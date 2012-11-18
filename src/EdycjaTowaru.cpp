@@ -17,7 +17,7 @@
 **/
 
 #include "EdycjaTowaru.h"
-#include "ui_edycjatowaru.h"
+#include "ui_EdycjaTowaru.h"
 
 #include <QSqlQuery>
 #include <QVariant>
