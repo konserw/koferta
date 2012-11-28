@@ -35,7 +35,6 @@ class cUser;
 namespace Ui {
     class MainWindow;
 }
-//class MainWindow;
 
 class cWydruk: public QWidget
 {
@@ -67,7 +66,7 @@ private:
     static const int d = (w-5)/2;                       //szerokość kolumny w szkielecie
     int z[8];                                           //szerokosc komorek tabeli
     static const int dw = 140;                          //szerokosc pierwszej kolumny w szkielecie poniżej tabeli
-    static const int margin = 5;                      //szerokość marginesu
+    static const int margin = 5;                        //szerokość marginesu
 
     QPrinter* printer;
     QPrintPreviewDialog* preview;
@@ -77,7 +76,6 @@ private:
     QString* _data;                                     //data sporządzenia oferty
     QString* _klient;                                   //id klienta
     QString* _numer;                                    //nr. oferty
- //   cUser* _u;
 };
 
 #endif // WYDRUK_H
