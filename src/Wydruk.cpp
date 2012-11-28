@@ -191,7 +191,8 @@ void cWydruk::make(){
             "<title>Oferta</title>\n"
             "</head><body><br>\n"
             "<hr width=100%>\n"
-            "<table cellspacing=3><tr>\n"
+            "<table cellspacing=3>\n"
+            "<thead><tr>\n"
             "<td valign=top width=";
     *sDoc += QString::number(d);
     *sDoc += ">\n";
@@ -214,7 +215,7 @@ void cWydruk::make(){
     *sDoc += q.value(4).toString();
     *sDoc += "\n</td>\n";
     /*linia pionowa*/
-    *sDoc += "<td width=1 bgcolor=#000000><BR></td>\n";
+  //  *sDoc += "<td width=1 bgcolor=#000000><BR></td>\n";
     /*OD*/
     *sDoc += "<td width=";
     *sDoc += QString::number(d);
@@ -232,12 +233,19 @@ void cWydruk::make(){
     *sDoc += _u->adress();
     *sDoc += _u->mail();
     *sDoc += "\n"
-         "</td></tr>\n"
-         "</table>\n"
-         "<hr width=100%>\n";
+            "</td></tr>"
+            "<tr><td colspan=2>\n"
+         "<hr width=100%>\n"
+         "</td>\n"
+         "</tr></thead>\n"
+         "<tr><td colspan=2>\n";
     *sDoc += ui->zapytanie->toPlainText();
-    *sDoc += "\n";
-    //tabela
+    *sDoc += "<br />\n";
+    /*
+    *sDoc += "</td></tr>\n"
+            "<tr><td>\n"
+ */
+ //tabela
     *sDoc += "<font face=\"Arial Narrow\" size=2>\n"
          "<table cellspacing=3>\n"
          "\t<thead><tr>\n"
@@ -347,11 +355,13 @@ void cWydruk::make(){
             "\t\t<td align=right>";
     *sDoc += ui->tableWidget->item(rows, 7)->text();
     *sDoc += "</td>\n\t</tr>\n"
-         "</table></font>\n"
+         "</table></font><br>\n"
          "Podane ceny nie zawierają podatku VAT<br>\n"
     //warunki
-         "\t<table cellspacing=3>\n"
-         "\t<tr>\n\t\t<td width=";
+//         "\t<table cellspacing=3>\n"
+            "</td></tr>\n"
+
+            "\t<tr>\n\t\t<td width=";
     *sDoc += QString::number(dw);
     *sDoc += ">"
          "Warunki dostawy:</td>\n"
