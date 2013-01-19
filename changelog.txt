@@ -136,8 +136,16 @@ v. 1.85
 * przebudowanie struktury plików źródłowych
 * auto-update
 
+v. 1.86
+* kopiowanie nagłówka na kolejne strony oferty
+* dokument opisujący system
+* zastosowanie systemu wersjonowania git
+* aktualizacja daty przy nadaniu nowego numeru oferty
 
 TODO:
+* przeniesienie serwera na platformę Raspbery Pi
+* zmiana tabel z QTableWidget na QTableView z odpowiednim modelem
+* wyszukiwarka w zapisanych ofertach
 * przygotowania do translacji
 * skróty klawiatórowe
 * ikony
@@ -150,7 +158,5 @@ TODO:
 * zapisane ofery w formie odnośników do tabeli combosów
 * zapisywanie informacji o wydruku w zapisanych ofertach
 * dodatkowy editbox na "uwagi"
-* szuaknie towarów i klientów jako widżet
-    * rozbudowa wyszukiwania klienta (lepszy algorytm, możliwość szukania po nazwisku)
-    * funkcja sprawdzająca czy dany towar jest już w tabeli
+
 

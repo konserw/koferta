@@ -70,4 +70,5 @@ OTHER_FILES += \
     res/LICENSE \
     res/gpl-3.0.txt \
     res/gpl-3.0.html \
-    res/SHA1_LICENSE
+    res/SHA1_LICENSE \
+    README.md
