@@ -30,9 +30,13 @@
 
 void MainWindow::nowyNumer()
 {
+    QDate d = QDate::currentDate();
+    *data = d.toString("dd.MM.yyyy");
+    ui->dateEdit->setDate(d);
+
     *nr_oferty = QString::number(u->nrOferty());
     nr_oferty->append("/");
-    nr_oferty->append(QDate::currentDate().toString("yyyy"));
+    nr_oferty->append(d.toString("yyyy"));
 
     this->setTitle(nr_oferty);
 }
@@ -44,10 +48,6 @@ void MainWindow::nowa()
     id_klienta->clear();
 
     this->nowyNumer();
-
-    QDate d = QDate::currentDate();
-    *data = d.toString("dd.MM.yyyy");
-    ui->dateEdit->setDate(d);
 
     if(ui->tab->isEnabled()==false)
         this->init();
