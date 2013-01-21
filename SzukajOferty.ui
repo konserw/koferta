@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SzukajOferty</class>
+ <widget class="QWidget" name="SzukajOferty">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>548</width>
+    <height>511</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>1</x>
+     <y>1</y>
+     <width>195</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Wybierz ofertę do wczytania:</string>
+   </property>
+  </widget>
+  <widget class="QTableWidget" name="tableWidget">
+   <property name="geometry">
+    <rect>
+     <x>1</x>
+     <y>24</y>
+     <width>256</width>
+     <height>192</height>
+    </rect>
+   </property>
+   <column>
+    <property name="text">
+     <string>Nr oferty</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Klient</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Data oferty</string>
+    </property>
+   </column>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

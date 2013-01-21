@@ -23,7 +23,7 @@ QT += core gui sql network
 
 TEMPLATE = app
 
-DEFINES += VER=1.85
+DEFINES += VER=1.86
 DEFINES += GET_PASS=\\\"W7^Dz*mALE0UIOrEb\\\"
 
 
@@ -32,7 +32,7 @@ win32 { #nmake & M$ compiler
     QMAKE_CXXFLAGS += /nologo /Ot #/Wp64 /Wall
     QMAKE_LFLAGS_RELEASE += /NODEFAULTLIB:LIBCMT
 
-    CONFIG += qt windows #release
+    CONFIG += qt windows release
 
     INCLUDEPATH += C:\\mysql\\include
 
@@ -40,7 +40,7 @@ win32 { #nmake & M$ compiler
     LIBS += -LC:\\mysql\\lib -lmysqlclient -llibmysql
 
     DEFINES += WIN32
-#   DEFINES += RELEASE
+    DEFINES += RELEASE
 }
 
 unix {
@@ -57,11 +57,14 @@ INCLUDEPATH += includes
 
 SOURCES += \
     src/*.cpp \
-    src/MainWindow/*.cpp
+    src/MainWindow/*.cpp \
+    SzukajOferty.cpp
 
-HEADERS  += includes/*.h
+HEADERS  += includes/*.h \
+    SzukajOferty.h
 
-FORMS += ui/*.ui
+FORMS += ui/*.ui \
+    SzukajOferty.ui
 
 RESOURCES += res/zasoby.qrc
 
