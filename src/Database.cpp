@@ -73,7 +73,7 @@ void insert_klient(QString skrot, QString full, QString tytul, QString imie, QSt
     EXEC(s);
 }
 
-void insert_zapisane(QString nr_oferty, QString id_klienta, QString data, QString uid, QString zapytanie, QString dostawa, QString termin, QString platnosc, QString oferta)
+void insert_zapisane(QString nr_oferty, int id_klienta, QString data, QString uid, QString zapytanie, QString dostawa, QString termin, QString platnosc, QString oferta)
 {
     QString s;
     QSqlQuery q;
@@ -92,7 +92,7 @@ void insert_zapisane(QString nr_oferty, QString id_klienta, QString data, QStrin
         " VALUES ('";
     s += nr_oferty;
     s += "', ";
-    s += id_klienta;
+    s += QString::number(id_klienta);
     s += ", '";
     s += data;
     s += "', ";

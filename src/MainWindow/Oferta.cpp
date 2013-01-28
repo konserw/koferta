@@ -45,7 +45,7 @@ void MainWindow::nowa()
 {
     //czyszczenie starych danych
     ui->label->clear();
-    id_klienta->clear();
+    id_klienta = -1;
 
     this->nowyNumer();
 
@@ -78,7 +78,7 @@ void MainWindow::zapisz()
 {
     QString s;
 
-    if(id_klienta->isEmpty())
+    if(id_klienta == -1)
     {
         QMessageBox::warning(this, "brak danych", "Aby zapisanie oferty w bazie danych było możliwe należy wybrać klienta.");
         return;
@@ -89,7 +89,7 @@ void MainWindow::zapisz()
     if(anr == u->nrOferty())
         u->nrOfertyInkrement();
 
-    insert_zapisane(*nr_oferty, *id_klienta, s += *data, u->uid(), ui->zapytanie->toPlainText(), ui->dostawa->toPlainText(), ui->termin->toPlainText(), ui->platnosc->toPlainText(), ui->oferta->toPlainText());
+    insert_zapisane(*nr_oferty, id_klienta, *data, u->uid(), ui->zapytanie->toPlainText(), ui->dostawa->toPlainText(), ui->termin->toPlainText(), ui->platnosc->toPlainText(), ui->oferta->toPlainText());
 
     for(int i=0; i < ui->tableWidget->rowCount() - 1; ++i)
         insert_zapisane_towary(*nr_oferty, ui->tableWidget->item(i, 0)->text(), ui->tableWidget->item(i, 5)->text(), ui->tableWidget->item(i, 3)->text());
@@ -120,7 +120,7 @@ void MainWindow::wczytaj_oferte(QString id)
     this->init();
 
     *nr_oferty = id;
-    this->setKlient(q.value(0).toString());
+    this->setKlient(q.value(0).toInt());
     *data = q.value(1).toString();
     ui->zapytanie->setPlainText(q.value(3).toString());
     ui->dostawa->setPlainText(q.value(4).toString());

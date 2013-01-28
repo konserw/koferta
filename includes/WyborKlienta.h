@@ -39,12 +39,12 @@ public:
 
 public slots:
     void ok();
-    void ref(QString);                                  //Odświerzanie listy klientów na podstawie wybranych kryteriów wyszukiwania
 
 signals:
-    void id_klienta(QString);                           //sygnał przekazujący wybranego lienta do MainQindow
+    void id_klienta(int);                           //sygnał przekazujący wybranego lienta do MainQindow
 
 private:
+    QString* s;
     Ui::WyborKlienta *ui;
 };
 

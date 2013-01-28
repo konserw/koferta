@@ -141,11 +141,14 @@ v. 1.86
 * dokument opisujący system
 * zastosowanie systemu wersjonowania git
 * aktualizacja daty przy nadaniu nowego numeru oferty
+* zmiana id_klienta na int, tak jak jest w bazie
+* wyszukiwanie w zapisanych ofertach zaimplementowane jako model-view w osobnym widżecie
+* wyszukiwanie klientów zaimplementowane jako model-view w osobnym widżecie
+
 
 TODO:
 * przeniesienie serwera na platformę Raspbery Pi
-* zmiana tabel z QTableWidget na QTableView z odpowiednim modelem
-* wyszukiwarka w zapisanych ofertach
+-> zmiana tabel z QTableWidget na QTableView z odpowiednim modelem
 * przygotowania do translacji
 * skróty klawiatórowe
 * ikony

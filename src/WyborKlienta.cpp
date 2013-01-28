@@ -29,14 +29,8 @@ cWyborKlienta::cWyborKlienta(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->tableWidget->hideColumn(0);
-
     connect(ui->cancel, SIGNAL(clicked()), this, SLOT(close()));
     connect(ui->ok, SIGNAL(clicked()), this, SLOT(ok()));
-    connect(ui->lineEdit, SIGNAL(textEdited(QString)), this, SLOT(ref(QString)));
-
-    ui->tableWidget->setColumnWidth(1, 200);
-    ui->tableWidget->setColumnWidth(2, 150);
 }
 
 cWyborKlienta::~cWyborKlienta()
@@ -46,37 +40,11 @@ cWyborKlienta::~cWyborKlienta()
 
 void cWyborKlienta::ok()
 {
-    ui->lineEdit->clear();
-    QList<QTableWidgetItem*> l = ui->tableWidget->selectedItems();
-    if (!l.isEmpty())
-        emit id_klienta(ui->tableWidget->item(l.at(0)->row(), 0)->text());
-    this->close();
-}
-void cWyborKlienta::ref(QString in)
-{
-    if(ui->lineEdit->text() != in) ui->lineEdit->setText(in);
-    while(ui->tableWidget->rowCount()){
-        ui->tableWidget->removeRow(ui->tableWidget->rowCount()-1);
-    }
-    if(in.size()==0)return;
-
-    QString s;
-    QSqlQuery q;
-    QTableWidgetItem* item;
-    int row = 0;
-
-    s = "SELECT id, short, nazwisko FROM klient WHERE short LIKE '";
-    s += in;
-    s += "%';";
-
-    EXEC(s);
-
-    while(q.next()){
-        ui->tableWidget->insertRow(row);
-        for(int i=0; i<3; i++){
-            item = new QTableWidgetItem(q.value(i).toString());
-            ui->tableWidget->setItem(row, i, item);
-        }
-        row++;
+    int r = ui->widget->selected();
+    if (r != -1)
+    {
+        emit id_klienta(r);
+        this->close();
     }
 }
+

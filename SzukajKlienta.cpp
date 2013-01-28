@@ -19,6 +19,7 @@
 #include "ui_SzukajKlienta.h"
 #include <QSqlTableModel>
 #include "Macros.h"
+#include <QSqlRecord>
 
 SzukajKlienta::SzukajKlienta(QWidget *parent) :
   QWidget(parent),
@@ -30,29 +31,56 @@ SzukajKlienta::SzukajKlienta(QWidget *parent) :
     ui->radioButton_nazwa->setChecked(true);
     ui->radioButton_nazwisko->setText(tr("Filtruj po nazwisku"));
 
-
-    QStringList sl;
-    sl << tr("Nr oferty") << tr("Klient") << tr("Data") << tr("Oferent");
-    for(int i=0; i<sl.size(); ++i)
-        ui->tabWidget->setTabText(i, sl[i]);
-
     model = new QSqlTableModel(this);
     model->setTable("klient");
     model->setEditStrategy(QSqlTableModel::OnManualSubmit);
     model->select();
 
+    QStringList sl;
+    sl << tr("Id") << tr("Nazwa") << tr("Nazwisko");
     for(int i=0; i<sl.size(); ++i)
         model->setHeaderData(i, Qt::Horizontal, sl[i]);
 
     ui->tableView->setModel(model);
-    for(int i=4; i<9; ++i)
+    ui->tableView->hideColumn(0);
+    for(int i=2; i<5; ++i)
         ui->tableView->hideColumn(i);
+    ui->tableView->hideColumn(6);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->resizeColumnToContents(3);
 
+    connect(ui->lineEdit, SIGNAL(textEdited(QString)), this, SLOT(ref(const QString&)));
+    connect(ui->radioButton_nazwa, SIGNAL(clicked()), this, SLOT(ref2()));
+    connect(ui->radioButton_nazwisko, SIGNAL(clicked()), this, SLOT(ref2()));
+    connect(ui->tableView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(select(const QModelIndex&)));
 }
 
 SzukajKlienta::~SzukajKlienta()
 {
     delete ui;
+}
+
+int SzukajKlienta::selected()
+{
+    QSqlRecord r = model->record(ui->tableView->currentIndex().row());
+    if(!r.isEmpty())
+        return r.value(0).toInt();
+    else
+        return -1;
+}
+void SzukajKlienta::ref2()
+{
+    ref(ui->lineEdit->text());
+}
+
+void SzukajKlienta::ref(const QString& in)
+{
+    QString s;
+    if(ui->radioButton_nazwa->isChecked())
+        s = "short like '";
+    else
+        s = "nazwisko like '";
+    s += in;
+    s += "%'";
+    model->setFilter(s);
 }

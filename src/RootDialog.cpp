@@ -247,7 +247,7 @@ void cRootDialog::db_import()
                 DEBUG <<  "upd_users: " << s;
                 break;
             case 3:
-                insert_zapisane(l.at(0), l.at(1), l.at(2), l.at(3), l.at(4), l.at(5), l.at(6), l.at(7), l.at(8));
+                insert_zapisane(l.at(0), l.at(1).toInt(), l.at(2), l.at(3), l.at(4), l.at(5), l.at(6), l.at(7), l.at(8));
                 break;
             case 4:
                 insert_zapisane_towary(l.at(0), l.at(1), l.at(2), l.at(3));

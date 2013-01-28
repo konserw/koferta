@@ -53,7 +53,7 @@ public:
 
 public slots:    
     void setTowar(QHash<QString, int>);                 //dodawanie towarów do tabeli (wywoływane przez sygnał z dialogu dodajTowar)
-    void setKlient(QString id);                         //ustawia wybranego klienta - połączone z sygnałem z dialogu klient
+    void setKlient(int id);                             //ustawia wybranego klienta - połączone z sygnałem z dialogu klient
 
     void wczytaj_oferte(QString);                       //wczytuje ofertę o zadanym id, połączone z dialogiem wczytywanie
 
@@ -128,7 +128,7 @@ private:
    // QHash<QString, QString>* zapytanie;
 
     //wewnętrzne zmienne
-    QString* id_klienta;
+    int id_klienta;
     QString* nr_oferty;
     QString* data;
     cUser* u;

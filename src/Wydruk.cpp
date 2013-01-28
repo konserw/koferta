@@ -41,7 +41,7 @@ cWydruk::~cWydruk()
     delete doc;
 }
 
-cWydruk::cWydruk(Ui::MainWindow* _ui, QString* data, QString* klient, QString* numer)
+cWydruk::cWydruk(Ui::MainWindow* _ui, QString* data, int klient, QString* numer)
 {
     sDoc = new QString;
 
@@ -180,7 +180,7 @@ void cWydruk::make(){
     uint rows = ui->tableWidget->rowCount()-1;
 
     s = "SELECT DISTINCT full, adres, tytul, imie, nazwisko FROM klient WHERE id=";
-    s += *_klient;
+    s += QString::number(_klient);
 
     EXEC(s);
 

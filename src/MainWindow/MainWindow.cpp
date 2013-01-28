@@ -36,7 +36,6 @@ MainWindow::~MainWindow()
     DEBUG << "destruktor main window";
 
     delete ui;
-    delete id_klienta;
     delete nr_oferty;
     delete data;
     delete dostawa;
@@ -77,7 +76,6 @@ MainWindow::MainWindow(cUser* us) :
     mb->setModal(true);
     //Stringi
     nr_oferty = new QString;
-    id_klienta = new QString;
     data = new QString(QDate::currentDate().toString("dd.MM.yyyy"));
     //inne
     u = us;
@@ -133,7 +131,7 @@ MainWindow::MainWindow(cUser* us) :
     connect(ui->ofertaCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(ref4(QString)));
 
     //inne
-    connect(kw, SIGNAL(id_klienta(QString)), this, SLOT(setKlient(QString)));
+    connect(kw, SIGNAL(id_klienta(int)), this, SLOT(setKlient(int)));
     connect(tw, SIGNAL(sig(QHash<QString, int>)), this, SLOT(setTowar(QHash<QString, int>)));
     connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(change(QTableWidgetItem*)));
 /**
@@ -392,16 +390,15 @@ void MainWindow::dateChanged(QDate data)
     ui->zapytanie->setPlainText(s);
 }
 
-void MainWindow::setKlient(QString id)
+void MainWindow::setKlient(int id)
 {
     QString s;
     QSqlQuery q;
 
-    *id_klienta = id;
+    id_klienta = id;
 
-    s = "SELECT DISTINCT short, nazwisko FROM klient WHERE id='";
-    s += id;
-    s += "'";
+    s = "SELECT DISTINCT short, nazwisko FROM klient WHERE id=";
+    s += QString::number(id);
 
     EXEC(s);
 
