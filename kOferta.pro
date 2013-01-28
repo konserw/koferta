@@ -58,13 +58,16 @@ INCLUDEPATH += includes
 SOURCES += \
     src/*.cpp \
     src/MainWindow/*.cpp \
-    SzukajOferty.cpp
+    SzukajOferty.cpp \
+    SzukajKlienta.cpp
 
 HEADERS  += includes/*.h \
-    SzukajOferty.h
+    SzukajOferty.h \
+    SzukajKlienta.h
 
 FORMS += ui/*.ui \
-    SzukajOferty.ui
+    SzukajOferty.ui \
+    SzukajKlienta.ui
 
 RESOURCES += res/zasoby.qrc
 

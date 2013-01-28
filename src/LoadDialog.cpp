@@ -21,6 +21,7 @@
 
 #include <QSqlQuery>
 #include "Macros.h"
+#include "../SzukajOferty.h"
 
 cLoadDialog::cLoadDialog(QWidget *parent) :
     QDialog(parent),
@@ -29,29 +30,13 @@ cLoadDialog::cLoadDialog(QWidget *parent) :
     ui->setupUi(this);
     of = new QString;
 
-    QTableWidgetItem* item;
-    QSqlQuery q;
-    QString s;
-    int row = 0;
-
-    s = "SELECT zapisane.nr_oferty, klient.short, zapisane.data FROM zapisane, klient WHERE zapisane.id_klienta = klient.id";
-
-    EXEC(s);
-
-    while(q.next())
-    {
-        ui->tableWidget->insertRow(row);
-        for(int i=0; i<3; ++i)
-        {
-            item = new QTableWidgetItem(q.value(i).toString());
-            ui->tableWidget->setItem(row, i, item);
-        }
-        row++;
-    }
+    QFont font("Monospace");
+    font.setStyleHint(QFont::TypeWriter);
+    ui->textEdit->setFont(font);
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    connect(ui->tableWidget, SIGNAL(cellClicked(int,int)), this, SLOT(ref(int, int)));
+    connect(ui->widget, SIGNAL(selected(const QString&)), this, SLOT(ref(const QString&)));
 }
 
 cLoadDialog::~cLoadDialog()
@@ -66,44 +51,50 @@ void cLoadDialog::ok()
     this->accept();
 }
 
-void cLoadDialog::ref(int w, int k)
+void cLoadDialog::ref(const QString& id)
 {
-    Q_UNUSED(k)
     QSqlQuery q;
     QString s, out;
-    *of = ui->tableWidget->item(w, 0)->text();
-    out = "Numer oferty: ";
-    out += *of;
-    out += "\nData oferty: ";
-    out +=  ui->tableWidget->item(w, 2)->text();
-    out += "\nKlient: ";
-    out += ui->tableWidget->item(w, 1)->text();
 
-    s = "SELECT DISTINCT klient.nazwisko FROM klient, zapisane WHERE zapisane.nr_oferty = '";
-    s += *of;
+    s = "SELECT DISTINCT zapisane.data, klient.short, klient.tytul, klient.nazwisko FROM klient, zapisane WHERE zapisane.nr_oferty = '";
+    s += id;
     s += "' AND zapisane.id_klienta = klient.id";
-
     EXEC(s);
-
     q.next();
 
-    out += ", ";
+    out = "Numer oferty: ";
+    out += id;
+    out += "\nData oferty: ";
     out += q.value(0).toString();
-    out += "\n\tTowary:\nKod towatu:\t\tIlosc:\n";
+    out += "\nKlient: ";
+    out += q.value(1).toString();
+    out += ", ";
+    out += q.value(2).toString();
+    out += " ";
+  //  out += ", Pan(i) ";
+    out += q.value(3).toString();
+   // out += "\n\tTowary:\n
+    out += "\nKod towatu:\t\tIlosc:\n";
 
     s = "SELECT kod, ilosc FROM zapisane_towary WHERE nr_oferty = '";
-    s += *of;
+    s += id;
     s += "'";
-
     EXEC(s);
 
+    QString kod;
     while(q.next())
     {
-        out += q.value(0).toString();
+        kod = q.value(0).toString();
+        out += kod;
         out += "\t\t";
+        if(kod.size() < 10)
+            out += "\t";
+        if(kod.size() < 5)
+            out += "\t";
         out += q.value(1).toString();
         out += "\n";
     }
 
+    *of = id;
     ui->textEdit->setText(out);
 }

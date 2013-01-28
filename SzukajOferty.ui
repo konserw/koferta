@@ -13,44 +13,78 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>1</x>
-     <y>1</y>
-     <width>195</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Wybierz ofertę do wczytania:</string>
-   </property>
-  </widget>
-  <widget class="QTableWidget" name="tableWidget">
-   <property name="geometry">
-    <rect>
-     <x>1</x>
-     <y>24</y>
-     <width>256</width>
-     <height>192</height>
-    </rect>
-   </property>
-   <column>
-    <property name="text">
-     <string>Nr oferty</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Klient</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>Data oferty</string>
-    </property>
-   </column>
-  </widget>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label_filtruj">
+     <property name="text">
+      <string>Filtruj:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="currentIndex">
+      <number>2</number>
+     </property>
+     <widget class="QWidget" name="tab_id">
+      <attribute name="title">
+       <string>Tab 1</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLineEdit" name="lineEdit_Id"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_klient">
+      <attribute name="title">
+       <string>Page</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="QLineEdit" name="lineEdit_Client"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_date">
+      <attribute name="title">
+       <string>Tab 2</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QDateEdit" name="dateEdit"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_user">
+      <attribute name="title">
+       <string>Page</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QComboBox" name="comboBox"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_wybierz">
+     <property name="text">
+      <string>Wybierz ofertę do wczytania:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTableView" name="tableView"/>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

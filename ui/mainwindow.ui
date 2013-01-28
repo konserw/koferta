@@ -14,7 +14,7 @@
    <string>kOferta</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="zasoby.qrc">
+   <iconset resource="../res/zasoby.qrc">
     <normaloff>:/ico</normaloff>:/ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -29,7 +29,7 @@
            <enum>QTabWidget::West</enum>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tab">
            <attribute name="title">
@@ -600,7 +600,7 @@
      <x>0</x>
      <y>0</y>
      <width>888</width>
-     <height>25</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOferta">
@@ -758,7 +758,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="zasoby.qrc"/>
+  <include location="../res/zasoby.qrc"/>
  </resources>
  <connections/>
 </ui>

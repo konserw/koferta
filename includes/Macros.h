@@ -6,6 +6,7 @@
 #include <QSqlError>
 #include <QSqlDatabase>
 #include <QTextStream>
+#include <QSqlQuery>
 
 #ifdef RELEASE
     #define DEBUG QTextStream(stdout)

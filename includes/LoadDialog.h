@@ -40,7 +40,7 @@ public:
 
 public slots:
     void ok();
-    void ref(int, int);
+    void ref(const QString &);
 
 signals:
     void sig(QString);
