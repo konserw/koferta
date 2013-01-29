@@ -45,7 +45,7 @@ public slots:
     void refUser(const QString &);
 
 signals:
-    void selected(const QString&);
+    void selectionChanged(const QString&);
 private:
     QSqlRelationalTableModel* model;
     Ui::SzukajOferty *ui;

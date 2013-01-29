@@ -40,7 +40,7 @@ cWyborKlienta::~cWyborKlienta()
 
 void cWyborKlienta::ok()
 {
-    int r = ui->widget->selected();
+    int r = ui->widget->selectedClient();
     if (r != -1)
     {
         emit id_klienta(r);

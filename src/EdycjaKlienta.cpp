@@ -37,25 +37,22 @@ cEdycjaKlienta::cEdycjaKlienta(QWidget *parent) :
 
     ui->setupUi(this);
 
-    connect(ui->lineEdit, SIGNAL(textChanged(QString)), this, SLOT(ref(QString)));
     connect(ui->apply, SIGNAL(clicked()), this, SLOT(app()));
     connect(ui->close, SIGNAL(clicked()), this, SLOT(close()));
-    connect(ui->tableWidget, SIGNAL(cellClicked(int,int)), this, SLOT(change(int,int)));
+    connect(ui->widget, SIGNAL(selectionChanged(int)), this, SLOT(change(int)));
     connect(ui->del, SIGNAL(clicked()), this, SLOT(del()));
 
-    ui->tableWidget->setColumnWidth(1, 200);
-    ui->tableWidget->setColumnWidth(2, 150);
-    ui->tableWidget->hideColumn(0);
-
-    id = 0;
+    id = -1;
 }
 
-void cEdycjaKlienta::change(int row, int col)
+void cEdycjaKlienta::change(int _id)
 {
-    QString s;
-    QSqlQuery q;
+    if(id == _id)
+        return;
 
-    if(col==-1)
+    id = _id;
+
+    if(id == -1)
     {
         ui->skrocona->clear();
         ui->pelna->clear();
@@ -66,7 +63,9 @@ void cEdycjaKlienta::change(int row, int col)
         return;
     }
 
-    id = ui->tableWidget->item(row, 0)->text().toInt();
+    QString s;
+    QSqlQuery q;
+
     DEBUG << "Zaznaczono klienta id " << id;
 
     s = "SELECT DISTINCT short, full, tytul, imie, nazwisko, adres FROM klient WHERE id=";
@@ -84,42 +83,6 @@ void cEdycjaKlienta::change(int row, int col)
     ui->adres->setPlainText(s);
 }
 
-void cEdycjaKlienta::ref(QString in)
-{
-    QString s;
-    QSqlQuery q;
-    QTableWidgetItem* item;
-    uint row = 0;
-
-    DEBUG <<  "szukanie " << in;
-
-    while(ui->tableWidget->rowCount())
-        ui->tableWidget->removeRow(ui->tableWidget->rowCount()-1);
-    DEBUG <<  "czyszczenie tabeli zakończone";
-
-    if(in.size()==0)
-    {
-        DEBUG <<  "brak frazy do szukania";
-        return;
-    }
-
-    s = "SELECT id, short, nazwisko FROM klient WHERE short LIKE '";
-    s += in;
-    s += "%'";
-    EXEC(s);
-
-    while(q.next())
-    {
-        ui->tableWidget->insertRow(row);
-        for(int i=0; i<3; i++)
-        {
-            item = new QTableWidgetItem(q.value(i).toString());
-            ui->tableWidget->setItem(row, i, item);
-        }
-        row++;
-    }
-    DEBUG <<  "wyszukiwanie zakończone, wyników: " << row;
-}
 
 void cEdycjaKlienta::app()
 {
@@ -161,6 +124,5 @@ void cEdycjaKlienta::del()
 
     EXEC(s);
 
-    ui->lineEdit->clear();
-    this->change(0, -1);
+    change(-1);
 }

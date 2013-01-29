@@ -34,9 +34,8 @@ public:
     ~cEdycjaKlienta();
 
 public slots:
-    void ref(QString in);
     void app();
-    void change(int, int);
+    void change(int);
     void del();
 
 private:

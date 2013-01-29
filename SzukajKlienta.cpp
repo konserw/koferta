@@ -27,6 +27,8 @@ SzukajKlienta::SzukajKlienta(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    id = -1;
+
     ui->radioButton_nazwa->setText(tr("Filtruj po nazwie"));
     ui->radioButton_nazwa->setChecked(true);
     ui->radioButton_nazwisko->setText(tr("Filtruj po nazwisku"));
@@ -53,6 +55,7 @@ SzukajKlienta::SzukajKlienta(QWidget *parent) :
     connect(ui->radioButton_nazwa, SIGNAL(clicked()), this, SLOT(ref2()));
     connect(ui->radioButton_nazwisko, SIGNAL(clicked()), this, SLOT(ref2()));
     connect(ui->tableView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(select(const QModelIndex&)));
+    connect(ui->tableView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(select(const QModelIndex&)));
 }
 
 SzukajKlienta::~SzukajKlienta()
@@ -60,17 +63,25 @@ SzukajKlienta::~SzukajKlienta()
     delete ui;
 }
 
-int SzukajKlienta::selected()
+int SzukajKlienta::selectedClient()
 {
-    QSqlRecord r = model->record(ui->tableView->currentIndex().row());
-    if(!r.isEmpty())
-        return r.value(0).toInt();
-    else
-        return -1;
+    return id;
 }
 void SzukajKlienta::ref2()
 {
     ref(ui->lineEdit->text());
+}
+
+void SzukajKlienta::select(const QModelIndex &idx)
+{
+    QSqlRecord r = model->record(idx.row());
+    if(!r.isEmpty())
+    {
+        id = r.value(0).toInt();
+        emit selectionChanged(id);
+    }
+    else
+        id = -1;
 }
 
 void SzukajKlienta::ref(const QString& in)

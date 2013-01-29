@@ -81,7 +81,7 @@ void SzukajOferty::select(const QModelIndex& index)
     int row = index.row();
     QString id = model->record(row).value(0).toString();
     DEBUG << "selected row: " << row << "id: " << id;
-    emit selected(id);
+    emit selectionChanged(id);
 }
 
 void SzukajOferty::refId(const QString& id)
