@@ -281,23 +281,25 @@ void MainWindow::setTowar(QHash<QString, int> hasz)
         item = new QTableWidgetItem(q.value(0).toString());
         ui->tableWidget->setItem(row, 1, item);
         //cena kat
-        double r ;//= q.value(1).toDouble(&ok);
- //       if(!ok)
- //       {
+        double r;
 
-            QString x = q.value(1).toString();
-  //          DEBUG << x;
-            x.replace(",", ".");
+        QString x = q.value(1).toString();
+        x.replace(",", ".");
+
+        r = x.toDouble(&ok);
+        if(!ok)
+        {
+            DEBUG << "Problem z zmaianą . i , w liczbie " << x;
+            x.replace(".", ",");
             DEBUG << x;
             r = x.toDouble(&ok);
             if(!ok)
             {
-                DEBUG << x;
-                x.replace(".", ",");
-                DEBUG << x;
-                r = x.toDouble(&ok);
+                DEBUG << "dalej !?";
+                r = 0;
             }
- //       }
+        }
+
         item = new QTableWidgetItem(QString::number(r, 'f', 2));
         ui->tableWidget->setItem(row, 8, item);
         if(pln) r *= kurs;

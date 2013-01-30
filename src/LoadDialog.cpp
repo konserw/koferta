@@ -36,7 +36,7 @@ cLoadDialog::cLoadDialog(QWidget *parent) :
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    connect(ui->widget, SIGNAL(selected(const QString&)), this, SLOT(ref(const QString&)));
+    connect(ui->widget, SIGNAL(selectionChanged(const QString&)), this, SLOT(ref(const QString&)));
 }
 
 cLoadDialog::~cLoadDialog()
@@ -73,8 +73,8 @@ void cLoadDialog::ref(const QString& id)
     out += " ";
   //  out += ", Pan(i) ";
     out += q.value(3).toString();
-   // out += "\n\tTowary:\n
-    out += "\nKod towatu:\t\tIlosc:\n";
+    out += "\n\n\t\tTowary:\n"
+        "Kod towatu:\t\tIlosc:\n";
 
     s = "SELECT kod, ilosc FROM zapisane_towary WHERE nr_oferty = '";
     s += id;

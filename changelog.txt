@@ -136,7 +136,8 @@ v. 1.85
 * przebudowanie struktury plików źródłowych
 * auto-update
 
-v. 1.86
+v. 1.9
+* drobne poprawki w różnych miejscach
 * kopiowanie nagłówka na kolejne strony oferty
 * dokument opisujący system
 * zastosowanie systemu wersjonowania git
@@ -144,7 +145,7 @@ v. 1.86
 * zmiana id_klienta na int, tak jak jest w bazie
 * wyszukiwanie w zapisanych ofertach zaimplementowane jako model-view w osobnym widżecie
 * wyszukiwanie klientów zaimplementowane jako model-view w osobnym widżecie
-
+* update bibliotek qt dla systemu windows do wersji 4.8.4
 
 TODO:
 * przeniesienie serwera na platformę Raspbery Pi

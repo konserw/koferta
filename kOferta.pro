@@ -29,18 +29,19 @@ DEFINES += GET_PASS=\\\"W7^Dz*mALE0UIOrEb\\\"
 
 
 win32 { #nmake & M$ compiler
-    QMAKE_CXXFLAGS += /nologo /Ot #/Wp64 /Wall
+    QMAKE_CXXFLAGS += /nologo /O2 #/Wp64 /Wall
     QMAKE_LFLAGS_RELEASE += /NODEFAULTLIB:LIBCMT
 
     CONFIG += qt windows release
 
     INCLUDEPATH += C:\\mysql\\include
+    INCLUDEPATH += C:\\koferta_src
 
     LIBS += -L"C:\\Program Files\\Microsoft SDKs\\Windows\\v7.0A\\Lib" -lUser32 -lAdvAPI32
     LIBS += -LC:\\mysql\\lib -lmysqlclient -llibmysql
 
     DEFINES += WIN32
-    DEFINES += RELEASE
+ #   DEFINES += RELEASE
 }
 
 unix {
@@ -59,15 +60,18 @@ SOURCES += \
     src/*.cpp \
     src/MainWindow/*.cpp \
     SzukajOferty.cpp \
-    SzukajKlienta.cpp
+    SzukajKlienta.cpp \
+    SzukajTowaru.cpp
 
 HEADERS  += includes/*.h \
     SzukajOferty.h \
-    SzukajKlienta.h
+    SzukajKlienta.h \
+    SzukajTowaru.h
 
 FORMS += ui/*.ui \
     SzukajOferty.ui \
-    SzukajKlienta.ui
+    SzukajKlienta.ui \
+    SzukajTowaru.ui
 
 RESOURCES += res/zasoby.qrc
 
