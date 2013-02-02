@@ -22,6 +22,9 @@
 #include <QDate>
 #include <QSqlQuery>
 #include <QInputDialog>
+#include <QList>
+#include <QTableWidget>
+#include <QTableWidgetItem>
 
 #include "WyborTowaru.h"
 #include "WyborKlienta.h"
@@ -49,6 +52,23 @@ MainWindow::~MainWindow()
     DEBUG << "aplikacja zkończona prawidłowo";
 }
 
+int MainWindow::ileTowaru(const QString& id)
+{
+    DEBUG << "idTowaru:" << id;
+    QList<QTableWidgetItem*> list = ui->tableWidget->findItems(id, Qt::MatchFixedString);
+    if(list.isEmpty())
+    {
+        DEBUG << "not found";
+        return 0;
+    }
+    else
+    {
+        int row = list[0]->row();
+        DEBUG << "found in row: " << row;
+        return ui->tableWidget->item(row, 5)->text().toInt();
+    }
+}
+
 MainWindow::MainWindow(cUser* us) :
     QMainWindow(NULL),
     ui(new Ui::MainWindow)
@@ -69,7 +89,7 @@ MainWindow::MainWindow(cUser* us) :
     pln = false;
 
     //okna
-    tw = new cWyborTowaru(this);
+    tw = new WyborTowaru(this);
     kw = new cWyborKlienta(this);
     mb = new QMessageBox(QMessageBox::Information, "Przetwarzanie bazy", "Przetwarzanie bazy, proszę czekać...", QMessageBox::NoButton, this);
     mb->setStandardButtons(0);
@@ -132,7 +152,7 @@ MainWindow::MainWindow(cUser* us) :
 
     //inne
     connect(kw, SIGNAL(id_klienta(int)), this, SLOT(setKlient(int)));
-    connect(tw, SIGNAL(sig(QHash<QString, int>)), this, SLOT(setTowar(QHash<QString, int>)));
+    connect(tw, SIGNAL(selectionChanged(QString,int)), this, SLOT(setTowar(QString, int)));
     connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(change(QTableWidgetItem*)));
 /**
  combosy
@@ -253,19 +273,23 @@ void MainWindow::sum()
     ui->tableWidget->item(row, 7)->setText(QString::number(sum, 'f', 2));
 }
 
-void MainWindow::setTowar(QHash<QString, int> hasz)
+void MainWindow::setTowar(QString id, int ile)
 {
-    QSqlQuery q;
-    QString s;
-    QHash<QString, int>::iterator it;
-    int row = ui->tableWidget->rowCount()-1;
-    if(row<0)row=0;
-    bool ok;
 
-    for(it = hasz.begin(); it != hasz.end(); ++it)
+    QList<QTableWidgetItem*> list = ui->tableWidget->findItems(id, Qt::MatchFixedString);
+
+    if(list.isEmpty())
     {
+        QSqlQuery q;
+        QString s;
+        bool ok;
+        QTableWidgetItem* item;
+
+        int row = ui->tableWidget->rowCount()-1;
+        if(row < 0) row = 0;
+
         s = "SELECT nazwa, cena_kat, jednostka FROM towar WHERE id='";
-        s += it.key();
+        s += id;
         s+= "'";
 
         EXEC(s);
@@ -273,9 +297,9 @@ void MainWindow::setTowar(QHash<QString, int> hasz)
         q.next();
 
         ui->tableWidget->insertRow(row);
-        QTableWidgetItem* item;
+
         //kod
-        item = new QTableWidgetItem(it.key());
+        item = new QTableWidgetItem(id);
         ui->tableWidget->setItem(row, 0, item);
         //nazwa
         item = new QTableWidgetItem(q.value(0).toString());
@@ -312,7 +336,7 @@ void MainWindow::setTowar(QHash<QString, int> hasz)
         item = new QTableWidgetItem("");
         ui->tableWidget->setItem(row, 4, item);
         //ilosc
-        item = new QTableWidgetItem(QString::number(it.value()));
+        item = new QTableWidgetItem(QString::number(ile));
         ui->tableWidget->setItem(row, 5, item);
         //jednostka
         item = new QTableWidgetItem(q.value(2).toString());
@@ -321,9 +345,13 @@ void MainWindow::setTowar(QHash<QString, int> hasz)
         item = new QTableWidgetItem("");
         ui->tableWidget->setItem(row, 7, item);
         przelicz(row);
-
-        row++;
     }
+    else
+    {
+        ui->tableWidget->item(list[0]->row(), 5)->setText(QString::number(ile));
+    }
+
+
     sum();
 }
 double MainWindow::ev(unsigned row, unsigned col)

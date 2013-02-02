@@ -7,9 +7,17 @@
 #include <QSqlDatabase>
 #include <QTextStream>
 #include <QSqlQuery>
+#include <QFile>
+
+#ifdef WIN32
+    extern QTextStream* logFile;
+    #define OUTSTREAM *logFile << "\n"
+#else
+    #define OUTSTREAM qDebug()
+#endif
 
 #ifdef RELEASE
-    #define DEBUG QTextStream(stdout)
+    #define DEBUG OUTSTREAM
 
     #define EXEC(x) \
         do{ \
@@ -42,16 +50,16 @@
             s += *host; \
             ui->info->setText(s); \
         }
-#else
 
-    #define DEBUG qDebug() << __FILE__ << " (" << __LINE__ << "): "
+#else
+    #define DEBUG OUTSTREAM << __FILE__ << " (" << __LINE__ << "): "
 
     #define EXEC(s) \
         do{ \
-            qDebug() << __FILE__ << " (" << __LINE__ << "): zapytanie mysql: " << s; \
+            OUTSTREAM << __FILE__ << " (" << __LINE__ << "): zapytanie mysql: " << s; \
             if(q.exec(s) == false) \
                 { \
-                qDebug() << __FILE__ << " (" << __LINE__ << "): Zapytanie mysql zkończone niepowodzeniem!"; \
+                OUTSTREAM << __FILE__ << " (" << __LINE__ << "): Zapytanie mysql zkończone niepowodzeniem!"; \
                 QMessageBox::warning(NULL, "error", "Wystąpił błąd połączenia z bazą danych. Sprawdź połączenie i spróbuj ponownie"); \
                 return; \
             } \
@@ -60,12 +68,12 @@
     #define LOGIN \
         if (!d->open()) \
         { \
-            qDebug() << __FILE__ << " (" << __LINE__ << "): Błąd: nie można się połączyć z bazą!"; \
-            qDebug() << "\t\t\t connName: " << d->connectionName(); \
-            qDebug() << "\t\t\t driver: " << d->driverName(); \
-            qDebug() << "\t\t\t opcje " << d->connectOptions(); \
-            qDebug() << "\t\t\t host: " << d->hostName(); \
-            qDebug() << "\t\t\t last error: " << d->lastError().text(); \
+            OUTSTREAM << __FILE__ << " (" << __LINE__ << "): Błąd: nie można się połączyć z bazą!"; \
+            OUTSTREAM << "\t\t\t connName: " << d->connectionName(); \
+            OUTSTREAM << "\t\t\t driver: " << d->driverName(); \
+            OUTSTREAM << "\t\t\t opcje " << d->connectOptions(); \
+            OUTSTREAM << "\t\t\t host: " << d->hostName(); \
+            OUTSTREAM << "\t\t\t last error: " << d->lastError().text(); \
             QMessageBox::warning(NULL, "error", "Nie udało się nawiązać połączenia z bazą danych."); \
             return; \
         }
@@ -73,12 +81,12 @@
     #define LOGIN_ \
         if (!d->open()) \
         { \
-            qDebug() << __FILE__ << " (" << __LINE__ << "): Błąd: nie można się połączyć z bazą!"; \
-            qDebug() << "\t\t\t connName: " << d->connectionName(); \
-            qDebug() << "\t\t\t driver: " << d->driverName(); \
-            qDebug() << "\t\t\t opcje " << d->connectOptions(); \
-            qDebug() << "\t\t\t host: " << d->hostName(); \
-            qDebug() << "\t\t\t last error: " << d->lastError().text(); \
+            OUTSTREAM << __FILE__ << " (" << __LINE__ << "): Błąd: nie można się połączyć z bazą!"; \
+            OUTSTREAM << "\t\t\t connName: " << d->connectionName(); \
+            OUTSTREAM << "\t\t\t driver: " << d->driverName(); \
+            OUTSTREAM << "\t\t\t opcje " << d->connectOptions(); \
+            OUTSTREAM << "\t\t\t host: " << d->hostName(); \
+            OUTSTREAM << "\t\t\t last error: " << d->lastError().text(); \
             s = "Połączenie z bazą danych na "; \
             s += *host; \
             s += " nie powiodło się."; \

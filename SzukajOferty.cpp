@@ -63,6 +63,7 @@ SzukajOferty::SzukajOferty(QWidget *parent) :
         ui->tableView->hideColumn(i);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->resizeColumnToContents(3);
+    ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     connect(ui->tableView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(select(const QModelIndex&)));
     connect(ui->lineEdit_Id, SIGNAL(textEdited(QString)), this, SLOT(refId(const QString&)));

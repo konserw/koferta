@@ -106,8 +106,6 @@ void MainWindow::wczytaj_oferte(QString id)
 {
     QString s;
     QSqlQuery q;
-    QHash<QString, int> h;
-    QHash<QString, double> h2;
 
     s = "SELECT id_klienta, data, uid, zapytanie, dostawa, termin, platnosc, oferta FROM zapisane WHERE nr_oferty = '";
     s += id;
@@ -133,25 +131,23 @@ void MainWindow::wczytaj_oferte(QString id)
     s += "'";
     EXEC(s);
 
-    while(q.next())
-    {
-        s = q.value(0).toString();
-        h.insert(s, q.value(1).toInt());
-        h2.insert(s, q.value(2).toDouble());
-    }
-
     if(ui->tabWidget->isEnabled())
         this->clear();
     else
         this->init();
 
-    this->setTowar(h);
-    for(int i=0; i<ui->tableWidget->rowCount()-1; ++i)
+    int row;
+    while(q.next())
     {
-        ui->tableWidget->item(i, 3)->setText(QString::number(h2.value(ui->tableWidget->item(i, 0)->text())));
-        this->przelicz(i);
+        s = q.value(0).toString();
+        this->setTowar(s, q.value(1).toInt());
+        row = ui->tableWidget->rowCount()-1;
+        if(row < 0) row = 0;
+        ui->tableWidget->item(row, 3)->setText(QString::number(q.value(2).toDouble()));
     }
+
     sum();
+
     this->setTitle(nr_oferty);
 }
 

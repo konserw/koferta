@@ -24,11 +24,34 @@
 #include "User.h"
 #include "Macros.h"
 
+#ifdef WIN32
+    QTextStream* logFile = NULL;
+#endif
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
+
+#ifdef WIN32
+    QFile file("log.txt");
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QMessageBox::critical(NULL, "Error", "Nie udało się otworzyć pliku z logiem");
+        logFile = new QTextStream(stderr);
+    }
+    else
+    {
+        logFile = new QTextStream(&file);
+        logFile->setCodec("Windows-1250");
+    }
+    if(logFile == NULL)
+    {
+        QMessageBox::critical(NULL, "Error", "Nie udało się otworzyć pliku z logiem, ani podpiąć do strumienia błędów.\nNastąpi zakończenie programu.");
+        return 2;
+    }
+#endif
 
     cUser** u;
     u = new cUser*;
@@ -38,6 +61,9 @@ int main(int argc, char *argv[])
     if(logw->exec() != QDialog::Accepted)
     {
         delete logw;
+#ifdef WIN32
+        delete logFile;
+#endif
         DEBUG << "Zamknieto okno logowanie - wychodzę";
         return 1;
     }
@@ -52,5 +78,9 @@ int main(int argc, char *argv[])
     delete u;
 
     DEBUG << "wchodzę do głównej pętli";
-    return a.exec();
+    int status = a.exec();
+#ifdef WIN32
+    delete logFile;
+#endif
+    return status;
 }

@@ -50,6 +50,7 @@ SzukajKlienta::SzukajKlienta(QWidget *parent) :
     ui->tableView->hideColumn(6);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->resizeColumnToContents(3);
+    ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     connect(ui->lineEdit, SIGNAL(textEdited(QString)), this, SLOT(ref(const QString&)));
     connect(ui->radioButton_nazwa, SIGNAL(clicked()), this, SLOT(ref2()));

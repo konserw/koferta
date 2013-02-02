@@ -30,7 +30,7 @@ class QTextDocument;
 class QStringList;
 class QTableWidgetItem;
 class cWyborKlienta;
-class cWyborTowaru;
+class WyborTowaru;
 class QMessageBox;
 class cLoadDialog;
 class QSqlDatabase;
@@ -48,11 +48,13 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(cUser*);                         //aktualny użytkownik przekazywany jako parametr
+    explicit MainWindow(cUser*);                        //aktualny użytkownik przekazywany jako parametr
     ~MainWindow();
 
+    int ileTowaru(const QString&);                      //ilość danego towaru do wyświetlenia w wyborzeTowaru
+
 public slots:    
-    void setTowar(QHash<QString, int>);                 //dodawanie towarów do tabeli (wywoływane przez sygnał z dialogu dodajTowar)
+    void setTowar(QString, int);                        //dodawanie towarów do tabeli (wywoływane przez sygnał z dialogu dodajTowar)
     void setKlient(int id);                             //ustawia wybranego klienta - połączone z sygnałem z dialogu klient
 
     void wczytaj_oferte(QString);                       //wczytuje ofertę o zadanym id, połączone z dialogiem wczytywanie
@@ -105,7 +107,7 @@ private:
     Ui::MainWindow *ui;
 
     cWyborKlienta* kw;
-    cWyborTowaru* tw;
+    WyborTowaru* tw;
     QMessageBox* mb;
     cLoadDialog* ww;
     cWydruk* wyd;

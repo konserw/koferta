@@ -23,18 +23,19 @@
 
 class QSqlTableModel;
 class QModelIndex;
+class SpinBoxDelegate;
 
 namespace Ui {
-    class SzukajTowaru;
+    class WyborTowaru;
 }
 
-class SzukajTowaru : public QWidget
+class WyborTowaru : public QWidget
 {
     Q_OBJECT
     
 public:
-    explicit SzukajTowaru(QWidget *parent = 0);
-    ~SzukajTowaru();
+    explicit WyborTowaru(QWidget *parent = 0);
+    ~WyborTowaru();
 
 public slots:
     void ref(const QString&);
@@ -45,8 +46,9 @@ signals:
     void selectionChanged(QString, int);
 
 private:
-    Ui::SzukajTowaru *ui;
+    Ui::WyborTowaru *ui;
     QSqlTableModel* model;
+    SpinBoxDelegate* d;
 };
 
 #endif // SZUKAJTOWARU_H

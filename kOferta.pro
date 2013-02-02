@@ -17,16 +17,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #----------------------------------------------------------------------------
+
 TARGET = kOferta
 
 QT += core gui sql network
 
 TEMPLATE = app
 
-DEFINES += VER=1.86
+DEFINES += VER=1.9
 DEFINES += GET_PASS=\\\"W7^Dz*mALE0UIOrEb\\\"
-
-
 
 win32 { #nmake & M$ compiler
     QMAKE_CXXFLAGS += /nologo /O2 #/Wp64 /Wall
@@ -41,7 +40,7 @@ win32 { #nmake & M$ compiler
     LIBS += -LC:\\mysql\\lib -lmysqlclient -llibmysql
 
     DEFINES += WIN32
- #   DEFINES += RELEASE
+   # DEFINES += RELEASE
 }
 
 unix {
@@ -61,17 +60,22 @@ SOURCES += \
     src/MainWindow/*.cpp \
     SzukajOferty.cpp \
     SzukajKlienta.cpp \
-    SzukajTowaru.cpp
+    SzukajTowaru.cpp \
+    delegate.cpp \
+    WyborTowaru.cpp
 
 HEADERS  += includes/*.h \
     SzukajOferty.h \
     SzukajKlienta.h \
-    SzukajTowaru.h
+    SzukajTowaru.h \
+    delegate.h \
+    WyborTowaru.h
 
 FORMS += ui/*.ui \
     SzukajOferty.ui \
     SzukajKlienta.ui \
-    SzukajTowaru.ui
+    SzukajTowaru.ui \
+    WyborTowaru.ui
 
 RESOURCES += res/zasoby.qrc
 
