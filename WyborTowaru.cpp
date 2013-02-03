@@ -1,69 +1,47 @@
 /**
     kOferta - system usprawniajacy proces ofertowania
     Copyright (C) 2011  Kamil 'konserw' Strzempowicz, konserw@gmail.com
-
+    
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-
+    
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-
+    
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#include <QSqlTableModel>
-#include "Macros.h"
-#include <QSqlRecord>
-
 #include "WyborTowaru.h"
 #include "ui_WyborTowaru.h"
-#include "delegate.h"
+
+#include <QSqlRecord>
 
 WyborTowaru::WyborTowaru(QWidget *parent) :
-  QWidget(parent),
+    QDialog(parent),
     ui(new Ui::WyborTowaru)
 {
     ui->setupUi(this);
 
-    ui->label->setText(tr("Filtr:"));
-    ui->radioButton_id->setText(tr("Id produktu"));
-    ui->radioButton_id->setChecked(true);
-    ui->radioButton_name->setText(tr("Nazwa produktu"));
-    ui->pushButton_close->setText(tr("Zamknij"));
+    ui->pushButton->setText(tr("Zamknij"));
+    ui->label_add->setText(tr("Dodaj:"));
+    ui->plainTextEdit->setPlainText(tr("Wybierz towar z listy po lewej"));
+    ui->spinBox->setMinimum(0);
+    ui->spinBox->setSingleStep(1);
+    ui->spinBox->setMaximum(999);
+    rec = NULL;
 
-    model = new QSqlTableModel(this);
-    model->setTable("towar");
-    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    model->select();
+    QFont font("Monospace");
+    font.setStyleHint(QFont::TypeWriter);
+    ui->plainTextEdit->setFont(font);
 
-  //  model->insertColumn(0, model);
-    QStringList sl;
-    sl << tr("Id") << tr("Nazwa") << tr("Cena Katalogowa") << tr("Sztuk");
-    for(int i=0; i<sl.size(); ++i)
-        model->setHeaderData(i, Qt::Horizontal, sl[i]);
-
-
-
-
-    ui->tableView->setModel(model);
-//    ui->tableView->hideColumn(4);
-    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-  //  ui->tableView->resizeColumnToContents(0);
-   // ui->tableView->resizeColumnToContents(1);
-    d = new SpinBoxDelegate;
-    ui->tableView->setItemDelegateForColumn(3, d);
-    //ui->tableView->openPersistentEditor();
-
-    connect(d, SIGNAL(valueChanged(int,int)), this, SLOT(select(int,int)));
-    connect(ui->radioButton_id, SIGNAL(clicked()), this, SLOT(ref2()));
-    connect(ui->radioButton_name, SIGNAL(clicked()), this, SLOT(ref2()));
-    connect(ui->lineEdit, SIGNAL(textEdited(QString)), this, SLOT(ref(QString)));
-    connect(ui->pushButton_close, SIGNAL(clicked()), this, SLOT(close()));
+    connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(close()));
+    connect(ui->widget, SIGNAL(selectionChanged(const QSqlRecord&)), this, SLOT(refresh(const QSqlRecord&)));
+    connect(ui->spinBox, SIGNAL(valueChanged(int)), this, SLOT(spin(int)));
 }
 
 WyborTowaru::~WyborTowaru()
@@ -71,25 +49,25 @@ WyborTowaru::~WyborTowaru()
     delete ui;
 }
 
-void WyborTowaru::select(int row, int value)
+void WyborTowaru::refresh(const QSqlRecord& _rec)
 {
-    QString id = model->record(row).value(1).toString();
-    emit selectionChanged(id, value);
-}
+    delete rec;
+    rec = new QSqlRecord(_rec);
 
-void WyborTowaru::ref2()
-{
-    this->ref(ui->lineEdit->text());
-}
-
-void WyborTowaru::ref(const QString & in)
-{
     QString s;
-    if(ui->radioButton_id->isChecked())
-        s = "id like '";
-    else
-        s = "nazwa like '";
-    s += in;
-    s += "%'";
-    model->setFilter(s);
+    s = tr("Kod towaru:\t\t");
+    s += rec->value(0).toString();
+    s += tr("\n\nSpecyfikacja:\t");
+    s += rec->value(1).toString();
+    s += tr("\n\nCena katalogowa:\t");
+    s += rec->value(2).toString();
+    s += tr("\n\nJednostka:\t\t");
+    s += rec->value(3).toString();
+    ui->plainTextEdit->setPlainText(s);
+}
+
+void WyborTowaru::spin(int ile)
+{
+    if(ile != 0 && rec != NULL)
+        emit countChanged(*rec, ile);
 }

@@ -25,7 +25,18 @@
 #include <QList>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <QFile>
+#include <QTextStream>
+#include <QTextCodec>
+#include <QFileDialog>
 
+#include "SyntaxKlient.h"
+#include "SyntaxTowar.h"
+#include "NowyKlient.h"
+#include "NowyTowar.h"
+#include "Database.h"
+#include "EdycjaTowaru.h"
+#include "EdycjaKlienta.h"
 #include "WyborTowaru.h"
 #include "WyborKlienta.h"
 #include "Logowanie.h"
@@ -33,10 +44,15 @@
 #include "Wydruk.h"
 #include "User.h"
 #include "Macros.h"
+#include "Wydruk.h"
+
+/*************************
+**      GŁÓWNE OKNO     **
+*************************/
 
 MainWindow::~MainWindow()
 {
-    DEBUG << "destruktor main window";
+    DEBUG << "destruktor mainwindow";
 
     delete ui;
     delete nr_oferty;
@@ -47,9 +63,6 @@ MainWindow::~MainWindow()
     delete oferta;
     delete u;
     delete wyd;
-
-
-    DEBUG << "aplikacja zkończona prawidłowo";
 }
 
 int MainWindow::ileTowaru(const QString& id)
@@ -223,7 +236,7 @@ void MainWindow::about()
 
 void MainWindow::setTitle(QString* nr)
 {
-    QString s = "kOferta v.";
+    QString s = "kOferta v. ";
     s += QString::number(VER);
 
     if(nr != NULL)
@@ -499,3 +512,336 @@ void MainWindow::tabupd()
     }
     sum();
 }
+/*************************
+**      OFERTA          **
+*************************/
+
+void MainWindow::nowyNumer()
+{
+    QDate d = QDate::currentDate();
+    *data = d.toString("dd.MM.yyyy");
+    ui->dateEdit->setDate(d);
+
+    *nr_oferty = QString::number(u->nrOferty());
+    nr_oferty->append("/");
+    nr_oferty->append(d.toString("yyyy"));
+
+    this->setTitle(nr_oferty);
+}
+
+void MainWindow::nowa()
+{
+    //czyszczenie starych danych
+    ui->label->clear();
+    id_klienta = -1;
+
+    this->nowyNumer();
+
+    if(ui->tab->isEnabled()==false)
+        this->init();
+    else
+        this->clear();
+}
+
+void MainWindow::init()
+{
+    //włączenie zablokowanych części
+    ui->tab->setEnabled(true);
+    ui->tab_2->setEnabled(true);
+
+    ui->menuExport->setEnabled(true);
+    ui->actionSave->setEnabled(true);
+    ui->actionNR->setEnabled(true);
+
+    //inicjacja tabelki
+    this->clear();
+    for(int i=0; i<ui->tableWidget->columnCount(); i++)
+        ui->tableWidget->setColumnWidth(i, 85);
+    ui->tableWidget->setColumnWidth(1, 410);
+    ui->tableWidget->setColumnWidth(0, 99);
+    ui->tableWidget->setSortingEnabled(true);
+}
+
+void MainWindow::zapisz()
+{
+    QString s;
+
+    if(id_klienta == -1)
+    {
+        QMessageBox::warning(this, "brak danych", "Aby zapisanie oferty w bazie danych było możliwe należy wybrać klienta.");
+        return;
+    }
+
+    int anr = nr_oferty->split('/').first().toInt();
+
+    if(anr == u->nrOferty())
+        u->nrOfertyInkrement();
+
+    insert_zapisane(*nr_oferty, id_klienta, *data, u->uid(), ui->zapytanie->toPlainText(), ui->dostawa->toPlainText(), ui->termin->toPlainText(), ui->platnosc->toPlainText(), ui->oferta->toPlainText());
+
+    for(int i=0; i < ui->tableWidget->rowCount() - 1; ++i)
+        insert_zapisane_towary(*nr_oferty, ui->tableWidget->item(i, 0)->text(), ui->tableWidget->item(i, 5)->text(), ui->tableWidget->item(i, 3)->text());
+}
+
+void MainWindow::wczytaj()
+{
+    ww = new cLoadDialog(this);
+    connect(ww, SIGNAL(sig(QString)), this, SLOT(wczytaj_oferte(QString)));
+    ww->exec();
+    delete ww;
+}
+void MainWindow::wczytaj_oferte(QString id)
+{
+    QString s;
+    QSqlQuery q;
+
+    s = "SELECT id_klienta, data, uid, zapytanie, dostawa, termin, platnosc, oferta FROM zapisane WHERE nr_oferty = '";
+    s += id;
+    s += "'";
+
+    EXEC(s);
+
+    q.next();
+
+    this->init();
+
+    *nr_oferty = id;
+    this->setKlient(q.value(0).toInt());
+    *data = q.value(1).toString();
+    ui->zapytanie->setPlainText(q.value(3).toString());
+    ui->dostawa->setPlainText(q.value(4).toString());
+    ui->termin->setPlainText(q.value(5).toString());
+    ui->platnosc->setPlainText(q.value(6).toString());
+    ui->oferta->setPlainText(q.value(7).toString());
+
+    s = "SELECT kod, ilosc, rabat FROM zapisane_towary WHERE nr_oferty = '";
+    s += id;
+    s += "'";
+    EXEC(s);
+
+    if(ui->tabWidget->isEnabled())
+        this->clear();
+    else
+        this->init();
+
+    int row;
+    while(q.next())
+    {
+        s = q.value(0).toString();
+        this->setTowar(s, q.value(1).toInt());
+        row = ui->tableWidget->rowCount()-2;
+//        if(row < 0) row = 0;
+        ui->tableWidget->item(row, 3)->setText(QString::number(q.value(2).toDouble()));
+    }
+
+    sum();
+
+    this->setTitle(nr_oferty);
+}
+
+/*************************
+**      BAZA DANYCH     **
+*************************/
+
+/* TOWAR */
+
+void MainWindow::dodajTowar()
+{
+    cNowyTowar* nowyTowar = new cNowyTowar(this);
+    nowyTowar->exec();
+    delete nowyTowar;
+}
+
+void MainWindow::importTowar()
+{
+    QString s;
+    s = QFileDialog::getOpenFileName(this, "Otwórz plik cennika", "", "Plik CSV (*.csv)");
+    if(s.isEmpty())return;
+
+    QFile file(s);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QMessageBox::critical(this, "Error","Nie udało się otworzyć pliku z danymi cennika");
+        if(!file.exists())DEBUG <<  "cennik nie iesnieje";
+        else DEBUG <<  "cennik niedostępny";
+        return;
+    }
+
+    mb->show();
+    DEBUG <<  "wczytuje towar...";
+
+    QTextStream in(&file);
+    in.setCodec("UTF-8");
+
+    QStringList list;
+    QSqlQuery q;
+    QString sRead;
+
+    for(unsigned i=0; !in.atEnd(); ++i)
+    {
+        sRead = in.readLine();
+        list = sRead.split("|");
+        if(list.size() < 3)
+        {
+            DEBUG <<  "syntax error, wczyt towar, line: " << i;
+            syntax_towar sw(this, sRead);
+            sw.exec();
+            continue;
+        }
+
+        if(list.size() > 3 && (list.at(3) == "mb." || list.at(3) == "m" || list.at(3) == "metr"))
+            s = "mb.";
+        else
+            s = "szt.";
+        insert_towar(list.at(1), list.at(0), list.at(2), s);
+    }
+//    mb->hide();
+    mb->accept();
+    DEBUG <<  "koniec wczytywania";
+}
+
+void MainWindow::eksportTowar()
+{
+    QSqlQuery q;
+    QString s;
+
+    s = QFileDialog::getSaveFileName(this, "Zapisz plik cennika", "", "Plik CSV (*.csv)");
+    if(s.isEmpty())return;
+
+    QFile file(s);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QMessageBox::critical(this, "Error","Nie udało się otworzyć plikudo zapisu");
+        DEBUG <<  "Plik do zapisu towarów niedostępny";
+        return;
+    }
+
+    mb->show();
+    DEBUG <<  "zapis cennikow do pliku: " << s;
+
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+
+    s = "SELECT id, nazwa, cena_kat, jednostka FROM towar";
+
+    EXEC(s);
+
+    while(q.next())
+    {
+        out << q.value(1).toString() << "|" << q.value(0).toString() << "|" << q.value(2).toString() << "|" << q.value(3).toString() << "\n";
+    }
+
+    mb->accept();
+    DEBUG <<  "koniec zapisu cennika";
+}
+
+void MainWindow::edytujTowar()
+{
+    EdycjaTowaru* okno = new EdycjaTowaru(this);
+    okno->exec();
+    delete okno;
+}
+
+
+/* KLIENT */
+
+void MainWindow::dodajKlient()
+{
+    cNowyKlient* nowyKlient = new cNowyKlient(this);
+    nowyKlient->exec();
+    delete nowyKlient;
+}
+
+void MainWindow::importKlient()
+{
+    QString s;
+    s = QFileDialog::getOpenFileName(this, "Otwórz plik bazy klientów", "", "Plik CSV (*.csv)");
+    if(s.isEmpty())return;
+
+    QFile file(s);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QMessageBox::critical(this, "Error","Nie udało się otworzyć pliku z danymi klientów");
+        if(!file.exists()) DEBUG <<  "klienci nie iesnieje";
+        else DEBUG <<  "klienci niedostępny";
+        return;
+    }
+
+    mb->show();
+    DEBUG <<  "wczytuje klientow...";
+
+    QTextStream in(&file);
+    in.setCodec("UTF-8");
+
+    QStringList list;
+    QString sRead;
+
+    for(unsigned i=0; !in.atEnd(); ++i)
+    {
+        sRead = in.readLine();
+        list = sRead.split("|");
+        if(list.size() < 8)
+        {
+            DEBUG <<  "syntax error, wczyt_klient line: " << i;
+            syntax_klient sw(this, sRead);
+            sw.exec();
+            continue;
+        }
+
+        s = list.at(5);
+        s += "<br>\n";
+        s += list.at(6);
+        s += " ";
+        s += list.at(7);
+        insert_klient(list.at(4), list.at(3), list.at(0), list.at(1), list.at(2), s);
+    }
+
+    DEBUG <<  "koniec wczytywania";
+    mb->accept();
+}
+
+void MainWindow::eksportKlient()
+{
+    QSqlQuery q;
+    QString s;
+
+    s = QFileDialog::getSaveFileName(this, "Zapisz plik bazy klientów", "", "Plik CSV (*.csv)");
+    if(s.isEmpty())return;
+
+    QFile file(s);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QMessageBox::critical(this, "Error","Nie udało się otworzyć pliku do zapisu");
+        return;
+    }
+
+    mb->show();
+
+    DEBUG <<  "zapis klientow do pliku: " << s;
+
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+
+    s = "SELECT nazwisko, imie, short, full, tytul, adres FROM klient";
+
+    EXEC(s);
+
+    while(q.next())
+    {
+        for(int i=0; i<7; i++)
+            out << q.value(i).toString() << "|";
+        out << "\n";
+    }
+
+    mb->accept();
+    DEBUG <<  "koniec zapisu klientow";
+}
+
+void MainWindow::edytujKlient()
+{
+    cEdycjaKlienta* okno = new cEdycjaKlienta(this);
+    okno->exec();
+    delete okno;
+}
+
+

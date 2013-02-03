@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     else
     {
         logFile = new QTextStream(&file);
-        logFile->setCodec("Windows-1250");
+        logFile->setCodec("UTF-8");
     }
     if(logFile == NULL)
     {
@@ -58,29 +58,29 @@ int main(int argc, char *argv[])
     cLogowanie* logw;
     logw = new cLogowanie(u);
 
-    if(logw->exec() != QDialog::Accepted)
-    {
-        delete logw;
-#ifdef WIN32
-        delete logFile;
-#endif
-        DEBUG << "Zamknieto okno logowanie - wychodzę";
-        return 1;
-    }
-
+    int result = logw->exec();
+    DEBUG << "logw result: " << result;
     delete logw;
 
-    DEBUG << "Zalogowano jako uzytkownik " << (*u)->name();
+    if(result == QDialog::Accepted)
+    {
 
-    MainWindow w(*u);
-    w.showMaximized();
+        DEBUG << "Zalogowano jako uzytkownik " << (*u)->name();
 
+        MainWindow w(*u);
+        w.showMaximized();
+
+        DEBUG << "wchodzę do głównej pętli";
+        result = a.exec();
+    }
+    else
+        DEBUG << "Zamknieto okno logowanie - wychodzę";
+
+    //delete *u;
     delete u;
-
-    DEBUG << "wchodzę do głównej pętli";
-    int status = a.exec();
+    DEBUG << "koniec programu, status: " << result;
 #ifdef WIN32
     delete logFile;
 #endif
-    return status;
+    return result;
 }

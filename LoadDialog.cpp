@@ -21,7 +21,7 @@
 
 #include <QSqlQuery>
 #include "Macros.h"
-#include "../SzukajOferty.h"
+#include "SzukajOferty.h"
 
 cLoadDialog::cLoadDialog(QWidget *parent) :
     QDialog(parent),

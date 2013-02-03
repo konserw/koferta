@@ -20,12 +20,13 @@
 #include "Macros.h"
 #include <QSqlRecord>
 
-#include "SzukajTowaru.h"
-#include "ui_SzukajTowaru.h"
+#include "WyborTowaru.h"
+#include "ui_WyborTowaru.h"
+#include "delegate.h"
 
-SzukajTowaru::SzukajTowaru(QWidget *parent) :
-  QWidget(parent),
-    ui(new Ui::SzukajTowaru)
+WyborTowaru::WyborTowaru(QWidget *parent) :
+  QDialog(parent),
+    ui(new Ui::WyborTowaru)
 {
     ui->setupUi(this);
 
@@ -33,49 +34,55 @@ SzukajTowaru::SzukajTowaru(QWidget *parent) :
     ui->radioButton_id->setText(tr("Id produktu"));
     ui->radioButton_id->setChecked(true);
     ui->radioButton_name->setText(tr("Nazwa produktu"));
+    ui->pushButton_close->setText(tr("Zamknij"));
 
     model = new QSqlTableModel(this);
     model->setTable("towar");
     model->setEditStrategy(QSqlTableModel::OnManualSubmit);
     model->select();
 
+  //  model->insertColumn(0, model);
     QStringList sl;
-    sl << tr("Id") << tr("Nazwa");// << tr("Cena Katalogowa");
+    sl << tr("Id") << tr("Nazwa") << tr("Cena Katalogowa") << tr("Sztuk");
     for(int i=0; i<sl.size(); ++i)
         model->setHeaderData(i, Qt::Horizontal, sl[i]);
 
-    ui->tableView->setModel(model);
-    ui->tableView->resizeColumnToContents(0);
-    ui->tableView->resizeColumnToContents(1);
-    ui->tableView->hideColumn(2);
-    ui->tableView->hideColumn(3);
-    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
+
+
+    ui->tableView->setModel(model);
+//    ui->tableView->hideColumn(4);
+    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+  //  ui->tableView->resizeColumnToContents(0);
+   // ui->tableView->resizeColumnToContents(1);
+    d = new SpinBoxDelegate;
+    ui->tableView->setItemDelegateForColumn(3, d);
+    //ui->tableView->openPersistentEditor();
+
+    connect(d, SIGNAL(valueChanged(int,int)), this, SLOT(select(int,int)));
     connect(ui->radioButton_id, SIGNAL(clicked()), this, SLOT(ref2()));
     connect(ui->radioButton_name, SIGNAL(clicked()), this, SLOT(ref2()));
     connect(ui->lineEdit, SIGNAL(textEdited(QString)), this, SLOT(ref(QString)));
-    connect(ui->tableView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(select(const QModelIndex&)));
+    connect(ui->pushButton_close, SIGNAL(clicked()), this, SLOT(close()));
 }
 
-SzukajTowaru::~SzukajTowaru()
+WyborTowaru::~WyborTowaru()
 {
     delete ui;
 }
 
-void SzukajTowaru::select(const QModelIndex& idx)
+void WyborTowaru::select(int row, int value)
 {
-    QSqlRecord r = model->record(idx.row());
-    if(!r.isEmpty())
-        emit selectionChanged(r);
+    QString id = model->record(row).value(1).toString();
+    emit selectionChanged(id, value);
 }
 
-void SzukajTowaru::ref2()
+void WyborTowaru::ref2()
 {
     this->ref(ui->lineEdit->text());
 }
 
-void SzukajTowaru::ref(const QString & in)
+void WyborTowaru::ref(const QString & in)
 {
     QString s;
     if(ui->radioButton_id->isChecked())

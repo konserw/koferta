@@ -91,18 +91,34 @@ cLogowanie::cLogowanie(cUser** usr) :
         }
     }
     else
+    {
+        QStringList list;
+        QMessageBox::critical(this, tr("Błąd"), tr("Bład sterownika bazy danych!\nNastąpi zamknięcie programu."));
         DEBUG << "invalid driver";
+
+        DEBUG << "library paths: ";
+        list = qApp->libraryPaths();
+        for(int i=0; i<list.size(); i++)
+            DEBUG << "\t" << list[i];
+
+        DEBUG << "aviable drivers: ";
+        list = QSqlDatabase::drivers();
+        for(int i=0; i<list.size(); i++)
+            DEBUG << "\t" << list[i];
+        this->reject();
+        return;
+    }
 #endif
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    connect(this, SIGNAL(rejected()), qApp, SLOT(quit()));
     connect(ui->add, SIGNAL(clicked()), this, SLOT(add()));
     connect(ui->ip, SIGNAL(currentIndexChanged(QString)), this, SLOT(hostChanged(QString)));
 
     hosts = new QStringList;
     hosts->append("localhost");
 
+#ifdef RELEASE
     QFile file("host");
     if(file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -119,7 +135,11 @@ cLogowanie::cLogowanie(cUser** usr) :
     else
         DEBUG << "otawrcie pliku host nie powiodło się";
     ui->ip->addItems(*hosts);
-
+#else
+    this->hostChanged("192.168.1.100");
+    ui->comboBox->setCurrentIndex(5);
+    ui->lineEdit->setFocus();
+#endif
 }
 
 void cLogowanie::hostChanged(QString ip)

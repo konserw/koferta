@@ -23,6 +23,7 @@
 
 class QSqlTableModel;
 class QModelIndex;
+class QSqlRecord;
 
 namespace Ui {
     class SzukajTowaru;
@@ -39,10 +40,10 @@ public:
 public slots:
     void ref(const QString&);
     void ref2();
-    void select(int row, int value);
+    void select(const QModelIndex &);
 
 signals:
-    void selectionChanged(QString, int);
+    void selectionChanged(const QSqlRecord&);
 
 private:
     Ui::SzukajTowaru *ui;

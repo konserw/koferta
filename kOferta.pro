@@ -20,16 +20,17 @@
 
 TARGET = kOferta
 
-QT += core gui sql network
+QT = core gui sql network
 
 TEMPLATE = app
 
-DEFINES += VER=1.9
+DEFINES += VER=2.0
 DEFINES += GET_PASS=\\\"W7^Dz*mALE0UIOrEb\\\"
 
 win32 { #nmake & M$ compiler
     QMAKE_CXXFLAGS += /nologo /O2 #/Wp64 /Wall
     QMAKE_LFLAGS_RELEASE += /NODEFAULTLIB:LIBCMT
+    QMAKE_LFLAGS_DEBUG += /NODEFAULTLIB:LIBCMT
 
     CONFIG += qt windows release
 
@@ -53,29 +54,68 @@ UI_DIR =        temp/ui
 MOC_DIR =       temp/moc
 RCC_DIR =       temp/rcc
 
-INCLUDEPATH += includes
+DEPENDPATH += . res 
 
-SOURCES += \
-    src/*.cpp \
-    src/MainWindow/*.cpp \
-    SzukajOferty.cpp \
-    SzukajKlienta.cpp \
-    SzukajTowaru.cpp \
-    delegate.cpp \
-    WyborTowaru.cpp
-
-HEADERS  += includes/*.h \
-    SzukajOferty.h \
-    SzukajKlienta.h \
-    SzukajTowaru.h \
-    delegate.h \
+HEADERS += Database.h \
+           EdycjaKlienta.h \
+           EdycjaTowaru.h \
+           LoadDialog.h \
+           Logowanie.h \
+           Macros.h \
+           MainWindow.h \
+           NowyKlient.h \
+           NowyTowar.h \
+           NowyUser.h \
+           RootDialog.h \
+           SHA1.h \
+           SyntaxKlient.h \
+           SyntaxTowar.h \
+           SzukajKlienta.h \
+           SzukajOferty.h \
+           SzukajTowaru.h \
+           User.h \
+           WyborKlienta.h \
+           Wydruk.h \ 
     WyborTowaru.h
 
-FORMS += ui/*.ui \
-    SzukajOferty.ui \
-    SzukajKlienta.ui \
-    SzukajTowaru.ui \
+FORMS += EdycjaKlienta.ui \
+         EdycjaTowaru.ui \
+         LoadDialog.ui \
+         Logowanie.ui \
+         mainwindow.ui \
+         NowyKlient.ui \
+         NowyTowar.ui \
+         NowyUser.ui \
+         RootDialog.ui \
+         SyntaxKlient.ui \
+         SyntaxTowar.ui \
+         SzukajKlienta.ui \
+         SzukajOferty.ui \
+         SzukajTowaru.ui \
+         WyborKlienta.ui \ 
     WyborTowaru.ui
+         
+SOURCES += Database.cpp \
+           EdycjaKlienta.cpp \
+           EdycjaTowaru.cpp \
+           LoadDialog.cpp \
+           Logowanie.cpp \
+           Main.cpp \
+           MainWindow.cpp \
+           NowyKlient.cpp \
+           NowyTowar.cpp \
+           NowyUser.cpp \
+           RootDialog.cpp \
+           SHA1.cpp \
+           SyntaxKlient.cpp \
+           SyntaxTowar.cpp \
+           SzukajKlienta.cpp \
+           SzukajOferty.cpp \
+           SzukajTowaru.cpp \
+           User.cpp \
+           WyborKlienta.cpp \
+           Wydruk.cpp \          
+    WyborTowaru.cpp
 
 RESOURCES += res/zasoby.qrc
 

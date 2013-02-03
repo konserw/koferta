@@ -20,6 +20,7 @@
 #define EDYCJATOWARU_H
 
 #include <QDialog>
+#include <QSqlRecord>
 
 namespace Ui {
     class EdycjaTowaru;
@@ -34,18 +35,12 @@ public:
     ~EdycjaTowaru();
 
 public slots:
-    void ref(QString text);
-    void ref2();
     void app();
-    void click(int, int);
+    void click(const QSqlRecord & rec = QSqlRecord());
     void del();
 
 private:
     Ui::EdycjaTowaru *ui;
-    QString stary;                                      //stara wartość wyszukiwania przechowywana do porównania z wartością aktualną
-    void clear_table();
-    void stary_ref(QString text);
-
 };
 
 #endif // EDYCJATOWARU_H

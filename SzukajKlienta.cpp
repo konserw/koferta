@@ -56,7 +56,6 @@ SzukajKlienta::SzukajKlienta(QWidget *parent) :
     connect(ui->radioButton_nazwa, SIGNAL(clicked()), this, SLOT(ref2()));
     connect(ui->radioButton_nazwisko, SIGNAL(clicked()), this, SLOT(ref2()));
     connect(ui->tableView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(select(const QModelIndex&)));
-    connect(ui->tableView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(select(const QModelIndex&)));
 }
 
 SzukajKlienta::~SzukajKlienta()

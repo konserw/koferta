@@ -145,22 +145,29 @@ v. 1.9
 * zmiana id_klienta na int, tak jak jest w bazie
 * wyszukiwanie w zapisanych ofertach zaimplementowane jako model-view w osobnym widżecie
 * wyszukiwanie klientów zaimplementowane jako model-view w osobnym widżecie
+* zapisywanie loga z działąnia aplikacja na systemie windows
+
+v. 2.0
+* ponowne przebudowanie struktury plików źródłowych
 * update bibliotek qt dla systemu windows do wersji 4.8.4
+* przebudowana główna funkcja programu
+* lepsze radzenie sobie z problemami sterownika mysql
+* wyszukiwanie towarów zaimplementowane jako model-view w osobnym widżecie
+* nowe okno dodawania towarów
 
 TODO:
 * przeniesienie serwera na platformę Raspbery Pi
--> zmiana tabel z QTableWidget na QTableView z odpowiednim modelem
 * przygotowania do translacji
 * skróty klawiatórowe
 * ikony
 * sprawdzanie skrótu SHA1 pobranej aktualizacji
 * lepszy skrypt aktualizujący wersję/url/hash nowego buildu w bazie
-* przerobienie funkcji sha1
-* wielowątkowość
+* przerobienie funkcji sha1 (?)
 * opcje comboboxów przeniesione do bazy
+* dodatkowy editbox na "uwagi"
 * możliwość dodawania opcji komboboksów do bazy
 * zapisane ofery w formie odnośników do tabeli combosów
 * zapisywanie informacji o wydruku w zapisanych ofertach
-* dodatkowy editbox na "uwagi"
+
 
 

@@ -1,30 +1,32 @@
 /**
     kOferta - system usprawniajacy proces ofertowania
     Copyright (C) 2011  Kamil 'konserw' Strzempowicz, konserw@gmail.com
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-    
+
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-    
+
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef WYBORTOWARU_H
-#define WYBORTOWARU_H
+#ifndef SZUKAJTOWARU_H
+#define SZUKAJTOWARU_H
 
 #include <QDialog>
 
-class QSqlRecord;
+class QSqlTableModel;
+class QModelIndex;
+class SpinBoxDelegate;
 
 namespace Ui {
-class WyborTowaru;
+    class WyborTowaru;
 }
 
 class WyborTowaru : public QDialog
@@ -36,15 +38,17 @@ public:
     ~WyborTowaru();
 
 public slots:
-    void refresh(const QSqlRecord &);
-    void spin(int);
+    void ref(const QString&);
+    void ref2();
+    void select(int row, int value);
 
 signals:
-    void countChanged(const QSqlRecord &, int);
-    
+    void selectionChanged(QString, int);
+
 private:
     Ui::WyborTowaru *ui;
-    QSqlRecord* rec;
+    QSqlTableModel* model;
+    SpinBoxDelegate* d;
 };
 
-#endif // WYBORTOWARU_H
+#endif // SZUKAJTOWARU_H
