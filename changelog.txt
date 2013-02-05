@@ -154,20 +154,22 @@ v. 2.0
 * lepsze radzenie sobie z problemami sterownika mysql
 * wyszukiwanie towarów zaimplementowane jako model-view w osobnym widżecie
 * nowe okno dodawania towarów
+* dodatkowy editbox na "uwagi"
+* małe poprawki w wydruku oferty
 
 TODO:
 * przeniesienie serwera na platformę Raspbery Pi
+* opcje comboboxów przeniesione do bazy
+* możliwość dodawania opcji komboboksów do bazy
+* zapisane ofery w formie odnośników do tabeli combosów
+* zapisywanie uwag w bazie jako tekstu
+* zapis ceny katalogowej towaru jako liczby w tabeli
+* zapisywanie informacji o wydruku w zapisanych ofertach
+* unifikacja stylu nazw plików i klas
+
 * przygotowania do translacji
 * skróty klawiatórowe
 * ikony
 * sprawdzanie skrótu SHA1 pobranej aktualizacji
 * lepszy skrypt aktualizujący wersję/url/hash nowego buildu w bazie
 * przerobienie funkcji sha1 (?)
-* opcje comboboxów przeniesione do bazy
-* dodatkowy editbox na "uwagi"
-* możliwość dodawania opcji komboboksów do bazy
-* zapisane ofery w formie odnośników do tabeli combosów
-* zapisywanie informacji o wydruku w zapisanych ofertach
-
-
-

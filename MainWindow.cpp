@@ -29,6 +29,7 @@
 #include <QTextStream>
 #include <QTextCodec>
 #include <QFileDialog>
+#include <QSqlRecord>
 
 #include "SyntaxKlient.h"
 #include "SyntaxTowar.h"
@@ -65,23 +66,6 @@ MainWindow::~MainWindow()
     delete wyd;
 }
 
-int MainWindow::ileTowaru(const QString& id)
-{
-    DEBUG << "idTowaru:" << id;
-    QList<QTableWidgetItem*> list = ui->tableWidget->findItems(id, Qt::MatchFixedString);
-    if(list.isEmpty())
-    {
-        DEBUG << "not found";
-        return 0;
-    }
-    else
-    {
-        int row = list[0]->row();
-        DEBUG << "found in row: " << row;
-        return ui->tableWidget->item(row, 5)->text().toInt();
-    }
-}
-
 MainWindow::MainWindow(cUser* us) :
     QMainWindow(NULL),
     ui(new Ui::MainWindow)
@@ -89,6 +73,9 @@ MainWindow::MainWindow(cUser* us) :
     DEBUG << "konstruktor mainwindow";
 
     ui->setupUi(this);
+
+    ui->tab->setFocus();
+    ui->label_uwagi->setText(tr("Uwagi (nie zapisywane!)"));
 
     //stan początkowy
     this->setTitle(NULL);
@@ -104,7 +91,7 @@ MainWindow::MainWindow(cUser* us) :
     //okna
     tw = new WyborTowaru(this);
     kw = new cWyborKlienta(this);
-    mb = new QMessageBox(QMessageBox::Information, "Przetwarzanie bazy", "Przetwarzanie bazy, proszę czekać...", QMessageBox::NoButton, this);
+    mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
     mb->setStandardButtons(0);
     mb->setModal(true);
     //Stringi
@@ -112,7 +99,7 @@ MainWindow::MainWindow(cUser* us) :
     data = new QString(QDate::currentDate().toString("dd.MM.yyyy"));
     //inne
     u = us;
-    wyd = new cWydruk(ui, data, id_klienta, nr_oferty);
+    wyd = new cWydruk(ui, data, &id_klienta, nr_oferty);
 
 /**
  connections
@@ -165,7 +152,7 @@ MainWindow::MainWindow(cUser* us) :
 
     //inne
     connect(kw, SIGNAL(id_klienta(int)), this, SLOT(setKlient(int)));
-    connect(tw, SIGNAL(selectionChanged(QString,int)), this, SLOT(setTowar(QString, int)));
+    connect(tw, SIGNAL(countChanged(QSqlRecord,int)), this, SLOT(setTowar(QSqlRecord,int)));
     connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(change(QTableWidgetItem*)));
 /**
  combosy
@@ -248,6 +235,24 @@ void MainWindow::setTitle(QString* nr)
     this->setWindowTitle(s);
 }
 
+int MainWindow::ileTowaru(const QString& id)
+{
+    DEBUG << "search for existing idTowaru:" << id;
+    QList<QTableWidgetItem*> list = ui->tableWidget->findItems(id, Qt::MatchFixedString);
+    if(list.isEmpty())
+    {
+        DEBUG << "not found in table";
+        return 0;
+    }
+    else
+    {
+        int row = list[0]->row();
+        DEBUG << "found in row: " << row;
+        return ui->tableWidget->item(row, 5)->text().toInt();
+    }
+}
+
+
 void MainWindow::clear()
 {
     while(ui->tableWidget->rowCount()){
@@ -284,6 +289,78 @@ void MainWindow::sum()
         sum += ev(i, 7);
     }
     ui->tableWidget->item(row, 7)->setText(QString::number(sum, 'f', 2));
+}
+
+void MainWindow::setTowar(const QSqlRecord& rec, int ile)
+{
+
+    QString id = rec.value("id").toString();
+    QList<QTableWidgetItem*> list = ui->tableWidget->findItems(id, Qt::MatchFixedString);
+
+    if(list.isEmpty())
+    {
+        bool ok;
+        QTableWidgetItem* item;
+
+        int row = ui->tableWidget->rowCount()-1;
+        if(row < 0) row = 0;
+
+        ui->tableWidget->insertRow(row);
+
+        //kod
+        item = new QTableWidgetItem(id);
+        ui->tableWidget->setItem(row, 0, item);
+        //nazwa
+        item = new QTableWidgetItem(rec.value("nazwa").toString());
+        ui->tableWidget->setItem(row, 1, item);
+        //cena kat
+        double r;
+
+        QString x = rec.value("cena_kat").toString();
+        x.replace(",", ".");
+
+        r = x.toDouble(&ok);
+        if(!ok)
+        {
+            DEBUG << "Problem z zmaianą . i , w liczbie " << x;
+            x.replace(".", ",");
+            DEBUG << x;
+            r = x.toDouble(&ok);
+            if(!ok)
+            {
+                DEBUG << "dalej !?";
+                r = 0;
+            }
+        }
+
+        item = new QTableWidgetItem(QString::number(r, 'f', 2));
+        ui->tableWidget->setItem(row, 8, item);
+        if(pln) r *= kurs;
+        item = new QTableWidgetItem(QString::number(r, 'f', 2));
+        ui->tableWidget->setItem(row, 2, item);
+        //rabat
+        item = new QTableWidgetItem("0");
+        ui->tableWidget->setItem(row, 3, item);
+        //cana
+        item = new QTableWidgetItem("");
+        ui->tableWidget->setItem(row, 4, item);
+        //ilosc
+        item = new QTableWidgetItem(QString::number(ile));
+        ui->tableWidget->setItem(row, 5, item);
+        //jednostka
+        item = new QTableWidgetItem(rec.value("jednostka").toString());
+        ui->tableWidget->setItem(row, 6, item);
+        //koszt
+        item = new QTableWidgetItem("");
+        ui->tableWidget->setItem(row, 7, item);
+        przelicz(row);
+    }
+    else
+    {
+        ui->tableWidget->item(list[0]->row(), 5)->setText(QString::number(ile));
+    }
+
+    sum();
 }
 
 void MainWindow::setTowar(QString id, int ile)
@@ -367,6 +444,7 @@ void MainWindow::setTowar(QString id, int ile)
 
     sum();
 }
+
 double MainWindow::ev(unsigned row, unsigned col)
 {
     return ui->tableWidget->item(row, col)->text().toDouble();
@@ -630,7 +708,7 @@ void MainWindow::wczytaj_oferte(QString id)
         s = q.value(0).toString();
         this->setTowar(s, q.value(1).toInt());
         row = ui->tableWidget->rowCount()-2;
-//        if(row < 0) row = 0;
+        if(row < 0) row = 0;
         ui->tableWidget->item(row, 3)->setText(QString::number(q.value(2).toDouble()));
     }
 

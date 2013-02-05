@@ -41,7 +41,7 @@ public slots:
     void ok();
 
 signals:
-    void id_klienta(int);                           //sygnał przekazujący wybranego lienta do MainQindow
+    void id_klienta(int);                           //sygnał przekazujący wybranego lienta do MainWindow
 
 private:
     QString* s;

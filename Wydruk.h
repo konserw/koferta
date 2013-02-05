@@ -41,7 +41,7 @@ class cWydruk: public QWidget
     Q_OBJECT
 
 public:
-    explicit cWydruk(Ui::MainWindow* _ui, QString* data, int klient, QString* numer);
+    explicit cWydruk(Ui::MainWindow* _ui, QString* data, int* klient, QString* numer);
     ~cWydruk();
 
 public slots:
@@ -74,7 +74,7 @@ private:
     QTextDocument* doc;
 
     QString* _data;                                     //data sporządzenia oferty
-    int _klient;                                        //id klienta
+    int* _klient;                                        //id klienta
     QString* _numer;                                    //nr. oferty
 };
 

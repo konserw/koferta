@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>888</width>
-    <height>705</height>
+    <width>975</width>
+    <height>734</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>kOferta</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../res/zasoby.qrc">
+   <iconset resource="res/zasoby.qrc">
     <normaloff>:/ico</normaloff>:/ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -380,6 +380,40 @@
              </widget>
             </item>
             <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_11">
+              <item>
+               <widget class="QLabel" name="label_uwagi">
+                <property name="text">
+                 <string>Warunki oferty:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_9">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QPlainTextEdit" name="plainTextEdit_uwagi">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>50</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
              <spacer name="verticalSpacer">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -599,7 +633,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>888</width>
+     <width>975</width>
      <height>23</height>
     </rect>
    </property>
@@ -758,7 +792,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="../res/zasoby.qrc"/>
+  <include location="res/zasoby.qrc"/>
  </resources>
  <connections/>
 </ui>

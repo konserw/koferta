@@ -77,7 +77,7 @@ void SzukajKlienta::select(const QModelIndex &idx)
     QSqlRecord r = model->record(idx.row());
     if(!r.isEmpty())
     {
-        id = r.value(0).toInt();
+        id = r.value("id").toInt();
         emit selectionChanged(id);
     }
     else

@@ -41,7 +41,7 @@ cWydruk::~cWydruk()
     delete doc;
 }
 
-cWydruk::cWydruk(Ui::MainWindow* _ui, QString* data, int klient, QString* numer)
+cWydruk::cWydruk(Ui::MainWindow* _ui, QString* data, int* klient, QString* numer)
 {
     sDoc = new QString;
 
@@ -180,76 +180,97 @@ void cWydruk::make(){
     uint rows = ui->tableWidget->rowCount()-1;
 
     s = "SELECT DISTINCT full, adres, tytul, imie, nazwisko FROM klient WHERE id=";
-    s += QString::number(_klient);
+    s += QString::number(*_klient);
 
     EXEC(s);
 
     q.next();
 
     *sDoc = "<html>\n"
-            "<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head>\n"
+            "<head>\n"
+            "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head>\n"
             "<title>Oferta</title>\n"
-            "</head><body><br>\n"
-            "<hr width=100%>\n"
+            "</head>\n"
+            "<body>\n"
             "<table cellspacing=3>\n"
-            "<thead><tr>\n"
-            "<td valign=top width=";
+         /*NAGŁÓWEK*/
+            "<thead>\n"
+            "<tr><td>\n"
+            "\t<table>\n"
+            "\t<tr>\n"
+            "\t\t<td colspan=3><hr width=100%></td>\n"
+            "\t</tr>\n"
+            "\t<tr>\n"
+            "\t\t<td valign=top width=";
     *sDoc += QString::number(d);
     *sDoc += ">\n";
 
-    *sDoc += "Numer oferty: <font size=4>";
+    *sDoc += "\t\t\tNumer oferty: <font size=4>";
     *sDoc += *_numer;
     *sDoc += "</font><br>\n"
-             "Data oferty: ";
+             "\t\t\tData oferty: ";
     *sDoc += *_data;
-    *sDoc += "\n<hr width=100%>\n"
-             "Dla:<br>\n";
+    *sDoc += "\n"
+            "\t\t\t<hr width=100%>\n"
+            "\t\t\tDla:<br>\n"
+            "\t\t\t";
     *sDoc += q.value(0).toString();
-    *sDoc += "<br>\n";
+    *sDoc += "<br>\n"
+            "\t\t\t";
     *sDoc += q.value(1).toString();
-    *sDoc += "<br>\n";
+    *sDoc += "<br>\n"
+            "\t\t\t";
     *sDoc += q.value(2).toString();
     *sDoc += " ";
     *sDoc += q.value(3).toString();
     *sDoc += " ";
     *sDoc += q.value(4).toString();
-    *sDoc += "\n</td>\n";
+    *sDoc += "\n"
+            "\t\t</td>\n";
     /*linia pionowa*/
-  //  *sDoc += "<td width=1 bgcolor=#000000><BR></td>\n";
+    *sDoc += "\t\t<td width=1 bgcolor=#000000>\n"
+            "\t\t\t<br />\n"
+            "\t\t</td>\n";
     /*OD*/
-    *sDoc += "<td width=";
+    *sDoc += "\t\t<td width=";
     *sDoc += QString::number(d);
-    *sDoc += ">\n";
+    *sDoc += ">\n"
+            "\t\t\t";
     if(htm)
         *sDoc += "<img src=logo.jpg align=center><br>\n";
     else
         *sDoc += "<img src=:/log align=center><br>\n";
     *sDoc +=
-         "<b>Marley Polska Sp. z o.o.</b><br>\n"
-         "ul. Annopol 24<br>\n"
-         "03-236 Warszawa<br>\n"
-         "<br>\n";
+             "\t\t\t<b>Marley Polska Sp. z o.o.</b><br>\n"
+             "\t\t\tul. Annopol 24<br>\n"
+             "\t\t\t03-236 Warszawa<br>\n"
+             "\t\t\t<br>\n"
+             "\t\t\t";
     /*adres bióra*/
-    *sDoc += _u->adress();
+    *sDoc += _u->adress().replace("\n", "\n\t\t\t");
     *sDoc += _u->mail();
     *sDoc += "\n"
-            "</td></tr>"
-            "<tr><td colspan=2>\n"
-         "<hr width=100%>\n"
-         "</td>\n"
-         "</tr></thead>\n"
-         "<tr><td colspan=2>\n";
-    *sDoc += ui->zapytanie->toPlainText();
-    *sDoc += "<br />\n";
-    /*
-    *sDoc += "</td></tr>\n"
+            "\t\t</td>\n"
+            "\t</tr>\n"
+            "\t<tr>\n"
+            "\t\t<td colspan=3><hr width=100%></td>\n"
+            "\t</tr>\n"
+            "\t</table>\n"
+            "</td></tr>\n"
+            "</thead>\n"
+   /*Właściwa oferta*/
+            "<tbody>\n"
             "<tr><td>\n"
- */
+            "\t";
+    *sDoc += ui->zapytanie->toPlainText();
+    *sDoc += "<br />\n"
+            "</td></tr>\n"
+            "<tr><td>\n";
  //tabela
-    *sDoc += "<font face=\"Arial Narrow\" size=2>\n"
-         "<table cellspacing=3>\n"
-         "\t<thead><tr>\n"
-         "\t\t<td width=";
+    *sDoc += "\t<font face=\"Arial Narrow\" size=2>\n"
+             "\t<table cellspacing=3>\n"
+             "\t<thead><tr>\n"
+             "\t\t<td width=";
     *sDoc += QString::number(z[0]);
     *sDoc += ">LP</td>\n";
     if(ui->kol_kod->isChecked())
@@ -354,47 +375,68 @@ void cWydruk::make(){
     *sDoc += ":</td>\n"
             "\t\t<td align=right>";
     *sDoc += ui->tableWidget->item(rows, 7)->text();
-    *sDoc += "</td>\n\t</tr>\n"
-         "</table></font><br>\n"
-         "Podane ceny nie zawierają podatku VAT<br>\n"
-    //warunki
-//         "\t<table cellspacing=3>\n"
+    *sDoc += "</td>\n"
+            "\t</tr>\n"
+            "\t</table></font>\n"
             "</td></tr>\n"
-
+            "<tr><td>\n"
+            "\tPodane ceny nie zawierają podatku VAT<br>\n"
+            "</td></tr>\n"
+//warunki
+            "<tr><td>\n"
+            "\t<table cellspacing=3>\n"
             "\t<tr>\n\t\t<td width=";
     *sDoc += QString::number(dw);
     *sDoc += ">"
-         "Warunki dostawy:</td>\n"
-         "\t\t<td width=";
+             "Warunki dostawy:</td>\n"
+             "\t\t<td width=";
     *sDoc += QString::number(w-dw-3);
     *sDoc += ">";
     *sDoc += ui->dostawa->toPlainText();
     *sDoc += "</td>\n\t</tr>\n"
-         "\t<tr>\n"
-         "\t\t<td>Termin dostawy:</td>\n"
-         "\t\t<td>";
+             "\t<tr>\n"
+             "\t\t<td>Termin dostawy:</td>\n"
+             "\t\t<td>";
     *sDoc += ui->termin->toPlainText();
     *sDoc += "</td>\n"
              "\t</tr>\n"
-         "\t<tr>\n"
-         "\t\t<td>Warunki plałatności:</td>\n"
-         "\t\t<td>";
+             "\t<tr>\n"
+             "\t\t<td>Warunki plałatności:</td>\n"
+             "\t\t<td>";
     *sDoc += ui->platnosc->toPlainText();
     *sDoc += "</td>\n"
              "\t</tr>\n"
-         "</table>\n"
-         "</td></tr>\n";
-    //stopka
-    *sDoc += "<tr><td>\n";
+            "\t<tr>\n"
+            "\t\t<td>Uwagi:</td>\n"
+            "\t\t<td>";
+   *sDoc += ui->plainTextEdit_uwagi->toPlainText();
+   *sDoc += "</td>\n"
+            "\t</tr>\n"
+            "\t</table>\n"
+            "</td></tr>\n";
+//Pozdro600
+    *sDoc += "<tr><td>\n"
+            "\t";
     *sDoc += ui->oferta->toPlainText();
     *sDoc += "<br>\n"
-         "Łączymy pozdrowienia.\n"
-         "<p align = right style = \"margin-right: 100\">\n"
-         "\tOfertę przygotował";
+             "\tŁączymy pozdrowienia.\n"
+             "\t<p align = right style = \"margin-right: 100\">\n"
+             "\t\tOfertę przygotował";
     if(!_u->male()) *sDoc += "a";
-    *sDoc += "<br>\n\t";
-
+    *sDoc += "<br>\n"
+            "\t\t";
     *sDoc += _u->name();
-    *sDoc += "\n</p>\n"
-         "</body></html>\n";
+    *sDoc += "\n"
+            "\t</p>\n"
+            "</td></tr>\n"
+            "</tbody>\n"
+            /*
+    //STOPKA
+             "<tfoot><tr><td>\n"
+             "\tS T O P K A\n"
+             "</td></tr></tfoot>\n"
+                     */
+            "</table>\n"
+            "</body>\n"
+            "</html>\n";
 }

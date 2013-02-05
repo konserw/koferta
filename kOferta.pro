@@ -41,7 +41,7 @@ win32 { #nmake & M$ compiler
     LIBS += -LC:\\mysql\\lib -lmysqlclient -llibmysql
 
     DEFINES += WIN32
-   # DEFINES += RELEASE
+    DEFINES += RELEASE
 }
 
 unix {

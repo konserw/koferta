@@ -18,7 +18,7 @@
 
 #include "WyborTowaru.h"
 #include "ui_WyborTowaru.h"
-
+#include "MainWindow.h"
 #include <QSqlRecord>
 
 WyborTowaru::WyborTowaru(QWidget *parent) :
@@ -55,15 +55,16 @@ void WyborTowaru::refresh(const QSqlRecord& _rec)
     rec = new QSqlRecord(_rec);
 
     QString s;
-    s = tr("Kod towaru:\t\t");
+    s = tr("Kod towaru:\t");
     s += rec->value(0).toString();
     s += tr("\n\nSpecyfikacja:\t");
     s += rec->value(1).toString();
     s += tr("\n\nCena katalogowa:\t");
     s += rec->value(2).toString();
-    s += tr("\n\nJednostka:\t\t");
+    s += tr("\n\nJednostka:\t");
     s += rec->value(3).toString();
     ui->plainTextEdit->setPlainText(s);
+    ui->spinBox->setValue(static_cast<MainWindow*>(this->parent())->ileTowaru(rec->value(0).toString()));
 }
 
 void WyborTowaru::spin(int ile)

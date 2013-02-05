@@ -37,6 +37,7 @@ class QSqlDatabase;
 class QSqlQuery;
 class cWydruk;
 class cUser;
+class QSqlRecord;
 
 
 namespace Ui {
@@ -53,8 +54,9 @@ public:
 
     int ileTowaru(const QString&);                      //ilość danego towaru do wyświetlenia w wyborzeTowaru
 
-public slots:    
-    void setTowar(QString, int);                        //dodawanie towarów do tabeli (wywoływane przez sygnał z dialogu dodajTowar)
+    void setTowar(QString id, int ile);
+public slots:
+    void setTowar(const QSqlRecord&, int);              //dodawanie towarów do tabeli (wywoływane przez sygnał z dialogu dodajTowar)
     void setKlient(int id);                             //ustawia wybranego klienta - połączone z sygnałem z dialogu klient
 
     void wczytaj_oferte(QString);                       //wczytuje ofertę o zadanym id, połączone z dialogiem wczytywanie
