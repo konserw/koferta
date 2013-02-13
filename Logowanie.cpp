@@ -136,7 +136,7 @@ cLogowanie::cLogowanie(cUser** usr) :
         DEBUG << "otawrcie pliku host nie powiodło się";
     ui->ip->addItems(*hosts);
 #else
-    this->hostChanged("192.168.1.100");
+    this->hostChanged("192.168.1.90");
     ui->comboBox->setCurrentIndex(5);
     ui->lineEdit->setFocus();
 #endif

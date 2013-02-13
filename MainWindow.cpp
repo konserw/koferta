@@ -1,6 +1,6 @@
 /**
     kOferta - system usprawniajacy proces ofertowania
-    Copyright (C) 2011  Kamil 'konserw' Strzempowicz, konserw@gmail.com
+    Copyright (C) 2011  Kamil "konserw" Strzempowicz, konserw@gmail.com
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -30,6 +30,8 @@
 #include <QTextCodec>
 #include <QFileDialog>
 #include <QSqlRecord>
+#include <QSqlTableModel>
+#include <QCalendarWidget>
 
 #include "SyntaxKlient.h"
 #include "SyntaxTowar.h"
@@ -53,44 +55,38 @@
 
 MainWindow::~MainWindow()
 {
-    DEBUG << "destruktor mainwindow";
+    DEBUG << "destruktor mainwindow - start";
 
     delete ui;
     delete nr_oferty;
     delete data;
-    delete dostawa;
-    delete platnosc;
-    delete termin;
-    delete oferta;
     delete u;
     delete wyd;
+    delete calendarWidget;
+    delete dostawaModel;
+    delete platnoscModel;
+    delete terminModel;
+    delete ofertaModel;
+    delete klient;
+
+    DEBUG << "destruktor mainwindow - koniec";
 }
 
 MainWindow::MainWindow(cUser* us) :
     QMainWindow(NULL),
     ui(new Ui::MainWindow)
 {
-    DEBUG << "konstruktor mainwindow";
+    DEBUG << "konstruktor mainwindow";   
+/**
+  zmienne
+ **/
+    DEBUG << "inicjalizacja zmiennych";
 
     ui->setupUi(this);
-
-    ui->tab->setFocus();
-    ui->label_uwagi->setText(tr("Uwagi (nie zapisywane!)"));
-
-    //stan początkowy
-    this->setTitle(NULL);
-    ui->tab->setEnabled(false);
-    ui->tab_2->setEnabled(false);
-
-    ui->menuExport->setEnabled(false);
-    ui->actionSave->setEnabled(false);
-    ui->actionNR->setEnabled(false);
-
     pln = false;
 
     //okna
     tw = new WyborTowaru(this);
-    kw = new cWyborKlienta(this);
     mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
     mb->setStandardButtons(0);
     mb->setModal(true);
@@ -99,11 +95,14 @@ MainWindow::MainWindow(cUser* us) :
     data = new QString(QDate::currentDate().toString("dd.MM.yyyy"));
     //inne
     u = us;
-    wyd = new cWydruk(ui, data, &id_klienta, nr_oferty);
-
+    //wyd = new cWydruk(ui, data, &id_klienta, nr_oferty);
+    calendarWidget = new QCalendarWidget;
+    klient = NULL;
 /**
  connections
 **/
+    DEBUG << "połaczenia sygnałów i slotów";
+
     /*menu:*/
     //plik
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(nowa()));
@@ -140,53 +139,90 @@ MainWindow::MainWindow(cUser* us) :
 
     //buttony w tabach
     connect(ui->addTowar, SIGNAL(clicked()), tw, SLOT(exec()));
-    connect(ui->wyborKlienta, SIGNAL(clicked()), kw, SLOT(exec()));
     connect(ui->rabat, SIGNAL(clicked()), this, SLOT(rabat()));
     connect(ui->delw, SIGNAL(clicked()), this, SLOT(del()));
 
-    //combosy - odświerzanie zawartości pól tekstowych
-    connect(ui->dostawaCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(ref(QString)));
-    connect(ui->platnosCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(ref2(QString)));
-    connect(ui->terminCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(ref3(QString)));
-    connect(ui->ofertaCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(ref4(QString)));
+    //Pozostałe informacje - odświerzanie zawartości pól tekstowych
+    connect(ui->pushButton_wyborKlienta, SIGNAL(clicked()), this, SLOT(popWyborKlienta()));
+    connect(ui->comboBox_dostawa, SIGNAL(currentIndexChanged(int)), this, SLOT(dostawaRef(int)));
+    connect(ui->comboBox_oferta, SIGNAL(currentIndexChanged(int)), this, SLOT(ofertaRef(int)));
+    connect(ui->comboBox_platnosc, SIGNAL(currentIndexChanged(int)), this, SLOT(platnoscRef(int)));
+    connect(ui->comboBox_termin, SIGNAL(currentIndexChanged(int)), this, SLOT(terminRef(int)));
+    connect(calendarWidget, SIGNAL(clicked(QDate)), this, SLOT(calChanged(QDate)));
+    connect(ui->pushButton_zapytanieData, SIGNAL(clicked()), calendarWidget, SLOT(show()));
+    connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), this, SLOT(zapytanieRef()));
+    connect(ui->lineEdit_zapytanieNr, SIGNAL(textChanged(QString)), this, SLOT(zapytanieRef()));
+    connect(ui->checkBox_zapytanieData, SIGNAL(toggled(bool)), this, SLOT(checkData(bool)));
+    connect(ui->checkBox_zapytanieNr, SIGNAL(toggled(bool)), this, SLOT(checkNr(bool)));
 
     //inne
-    connect(kw, SIGNAL(id_klienta(int)), this, SLOT(setKlient(int)));
     connect(tw, SIGNAL(countChanged(QSqlRecord,int)), this, SLOT(setTowar(QSqlRecord,int)));
     connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(change(QTableWidgetItem*)));
+
 /**
- combosy
+  ui
 **/
-    dostawa = new QHash<QString, QString>;
-    dostawa->insert("dostawcy, pow 3000", "Na koszt dostawcy przy zamówieniu powyżej 3000,- zł. netto. (nie dot. rur w odcinkach 5 m)");
-    dostawa->insert("dostawcy", "Na koszt dostawcy.");
-    dostawa->insert("odbiorcy", "Na koszt odbiorcy z magazynu w Warszawie.");
-    ui->dostawaCombo->addItems(dostawa->keys());
+    DEBUG << "user interface";
 
-    platnosc = new QHash<QString, QString>;
-    platnosc->insert("przelew 14", "Przelewem w terminie 14 dni od daty wystawienia faktury w złotych polskich wg. kursu sprzedaży euro w NBP obowiązującego w dniu wystawienia faktury.");
-    platnosc->insert("przelew 30", "Przelewem w terminie 30 dni od daty wystawienia faktury w złotych polskich wg. kursu sprzedaży euro w NBP obowiązującego w dniu wystawienia faktury.");
-    platnosc->insert("przedpłata", "Przedpłata w złotych polskich wg. kursu sprzedaży euro w NBP obowiązującego w dniu wystawienia faktury.");
-    platnosc->insert("pobranie", "Za pobraniem w złotych polskich wg. kursu sprzedaży euro w NBP obowiązującego w dniu wystawienia faktury.");
-    platnosc->insert("przelew 14 zl", "Przelewem w terminie 14 dni od daty wystawienia faktury.");
-    platnosc->insert("przelew 30 zl", "Przelewem w terminie 30 dni od daty wystawienia faktury.");
-    platnosc->insert("przedpłata zl", "Przedpłata.");
-    platnosc->insert("pobranie zl", "Za pobraniem.");
-    ui->platnosCombo->addItems(platnosc->keys());
+    ui->tab->setFocus();
 
-    termin = new QHash<QString, QString>;
-    termin->insert("natychmiastowy", "1-2 dni roboczych od daty złożenia zamówienia");
-    termin->insert("2-3 tyg", "2 do 3 tygodni roboczych od daty złożenia zamówienia");
-    termin->insert("4-6 tyg", "4 do 6 tygodni roboczych od daty złożenia zamówienia");
-    ui->terminCombo->addItems(termin->keys());
+    //stan początkowy
+    this->setTitle(NULL);
+    ui->tab->setEnabled(false);
+    ui->tab_2->setEnabled(false);
 
-    oferta = new QHash<QString, QString>;
-    oferta->insert("3 miesiące", "Niniejsza oferta jest ważna bez zobowiązań w okresie trzech miesięcy od daty jej sporządzenia.");
-    oferta->insert("1 miesiąc", "Niniejsza oferta jest ważna bez zobowiązań w okresie jednego miesięca od daty jej sporządzenia.");
-    ui->ofertaCombo->addItems(oferta->keys());
+    ui->menuExport->setEnabled(false);
+    ui->actionSave->setEnabled(false);
+    ui->actionNR->setEnabled(false);
 
-    connect(ui->calendarWidget, SIGNAL(selectionChanged()), this, SLOT(calChanged()));
-    connect(ui->dateEdit, SIGNAL(dateChanged(QDate)), this, SLOT(dateChanged(QDate)));
+/**
+ Pozostałe informacje
+**/
+
+    ui->label_klient->setText(tr("Klient:"));
+    ui->pushButton_wyborKlienta->setText(tr("Wybór klienta"));
+
+    ui->label_zapytanie->setText(tr("Zapytanie:"));
+    ui->pushButton_zapytanieData->setText(tr("Kalendarz"));
+    ui->checkBox_zapytanieData->setText(tr("Data zapytania:"));
+    ui->checkBox_zapytanieData->setChecked(true);
+    ui->checkBox_zapytanieNr->setText(tr("Numer zapytania:"));
+    ui->checkBox_zapytanieNr->setChecked(false);
+
+    dostawaModel = new QSqlTableModel;
+    dostawaModel->setTable("dostawa");
+    dostawaModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    dostawaModel->select();
+    ui->comboBox_dostawa->setModel(dostawaModel);
+    ui->comboBox_dostawa->setModelColumn(1);
+    ui->plainTextEdit_dostawa->setReadOnly(true);
+    ui->label_dostawa->setText(tr("Warunki dostawy:"));
+
+    terminModel = new QSqlTableModel;
+    terminModel->setTable("termin");
+    terminModel->select();
+    ui->comboBox_termin->setModel(terminModel);
+    ui->comboBox_termin->setModelColumn(1);
+    ui->plainTextEdit_termin->setReadOnly(true);
+    ui->label_termin->setText(tr("Termin dostawy:"));
+
+    platnoscModel = new QSqlTableModel;
+    platnoscModel->setTable("platnosc");
+    platnoscModel->select();
+    ui->comboBox_platnosc->setModel(platnoscModel);
+    ui->comboBox_platnosc->setModelColumn(1);
+    ui->plainTextEdit_platnosc->setReadOnly(true);
+    ui->label_platnosc->setText(tr("Warunki płatności:"));
+
+    ofertaModel = new QSqlTableModel;
+    ofertaModel->setTable("oferta");
+    ofertaModel->select();
+    ui->comboBox_oferta->setModel(ofertaModel);
+    ui->comboBox_oferta->setModelColumn(1);
+    ui->plainTextEdit_oferta->setReadOnly(true);
+    ui->label_oferta->setText(tr("Warunki Oferty:"));
+
+    ui->label_uwagi->setText(tr("Uwagi:"));
 }
 
 void MainWindow::about()
@@ -477,59 +513,96 @@ void MainWindow::del()
     sum();
 }
 
-void MainWindow::ref(QString id)
+void MainWindow::dostawaRef(int row)
 {
-    ui->dostawa->setPlainText(dostawa->value(id));
-}
-void MainWindow::ref2(QString id)
-{
-    ui->platnosc->setPlainText(platnosc->value(id));
-}
-void MainWindow::ref3(QString id)
-{
-    ui->termin->setPlainText(termin->value(id));
-}
-void MainWindow::ref4(QString id)
-{
-    ui->oferta->setPlainText(oferta->value(id));
+    ui->plainTextEdit_dostawa->setPlainText(dostawaModel->record(row).value("long").toString());
 }
 
-void MainWindow::calChanged()
+void MainWindow::platnoscRef(int row)
 {
-    QDate d;
-    d = ui->calendarWidget->selectedDate();
-    ui->dateEdit->setDate(d);
+    ui->plainTextEdit_platnosc->setPlainText(platnoscModel->record(row).value("long").toString());
 }
 
-void MainWindow::dateChanged(QDate data)
+void MainWindow::terminRef(int row)
 {
-    ui->calendarWidget->setSelectedDate(data);
+    ui->plainTextEdit_termin->setPlainText(terminModel->record(row).value("long").toString());
+}
+
+void MainWindow::ofertaRef(int row)
+{
+    ui->plainTextEdit_oferta->setPlainText(ofertaModel->record(row).value("long").toString());
+}
+
+void MainWindow::calChanged(QDate d)
+{
+    ui->lineEdit_zapytanieData->setText(d.toString("dd.MM.yyyy"));
+    calendarWidget->close();
+    ui->checkBox_zapytanieData->setChecked(true);
+}
+
+void MainWindow::zapytanieRef()
+{
     QString s;
-    s = "W odpowiedzi na zapytanie z dnia ";
-    s += data.toString("dd.MM.yyyy");
+    s = "W odpowiedzi na zapytanie";
+    if(ui->checkBox_zapytanieNr->isChecked())
+    {
+        s += " numer ";
+        s += ui->lineEdit_zapytanieNr->text();
+    }
+    if(ui->checkBox_zapytanieData->isChecked())
+    {
+        s += " z dnia ";
+        s += ui->lineEdit_zapytanieData->text();
+    }
+
     s += " przedstawiamy ofertę na dostawę następujących produktów:";
-    ui->zapytanie->setPlainText(s);
+    ui->plainTextEdit_zapytanie->setPlainText(s);
 }
 
-void MainWindow::setKlient(int id)
+void MainWindow::checkNr(bool ch)
 {
-    QString s;
-    QSqlQuery q;
-
-    id_klienta = id;
-
-    s = "SELECT DISTINCT short, nazwisko FROM klient WHERE id=";
-    s += QString::number(id);
-
-    EXEC(s);
-
-    q.next();
-    s = q.value(0).toString();
-    s += " | ";
-    s += q.value(1).toString();
-    ui->label->setText(s);
+    ui->lineEdit_zapytanieNr->setEnabled(ch);
+    if(!ch)
+        ui->lineEdit_zapytanieNr->clear();
+    this->zapytanieRef();
 }
 
+void MainWindow::checkData(bool ch)
+{
+    ui->lineEdit_zapytanieData->setEnabled(ch);
+    if(!ch)
+        ui->lineEdit_zapytanieData->clear();
+    this->zapytanieRef();
+}
+
+void MainWindow::popWyborKlienta()
+{
+    WyborKlienta* pop = new WyborKlienta(this);
+    connect(pop, SIGNAL(selectionChanged(QSqlRecord)), this, SLOT(clientChanged(QSqlRecord)));
+    pop->exec();
+    delete pop;
+}
+
+void MainWindow::clientChanged(const QSqlRecord& rec)
+{
+    delete klient;
+    if(rec.isEmpty())
+    {
+        klient = NULL;
+        ui->plainTextEdit_klient->clear();
+    }
+    else
+    {
+        klient = new QSqlRecord(rec);
+        QString s;
+        s = rec.value("tytul").toString();
+        s += " ";
+        s += rec.value("nazwisko").toString();
+        s += "\n";
+        s += rec.value("full").toString();
+        ui->plainTextEdit_klient->setPlainText(s);
+    }
+}
 
 void MainWindow::pln_on()
 {
@@ -598,7 +671,7 @@ void MainWindow::nowyNumer()
 {
     QDate d = QDate::currentDate();
     *data = d.toString("dd.MM.yyyy");
-    ui->dateEdit->setDate(d);
+    calendarWidget->setSelectedDate(d);
 
     *nr_oferty = QString::number(u->nrOferty());
     nr_oferty->append("/");
@@ -610,8 +683,7 @@ void MainWindow::nowyNumer()
 void MainWindow::nowa()
 {
     //czyszczenie starych danych
-    ui->label->clear();
-    id_klienta = -1;
+    clientChanged(QSqlRecord());
 
     this->nowyNumer();
 
@@ -644,18 +716,18 @@ void MainWindow::zapisz()
 {
     QString s;
 
-    if(id_klienta == -1)
+    if(klient == NULL)
     {
         QMessageBox::warning(this, "brak danych", "Aby zapisanie oferty w bazie danych było możliwe należy wybrać klienta.");
         return;
     }
 
-    int anr = nr_oferty->split('/').first().toInt();
+    int anr = nr_oferty->split("/").first().toInt();
 
     if(anr == u->nrOferty())
         u->nrOfertyInkrement();
 
-    insert_zapisane(*nr_oferty, id_klienta, *data, u->uid(), ui->zapytanie->toPlainText(), ui->dostawa->toPlainText(), ui->termin->toPlainText(), ui->platnosc->toPlainText(), ui->oferta->toPlainText());
+    insert_zapisane(*nr_oferty, klient->value("id").toInt(), *data, u->uid(), ui->plainTextEdit_zapytanie->toPlainText(), ui->plainTextEdit_zapytanie->toPlainText(), ui->plainTextEdit_termin->toPlainText(), ui->plainTextEdit_platnosc->toPlainText(), ui->plainTextEdit_oferta->toPlainText());
 
     for(int i=0; i < ui->tableWidget->rowCount() - 1; ++i)
         insert_zapisane_towary(*nr_oferty, ui->tableWidget->item(i, 0)->text(), ui->tableWidget->item(i, 5)->text(), ui->tableWidget->item(i, 3)->text());
@@ -684,13 +756,13 @@ void MainWindow::wczytaj_oferte(QString id)
     this->init();
 
     *nr_oferty = id;
-    this->setKlient(q.value(0).toInt());
+  //  this->setKlient(q.value(0).toInt());
     *data = q.value(1).toString();
-    ui->zapytanie->setPlainText(q.value(3).toString());
-    ui->dostawa->setPlainText(q.value(4).toString());
-    ui->termin->setPlainText(q.value(5).toString());
-    ui->platnosc->setPlainText(q.value(6).toString());
-    ui->oferta->setPlainText(q.value(7).toString());
+    ui->plainTextEdit_zapytanie->setPlainText(q.value(3).toString());
+    ui->plainTextEdit_dostawa->setPlainText(q.value(4).toString());
+    ui->plainTextEdit_termin->setPlainText(q.value(5).toString());
+    ui->plainTextEdit_platnosc->setPlainText(q.value(6).toString());
+    ui->plainTextEdit_oferta->setPlainText(q.value(7).toString());
 
     s = "SELECT kod, ilosc, rabat FROM zapisane_towary WHERE nr_oferty = '";
     s += id;

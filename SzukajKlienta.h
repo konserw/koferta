@@ -22,6 +22,7 @@
 #include <QWidget>
 
 class QSqlTableModel;
+class QSqlRecord;
 class QModelIndex;
 
 namespace Ui {
@@ -35,7 +36,6 @@ class SzukajKlienta : public QWidget
 public:
     explicit SzukajKlienta(QWidget *parent = 0);
     ~SzukajKlienta();
-    int selectedClient();
 
 public slots:
     void ref(const QString&);
@@ -43,7 +43,7 @@ public slots:
     void select(const QModelIndex&);
 
 signals:
-    void selectionChanged(int);
+    void selectionChanged(const QSqlRecord&);
 
 private:
     QSqlTableModel* model;

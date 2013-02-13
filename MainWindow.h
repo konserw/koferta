@@ -26,10 +26,11 @@
 #include <QHash>
 #include <QDate>
 
+class QSqlTableModel;
+class QModelIndex;
 class QTextDocument;
 class QStringList;
 class QTableWidgetItem;
-class cWyborKlienta;
 class WyborTowaru;
 class QMessageBox;
 class cLoadDialog;
@@ -38,6 +39,7 @@ class QSqlQuery;
 class cWydruk;
 class cUser;
 class QSqlRecord;
+class QCalendarWidget;
 
 
 namespace Ui {
@@ -55,9 +57,9 @@ public:
     int ileTowaru(const QString&);                      //ilość danego towaru do wyświetlenia w wyborzeTowaru
 
     void setTowar(QString id, int ile);
+
 public slots:
     void setTowar(const QSqlRecord&, int);              //dodawanie towarów do tabeli (wywoływane przez sygnał z dialogu dodajTowar)
-    void setKlient(int id);                             //ustawia wybranego klienta - połączone z sygnałem z dialogu klient
 
     void wczytaj_oferte(QString);                       //wczytuje ofertę o zadanym id, połączone z dialogiem wczytywanie
 
@@ -68,14 +70,17 @@ public slots:
     void del();                                         //usuwanie wiersza z tabeli
 
 
-    //odświerzanie texteditów po zmianie w comboboxie  w drugiej zakładce
-    void ref(QString);
-    void ref2(QString);
-    void ref3(QString);
-    void ref4(QString);
-    //zmiany daty
-    void calChanged();                                  //zmiana nastąpiła w kalendarzu, wprowadzenie jej do dateedita
-    void dateChanged(QDate);                            //zmiana w dateedicie, wprowadzenie jej do edita
+    //odświerzanie texteditów drugiej zakładce
+    void dostawaRef(int);
+    void platnoscRef(int);
+    void terminRef(int);
+    void ofertaRef(int);
+    void zapytanieRef();
+    void calChanged(QDate d);                           //zmiana nastąpiła w kalendarzu, wprowadzenie jej do dateedita
+    void checkNr(bool);
+    void checkData(bool);
+    void popWyborKlienta();
+    void clientChanged(const QSqlRecord&);              //ustawia wybranego klienta - połączone z sygnałem z dialogu klient
 
     //opcje wydruku
     void pln_on();                                      //włącza przeliczanie euro na pln
@@ -108,7 +113,6 @@ public slots:
 private:
     Ui::MainWindow *ui;
 
-    cWyborKlienta* kw;
     WyborTowaru* tw;
     QMessageBox* mb;
     cLoadDialog* ww;
@@ -121,24 +125,24 @@ private:
     void tabupd();                                      //przeliczenie wartości w całej tabeli po zmianie waluty
 
     //pomocnicze funkcje
-    void setTitle(QString*);                             //ustawia tytuł okna
+    void setTitle(QString*);                            //ustawia tytuł okna
     void init();                                        //odblokowanie interfejsu i inicjacja tabeli
 
-    //domyślne wypełnienia textboxów z 2 zakładki wraz z odpowiednimi etykietami do comboboxów
-    QHash<QString, QString>* dostawa;
-    QHash<QString, QString>* platnosc;
-    QHash<QString, QString>* termin;
-    QHash<QString, QString>* oferta;
-   // QHash<QString, QString>* zapytanie;
-
     //wewnętrzne zmienne
-    int id_klienta;
+
     QString* nr_oferty;
     QString* data;
     cUser* u;
     double kurs;
     bool pln;
 
+    QSqlTableModel* dostawaModel;
+    QSqlTableModel* platnoscModel;
+    QSqlTableModel* terminModel;
+    QSqlTableModel* ofertaModel;
+
+    QCalendarWidget* calendarWidget;
+    QSqlRecord* klient;
 };
 
 #endif // MAINWINDOW_H

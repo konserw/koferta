@@ -157,13 +157,15 @@ v. 2.0
 * dodatkowy editbox na "uwagi"
 * małe poprawki w wydruku oferty
 
-TODO:
+v. 2.1
 * przeniesienie serwera na platformę Raspbery Pi
 * opcje comboboxów przeniesione do bazy
-* możliwość dodawania opcji komboboksów do bazy
 * zapisane ofery w formie odnośników do tabeli combosów
 * zapisywanie uwag w bazie jako tekstu
 * zapis ceny katalogowej towaru jako liczby w tabeli
+
+TODO:
+* możliwość dodawania opcji komboboksów do bazy
 * zapisywanie informacji o wydruku w zapisanych ofertach
 * unifikacja stylu nazw plików i klas
 

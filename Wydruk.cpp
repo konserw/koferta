@@ -262,7 +262,7 @@ void cWydruk::make(){
             "<tbody>\n"
             "<tr><td>\n"
             "\t";
-    *sDoc += ui->zapytanie->toPlainText();
+    *sDoc += ui->plainTextEdit_zapytanie->toPlainText();
     *sDoc += "<br />\n"
             "</td></tr>\n"
             "<tr><td>\n";
@@ -392,18 +392,18 @@ void cWydruk::make(){
              "\t\t<td width=";
     *sDoc += QString::number(w-dw-3);
     *sDoc += ">";
-    *sDoc += ui->dostawa->toPlainText();
+    *sDoc += ui->plainTextEdit_dostawa->toPlainText();
     *sDoc += "</td>\n\t</tr>\n"
              "\t<tr>\n"
              "\t\t<td>Termin dostawy:</td>\n"
              "\t\t<td>";
-    *sDoc += ui->termin->toPlainText();
+    *sDoc += ui->plainTextEdit_termin->toPlainText();
     *sDoc += "</td>\n"
              "\t</tr>\n"
              "\t<tr>\n"
              "\t\t<td>Warunki plałatności:</td>\n"
              "\t\t<td>";
-    *sDoc += ui->platnosc->toPlainText();
+    *sDoc += ui->plainTextEdit_platnosc->toPlainText();
     *sDoc += "</td>\n"
              "\t</tr>\n"
             "\t<tr>\n"
@@ -417,7 +417,7 @@ void cWydruk::make(){
 //Pozdro600
     *sDoc += "<tr><td>\n"
             "\t";
-    *sDoc += ui->oferta->toPlainText();
+    *sDoc += ui->plainTextEdit_oferta->toPlainText();
     *sDoc += "<br>\n"
              "\tŁączymy pozdrowienia.\n"
              "\t<p align = right style = \"margin-right: 100\">\n"

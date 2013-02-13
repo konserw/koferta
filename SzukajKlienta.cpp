@@ -63,10 +63,6 @@ SzukajKlienta::~SzukajKlienta()
     delete ui;
 }
 
-int SzukajKlienta::selectedClient()
-{
-    return id;
-}
 void SzukajKlienta::ref2()
 {
     ref(ui->lineEdit->text());
@@ -74,14 +70,7 @@ void SzukajKlienta::ref2()
 
 void SzukajKlienta::select(const QModelIndex &idx)
 {
-    QSqlRecord r = model->record(idx.row());
-    if(!r.isEmpty())
-    {
-        id = r.value("id").toInt();
-        emit selectionChanged(id);
-    }
-    else
-        id = -1;
+    emit selectionChanged(model->record(idx.row()));
 }
 
 void SzukajKlienta::ref(const QString& in)
