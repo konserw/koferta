@@ -24,11 +24,11 @@ QT = core gui sql network
 
 TEMPLATE = app
 
-DEFINES += VER=2.0
+DEFINES += VER=2.01
 DEFINES += GET_PASS=\\\"W7^Dz*mALE0UIOrEb\\\"
 
 win32 { #nmake & M$ compiler
-    QMAKE_CXXFLAGS += /nologo /O2 #/Wp64 /Wall
+    QMAKE_CXXFLAGS += /nologo /O2 /Wp64 /Wall
     QMAKE_LFLAGS_RELEASE += /NODEFAULTLIB:LIBCMT
     QMAKE_LFLAGS_DEBUG += /NODEFAULTLIB:LIBCMT
 
