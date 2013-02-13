@@ -710,6 +710,7 @@ void MainWindow::wczytaj_oferte(QString id)
         row = ui->tableWidget->rowCount()-2;
         if(row < 0) row = 0;
         ui->tableWidget->item(row, 3)->setText(QString::number(q.value(2).toDouble()));
+        przelicz(row);
     }
 
     sum();
