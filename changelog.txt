@@ -157,6 +157,9 @@ v. 2.0
 * dodatkowy editbox na "uwagi"
 * małe poprawki w wydruku oferty
 
+v. 2.01
+* poprawiony błąd przy wczytywaniu rabatu
+
 TODO:
 * przeniesienie serwera na platformę Raspbery Pi
 * opcje comboboxów przeniesione do bazy
