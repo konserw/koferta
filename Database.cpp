@@ -20,38 +20,26 @@
 #include "Database.h"
 #include "Macros.h"
 
-void insert_towar(QString id, QString nazwa, QString cena, QString jednostka)
+void insert_towar(const QString& id, const QString& nazwa, double cena, const QString& jednostka)
 {
     QSqlQuery q;
     QString s;
-    s = "SELECT nazwa FROM towar WHERE id='";
-    s += id;
-    s += "'";
+
+    s = QString("SELECT nazwa FROM towar WHERE id='%1'").arg(id);
     EXEC(s);
     if(q.next())
     {
         DEBUG <<  "Towar o id: " << id << " istnieje w bazie, nastapi jego nadpisanie!";
-        s = "DELETE FROM towar WHERE id='";
-        s += id;
-        s += "'";
-
+        s = QString("DELETE FROM towar WHERE id='%1'").arg(id);
         EXEC(s);
     }
-    s = "INSERT INTO towar (id, nazwa, cena_kat, jednostka) VALUES ('";
-    s += id;
-    s += "', '";
-    s += nazwa;
-    s += "', '";
-    s += cena;
-    s += "', '";
-    s += jednostka;
-    s += "');";
-    DEBUG <<  "Wstawianie towaru, id: " << id;
 
+    s = QString("INSERT INTO towar (id, nazwa, cena, jednostka) VALUES ('%1', '%2', '%3', '%4')").arg(id, nazwa, QString::number(cena), jednostka);
+   // DEBUG <<  "Wstawianie towaru, id: " << id;
     EXEC(s);
 }
 
-void insert_klient(QString skrot, QString full, QString tytul, QString imie, QString nazwisko, QString adres)
+void insert_klient(const QString& skrot, const QString& full, const QString& tytul, const QString& imie, const QString& nazwisko, const QString& adres)
 {
     QString s;
     QSqlQuery q;
@@ -68,65 +56,33 @@ void insert_klient(QString skrot, QString full, QString tytul, QString imie, QSt
     s += "', '";
     s += adres;
     s += "');";
-    DEBUG <<  "Wstawianie klienta, nazwisko: " << nazwisko;
-
+ //   DEBUG <<  "Wstawianie klienta, nazwisko: " << nazwisko;
     EXEC(s);
 }
 
-void insert_zapisane(QString nr_oferty, int id_klienta, QString data, QString uid, QString zapytanie, QString dostawa, QString termin, QString platnosc, QString oferta)
+void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& data, int uid, const QString& zapytanie_data, const QString& zapytanie_nr, int dostawa, int termin, int platnosc, int oferta, const QString& uwagi)
 {
     QString s;
     QSqlQuery q;
-    s = "DELETE FROM zapisane WHERE nr_oferty = '";
-    s += nr_oferty;
-    s += "'";
+    s = QString("DELETE FROM zapisane WHERE nr_oferty = '%1'").arg(nr_oferty);
     EXEC(s);
 
-    s = "DELETE FROM zapisane_towary WHERE nr_oferty = '";
-    s += nr_oferty;
-    s += "'";
+    s = QString("DELETE FROM zapisane_towary WHERE nr_oferty = '%1'").arg(nr_oferty);
     EXEC(s);
 
     s = "INSERT INTO zapisane "
-        "(nr_oferty, id_klienta, data, uid, zapytanie, dostawa, termin, platnosc, oferta)"
-        " VALUES ('";
-    s += nr_oferty;
-    s += "', ";
-    s += QString::number(id_klienta);
-    s += ", '";
-    s += data;
-    s += "', ";
-    s += uid;
-    s += ", '";
-    s += zapytanie;
-    s += "', '";
-    s += dostawa;
-    s += "', '";
-    s += termin;
-    s += "', '";
-    s += platnosc;
-    s += "', '";
-    s += oferta;
-    s += "')";
-    DEBUG <<  "Zapisywanie ofery nr: " << nr_oferty;
-
+        "(nr_oferty, id_klienta, data, uid, zapytanie_data, zapytanie_nr, dostawa, termin, platnosc, oferta, uwagi)";
+    s += QString(" VALUES ('%1', %2, '%3', %4, '%5', '%6', %7, %8, %9").arg(nr_oferty, QString::number(id_klienta), data, QString::number(uid), zapytanie_data, zapytanie_nr, QString::number(dostawa), QString::number(termin), QString::number(platnosc));
+    s += QString(", %1, '%2')").arg(QString::number(oferta), uwagi);
+//    DEBUG <<  "Zapisywanie ofery nr: " << nr_oferty;
     EXEC(s);
 }
 
-void insert_zapisane_towary(QString nr_oferty, QString kod, QString ilosc, QString rabat)
+void insert_zapisane_towary(const QString& nr_oferty, const QString& kod, double ilosc, double rabat)
 {
     QString s;
     QSqlQuery q;
-    s = "INSERT INTO zapisane_towary (nr_oferty, kod, ilosc, rabat) VALUES ('";
-    s += nr_oferty;
-    s += "', '";
-    s += kod;
-    s += "', ";
-    s += ilosc;
-    s += ", ";
-    s += rabat;
-    s += ")";
-    DEBUG <<  "Zapisywanie oferty nr: " << nr_oferty << " - kod: " << kod;
-
+    s = QString("INSERT INTO zapisane_towary (nr_oferty, kod, ilosc, rabat) VALUES ('%1', '%2', %3, %4)").arg(nr_oferty, kod, QString::number(ilosc), QString::number(rabat));
+//    DEBUG <<  "Zapisywanie oferty nr: " << nr_oferty << " - kod: " << kod;
     EXEC(s);
 }

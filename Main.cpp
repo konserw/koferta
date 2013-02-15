@@ -28,6 +28,8 @@
     QTextStream* logFile = NULL;
 #endif
 
+cUser* currentUser;
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -55,8 +57,8 @@ int main(int argc, char *argv[])
 
     cUser** u;
     u = new cUser*;
-    cLogowanie* logw;
-    logw = new cLogowanie(u);
+    Logowanie* logw;
+    logw = new Logowanie(u);
 
     int result = logw->exec();
     DEBUG << "logw result: " << result;

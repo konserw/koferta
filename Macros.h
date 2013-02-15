@@ -9,6 +9,10 @@
 #include <QSqlQuery>
 #include <QFile>
 
+class cUser;
+extern cUser* currentUser;
+
+
 #ifdef WIN32
     extern QTextStream* logFile;
     #define OUTSTREAM *logFile << "\n"
@@ -39,7 +43,7 @@
         if (!d->open()) \
         { \
             s = "Połączenie z bazą danych na "; \
-            s += *host; \
+            s += d->hostName(); \
             s += " nie powiodło się."; \
             ui->info->setText(s); \
             return; \
@@ -47,7 +51,7 @@
         else \
         { \
             s = "Połączono z bazą danych na "; \
-            s += *host; \
+            s += d->hostName(); \
             ui->info->setText(s); \
         }
 
@@ -88,7 +92,7 @@
             OUTSTREAM << "\t\t\t host: " << d->hostName(); \
             OUTSTREAM << "\t\t\t last error: " << d->lastError().text(); \
             s = "Połączenie z bazą danych na "; \
-            s += *host; \
+            s += d->hostName(); \
             s += " nie powiodło się."; \
             ui->info->setText(s); \
             return; \
@@ -96,7 +100,7 @@
         else \
         { \
             s = "Połączono z bazą danych na "; \
-            s += *host; \
+            s += d->hostName(); \
             ui->info->setText(s); \
         }
 #endif // RELEASE

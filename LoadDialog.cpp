@@ -22,79 +22,54 @@
 #include <QSqlQuery>
 #include "Macros.h"
 #include "SzukajOferty.h"
+#include <QSqlRecord>
+#include <QSqlTableModel>
 
-cLoadDialog::cLoadDialog(QWidget *parent) :
+LoadDialog::LoadDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::LoadDialog)
 {
     ui->setupUi(this);
-    of = new QString;
-
-    QFont font("Monospace");
-    font.setStyleHint(QFont::TypeWriter);
-    ui->textEdit->setFont(font);
+    ui->label_towary->setText(tr("Towary:"));
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    connect(ui->widget, SIGNAL(selectionChanged(const QString&)), this, SLOT(ref(const QString&)));
+    connect(ui->widget, SIGNAL(selectionChanged(const QSqlRecord&)), this, SLOT(ref(const QSqlRecord&)));
+
+    model = new QSqlTableModel(this);
+    model->setTable("zapisane_towary");
+    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+    QStringList sl;
+    sl << tr("Kod") << tr("Ilość") << tr("Rabat");
+    for(int i=1; i<4; ++i)
+        model->setHeaderData(i, Qt::Horizontal, sl[i-1]);
+
+    ui->tableView->setModel(model);
+    ui->tableView->hideColumn(0);
+    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    cur = NULL;
 }
 
-cLoadDialog::~cLoadDialog()
+LoadDialog::~LoadDialog()
 {
     delete ui;
-    delete of;
+    delete cur;
 }
 
-void cLoadDialog::ok()
+void LoadDialog::ok()
 {
-    emit sig(*of);
+    emit offerSelected(*cur, *model);
     this->accept();
 }
 
-void cLoadDialog::ref(const QString& id)
+void LoadDialog::ref(const QSqlRecord& rec)
 {
-    QSqlQuery q;
-    QString s, out;
+    delete cur;
+    cur = new QSqlRecord(rec);
 
-    s = "SELECT DISTINCT zapisane.data, klient.short, klient.tytul, klient.nazwisko FROM klient, zapisane WHERE zapisane.nr_oferty = '";
-    s += id;
-    s += "' AND zapisane.id_klienta = klient.id";
-    EXEC(s);
-    q.next();
-
-    out = "Numer oferty: ";
-    out += id;
-    out += "\nData oferty: ";
-    out += q.value(0).toString();
-    out += "\nKlient: ";
-    out += q.value(1).toString();
-    out += ", ";
-    out += q.value(2).toString();
-    out += " ";
-  //  out += ", Pan(i) ";
-    out += q.value(3).toString();
-    out += "\n\n\t\tTowary:\n"
-        "Kod towatu:\t\tIlosc:\n";
-
-    s = "SELECT kod, ilosc FROM zapisane_towary WHERE nr_oferty = '";
-    s += id;
-    s += "'";
-    EXEC(s);
-
-    QString kod;
-    while(q.next())
-    {
-        kod = q.value(0).toString();
-        out += kod;
-        out += "\t\t";
-        if(kod.size() < 10)
-            out += "\t";
-        if(kod.size() < 5)
-            out += "\t";
-        out += q.value(1).toString();
-        out += "\n";
-    }
-
-    *of = id;
-    ui->textEdit->setText(out);
+    model->setFilter(QString("nr_oferty = '%1'").arg(rec.value("nr_oferty").toString()));
+    model->select();
 }

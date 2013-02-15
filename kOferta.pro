@@ -45,7 +45,7 @@ win32 { #nmake & M$ compiler
 }
 
 unix {
- #   QMAKE_CXXFLAGS += -Wall -Werror -Wextra
+    QMAKE_CXXFLAGS += -Wall -Werror -Wextra
     LIBS += -L/usr/lib/mysql -lmysqlclient
 }
 
@@ -66,7 +66,6 @@ HEADERS += Database.h \
            NowyKlient.h \
            NowyTowar.h \
            NowyUser.h \
-           RootDialog.h \
            SHA1.h \
            SyntaxKlient.h \
            SyntaxTowar.h \
@@ -75,26 +74,23 @@ HEADERS += Database.h \
            SzukajTowaru.h \
            User.h \
            WyborKlienta.h \
-           Wydruk.h \ 
     WyborTowaru.h
 
 FORMS += EdycjaKlienta.ui \
          EdycjaTowaru.ui \
          LoadDialog.ui \
          Logowanie.ui \
-         mainwindow.ui \
+         MainWindow.ui \
          NowyKlient.ui \
          NowyTowar.ui \
          NowyUser.ui \
-         RootDialog.ui \
          SyntaxKlient.ui \
          SyntaxTowar.ui \
          SzukajKlienta.ui \
          SzukajOferty.ui \
          SzukajTowaru.ui \
          WyborKlienta.ui \ 
-    WyborTowaru.ui \
-    form.ui
+    WyborTowaru.ui
          
 SOURCES += Database.cpp \
            EdycjaKlienta.cpp \
@@ -106,7 +102,6 @@ SOURCES += Database.cpp \
            NowyKlient.cpp \
            NowyTowar.cpp \
            NowyUser.cpp \
-           RootDialog.cpp \
            SHA1.cpp \
            SyntaxKlient.cpp \
            SyntaxTowar.cpp \
@@ -114,8 +109,7 @@ SOURCES += Database.cpp \
            SzukajOferty.cpp \
            SzukajTowaru.cpp \
            User.cpp \
-           WyborKlienta.cpp \
-           Wydruk.cpp \          
+           WyborKlienta.cpp \        
     WyborTowaru.cpp
 
 RESOURCES += res/zasoby.qrc

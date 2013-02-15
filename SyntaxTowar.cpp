@@ -44,6 +44,6 @@ void syntax_towar::acc()
     else
         s = "szt.";
 
-    insert_towar(ui->kod->text(), ui->spec->text(), ui->cena->text(), s);
+    insert_towar(ui->kod->text(), ui->spec->text(), ui->cena->value(), s);
     this->accept();
 }

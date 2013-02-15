@@ -24,14 +24,14 @@
 
 #include "Macros.h"
 
-cEdycjaKlienta::~cEdycjaKlienta()
+EdycjaKlienta::~EdycjaKlienta()
 {
     delete ui;
 }
 
-cEdycjaKlienta::cEdycjaKlienta(QWidget *parent) :
+EdycjaKlienta::EdycjaKlienta(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::cEdycjaKlienta)
+    ui(new Ui::EdycjaKlienta)
 {
     DEBUG << "konstruktor";
 
@@ -45,7 +45,7 @@ cEdycjaKlienta::cEdycjaKlienta(QWidget *parent) :
     id = -1;
 }
 
-void cEdycjaKlienta::change(int _id)
+void EdycjaKlienta::change(int _id)
 {
     if(id == _id)
         return;
@@ -84,7 +84,7 @@ void cEdycjaKlienta::change(int _id)
 }
 
 
-void cEdycjaKlienta::app()
+void EdycjaKlienta::app()
 {
     if(id == 0) return;
 
@@ -111,7 +111,7 @@ void cEdycjaKlienta::app()
     EXEC(s);
 }
 
-void cEdycjaKlienta::del()
+void EdycjaKlienta::del()
 {
     if(QMessageBox::warning(this, "Usuń klienta", "Czy na pewno chcesz usunąć tego klienta z bazy danych?", QMessageBox::Ok, QMessageBox::Cancel)==QMessageBox::Cancel)
         return;

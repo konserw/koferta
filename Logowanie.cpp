@@ -31,8 +31,6 @@
 #include <QInputDialog>
 #include <QVariant>
 #include <QMessageBox>
-
-
 #include <QFileInfo>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -50,12 +48,20 @@
 #endif
 
 #include "User.h"
-#include "RootDialog.h"
 #include "SHA1.h"
 #include "Macros.h"
 #include "NowyUser.h"
 
-cLogowanie::cLogowanie(cUser** usr) :
+Logowanie::~Logowanie()
+{
+    DEBUG <<  "destruktor cLogowanie";
+    delete p;
+    delete d;
+    delete ui;
+    delete hosts;
+}
+
+Logowanie::Logowanie(cUser** usr) :
     QDialog(NULL),
     ui(new Ui::Logowanie)
 {
@@ -65,7 +71,6 @@ cLogowanie::cLogowanie(cUser** usr) :
 
     u = NULL;
     us = usr;
-    host = NULL;
 
     p = new QPixmap(":/klog");
     ui->img->setPixmap(*p);
@@ -142,21 +147,16 @@ cLogowanie::cLogowanie(cUser** usr) :
 #endif
 }
 
-void cLogowanie::hostChanged(QString ip)
+void Logowanie::hostChanged(QString ip)
 {
     DEBUG << "Host został zmieniony na: " << ip;
 
-    delete host;
-    host = new QString(ip);
     QString s;
     QSqlQuery q;
 
     ui->comboBox->clear();
 
-    if(*host == "localhost")
-        ui->comboBox->addItem("root");
-
-    d->setHostName(*host);
+    d->setHostName(ip);
     d->setUserName("kOferta_GetUsers");
     d->setPassword(GET_PASS);
 
@@ -202,7 +202,7 @@ void cLogowanie::hostChanged(QString ip)
     d->close();
 }
 
-void cLogowanie::downloadFinished(QNetworkReply *reply)
+void Logowanie::downloadFinished(QNetworkReply *reply)
 {
     DEBUG << "pobieranie ukończone";
 
@@ -249,17 +249,8 @@ void cLogowanie::downloadFinished(QNetworkReply *reply)
     qApp->quit();
 }
 
-cLogowanie::~cLogowanie()
-{
-    DEBUG <<  "destruktor cLogowanie";
-    delete p;
-    delete d;
-    delete ui;
-    delete hosts;
-    delete host;
-}
 
-void cLogowanie::add()
+void Logowanie::add()
 {
     QString s;
     bool ok;
@@ -283,7 +274,7 @@ void cLogowanie::add()
     }
 
 }
-void cLogowanie::ok()
+void Logowanie::ok()
 {
     QString name;
     name = ui->comboBox->currentText();
@@ -295,19 +286,6 @@ void cLogowanie::ok()
         return;
     }
 
-    if(name == "root")
-    {
-        d->setUserName("root");
-        d->setPassword(ui->lineEdit->text());
-
-        LOGIN
-
-        cRootDialog* rw = new cRootDialog(this);
-        rw->exec();
-        d->close();
-        this->hostChanged(*host);
-        return;
-    }
     else if(name == "Dodaj użytkownika")
     {
         if(hash(ui->lineEdit->text()) != "810272f60e2d59adaa4b98b0546b2cebd7018b5c")
@@ -327,7 +305,8 @@ void cLogowanie::ok()
         delete nu;
 
         d->close();
-        this->hostChanged(*host);
+        ui->ip->setCurrentIndex(ui->ip->currentIndex());
+        //this->hostChanged(*host);
         return;
     }
 

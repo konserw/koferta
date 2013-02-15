@@ -33,7 +33,7 @@ class QStringList;
 class QTableWidgetItem;
 class WyborTowaru;
 class QMessageBox;
-class cLoadDialog;
+class LoadDialog;
 class QSqlDatabase;
 class QSqlQuery;
 class cWydruk;
@@ -55,13 +55,11 @@ public:
     ~MainWindow();
 
     int ileTowaru(const QString&);                      //ilość danego towaru do wyświetlenia w wyborzeTowaru
-
     void setTowar(QString id, int ile);
 
 public slots:
     void setTowar(const QSqlRecord&, int);              //dodawanie towarów do tabeli (wywoływane przez sygnał z dialogu dodajTowar)
-
-    void wczytaj_oferte(QString);                       //wczytuje ofertę o zadanym id, połączone z dialogiem wczytywanie
+    void loadOffer(const QSqlRecord &rec, const QSqlTableModel &mod);              //wczytuje ofertę o połączone z dialogiem wczytywanie
 
     //obsługa głównej tabeli
     void change(QTableWidgetItem*);                     //wywoływane przeliczenia wartości kosztu i sumy w przypadku zmiany którejś wartości w tabeli
@@ -86,6 +84,13 @@ public slots:
     void pln_on();                                      //włącza przeliczanie euro na pln
     void pln_off();                                     //wyłącza przeliczanie euro na pln
     void chKurs(QString);                               //zmienia kurs wymiany euro->pln
+
+    //wydruk
+    void printPrev();                                   //podgląd wydruku
+    void printPdf();                                    //export do pdf
+    void printHtm();                                    //zapis jako htm
+    void print(QPrinter *printer);                      //"drukowanie" dokumentu do podglądu lub pdf
+    void makeDocument(QString *sDoc);                   //tworzy dokument jako kod htm w QTextDocument
 
 /*menu*/
     //menu plik
@@ -115,8 +120,7 @@ private:
 
     WyborTowaru* tw;
     QMessageBox* mb;
-    cLoadDialog* ww;
-    cWydruk* wyd;
+    LoadDialog* ww;
 
     //obsługa głównej tabeli
     void sum();                                         //przelicza sumę wszystkich pozycji
@@ -129,12 +133,12 @@ private:
     void init();                                        //odblokowanie interfejsu i inicjacja tabeli
 
     //wewnętrzne zmienne
-
     QString* nr_oferty;
     QString* data;
     cUser* u;
     double kurs;
     bool pln;
+    bool htm;
 
     QSqlTableModel* dostawaModel;
     QSqlTableModel* platnoscModel;
@@ -142,7 +146,7 @@ private:
     QSqlTableModel* ofertaModel;
 
     QCalendarWidget* calendarWidget;
-    QSqlRecord* klient;
+    QSqlRecord* klient;    
 };
 
 #endif // MAINWINDOW_H
