@@ -762,8 +762,9 @@ void MainWindow::importTowar()
     mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
     mb->setStandardButtons(0);
     mb->setModal(true);
-    //mb->show();
-    mb->exec();
+    mb->show();
+    mb->raise();
+
     DEBUG <<  "wczytuje towar...";
 
     QTextStream in(&file);
@@ -797,8 +798,8 @@ void MainWindow::importTowar()
 
         insert_towar(list.at(1), list.at(0), cena.toDouble(), s);
     }
-//    mb->hide();
-    mb->accept();
+    mb->hide();
+    delete mb;
     DEBUG <<  "koniec wczytywania";
 }
 
@@ -822,8 +823,9 @@ void MainWindow::eksportTowar()
     mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
     mb->setStandardButtons(0);
     mb->setModal(true);
-    //mb->show();
-    mb->exec();
+    mb->show();
+    mb->raise();
+
     DEBUG <<  "zapis cennikow do pliku: " << s;
 
     QTextStream out(&file);
@@ -838,7 +840,8 @@ void MainWindow::eksportTowar()
         out << q.value(1).toString() << "|" << q.value(0).toString() << "|" << q.value(2).toString() << "|" << q.value(3).toString() << "\n";
     }
 
-    mb->accept();
+    mb->hide();
+    delete mb;
     DEBUG <<  "koniec zapisu cennika";
 }
 
@@ -878,8 +881,9 @@ void MainWindow::importKlient()
     mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
     mb->setStandardButtons(0);
     mb->setModal(true);
-    //mb->show();
-    mb->exec();
+    mb->show();
+    mb->raise();
+
     DEBUG <<  "wczytuje klientow...";
 
     QTextStream in(&file);
@@ -909,7 +913,8 @@ void MainWindow::importKlient()
     }
 
     DEBUG <<  "koniec wczytywania";
-    mb->accept();
+    mb->hide();
+    delete mb;
 }
 
 void MainWindow::eksportKlient()
@@ -931,8 +936,9 @@ void MainWindow::eksportKlient()
     mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
     mb->setStandardButtons(0);
     mb->setModal(true);
-    //mb->show();
-    mb->exec();
+    mb->show();
+    mb->raise();
+
     DEBUG <<  "zapis klientow do pliku: " << s;
 
     QTextStream out(&file);
@@ -949,7 +955,8 @@ void MainWindow::eksportKlient()
         out << "\n";
     }
 
-    mb->accept();
+    mb->hide();
+    delete mb;
     DEBUG <<  "koniec zapisu klientow";
 }
 
