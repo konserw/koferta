@@ -25,20 +25,20 @@
 #include <QDialog>
 
 namespace Ui {
-    class syntax_towar;
+    class SyntaxTowar;
 }
 
-class syntax_towar : public QDialog
+class SyntaxTowar : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit syntax_towar(QWidget *parent, QString&);
-    ~syntax_towar();
+    explicit SyntaxTowar(QWidget *parent, QString&);
+    ~SyntaxTowar();
 public slots:
     void acc();
 private:
-    Ui::syntax_towar *ui;
+    Ui::SyntaxTowar *ui;
 };
 
 #endif // SYNTAX_TOWAR_H

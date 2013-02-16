@@ -23,23 +23,15 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QHash>
-#include <QDate>
 
 class QSqlTableModel;
 class QModelIndex;
 class QTextDocument;
-class QStringList;
 class QTableWidgetItem;
-class WyborTowaru;
-class QMessageBox;
-class LoadDialog;
-class QSqlDatabase;
-class QSqlQuery;
-class cWydruk;
 class cUser;
 class QSqlRecord;
 class QCalendarWidget;
+class QDate;
 
 
 namespace Ui {
@@ -51,13 +43,15 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(cUser*);                        //aktualny użytkownik przekazywany jako parametr
+    explicit MainWindow();                              //aktualny użytkownik przekazywany jako parametr
     ~MainWindow();
 
     int ileTowaru(const QString&);                      //ilość danego towaru do wyświetlenia w wyborzeTowaru
-    void setTowar(QString id, int ile);
 
 public slots:
+    void popWyborKlienta();
+    void popWyborTowaru();
+
     void setTowar(const QSqlRecord&, int);              //dodawanie towarów do tabeli (wywoływane przez sygnał z dialogu dodajTowar)
     void loadOffer(const QSqlRecord &rec, const QSqlTableModel &mod);              //wczytuje ofertę o połączone z dialogiem wczytywanie
 
@@ -74,10 +68,9 @@ public slots:
     void terminRef(int);
     void ofertaRef(int);
     void zapytanieRef();
-    void calChanged(QDate d);                           //zmiana nastąpiła w kalendarzu, wprowadzenie jej do dateedita
+    void calChanged(const QDate&);                           //zmiana nastąpiła w kalendarzu, wprowadzenie jej do dateedita
     void checkNr(bool);
     void checkData(bool);
-    void popWyborKlienta();
     void clientChanged(const QSqlRecord&);              //ustawia wybranego klienta - połączone z sygnałem z dialogu klient
 
     //opcje wydruku
@@ -96,7 +89,7 @@ public slots:
     //menu plik
     void nowa();
     void zapisz();
-    void wczytaj();
+    void popLoadDialog();
     void nowyNumer();
     //exit zaimplementowany
 
@@ -118,10 +111,6 @@ public slots:
 private:
     Ui::MainWindow *ui;
 
-    WyborTowaru* tw;
-    QMessageBox* mb;
-    LoadDialog* ww;
-
     //obsługa głównej tabeli
     void sum();                                         //przelicza sumę wszystkich pozycji
     void przelicz(uint);                                //przelicza koszt towaru z zadanego wiersza
@@ -135,7 +124,6 @@ private:
     //wewnętrzne zmienne
     QString* nr_oferty;
     QString* data;
-    cUser* u;
     double kurs;
     bool pln;
     bool htm;

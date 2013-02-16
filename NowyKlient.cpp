@@ -21,7 +21,7 @@
 #include "Database.h"
 
 
-cNowyKlient::cNowyKlient(QWidget *parent) :
+NowyKlient::NowyKlient(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::NowyKlient)
 {
@@ -30,12 +30,12 @@ cNowyKlient::cNowyKlient(QWidget *parent) :
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(close()));
 }
 
-cNowyKlient::~cNowyKlient()
+NowyKlient::~NowyKlient()
 {
     delete ui;
 }
 
-void cNowyKlient::acc(){
+void NowyKlient::acc(){
     QString adres = ui->adres->toPlainText();
     adres.replace("\n", "<br>\n");
     insert_klient(ui->skrocona->text(), ui->pelna->text(), ui->tytul->text(), ui->imie->text(), ui->nazwisko->text(), adres);

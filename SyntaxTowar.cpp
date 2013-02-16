@@ -20,9 +20,9 @@
 #include "ui_SyntaxTowar.h"
 #include "Database.h"
 
-syntax_towar::syntax_towar(QWidget *parent, QString& str) :
+SyntaxTowar::SyntaxTowar(QWidget *parent, QString& str) :
     QDialog(parent),
-    ui(new Ui::syntax_towar)
+    ui(new Ui::SyntaxTowar)
 {
     ui->setupUi(this);
 
@@ -32,11 +32,11 @@ syntax_towar::syntax_towar(QWidget *parent, QString& str) :
     ui->textBrowser->setText(str);
 }
 
-syntax_towar::~syntax_towar()
+SyntaxTowar::~SyntaxTowar()
 {
     delete ui;
 }
-void syntax_towar::acc()
+void SyntaxTowar::acc()
 {
     QString s;
     if(ui->r_m->isChecked())

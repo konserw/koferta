@@ -28,7 +28,7 @@ DEFINES += VER=2.1
 DEFINES += GET_PASS=\\\"W7^Dz*mALE0UIOrEb\\\"
 
 win32 { #nmake & M$ compiler
-    QMAKE_CXXFLAGS += /nologo /O2 /Wp64 /Wall
+    QMAKE_CXXFLAGS += /nologo /O2 #/Wall
     QMAKE_LFLAGS_RELEASE += /NODEFAULTLIB:LIBCMT
     QMAKE_LFLAGS_DEBUG += /NODEFAULTLIB:LIBCMT
 

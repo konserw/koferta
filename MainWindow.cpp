@@ -62,7 +62,6 @@ MainWindow::~MainWindow()
     delete ui;
     delete nr_oferty;
     delete data;
-    delete u;
     delete calendarWidget;
     delete dostawaModel;
     delete platnoscModel;
@@ -73,7 +72,7 @@ MainWindow::~MainWindow()
     DEBUG << "destruktor mainwindow - koniec";
 }
 
-MainWindow::MainWindow(cUser* us) :
+MainWindow::MainWindow ():
     QMainWindow(NULL),
     ui(new Ui::MainWindow)
 {
@@ -86,16 +85,10 @@ MainWindow::MainWindow(cUser* us) :
     ui->setupUi(this);
     pln = false;
 
-    //okna
-    tw = new WyborTowaru(this);
-    mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
-    mb->setStandardButtons(0);
-    mb->setModal(true);
     //Stringi
     nr_oferty = new QString;
     data = new QString(QDate::currentDate().toString("dd.MM.yyyy"));
-    //inne
-    u = us;
+
     //wyd = new cWydruk(ui, data, &id_klienta, nr_oferty);
     calendarWidget = new QCalendarWidget;
     klient = NULL;
@@ -107,7 +100,7 @@ MainWindow::MainWindow(cUser* us) :
     /*menu:*/
     //plik
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(nowa()));
-    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(wczytaj()));
+    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(popLoadDialog()));
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(zapisz()));
     connect(ui->actionNR, SIGNAL(triggered()), this, SLOT(nowyNumer()));
     connect(ui->actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
@@ -138,7 +131,7 @@ MainWindow::MainWindow(cUser* us) :
     connect(ui->kurs, SIGNAL(textChanged(QString)), this, SLOT(chKurs(QString)));
 
     //buttony w tabach
-    connect(ui->addTowar, SIGNAL(clicked()), tw, SLOT(exec()));
+    connect(ui->addTowar, SIGNAL(clicked()), this, SLOT(popWyborTowaru()));
     connect(ui->rabat, SIGNAL(clicked()), this, SLOT(rabat()));
     connect(ui->delw, SIGNAL(clicked()), this, SLOT(del()));
 
@@ -156,7 +149,6 @@ MainWindow::MainWindow(cUser* us) :
     connect(ui->checkBox_zapytanieNr, SIGNAL(toggled(bool)), this, SLOT(checkNr(bool)));
 
     //inne
-    connect(tw, SIGNAL(countChanged(QSqlRecord,int)), this, SLOT(setTowar(QSqlRecord,int)));
     connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(change(QTableWidgetItem*)));
 
 /**
@@ -164,7 +156,7 @@ MainWindow::MainWindow(cUser* us) :
 **/
     DEBUG << "user interface";
 
-    ui->tab->setFocus();
+    ui->tabWidget->setCurrentIndex(0);
 
     //stan początkowy
     this->setTitle(NULL);
@@ -181,6 +173,7 @@ MainWindow::MainWindow(cUser* us) :
 
     ui->label_klient->setText(tr("Klient:"));
     ui->pushButton_wyborKlienta->setText(tr("Wybór klienta"));
+    ui->plainTextEdit_klient->setReadOnly(true);
 
     ui->label_zapytanie->setText(tr("Zapytanie:"));
     ui->pushButton_zapytanieData->setText(tr("Kalendarz"));
@@ -188,6 +181,7 @@ MainWindow::MainWindow(cUser* us) :
     ui->checkBox_zapytanieData->setChecked(true);
     ui->checkBox_zapytanieNr->setText(tr("Numer zapytania:"));
     ui->checkBox_zapytanieNr->setChecked(false);
+    ui->plainTextEdit_zapytanie->setReadOnly(true);
 
     dostawaModel = new QSqlTableModel;
     dostawaModel->setTable("dostawa");
@@ -379,89 +373,7 @@ void MainWindow::setTowar(const QSqlRecord& rec, int ile)
 
     sum();
 }
-/*
-void MainWindow::setTowar(QString id, int ile)
-{
 
-    QList<QTableWidgetItem*> list = ui->tableWidget->findItems(id, Qt::MatchFixedString);
-
-    if(list.isEmpty())
-    {
-        QSqlQuery q;
-        QString s;
-        bool ok;
-        QTableWidgetItem* item;
-
-        int row = ui->tableWidget->rowCount()-1;
-        if(row < 0) row = 0;
-
-        s = "SELECT nazwa, cena_kat, jednostka FROM towar WHERE id='";
-        s += id;
-        s+= "'";
-
-        EXEC(s);
-
-        q.next();
-
-        ui->tableWidget->insertRow(row);
-
-        //kod
-        item = new QTableWidgetItem(id);
-        ui->tableWidget->setItem(row, 0, item);
-        //nazwa
-        item = new QTableWidgetItem(q.value(0).toString());
-        ui->tableWidget->setItem(row, 1, item);
-        //cena kat
-        double r;
-
-        QString x = q.value(1).toString();
-        x.replace(",", ".");
-
-        r = x.toDouble(&ok);
-        if(!ok)
-        {
-            DEBUG << "Problem z zmaianą . i , w liczbie " << x;
-            x.replace(".", ",");
-            DEBUG << x;
-            r = x.toDouble(&ok);
-            if(!ok)
-            {
-                DEBUG << "dalej !?";
-                r = 0;
-            }
-        }
-
-        item = new QTableWidgetItem(QString::number(r, 'f', 2));
-        ui->tableWidget->setItem(row, 8, item);
-        if(pln) r *= kurs;
-        item = new QTableWidgetItem(QString::number(r, 'f', 2));
-        ui->tableWidget->setItem(row, 2, item);
-        //rabat
-        item = new QTableWidgetItem("0");
-        ui->tableWidget->setItem(row, 3, item);
-        //cana
-        item = new QTableWidgetItem("");
-        ui->tableWidget->setItem(row, 4, item);
-        //ilosc
-        item = new QTableWidgetItem(QString::number(ile));
-        ui->tableWidget->setItem(row, 5, item);
-        //jednostka
-        item = new QTableWidgetItem(q.value(2).toString());
-        ui->tableWidget->setItem(row, 6, item);
-        //koszt
-        item = new QTableWidgetItem("");
-        ui->tableWidget->setItem(row, 7, item);
-        przelicz(row);
-    }
-    else
-    {
-        ui->tableWidget->item(list[0]->row(), 5)->setText(QString::number(ile));
-    }
-
-
-    sum();
-}
-*/
 double MainWindow::ev(unsigned row, unsigned col)
 {
     return ui->tableWidget->item(row, col)->text().toDouble();
@@ -514,7 +426,7 @@ void MainWindow::ofertaRef(int row)
     ui->plainTextEdit_oferta->setPlainText(ofertaModel->record(row).value("long").toString());
 }
 
-void MainWindow::calChanged(QDate d)
+void MainWindow::calChanged(const QDate &d)
 {
     ui->lineEdit_zapytanieData->setText(d.toString("dd.MM.yyyy"));
     calendarWidget->close();
@@ -560,6 +472,14 @@ void MainWindow::popWyborKlienta()
 {
     WyborKlienta* pop = new WyborKlienta(this);
     connect(pop, SIGNAL(selectionChanged(QSqlRecord)), this, SLOT(clientChanged(QSqlRecord)));
+    pop->exec();
+    delete pop;
+}
+
+void MainWindow::popWyborTowaru()
+{
+    WyborTowaru* pop = new WyborTowaru(this);
+    connect(pop, SIGNAL(countChanged(QSqlRecord,int)), this, SLOT(setTowar(QSqlRecord,int)));
     pop->exec();
     delete pop;
 }
@@ -654,7 +574,7 @@ void MainWindow::nowyNumer()
     *data = d.toString("dd.MM.yyyy");
     calendarWidget->setSelectedDate(d);
 
-    *nr_oferty = QString::number(u->nrOferty());
+    *nr_oferty = QString::number(currentUser->nrOferty());
     nr_oferty->append("/");
     nr_oferty->append(d.toString("yyyy"));
 
@@ -705,21 +625,21 @@ void MainWindow::zapisz()
 
     int anr = nr_oferty->split("/").first().toInt();
 
-    if(anr == u->nrOferty())
-        u->nrOfertyInkrement();
+    if(anr == currentUser->nrOferty())
+        currentUser->nrOfertyInkrement();
 
-    insert_zapisane(*nr_oferty, klient->value("id").toInt(), *data, u->uid(), ui->lineEdit_zapytanieData->text(), ui->lineEdit_zapytanieNr->text(), ui->comboBox_dostawa->currentIndex(), ui->comboBox_termin->currentIndex(), ui->comboBox_platnosc->currentIndex(), ui->comboBox_oferta->currentIndex(), ui->plainTextEdit_uwagi->toPlainText());
+    insert_zapisane(*nr_oferty, klient->value("id").toInt(), *data, currentUser->uid(), ui->lineEdit_zapytanieData->text(), ui->lineEdit_zapytanieNr->text(), ui->comboBox_dostawa->currentIndex(), ui->comboBox_termin->currentIndex(), ui->comboBox_platnosc->currentIndex(), ui->comboBox_oferta->currentIndex(), ui->plainTextEdit_uwagi->toPlainText());
 
     for(int i=0; i < ui->tableWidget->rowCount() - 1; ++i)
         insert_zapisane_towary(*nr_oferty, ui->tableWidget->item(i, 0)->text(), ui->tableWidget->item(i, 5)->text().toDouble(), ui->tableWidget->item(i, 3)->text().toDouble());
 }
 
-void MainWindow::wczytaj()
+void MainWindow::popLoadDialog()
 {
-    ww = new LoadDialog(this);
-    connect(ww, SIGNAL(offerSelected(QSqlRecord, QSqlTableModel)), this, SLOT(loadOffer(QSqlRecord, QSqlTableModel)));
-    ww->exec();
-    delete ww;
+    LoadDialog* pop = new LoadDialog(this);
+    connect(pop, SIGNAL(offerSelected(QSqlRecord, QSqlTableModel)), this, SLOT(loadOffer(QSqlRecord, QSqlTableModel)));
+    pop->exec();
+    delete pop;
 }
 void MainWindow::loadOffer(const QSqlRecord& rec, const QSqlTableModel& mod)
 {
@@ -818,7 +738,7 @@ void MainWindow::loadOffer(const QSqlRecord& rec, const QSqlTableModel& mod)
 
 void MainWindow::dodajTowar()
 {
-    cNowyTowar* nowyTowar = new cNowyTowar(this);
+    NowyTowar* nowyTowar = new NowyTowar(this);
     nowyTowar->exec();
     delete nowyTowar;
 }
@@ -838,7 +758,12 @@ void MainWindow::importTowar()
         return;
     }
 
-    mb->show();
+    QMessageBox* mb;
+    mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
+    mb->setStandardButtons(0);
+    mb->setModal(true);
+    //mb->show();
+    mb->exec();
     DEBUG <<  "wczytuje towar...";
 
     QTextStream in(&file);
@@ -856,7 +781,7 @@ void MainWindow::importTowar()
         if(list.size() < 3)
         {
             DEBUG <<  "syntax error, wczyt towar, line: " << i;
-            syntax_towar sw(this, sRead);
+            SyntaxTowar sw(this, sRead);
             sw.exec();
             continue;
         }
@@ -893,13 +818,18 @@ void MainWindow::eksportTowar()
         return;
     }
 
-    mb->show();
+    QMessageBox* mb;
+    mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
+    mb->setStandardButtons(0);
+    mb->setModal(true);
+    //mb->show();
+    mb->exec();
     DEBUG <<  "zapis cennikow do pliku: " << s;
 
     QTextStream out(&file);
     out.setCodec("UTF-8");
 
-    s = "SELECT id, nazwa, cena_kat, jednostka FROM towar";
+    s = "SELECT id, nazwa, cena, jednostka FROM towar";
 
     EXEC(s);
 
@@ -924,7 +854,7 @@ void MainWindow::edytujTowar()
 
 void MainWindow::dodajKlient()
 {
-    cNowyKlient* nowyKlient = new cNowyKlient(this);
+    NowyKlient* nowyKlient = new NowyKlient(this);
     nowyKlient->exec();
     delete nowyKlient;
 }
@@ -944,7 +874,12 @@ void MainWindow::importKlient()
         return;
     }
 
-    mb->show();
+    QMessageBox* mb;
+    mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
+    mb->setStandardButtons(0);
+    mb->setModal(true);
+    //mb->show();
+    mb->exec();
     DEBUG <<  "wczytuje klientow...";
 
     QTextStream in(&file);
@@ -960,7 +895,7 @@ void MainWindow::importKlient()
         if(list.size() < 8)
         {
             DEBUG <<  "syntax error, wczyt_klient line: " << i;
-            syntax_klient sw(this, sRead);
+            SyntaxKlient sw(this, sRead);
             sw.exec();
             continue;
         }
@@ -992,8 +927,12 @@ void MainWindow::eksportKlient()
         return;
     }
 
-    mb->show();
-
+    QMessageBox* mb;
+    mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
+    mb->setStandardButtons(0);
+    mb->setModal(true);
+    //mb->show();
+    mb->exec();
     DEBUG <<  "zapis klientow do pliku: " << s;
 
     QTextStream out(&file);
@@ -1217,8 +1156,8 @@ void MainWindow::makeDocument(QString *sDoc)
              "\t\t\t<br>\n"
              "\t\t\t";
     /*adres bióra*/
-    *sDoc += u->adress().replace("\n", "\n\t\t\t");
-    *sDoc += u->mail();
+    *sDoc += currentUser->adress().replace("\n", "\n\t\t\t");
+    *sDoc += currentUser->mail();
     *sDoc += "\n"
             "\t\t</td>\n"
             "\t</tr>\n"
@@ -1392,10 +1331,10 @@ void MainWindow::makeDocument(QString *sDoc)
              "\tŁączymy pozdrowienia.\n"
              "\t<p align = right style = \"margin-right: 100\">\n"
              "\t\tOfertę przygotował";
-    if(!u->male()) *sDoc += "a";
+    if(!currentUser->male()) *sDoc += "a";
     *sDoc += "<br>\n"
             "\t\t";
-    *sDoc += u->name();
+    *sDoc += currentUser->name();
     *sDoc += "\n"
             "\t</p>\n"
             "</td></tr>\n"

@@ -25,20 +25,20 @@
 #include <QDialog>
 
 namespace Ui {
-    class syntax_klient;
+    class SyntaxKlient;
 }
 
-class syntax_klient : public QDialog
+class SyntaxKlient : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit syntax_klient(QWidget *parent, QString&);
-    ~syntax_klient();
+    explicit SyntaxKlient(QWidget *parent, QString&);
+    ~SyntaxKlient();
 public slots:
     void acc();
 private:
-    Ui::syntax_klient *ui;
+    Ui::SyntaxKlient *ui;
 };
 
 #endif // SYNTAX_KLIENT_H

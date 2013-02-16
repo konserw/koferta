@@ -170,6 +170,7 @@ v. 2.1
 * usunięcie klasy wydruk i przeniesienie odpowiednich funkcji do MainWindow
 * wskaźnik na usera jako zmienna globalna
 * cena towaru jako zmienna numeryczna
+* konstruowanie okien dopiero przy ich wywołaniu
 
 
 TODO:

@@ -61,16 +61,13 @@ Logowanie::~Logowanie()
     delete hosts;
 }
 
-Logowanie::Logowanie(cUser** usr) :
+Logowanie::Logowanie() :
     QDialog(NULL),
     ui(new Ui::Logowanie)
 {
     DEBUG << "Konstruktor cLogowanie";
 
     ui->setupUi(this);
-
-    u = NULL;
-    us = usr;
 
     p = new QPixmap(":/klog");
     ui->img->setPixmap(*p);
@@ -300,7 +297,7 @@ void Logowanie::ok()
 
         LOGIN
 
-        cNowyUser* nu = new cNowyUser(this);
+        NowyUser* nu = new NowyUser(this);
         nu->exec();
         delete nu;
 
@@ -310,14 +307,13 @@ void Logowanie::ok()
         return;
     }
 
-    delete u;
-    u = new cUser(name);
+    delete currentUser;
+    currentUser = new cUser(name);
 
-    d->setUserName(u->dbName());
+    d->setUserName(currentUser->dbName());
     d->setPassword(hash(ui->lineEdit->text()));
 
     LOGIN
 
-    *us = u;
     this->accept();
 }

@@ -24,7 +24,7 @@
 #include "User.h"
 #include "Macros.h"
 
-cNowyUser::cNowyUser(QWidget *parent) :
+NowyUser::NowyUser(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::NowyUser)
 {
@@ -34,13 +34,13 @@ cNowyUser::cNowyUser(QWidget *parent) :
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
-cNowyUser::~cNowyUser()
+NowyUser::~NowyUser()
 {
     delete ui;
 }
 
 
-void cNowyUser::ok()
+void NowyUser::ok()
 {
     DEBUG <<  "dodawanie użytkownika " << ui->name->text();
     if(ui->pass->text().isEmpty())

@@ -39,7 +39,7 @@ class Logowanie : public QDialog
     Q_OBJECT
 
 public:
-    explicit Logowanie(cUser**);                       //konstruktor inicjalizujący elementy interface, user** służy do przekazania zwrotnego danych wybranego użytkownika
+    explicit Logowanie();                       //konstruktor inicjalizujący elementy interface, user** służy do przekazania zwrotnego danych wybranego użytkownika
     ~Logowanie();
 
 public slots:
@@ -53,7 +53,6 @@ private:
 
     QStringList* hosts;                                 //lista dostępnych hostów, generowana na podstawie pliku tekstowego
     QPixmap* p;                                         //bufor grafiki loga systemu kOferta
-    cUser *u, **us;                                     //wskaźnik podwójny zapamiętany z konstruktora i roboczy wskaźnik
     QSqlDatabase* d;                                    //obiekt połączenia z bazą
 
     QNetworkAccessManager* manager;                     //objekt odpowiedzialny za pobieranie aktualizacji
