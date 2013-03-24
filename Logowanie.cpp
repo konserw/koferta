@@ -119,7 +119,7 @@ Logowanie::Logowanie() :
 
     hosts = new QStringList;
     hosts->append("localhost");
-
+#define RELEASE
 #ifdef RELEASE
     QFile file("host");
     if(file.open(QIODevice::ReadOnly | QIODevice::Text))
