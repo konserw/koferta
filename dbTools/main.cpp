@@ -16,10 +16,9 @@ int main(int argc, char *argv[])
     QStringList ar = a.arguments();
     if(ar.size() < 2 || ar.contains("-h") || ar.contains("--help") || ar.contains("/?"))
     {
-        qDebug() << "dbTools [-h] [-d] [-nc] [-r path] [file1.csv ...]";
+        qDebug() << "dbTools [-h] [-d] [-r path] [file1.csv ...]";
         qDebug() << "-h --help\tPrint this help and exit";
         qDebug() << "-d\t\tDry run - check syntax, not inserting into base";
-        qDebug() << "-nc\t\tNot checking if item already exists in database";
         qDebug() << "-r path\t\tRecursive - scans path for all .csv files";
         return 0;
     }
@@ -27,13 +26,10 @@ int main(int argc, char *argv[])
     ar.removeFirst();
 
     bool dryRun = false;
-    bool checkExisting = true;
     bool recursive = false;
 
     if(ar.contains("-d"))
         dryRun = true;
-    if(ar.contains("-nc"))
-        checkExisting = false;
     if(ar.contains("-r"))
         recursive = true;
 
@@ -53,12 +49,12 @@ int main(int argc, char *argv[])
         }
 
         QSqlDatabase* d = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"));
-        d->setDatabaseName("kOferta");
-        d->setPort(3306);
         d->setHostName(ip);
+        d->setPort(3306);
+        d->setConnectOptions("CLIENT_SSL=1;CLIENT_IGNORE_SPACE=1");
         d->setUserName("root");
         d->setPassword(pass);
-        d->setConnectOptions("CLIENT_SSL=1;CLIENT_IGNORE_SPACE=1");
+        d->setDatabaseName("kOferta");
 
         QVariant v = d->driver()->handle();
         if (v.isValid() && qstrcmp(v.typeName(), "MYSQL*")==0)
@@ -119,9 +115,8 @@ int main(int argc, char *argv[])
             s = it.next();
             if(s.contains(".csv"))
             {
-                qDebug() << "iterator: " << s;
                 files++;
-                sl += importTowar(s, dryRun, checkExisting);
+                sl += importTowar(s, dryRun);
             }
         }
 
@@ -133,11 +128,11 @@ int main(int argc, char *argv[])
             if(s[0] == '-')
                 continue;
             files++;
-            sl += importTowar(s, dryRun, checkExisting);
+            sl += importTowar(s, dryRun);
         }
     }
 
-    qDebug() << "\n##############################";
+    qDebug() << "\n##############################################";
     qDebug() << "Zakończono pracę. Błedne wpisy w plikach:";
     foreach(s, sl)
         qDebug() << s;

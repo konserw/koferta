@@ -21,13 +21,26 @@ void insert_towar(const QString& id, const QString& nazwa, double cena, const QS
         }
     }
 
-    s = QString("INSERT INTO towar (id, nazwa, cena, jednostka) VALUES ('%1', '%2', '%3', '%4')").arg(id, nazwa, QString::number(cena), jednostka);
+    s = QString("INSERT INTO towar (id, nazwa, cena, jednostka) VALUES ('%1', '%2', %3, '%4')").arg(id, nazwa, QString::number(cena), jednostka);
     EXEC_SILENT(s);
 }
 
 
-QStringList importTowar(const QString& fileName, bool dryRun, bool checkExisting)
+QStringList importTowar(const QString& fileName, bool dryRun)
 {
+    static QStringList keys;
+    QString key;
+    QStringList list;
+    QString sRead;
+    QString cena;
+    QDebug dbg(QtDebugMsg);
+    QStringList sl;
+    QString s;
+    double dCena;
+    bool f;
+    QSqlQuery q;
+    QVariantList ids, nazwy, ceny, j;
+
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -36,19 +49,12 @@ QStringList importTowar(const QString& fileName, bool dryRun, bool checkExisting
         return QStringList() << fileName << " niedostępny";
     }
 
-    qDebug() << "\n############################################";
+    qDebug() << "\n#############################################################################";
     qDebug() <<  "#\tPrzetwarzanie pliku:" << fileName << "\t#";
-    qDebug() << "############################################";
+    qDebug() << "#############################################################################\n";
 
     QTextStream in(&file);
     in.setCodec("UTF-8");
-
-    QStringList list;
-    QString sRead;
-    QString cena;
-    QDebug dbg(QtDebugMsg);
-    QStringList sl;
-    QString s;
 
     for(unsigned i=0; !in.atEnd(); ++i)
     {
@@ -56,28 +62,57 @@ QStringList importTowar(const QString& fileName, bool dryRun, bool checkExisting
         list = sRead.split("|");
         if(list.size() < 3)
         {
-            sl << QString("%1\t| %2").arg(fileName, QString::number(i+1));
+            sl << QString("%1\t| %2\tZa mało kolumn").arg(fileName, QString::number(i+1));
             continue;
         }
 
-        if(dryRun)
+        key = list[1];
+        if(keys.contains(key))
         {
-            dbg <<  "Przetworzono lini:\t" << i+1 << "           \r";
+            sl << QString("%1\t| %2\tDuplikat klucza: %3").arg(fileName, QString::number(i+1), key);
+            continue;
+        }
+        keys << key;
+
+        cena =  list[2];
+        cena.remove(' ');
+        cena.replace(',', '.');
+        dCena = cena.toDouble(&f);
+        if(!f)
+        {
+            sl << QString("%1\t| %2\tZła cena: %3").arg(fileName, QString::number(i+1), cena);
             continue;
         }
 
-        if(list.size() > 3 && (list.at(3) == "mb." || list.at(3) == "m" || list.at(3) == "metr"))
+        if(list.size() > 3 && (list[3] == "mb." || list[3] == "m" || list[3] == "metr"))
             s = "mb.";
         else
             s = "szt.";
 
-        cena =  list.at(2);
-        cena.remove(' ');
-        cena.replace(',', '.');
+     //   if(1%50 == 0)
+            dbg <<  "\rPrzetworzono lini:\t" << i+1;
 
-        dbg <<  "Wstawianie towaru, id:\t" << list.at(1) << "                 \r";
-        insert_towar(list.at(1), list.at(0), cena.toDouble(), s, checkExisting);
+        if(!dryRun)
+        {
+            nazwy << list[0];
+            ceny << dCena;
+            j << s;
+        }
     }
+
+    dbg << "\n";
+
+    if(dryRun)
+        return sl;
+
+    q.prepare("INSERT INTO towar (id, nazwa, cena, jednostka) VALUES (:id, :nazwa, :cena, :j) ON DUPLICATE KEY UPDATE nazwa=VALUES(nazwa), cena=VALUES(cena), jednostka=VALUES(jednostka)");
+    q.bindValue(":id", ids);
+    q.bindValue(":nazwa", nazwy);
+    q.bindValue(":cena", ceny);
+    q.bindValue(":j", j);
+
+    if (!q.execBatch())
+         DEBUG << q.lastError();
 
     return sl;
 }

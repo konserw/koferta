@@ -11,6 +11,7 @@
         if(q.exec(s) == false) \
         { \
             DEBUG << "Zapytanie mysql zkończone niepowodzeniem!"; \
+            qDebug() << "\tError text: " <<  q.lastError().driverText(); \
             return; \
         } \
     }while(0)
@@ -20,12 +21,13 @@
         if(q.exec(s) == false) \
         { \
             DEBUG << "Zapytanie mysql zkończone niepowodzeniem!"; \
-            DEBUG << "zapytanie mysql: " << s; \
+            qDebug() << "\tZapytanie mysql: " << s; \
+            qDebug() << "\tError text: " <<  q.lastError().text(); \
             return; \
         } \
     }while(0)
 
 void insert_towar(const QString& id, const QString& nazwa, double cena, const QString& jednostka, bool checkExisting = true);
-QStringList importTowar(const QString& fileName, bool dryRun = false, bool checkExisting = true);
+QStringList importTowar(const QString& fileName, bool dryRun = false);
 
 #endif // FOO_H
