@@ -31,8 +31,6 @@
 #include <QInputDialog>
 #include <QVariant>
 #include <QMessageBox>
-
-
 #include <QFileInfo>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -50,22 +48,26 @@
 #endif
 
 #include "User.h"
-#include "RootDialog.h"
 #include "SHA1.h"
 #include "Macros.h"
 #include "NowyUser.h"
 
-cLogowanie::cLogowanie(cUser** usr) :
+Logowanie::~Logowanie()
+{
+    DEBUG <<  "destruktor cLogowanie";
+    delete p;
+    delete d;
+    delete ui;
+    delete hosts;
+}
+
+Logowanie::Logowanie() :
     QDialog(NULL),
     ui(new Ui::Logowanie)
 {
     DEBUG << "Konstruktor cLogowanie";
 
     ui->setupUi(this);
-
-    u = NULL;
-    us = usr;
-    host = NULL;
 
     p = new QPixmap(":/klog");
     ui->img->setPixmap(*p);
@@ -117,7 +119,7 @@ cLogowanie::cLogowanie(cUser** usr) :
 
     hosts = new QStringList;
     hosts->append("localhost");
-
+#define RELEASE
 #ifdef RELEASE
     QFile file("host");
     if(file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -136,27 +138,22 @@ cLogowanie::cLogowanie(cUser** usr) :
         DEBUG << "otawrcie pliku host nie powiodło się";
     ui->ip->addItems(*hosts);
 #else
-    this->hostChanged("192.168.1.100");
+    this->hostChanged("192.168.1.90");
     ui->comboBox->setCurrentIndex(5);
     ui->lineEdit->setFocus();
 #endif
 }
 
-void cLogowanie::hostChanged(QString ip)
+void Logowanie::hostChanged(QString ip)
 {
     DEBUG << "Host został zmieniony na: " << ip;
 
-    delete host;
-    host = new QString(ip);
     QString s;
     QSqlQuery q;
 
     ui->comboBox->clear();
 
-    if(*host == "localhost")
-        ui->comboBox->addItem("root");
-
-    d->setHostName(*host);
+    d->setHostName(ip);
     d->setUserName("kOferta_GetUsers");
     d->setPassword(GET_PASS);
 
@@ -202,7 +199,7 @@ void cLogowanie::hostChanged(QString ip)
     d->close();
 }
 
-void cLogowanie::downloadFinished(QNetworkReply *reply)
+void Logowanie::downloadFinished(QNetworkReply *reply)
 {
     DEBUG << "pobieranie ukończone";
 
@@ -249,17 +246,8 @@ void cLogowanie::downloadFinished(QNetworkReply *reply)
     qApp->quit();
 }
 
-cLogowanie::~cLogowanie()
-{
-    DEBUG <<  "destruktor cLogowanie";
-    delete p;
-    delete d;
-    delete ui;
-    delete hosts;
-    delete host;
-}
 
-void cLogowanie::add()
+void Logowanie::add()
 {
     QString s;
     bool ok;
@@ -283,7 +271,7 @@ void cLogowanie::add()
     }
 
 }
-void cLogowanie::ok()
+void Logowanie::ok()
 {
     QString name;
     name = ui->comboBox->currentText();
@@ -295,19 +283,6 @@ void cLogowanie::ok()
         return;
     }
 
-    if(name == "root")
-    {
-        d->setUserName("root");
-        d->setPassword(ui->lineEdit->text());
-
-        LOGIN
-
-        cRootDialog* rw = new cRootDialog(this);
-        rw->exec();
-        d->close();
-        this->hostChanged(*host);
-        return;
-    }
     else if(name == "Dodaj użytkownika")
     {
         if(hash(ui->lineEdit->text()) != "810272f60e2d59adaa4b98b0546b2cebd7018b5c")
@@ -322,23 +297,23 @@ void cLogowanie::ok()
 
         LOGIN
 
-        cNowyUser* nu = new cNowyUser(this);
+        NowyUser* nu = new NowyUser(this);
         nu->exec();
         delete nu;
 
         d->close();
-        this->hostChanged(*host);
+        ui->ip->setCurrentIndex(ui->ip->currentIndex());
+        //this->hostChanged(*host);
         return;
     }
 
-    delete u;
-    u = new cUser(name);
+    delete currentUser;
+    currentUser = new cUser(name);
 
-    d->setUserName(u->dbName());
+    d->setUserName(currentUser->dbName());
     d->setPassword(hash(ui->lineEdit->text()));
 
     LOGIN
 
-    *us = u;
     this->accept();
 }

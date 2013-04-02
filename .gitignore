@@ -1,6 +1,9 @@
-Makefile
+~*
 *~
-temp/
+temp/*
+Makefile
 kOferta
-kOferta.pro.user
+*.user
 host
+stats
+

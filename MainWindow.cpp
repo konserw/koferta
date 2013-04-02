@@ -1,6 +1,6 @@
 /**
     kOferta - system usprawniajacy proces ofertowania
-    Copyright (C) 2011  Kamil 'konserw' Strzempowicz, konserw@gmail.com
+    Copyright (C) 2011  Kamil "konserw" Strzempowicz, konserw@gmail.com
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -30,6 +30,12 @@
 #include <QTextCodec>
 #include <QFileDialog>
 #include <QSqlRecord>
+#include <QSqlTableModel>
+#include <QCalendarWidget>
+#include <QPrintPreviewDialog>
+#include <QTextDocument>
+#include <QPrinter>
+#include <QPrintDialog>
 
 #include "SyntaxKlient.h"
 #include "SyntaxTowar.h"
@@ -42,10 +48,8 @@
 #include "WyborKlienta.h"
 #include "Logowanie.h"
 #include "LoadDialog.h"
-#include "Wydruk.h"
 #include "User.h"
 #include "Macros.h"
-#include "Wydruk.h"
 
 /*************************
 **      GŁÓWNE OKNO     **
@@ -53,61 +57,50 @@
 
 MainWindow::~MainWindow()
 {
-    DEBUG << "destruktor mainwindow";
+    DEBUG << "destruktor mainwindow - start";
 
     delete ui;
     delete nr_oferty;
     delete data;
-    delete dostawa;
-    delete platnosc;
-    delete termin;
-    delete oferta;
-    delete u;
-    delete wyd;
+    delete calendarWidget;
+    delete dostawaModel;
+    delete platnoscModel;
+    delete terminModel;
+    delete ofertaModel;
+    delete klient;
+
+    DEBUG << "destruktor mainwindow - koniec";
 }
 
-MainWindow::MainWindow(cUser* us) :
+MainWindow::MainWindow ():
     QMainWindow(NULL),
     ui(new Ui::MainWindow)
 {
-    DEBUG << "konstruktor mainwindow";
+    DEBUG << "konstruktor mainwindow";   
+/**
+  zmienne
+ **/
+    DEBUG << "inicjalizacja zmiennych";
 
     ui->setupUi(this);
-
-    ui->tab->setFocus();
-    ui->label_uwagi->setText(tr("Uwagi (nie zapisywane!)"));
-
-    //stan początkowy
-    this->setTitle(NULL);
-    ui->tab->setEnabled(false);
-    ui->tab_2->setEnabled(false);
-
-    ui->menuExport->setEnabled(false);
-    ui->actionSave->setEnabled(false);
-    ui->actionNR->setEnabled(false);
-
     pln = false;
 
-    //okna
-    tw = new WyborTowaru(this);
-    kw = new cWyborKlienta(this);
-    mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
-    mb->setStandardButtons(0);
-    mb->setModal(true);
     //Stringi
     nr_oferty = new QString;
     data = new QString(QDate::currentDate().toString("dd.MM.yyyy"));
-    //inne
-    u = us;
-    wyd = new cWydruk(ui, data, &id_klienta, nr_oferty);
 
+    //wyd = new cWydruk(ui, data, &id_klienta, nr_oferty);
+    calendarWidget = new QCalendarWidget;
+    klient = NULL;
 /**
  connections
 **/
+    DEBUG << "połaczenia sygnałów i slotów";
+
     /*menu:*/
     //plik
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(nowa()));
-    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(wczytaj()));
+    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(popLoadDialog()));
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(zapisz()));
     connect(ui->actionNR, SIGNAL(triggered()), this, SLOT(nowyNumer()));
     connect(ui->actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
@@ -122,16 +115,15 @@ MainWindow::MainWindow(cUser* us) :
     connect(ui->towarEksport, SIGNAL(triggered()), this, SLOT(eksportTowar()));
     connect(ui->towarEdycja, SIGNAL(triggered()), this, SLOT(edytujTowar()));
     //export
-    connect(ui->actionDo_HTML, SIGNAL(triggered()), wyd, SLOT(do_htm()));
-    connect(ui->actionDo_PDF, SIGNAL(triggered()), wyd, SLOT(do_pdf()));
-    connect(ui->actionDruk, SIGNAL(triggered()), wyd, SLOT(prev()));
+    connect(ui->actionDo_HTML, SIGNAL(triggered()), this, SLOT(zapisz()));
+    connect(ui->actionDo_HTML, SIGNAL(triggered()), this, SLOT(printHtm()));
+    connect(ui->actionDo_PDF, SIGNAL(triggered()), this, SLOT(zapisz()));
+    connect(ui->actionDo_PDF, SIGNAL(triggered()), this, SLOT(printPdf()));
+    connect(ui->actionDruk, SIGNAL(triggered()), this, SLOT(zapisz()));
+    connect(ui->actionDruk, SIGNAL(triggered()), this, SLOT(printPrev()));
     //info:
     connect(ui->actionO_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui->actionO_kOferta, SIGNAL(triggered()), this, SLOT(about()));
-
-
-    //automatyczne zapisywanie
-    connect(wyd, SIGNAL(zapisz()), this, SLOT(zapisz()));
 
     //opcje wydruku
     connect(ui->pln, SIGNAL(pressed()), this, SLOT(pln_on()));
@@ -139,54 +131,92 @@ MainWindow::MainWindow(cUser* us) :
     connect(ui->kurs, SIGNAL(textChanged(QString)), this, SLOT(chKurs(QString)));
 
     //buttony w tabach
-    connect(ui->addTowar, SIGNAL(clicked()), tw, SLOT(exec()));
-    connect(ui->wyborKlienta, SIGNAL(clicked()), kw, SLOT(exec()));
+    connect(ui->addTowar, SIGNAL(clicked()), this, SLOT(popWyborTowaru()));
     connect(ui->rabat, SIGNAL(clicked()), this, SLOT(rabat()));
     connect(ui->delw, SIGNAL(clicked()), this, SLOT(del()));
 
-    //combosy - odświerzanie zawartości pól tekstowych
-    connect(ui->dostawaCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(ref(QString)));
-    connect(ui->platnosCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(ref2(QString)));
-    connect(ui->terminCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(ref3(QString)));
-    connect(ui->ofertaCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(ref4(QString)));
+    //Pozostałe informacje - odświerzanie zawartości pól tekstowych
+    connect(ui->pushButton_wyborKlienta, SIGNAL(clicked()), this, SLOT(popWyborKlienta()));
+    connect(ui->comboBox_dostawa, SIGNAL(currentIndexChanged(int)), this, SLOT(dostawaRef(int)));
+    connect(ui->comboBox_oferta, SIGNAL(currentIndexChanged(int)), this, SLOT(ofertaRef(int)));
+    connect(ui->comboBox_platnosc, SIGNAL(currentIndexChanged(int)), this, SLOT(platnoscRef(int)));
+    connect(ui->comboBox_termin, SIGNAL(currentIndexChanged(int)), this, SLOT(terminRef(int)));
+    connect(calendarWidget, SIGNAL(clicked(QDate)), this, SLOT(calChanged(QDate)));
+    connect(ui->pushButton_zapytanieData, SIGNAL(clicked()), calendarWidget, SLOT(show()));
+    connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), this, SLOT(zapytanieRef()));
+    connect(ui->lineEdit_zapytanieNr, SIGNAL(textChanged(QString)), this, SLOT(zapytanieRef()));
+    connect(ui->checkBox_zapytanieData, SIGNAL(toggled(bool)), this, SLOT(checkData(bool)));
+    connect(ui->checkBox_zapytanieNr, SIGNAL(toggled(bool)), this, SLOT(checkNr(bool)));
 
     //inne
-    connect(kw, SIGNAL(id_klienta(int)), this, SLOT(setKlient(int)));
-    connect(tw, SIGNAL(countChanged(QSqlRecord,int)), this, SLOT(setTowar(QSqlRecord,int)));
     connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(change(QTableWidgetItem*)));
+
 /**
- combosy
+  ui
 **/
-    dostawa = new QHash<QString, QString>;
-    dostawa->insert("dostawcy, pow 3000", "Na koszt dostawcy przy zamówieniu powyżej 3000,- zł. netto. (nie dot. rur w odcinkach 5 m)");
-    dostawa->insert("dostawcy", "Na koszt dostawcy.");
-    dostawa->insert("odbiorcy", "Na koszt odbiorcy z magazynu w Warszawie.");
-    ui->dostawaCombo->addItems(dostawa->keys());
+    DEBUG << "user interface";
 
-    platnosc = new QHash<QString, QString>;
-    platnosc->insert("przelew 14", "Przelewem w terminie 14 dni od daty wystawienia faktury w złotych polskich wg. kursu sprzedaży euro w NBP obowiązującego w dniu wystawienia faktury.");
-    platnosc->insert("przelew 30", "Przelewem w terminie 30 dni od daty wystawienia faktury w złotych polskich wg. kursu sprzedaży euro w NBP obowiązującego w dniu wystawienia faktury.");
-    platnosc->insert("przedpłata", "Przedpłata w złotych polskich wg. kursu sprzedaży euro w NBP obowiązującego w dniu wystawienia faktury.");
-    platnosc->insert("pobranie", "Za pobraniem w złotych polskich wg. kursu sprzedaży euro w NBP obowiązującego w dniu wystawienia faktury.");
-    platnosc->insert("przelew 14 zl", "Przelewem w terminie 14 dni od daty wystawienia faktury.");
-    platnosc->insert("przelew 30 zl", "Przelewem w terminie 30 dni od daty wystawienia faktury.");
-    platnosc->insert("przedpłata zl", "Przedpłata.");
-    platnosc->insert("pobranie zl", "Za pobraniem.");
-    ui->platnosCombo->addItems(platnosc->keys());
+    ui->tabWidget->setCurrentIndex(0);
 
-    termin = new QHash<QString, QString>;
-    termin->insert("natychmiastowy", "1-2 dni roboczych od daty złożenia zamówienia");
-    termin->insert("2-3 tyg", "2 do 3 tygodni roboczych od daty złożenia zamówienia");
-    termin->insert("4-6 tyg", "4 do 6 tygodni roboczych od daty złożenia zamówienia");
-    ui->terminCombo->addItems(termin->keys());
+    //stan początkowy
+    this->setTitle(NULL);
+    ui->tab->setEnabled(false);
+    ui->tab_2->setEnabled(false);
 
-    oferta = new QHash<QString, QString>;
-    oferta->insert("3 miesiące", "Niniejsza oferta jest ważna bez zobowiązań w okresie trzech miesięcy od daty jej sporządzenia.");
-    oferta->insert("1 miesiąc", "Niniejsza oferta jest ważna bez zobowiązań w okresie jednego miesięca od daty jej sporządzenia.");
-    ui->ofertaCombo->addItems(oferta->keys());
+    ui->menuExport->setEnabled(false);
+    ui->actionSave->setEnabled(false);
+    ui->actionNR->setEnabled(false);
 
-    connect(ui->calendarWidget, SIGNAL(selectionChanged()), this, SLOT(calChanged()));
-    connect(ui->dateEdit, SIGNAL(dateChanged(QDate)), this, SLOT(dateChanged(QDate)));
+/**
+ Pozostałe informacje
+**/
+
+    ui->label_klient->setText(tr("Klient:"));
+    ui->pushButton_wyborKlienta->setText(tr("Wybór klienta"));
+    ui->plainTextEdit_klient->setReadOnly(true);
+
+    ui->label_zapytanie->setText(tr("Zapytanie:"));
+    ui->pushButton_zapytanieData->setText(tr("Kalendarz"));
+    ui->checkBox_zapytanieData->setText(tr("Data zapytania:"));
+    ui->checkBox_zapytanieData->setChecked(true);
+    ui->checkBox_zapytanieNr->setText(tr("Numer zapytania:"));
+    ui->checkBox_zapytanieNr->setChecked(false);
+    ui->plainTextEdit_zapytanie->setReadOnly(true);
+
+    dostawaModel = new QSqlTableModel;
+    dostawaModel->setTable("dostawa");
+    dostawaModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    dostawaModel->select();
+    ui->comboBox_dostawa->setModel(dostawaModel);
+    ui->comboBox_dostawa->setModelColumn(1);
+    ui->plainTextEdit_dostawa->setReadOnly(true);
+    ui->label_dostawa->setText(tr("Warunki dostawy:"));
+
+    terminModel = new QSqlTableModel;
+    terminModel->setTable("termin");
+    terminModel->select();
+    ui->comboBox_termin->setModel(terminModel);
+    ui->comboBox_termin->setModelColumn(1);
+    ui->plainTextEdit_termin->setReadOnly(true);
+    ui->label_termin->setText(tr("Termin dostawy:"));
+
+    platnoscModel = new QSqlTableModel;
+    platnoscModel->setTable("platnosc");
+    platnoscModel->select();
+    ui->comboBox_platnosc->setModel(platnoscModel);
+    ui->comboBox_platnosc->setModelColumn(1);
+    ui->plainTextEdit_platnosc->setReadOnly(true);
+    ui->label_platnosc->setText(tr("Warunki płatności:"));
+
+    ofertaModel = new QSqlTableModel;
+    ofertaModel->setTable("oferta");
+    ofertaModel->select();
+    ui->comboBox_oferta->setModel(ofertaModel);
+    ui->comboBox_oferta->setModelColumn(1);
+    ui->plainTextEdit_oferta->setReadOnly(true);
+    ui->label_oferta->setText(tr("Warunki Oferty:"));
+
+    ui->label_uwagi->setText(tr("Uwagi:"));
 }
 
 void MainWindow::about()
@@ -299,7 +329,6 @@ void MainWindow::setTowar(const QSqlRecord& rec, int ile)
 
     if(list.isEmpty())
     {
-        bool ok;
         QTableWidgetItem* item;
 
         int row = ui->tableWidget->rowCount()-1;
@@ -314,25 +343,7 @@ void MainWindow::setTowar(const QSqlRecord& rec, int ile)
         item = new QTableWidgetItem(rec.value("nazwa").toString());
         ui->tableWidget->setItem(row, 1, item);
         //cena kat
-        double r;
-
-        QString x = rec.value("cena_kat").toString();
-        x.replace(",", ".");
-
-        r = x.toDouble(&ok);
-        if(!ok)
-        {
-            DEBUG << "Problem z zmaianą . i , w liczbie " << x;
-            x.replace(".", ",");
-            DEBUG << x;
-            r = x.toDouble(&ok);
-            if(!ok)
-            {
-                DEBUG << "dalej !?";
-                r = 0;
-            }
-        }
-
+        double r = rec.value("cena").toDouble();
         item = new QTableWidgetItem(QString::number(r, 'f', 2));
         ui->tableWidget->setItem(row, 8, item);
         if(pln) r *= kurs;
@@ -359,88 +370,6 @@ void MainWindow::setTowar(const QSqlRecord& rec, int ile)
     {
         ui->tableWidget->item(list[0]->row(), 5)->setText(QString::number(ile));
     }
-
-    sum();
-}
-
-void MainWindow::setTowar(QString id, int ile)
-{
-
-    QList<QTableWidgetItem*> list = ui->tableWidget->findItems(id, Qt::MatchFixedString);
-
-    if(list.isEmpty())
-    {
-        QSqlQuery q;
-        QString s;
-        bool ok;
-        QTableWidgetItem* item;
-
-        int row = ui->tableWidget->rowCount()-1;
-        if(row < 0) row = 0;
-
-        s = "SELECT nazwa, cena_kat, jednostka FROM towar WHERE id='";
-        s += id;
-        s+= "'";
-
-        EXEC(s);
-
-        q.next();
-
-        ui->tableWidget->insertRow(row);
-
-        //kod
-        item = new QTableWidgetItem(id);
-        ui->tableWidget->setItem(row, 0, item);
-        //nazwa
-        item = new QTableWidgetItem(q.value(0).toString());
-        ui->tableWidget->setItem(row, 1, item);
-        //cena kat
-        double r;
-
-        QString x = q.value(1).toString();
-        x.replace(",", ".");
-
-        r = x.toDouble(&ok);
-        if(!ok)
-        {
-            DEBUG << "Problem z zmaianą . i , w liczbie " << x;
-            x.replace(".", ",");
-            DEBUG << x;
-            r = x.toDouble(&ok);
-            if(!ok)
-            {
-                DEBUG << "dalej !?";
-                r = 0;
-            }
-        }
-
-        item = new QTableWidgetItem(QString::number(r, 'f', 2));
-        ui->tableWidget->setItem(row, 8, item);
-        if(pln) r *= kurs;
-        item = new QTableWidgetItem(QString::number(r, 'f', 2));
-        ui->tableWidget->setItem(row, 2, item);
-        //rabat
-        item = new QTableWidgetItem("0");
-        ui->tableWidget->setItem(row, 3, item);
-        //cana
-        item = new QTableWidgetItem("");
-        ui->tableWidget->setItem(row, 4, item);
-        //ilosc
-        item = new QTableWidgetItem(QString::number(ile));
-        ui->tableWidget->setItem(row, 5, item);
-        //jednostka
-        item = new QTableWidgetItem(q.value(2).toString());
-        ui->tableWidget->setItem(row, 6, item);
-        //koszt
-        item = new QTableWidgetItem("");
-        ui->tableWidget->setItem(row, 7, item);
-        przelicz(row);
-    }
-    else
-    {
-        ui->tableWidget->item(list[0]->row(), 5)->setText(QString::number(ile));
-    }
-
 
     sum();
 }
@@ -477,59 +406,104 @@ void MainWindow::del()
     sum();
 }
 
-void MainWindow::ref(QString id)
+void MainWindow::dostawaRef(int row)
 {
-    ui->dostawa->setPlainText(dostawa->value(id));
-}
-void MainWindow::ref2(QString id)
-{
-    ui->platnosc->setPlainText(platnosc->value(id));
-}
-void MainWindow::ref3(QString id)
-{
-    ui->termin->setPlainText(termin->value(id));
-}
-void MainWindow::ref4(QString id)
-{
-    ui->oferta->setPlainText(oferta->value(id));
+    ui->plainTextEdit_dostawa->setPlainText(dostawaModel->record(row).value("long").toString());
 }
 
-void MainWindow::calChanged()
+void MainWindow::platnoscRef(int row)
 {
-    QDate d;
-    d = ui->calendarWidget->selectedDate();
-    ui->dateEdit->setDate(d);
+    ui->plainTextEdit_platnosc->setPlainText(platnoscModel->record(row).value("long").toString());
 }
 
-void MainWindow::dateChanged(QDate data)
+void MainWindow::terminRef(int row)
 {
-    ui->calendarWidget->setSelectedDate(data);
+    ui->plainTextEdit_termin->setPlainText(terminModel->record(row).value("long").toString());
+}
+
+void MainWindow::ofertaRef(int row)
+{
+    ui->plainTextEdit_oferta->setPlainText(ofertaModel->record(row).value("long").toString());
+}
+
+void MainWindow::calChanged(const QDate &d)
+{
+    ui->lineEdit_zapytanieData->setText(d.toString("dd.MM.yyyy"));
+    calendarWidget->close();
+    ui->checkBox_zapytanieData->setChecked(true);
+}
+
+void MainWindow::zapytanieRef()
+{
     QString s;
-    s = "W odpowiedzi na zapytanie z dnia ";
-    s += data.toString("dd.MM.yyyy");
+    s = "W odpowiedzi na zapytanie";
+    if(ui->checkBox_zapytanieNr->isChecked())
+    {
+        s += " numer ";
+        s += ui->lineEdit_zapytanieNr->text();
+    }
+    if(ui->checkBox_zapytanieData->isChecked())
+    {
+        s += " z dnia ";
+        s += ui->lineEdit_zapytanieData->text();
+    }
+
     s += " przedstawiamy ofertę na dostawę następujących produktów:";
-    ui->zapytanie->setPlainText(s);
+    ui->plainTextEdit_zapytanie->setPlainText(s);
 }
 
-void MainWindow::setKlient(int id)
+void MainWindow::checkNr(bool ch)
 {
-    QString s;
-    QSqlQuery q;
-
-    id_klienta = id;
-
-    s = "SELECT DISTINCT short, nazwisko FROM klient WHERE id=";
-    s += QString::number(id);
-
-    EXEC(s);
-
-    q.next();
-    s = q.value(0).toString();
-    s += " | ";
-    s += q.value(1).toString();
-    ui->label->setText(s);
+    ui->lineEdit_zapytanieNr->setEnabled(ch);
+    if(!ch)
+        ui->lineEdit_zapytanieNr->clear();
+    this->zapytanieRef();
 }
 
+void MainWindow::checkData(bool ch)
+{
+    ui->lineEdit_zapytanieData->setEnabled(ch);
+    if(!ch)
+        ui->lineEdit_zapytanieData->clear();
+    this->zapytanieRef();
+}
+
+void MainWindow::popWyborKlienta()
+{
+    WyborKlienta* pop = new WyborKlienta(this);
+    connect(pop, SIGNAL(selectionChanged(QSqlRecord)), this, SLOT(clientChanged(QSqlRecord)));
+    pop->exec();
+    delete pop;
+}
+
+void MainWindow::popWyborTowaru()
+{
+    WyborTowaru* pop = new WyborTowaru(this);
+    connect(pop, SIGNAL(countChanged(QSqlRecord,int)), this, SLOT(setTowar(QSqlRecord,int)));
+    pop->exec();
+    delete pop;
+}
+
+void MainWindow::clientChanged(const QSqlRecord& rec)
+{
+    delete klient;
+    if(rec.isEmpty())
+    {
+        klient = NULL;
+        ui->plainTextEdit_klient->clear();
+    }
+    else
+    {
+        klient = new QSqlRecord(rec);
+        QString s;
+        s = rec.value("tytul").toString();
+        s += " ";
+        s += rec.value("nazwisko").toString();
+        s += "\n";
+        s += rec.value("full").toString();
+        ui->plainTextEdit_klient->setPlainText(s);
+    }
+}
 
 void MainWindow::pln_on()
 {
@@ -598,9 +572,9 @@ void MainWindow::nowyNumer()
 {
     QDate d = QDate::currentDate();
     *data = d.toString("dd.MM.yyyy");
-    ui->dateEdit->setDate(d);
+    calendarWidget->setSelectedDate(d);
 
-    *nr_oferty = QString::number(u->nrOferty());
+    *nr_oferty = QString::number(currentUser->nrOferty());
     nr_oferty->append("/");
     nr_oferty->append(d.toString("yyyy"));
 
@@ -610,8 +584,7 @@ void MainWindow::nowyNumer()
 void MainWindow::nowa()
 {
     //czyszczenie starych danych
-    ui->label->clear();
-    id_klienta = -1;
+    clientChanged(QSqlRecord());
 
     this->nowyNumer();
 
@@ -644,78 +617,117 @@ void MainWindow::zapisz()
 {
     QString s;
 
-    if(id_klienta == -1)
+    if(klient == NULL)
     {
         QMessageBox::warning(this, "brak danych", "Aby zapisanie oferty w bazie danych było możliwe należy wybrać klienta.");
         return;
     }
 
-    int anr = nr_oferty->split('/').first().toInt();
+    int anr = nr_oferty->split("/").first().toInt();
 
-    if(anr == u->nrOferty())
-        u->nrOfertyInkrement();
+    if(anr == currentUser->nrOferty())
+        currentUser->nrOfertyInkrement();
 
-    insert_zapisane(*nr_oferty, id_klienta, *data, u->uid(), ui->zapytanie->toPlainText(), ui->dostawa->toPlainText(), ui->termin->toPlainText(), ui->platnosc->toPlainText(), ui->oferta->toPlainText());
+    insert_zapisane(*nr_oferty, klient->value("id").toInt(), *data, currentUser->uid(), ui->lineEdit_zapytanieData->text(), ui->lineEdit_zapytanieNr->text(), ui->comboBox_dostawa->currentIndex(), ui->comboBox_termin->currentIndex(), ui->comboBox_platnosc->currentIndex(), ui->comboBox_oferta->currentIndex(), ui->plainTextEdit_uwagi->toPlainText());
 
     for(int i=0; i < ui->tableWidget->rowCount() - 1; ++i)
-        insert_zapisane_towary(*nr_oferty, ui->tableWidget->item(i, 0)->text(), ui->tableWidget->item(i, 5)->text(), ui->tableWidget->item(i, 3)->text());
+        insert_zapisane_towary(*nr_oferty, ui->tableWidget->item(i, 0)->text(), ui->tableWidget->item(i, 5)->text().toDouble(), ui->tableWidget->item(i, 3)->text().toDouble());
 }
 
-void MainWindow::wczytaj()
+void MainWindow::popLoadDialog()
 {
-    ww = new cLoadDialog(this);
-    connect(ww, SIGNAL(sig(QString)), this, SLOT(wczytaj_oferte(QString)));
-    ww->exec();
-    delete ww;
+    LoadDialog* pop = new LoadDialog(this);
+    connect(pop, SIGNAL(offerSelected(QSqlRecord, QSqlTableModel)), this, SLOT(loadOffer(QSqlRecord, QSqlTableModel)));
+    pop->exec();
+    delete pop;
 }
-void MainWindow::wczytaj_oferte(QString id)
+void MainWindow::loadOffer(const QSqlRecord& rec, const QSqlTableModel& mod)
 {
-    QString s;
-    QSqlQuery q;
-
-    s = "SELECT id_klienta, data, uid, zapytanie, dostawa, termin, platnosc, oferta FROM zapisane WHERE nr_oferty = '";
-    s += id;
-    s += "'";
-
-    EXEC(s);
-
-    q.next();
+    *nr_oferty = rec.value("nr_oferty").toString();
+    *data = rec.value("data").toString();
 
     this->init();
+    this->setTitle(nr_oferty);
 
-    *nr_oferty = id;
-    this->setKlient(q.value(0).toInt());
-    *data = q.value(1).toString();
-    ui->zapytanie->setPlainText(q.value(3).toString());
-    ui->dostawa->setPlainText(q.value(4).toString());
-    ui->termin->setPlainText(q.value(5).toString());
-    ui->platnosc->setPlainText(q.value(6).toString());
-    ui->oferta->setPlainText(q.value(7).toString());
+    QSqlQuery q;
+    QString s;
 
-    s = "SELECT kod, ilosc, rabat FROM zapisane_towary WHERE nr_oferty = '";
-    s += id;
-    s += "'";
+    s = QString("SELECT DISTINCT id_klienta FROM zapisane WHERE nr_oferty = '%1'").arg(*nr_oferty);
     EXEC(s);
+    q.next();
 
-    if(ui->tabWidget->isEnabled())
-        this->clear();
+    QSqlQueryModel klientModel;
+    s = QString("SELECT DISTINCT * FROM klient WHERE id = %1").arg(q.value(0).toInt());
+    DEBUG << s;
+    klientModel.setQuery(s);
+
+    clientChanged(klientModel.record(0));
+
+    if(rec.value("zapytanie_data").isNull())
+        ui->checkBox_zapytanieData->setChecked(false);
     else
-        this->init();
-
-    int row;
-    while(q.next())
     {
-        s = q.value(0).toString();
-        this->setTowar(s, q.value(1).toInt());
-        row = ui->tableWidget->rowCount()-2;
-        if(row < 0) row = 0;
-        ui->tableWidget->item(row, 3)->setText(QString::number(q.value(2).toDouble()));
-        przelicz(row);
+        ui->checkBox_zapytanieData->setChecked(true);
+        ui->lineEdit_zapytanieData->setText(rec.value("zapytanie_data").toString());
+    }
+    if(rec.value("zapytanie_nr").isNull())
+        ui->checkBox_zapytanieNr->setChecked(false);
+    else
+    {
+        ui->checkBox_zapytanieNr->setChecked(true);
+        ui->lineEdit_zapytanieNr->setText(rec.value("zapytanie_nr").toString());
     }
 
-    sum();
+    ui->comboBox_dostawa->setCurrentIndex(rec.value("dostawa").toInt());
+    ui->comboBox_termin->setCurrentIndex(rec.value("termin").toInt());
+    ui->comboBox_platnosc->setCurrentIndex(rec.value("platnosc").toInt());
+    ui->comboBox_oferta->setCurrentIndex(rec.value("platnosc").toInt());
+    ui->plainTextEdit_uwagi->setPlainText(rec.value("uwagi").toString());
 
-    this->setTitle(nr_oferty);
+    QTableWidgetItem* item;
+    double r;
+    QSqlRecord record;
+    for(int row=0; row<mod.rowCount(); ++row)
+    {
+        record = mod.record(row);
+
+        s = QString("SELECT nazwa, cena, jednostka FROM towar WHERE id='%1'").arg(record.value("kod").toString());
+        EXEC(s);
+        q.next();
+
+        ui->tableWidget->insertRow(row);
+
+        //kod
+        item = new QTableWidgetItem(record.value("kod").toString());
+        ui->tableWidget->setItem(row, 0, item);
+        //nazwa
+        item = new QTableWidgetItem(q.value(0).toString());
+        ui->tableWidget->setItem(row, 1, item);
+        //cena kat
+        r = q.value(1).toDouble();
+        item = new QTableWidgetItem(QString::number(r, 'f', 2));
+        ui->tableWidget->setItem(row, 8, item);
+        if(pln) r *= kurs;
+        item = new QTableWidgetItem(QString::number(r, 'f', 2));
+        ui->tableWidget->setItem(row, 2, item);
+        //rabat
+        item = new QTableWidgetItem(record.value("rabat").toString());
+        ui->tableWidget->setItem(row, 3, item);
+        //cana
+        item = new QTableWidgetItem("");
+        ui->tableWidget->setItem(row, 4, item);
+        //ilosc
+        item = new QTableWidgetItem(record.value("ilosc").toString());
+        ui->tableWidget->setItem(row, 5, item);
+        //jednostka
+        item = new QTableWidgetItem(q.value(2).toString());
+        ui->tableWidget->setItem(row, 6, item);
+        //koszt
+        item = new QTableWidgetItem("");
+        ui->tableWidget->setItem(row, 7, item);
+        przelicz(row);
+    }
+    sum();
 }
 
 /*************************
@@ -726,7 +738,7 @@ void MainWindow::wczytaj_oferte(QString id)
 
 void MainWindow::dodajTowar()
 {
-    cNowyTowar* nowyTowar = new cNowyTowar(this);
+    NowyTowar* nowyTowar = new NowyTowar(this);
     nowyTowar->exec();
     delete nowyTowar;
 }
@@ -746,7 +758,13 @@ void MainWindow::importTowar()
         return;
     }
 
+    QMessageBox* mb;
+    mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
+    mb->setStandardButtons(0);
+    mb->setModal(true);
     mb->show();
+    mb->raise();
+
     DEBUG <<  "wczytuje towar...";
 
     QTextStream in(&file);
@@ -755,6 +773,7 @@ void MainWindow::importTowar()
     QStringList list;
     QSqlQuery q;
     QString sRead;
+    QString cena;
 
     for(unsigned i=0; !in.atEnd(); ++i)
     {
@@ -763,7 +782,7 @@ void MainWindow::importTowar()
         if(list.size() < 3)
         {
             DEBUG <<  "syntax error, wczyt towar, line: " << i;
-            syntax_towar sw(this, sRead);
+            SyntaxTowar sw(this, sRead);
             sw.exec();
             continue;
         }
@@ -772,10 +791,15 @@ void MainWindow::importTowar()
             s = "mb.";
         else
             s = "szt.";
-        insert_towar(list.at(1), list.at(0), list.at(2), s);
+
+        cena =  list.at(2);
+        cena.remove(' ');
+        cena.replace(',', '.');
+
+        insert_towar(list.at(1), list.at(0), cena.toDouble(), s);
     }
-//    mb->hide();
-    mb->accept();
+    mb->hide();
+    delete mb;
     DEBUG <<  "koniec wczytywania";
 }
 
@@ -795,13 +819,19 @@ void MainWindow::eksportTowar()
         return;
     }
 
+    QMessageBox* mb;
+    mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
+    mb->setStandardButtons(0);
+    mb->setModal(true);
     mb->show();
+    mb->raise();
+
     DEBUG <<  "zapis cennikow do pliku: " << s;
 
     QTextStream out(&file);
     out.setCodec("UTF-8");
 
-    s = "SELECT id, nazwa, cena_kat, jednostka FROM towar";
+    s = "SELECT id, nazwa, cena, jednostka FROM towar";
 
     EXEC(s);
 
@@ -810,7 +840,8 @@ void MainWindow::eksportTowar()
         out << q.value(1).toString() << "|" << q.value(0).toString() << "|" << q.value(2).toString() << "|" << q.value(3).toString() << "\n";
     }
 
-    mb->accept();
+    mb->hide();
+    delete mb;
     DEBUG <<  "koniec zapisu cennika";
 }
 
@@ -826,7 +857,7 @@ void MainWindow::edytujTowar()
 
 void MainWindow::dodajKlient()
 {
-    cNowyKlient* nowyKlient = new cNowyKlient(this);
+    NowyKlient* nowyKlient = new NowyKlient(this);
     nowyKlient->exec();
     delete nowyKlient;
 }
@@ -846,7 +877,13 @@ void MainWindow::importKlient()
         return;
     }
 
+    QMessageBox* mb;
+    mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
+    mb->setStandardButtons(0);
+    mb->setModal(true);
     mb->show();
+    mb->raise();
+
     DEBUG <<  "wczytuje klientow...";
 
     QTextStream in(&file);
@@ -862,7 +899,7 @@ void MainWindow::importKlient()
         if(list.size() < 8)
         {
             DEBUG <<  "syntax error, wczyt_klient line: " << i;
-            syntax_klient sw(this, sRead);
+            SyntaxKlient sw(this, sRead);
             sw.exec();
             continue;
         }
@@ -876,7 +913,8 @@ void MainWindow::importKlient()
     }
 
     DEBUG <<  "koniec wczytywania";
-    mb->accept();
+    mb->hide();
+    delete mb;
 }
 
 void MainWindow::eksportKlient()
@@ -894,7 +932,12 @@ void MainWindow::eksportKlient()
         return;
     }
 
+    QMessageBox* mb;
+    mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
+    mb->setStandardButtons(0);
+    mb->setModal(true);
     mb->show();
+    mb->raise();
 
     DEBUG <<  "zapis klientow do pliku: " << s;
 
@@ -912,15 +955,398 @@ void MainWindow::eksportKlient()
         out << "\n";
     }
 
-    mb->accept();
+    mb->hide();
+    delete mb;
     DEBUG <<  "koniec zapisu klientow";
 }
 
 void MainWindow::edytujKlient()
 {
-    cEdycjaKlienta* okno = new cEdycjaKlienta(this);
+    EdycjaKlienta* okno = new EdycjaKlienta(this);
     okno->exec();
     delete okno;
 }
 
+/*************************
+**      WYDRUK          **
+*************************/
 
+void MainWindow::printPrev()
+{
+    htm = false;
+
+    QPrinter* printer = new QPrinter;
+    printer->setOutputFormat(QPrinter::NativeFormat);
+
+    QPrintPreviewDialog* preview = new QPrintPreviewDialog(printer, this);
+    preview->setWindowFlags(Qt::Window);
+    connect(preview, SIGNAL(paintRequested(QPrinter *)), SLOT(print(QPrinter *)));
+    preview->exec();
+
+    delete preview;
+    delete printer;
+}
+
+void MainWindow::printPdf()
+{
+    htm = false;
+
+    QString s;
+    s = QFileDialog::getSaveFileName(this, "Zapis pdfa", "", "Dokument PDF (*.pdf)");
+    if(s.isEmpty())return;
+
+    QPrinter* printer = new QPrinter;
+    printer->setOutputFormat(QPrinter::PdfFormat);
+    printer->setOutputFileName(s);
+    print(printer);
+
+    delete printer;
+}
+
+void MainWindow::printHtm()
+{
+    htm = true;
+
+    QString s;
+    s = QFileDialog::getSaveFileName(this, "Zapis do HTML", "", "Dokument HTML (*.htm)");
+    if(s.isEmpty())return;
+
+    QFile file(s);
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+        DEBUG << "plik " << s << " niedostępny";
+        QMessageBox::warning(NULL, "error", "Nie udało się uzyskać dostępu do pliku");
+        return;
+    }
+
+    QString* sDoc = new QString;
+    makeDocument(sDoc);
+
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+    out << *sDoc;
+
+    delete sDoc;
+}
+
+void MainWindow::print(QPrinter *printer)
+{
+    const int margin = 5;                        //szerokość marginesu
+    printer->setPaperSize(QPrinter::A4);
+    printer->setResolution(300);
+    printer->setPageMargins(margin, margin, margin, margin, QPrinter::Millimeter);
+
+    QString* sDoc = new QString;
+    makeDocument(sDoc);
+
+    QFont* font = new QFont;
+    font->setPointSize(10);
+    font->setFamily("Arial");
+
+    QTextDocument* doc = new QTextDocument;
+    doc->setDefaultFont(*font);
+    doc->setHtml(*sDoc);
+    doc->print(printer);
+
+    delete doc;
+    delete font;
+    delete sDoc;
+}
+
+void MainWindow::makeDocument(QString *sDoc)
+{
+    int kolumn = 3;
+    QString waluta;
+    uint rows = ui->tableWidget->rowCount()-1;
+
+    const int w = 745;                           //szerokosc szkieletu dokumentu
+    const int d = (w-5)/2;                       //szerokość kolumny w szkielecie
+    const int dw = 140;                          //szerokosc pierwszej kolumny w szkielecie poniżej tabeli
+    int z[8];                                    //szerokosc komorek tabeli
+    z[0] = 20; //lp
+    z[1] = 80; //kod
+    //z2 - reszta szerokości
+    z[3] = 60; //cena
+    z[4] = 40; //rabat
+    z[5] = 55; //cena2
+    z[6] = 50; //ilosc+jedn
+    z[7] = 60; //wartość
+
+    z[2] = w - z[0] - z[7];
+    if(ui->kol_kod->isChecked())
+    {
+        z[2] -= z[1];
+        kolumn++;
+    }
+    if(ui->kol_cenaKat->isChecked())
+    {
+        z[2] -= z[3];
+        kolumn++;
+    }
+    if(ui->kol_rabat->isChecked())
+    {
+        z[2] -= z[4];
+        kolumn++;
+    }
+    if(ui->kol_cena->isChecked())
+    {
+        z[2] -= z[5];
+        kolumn++;
+    }
+    if(ui->kol_ilosc->isChecked())
+    {
+        z[2] -= z[6];
+        kolumn++;
+    }
+    z[2] -= kolumn*4;
+
+    if(ui->eur->isChecked()) waluta= "€";
+    else waluta = "zł";
+
+
+    *sDoc = "<html>\n"
+            "<head>\n"
+            "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head>\n"
+            "<title>Oferta</title>\n"
+            "</head>\n"
+            "<body>\n"
+            "<table cellspacing=3>\n"
+/*NAGŁÓWEK*/
+            "<thead>\n"
+            "<tr><td>\n"
+            "\t<table>\n"
+            "\t<tr>\n"
+            "\t\t<td colspan=3><hr width=100%></td>\n"
+            "\t</tr>\n"
+            "\t<tr>\n"
+            "\t\t<td valign=top width=";
+    *sDoc += QString::number(d);
+    *sDoc += ">\n"
+             "\t\t\tNumer oferty: <font size=4>";
+    *sDoc += *nr_oferty;
+    *sDoc += "</font><br>\n"
+             "\t\t\tData oferty: ";
+    *sDoc += *data;
+    *sDoc += "\n"
+             "\t\t\t<hr width=100%>\n"
+             "\t\t\tDla:<br>\n"
+             "\t\t\t";
+    *sDoc += klient->value("full").toString();
+    *sDoc += "<br>\n"
+             "\t\t\t";
+    *sDoc += klient->value("adres").toString();
+    *sDoc += "<br>\n"
+             "\t\t\t";
+    *sDoc += klient->value("tytul").toString();
+    *sDoc += " ";
+    *sDoc += klient->value("imie").toString();
+    *sDoc += " ";
+    *sDoc += klient->value("nazwisko").toString();
+    *sDoc += "\n"
+             "\t\t</td>\n";
+/*linia pionowa*/
+    *sDoc += "\t\t<td width=1 bgcolor=#000000>\n"
+             "\t\t\t<br />\n"
+             "\t\t</td>\n";
+/*OD*/
+    *sDoc += "\t\t<td width=";
+    *sDoc += QString::number(d);
+    *sDoc += ">\n"
+            "\t\t\t";
+    if(htm)
+        *sDoc += "<img src=logo.jpg align=center><br>\n";
+    else
+        *sDoc += "<img src=:/log align=center><br>\n";
+    *sDoc +=
+             "\t\t\t<b>Marley Polska Sp. z o.o.</b><br>\n"
+             "\t\t\tul. Annopol 24<br>\n"
+             "\t\t\t03-236 Warszawa<br>\n"
+             "\t\t\t<br>\n"
+             "\t\t\t";
+    /*adres bióra*/
+    *sDoc += currentUser->adress().replace("\n", "\n\t\t\t");
+    *sDoc += currentUser->mail();
+    *sDoc += "\n"
+            "\t\t</td>\n"
+            "\t</tr>\n"
+            "\t<tr>\n"
+            "\t\t<td colspan=3><hr width=100%></td>\n"
+            "\t</tr>\n"
+            "\t</table>\n"
+            "</td></tr>\n"
+            "</thead>\n"
+   /*Właściwa oferta*/
+            "<tbody>\n"
+            "<tr><td>\n"
+            "\t";
+    *sDoc += ui->plainTextEdit_zapytanie->toPlainText();
+    *sDoc += "<br />\n"
+            "</td></tr>\n"
+            "<tr><td>\n";
+ //tabela
+    *sDoc += "\t<font face=\"Arial Narrow\" size=2>\n"
+             "\t<table cellspacing=3>\n"
+             "\t<thead><tr>\n"
+             "\t\t<td width=";
+    *sDoc += QString::number(z[0]);
+    *sDoc += ">LP</td>\n";
+    if(ui->kol_kod->isChecked())
+    {
+        *sDoc += "\t\t<td width=";
+        *sDoc += QString::number(z[1]);
+        *sDoc += ">Kod</td>\n";
+    }
+    if(ui->kol_towar->isChecked())
+    {
+        *sDoc += "\t\t<td width=";
+        *sDoc += QString::number(z[2]);
+        *sDoc += ">Specyfikacja</td>\n";
+    }
+    if(ui->kol_ilosc->isChecked())
+    {
+        *sDoc += "\t\t<td width=";
+        *sDoc += QString::number(z[6]);
+        *sDoc += " align = right>Ilość</td>\n";
+    }
+    if(ui->kol_cenaKat->isChecked())
+    {
+        *sDoc += "\t\t<td width=";
+        *sDoc += QString::number(z[3]);
+        *sDoc += " align = right>Cena kat. ";
+        *sDoc += waluta;
+        *sDoc += "</td>\n";
+    }
+    if(ui->kol_rabat->isChecked())
+    {
+        *sDoc += "\t\t<td width=";
+        *sDoc += QString::number(z[4]);
+        *sDoc += " align = right>Rabat</td>\n";
+    }
+    if(ui->kol_cena->isChecked())
+    {
+        *sDoc += "\t\t<td width=";
+        *sDoc += QString::number(z[5]);
+        *sDoc += " align = right>Cena ";
+        *sDoc += waluta;
+        *sDoc += "</td>\n";
+    }
+    *sDoc += "\t\t<td width=";
+    *sDoc += QString::number(z[7]);
+    *sDoc += " align = right>Wartość ";
+    *sDoc += waluta;
+    *sDoc += "</td>\n"
+          "\t</tr></thead>\n";
+
+    for(uint i=0; i<rows; ++i){
+        *sDoc += "\t<tr>\n\t\t<td>";
+        *sDoc += QString::number(i+1);
+        *sDoc += "</td>\n";
+        if(ui->kol_kod->isChecked())
+        {
+            *sDoc += "\t\t<td>";
+            *sDoc += ui->tableWidget->item(i, 0)->text();
+            *sDoc += "</td>\n";
+        }
+        if(ui->kol_towar->isChecked())
+        {
+            *sDoc += "\t\t<td>";
+            *sDoc += ui->tableWidget->item(i, 1)->text();
+            *sDoc += "</td>\n";
+        }
+        if(ui->kol_ilosc->isChecked())
+        {
+            *sDoc += "\t\t<td align=right>";
+            *sDoc += ui->tableWidget->item(i, 5)->text();
+            *sDoc += " ";
+            *sDoc += ui->tableWidget->item(i, 6)->text();
+            *sDoc += "</td>\n";
+        }
+        if(ui->kol_cenaKat->isChecked())
+        {
+            *sDoc += "\t\t<td align = right>";
+            *sDoc += ui->tableWidget->item(i, 2)->text();
+            *sDoc += "</td>\n";
+        }
+        if(ui->kol_rabat->isChecked())
+        {
+            *sDoc += "\t\t<td align = right>";
+            *sDoc += ui->tableWidget->item(i, 3)->text();
+            *sDoc += "%</td>\n";
+        }
+        if(ui->kol_cena->isChecked())
+        {
+            *sDoc += "\t\t<td align = right>";
+            *sDoc += ui->tableWidget->item(i, 4)->text();
+            *sDoc += "</td>\n";
+        }
+        *sDoc += "\t\t<td align = right>";
+        *sDoc += ui->tableWidget->item(i, 7)->text();
+        *sDoc += "</td>\n"
+                 "\t</tr>\n";
+    }
+    *sDoc += "\t<tr>\n"
+            "\t\t<td colspan=";
+    *sDoc += QString::number(kolumn-1);
+    *sDoc += " align=right>Razem ";
+    *sDoc += waluta;
+    *sDoc += ":</td>\n"
+            "\t\t<td align=right>";
+    *sDoc += ui->tableWidget->item(rows, 7)->text();
+    *sDoc += "</td>\n"
+            "\t</tr>\n"
+            "\t</table></font>\n"
+            "</td></tr>\n"
+            "<tr><td>\n"
+            "\tPodane ceny nie zawierają podatku VAT<br>\n"
+            "</td></tr>\n"
+//warunki
+            "<tr><td>\n"
+            "\t<table cellspacing=3>\n"
+            "\t<tr>\n\t\t<td width=";
+    *sDoc += QString::number(dw);
+    *sDoc += ">"
+             "Warunki dostawy:</td>\n"
+             "\t\t<td width=";
+    *sDoc += QString::number(w-dw-3);
+    *sDoc += ">";
+    *sDoc += ui->plainTextEdit_dostawa->toPlainText();
+    *sDoc += "</td>\n\t</tr>\n"
+             "\t<tr>\n"
+             "\t\t<td>Termin dostawy:</td>\n"
+             "\t\t<td>";
+    *sDoc += ui->plainTextEdit_termin->toPlainText();
+    *sDoc += "</td>\n"
+             "\t</tr>\n"
+             "\t<tr>\n"
+             "\t\t<td>Warunki plałatności:</td>\n"
+             "\t\t<td>";
+    *sDoc += ui->plainTextEdit_platnosc->toPlainText();
+    *sDoc += "</td>\n"
+             "\t</tr>\n"
+            "\t<tr>\n"
+            "\t\t<td>Uwagi:</td>\n"
+            "\t\t<td>";
+   *sDoc += ui->plainTextEdit_uwagi->toPlainText();
+   *sDoc += "</td>\n"
+            "\t</tr>\n"
+            "\t</table>\n"
+            "</td></tr>\n";
+//Pozdrowienia
+    *sDoc += "<tr><td>\n"
+            "\t";
+    *sDoc += ui->plainTextEdit_oferta->toPlainText();
+    *sDoc += "<br>\n"
+             "\tŁączymy pozdrowienia.\n"
+             "\t<p align = right style = \"margin-right: 100\">\n"
+             "\t\tOfertę przygotował";
+    if(!currentUser->male()) *sDoc += "a";
+    *sDoc += "<br>\n"
+            "\t\t";
+    *sDoc += currentUser->name();
+    *sDoc += "\n"
+            "\t</p>\n"
+            "</td></tr>\n"
+            "</tbody>\n"
+            "</table>\n"
+            "</body>\n"
+            "</html>\n";
+}

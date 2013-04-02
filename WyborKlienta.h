@@ -23,28 +23,24 @@
 #define KLIENT_H
 
 #include <QDialog>
-class cNowyKlient;
+class QSqlRecord;
 
 namespace Ui {
     class WyborKlienta;
 }
 
-class cWyborKlienta : public QDialog
+class WyborKlienta : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit cWyborKlienta(QWidget *parent = 0);        //inicjacja ui
-    ~cWyborKlienta();
-
-public slots:
-    void ok();
+    explicit WyborKlienta(QWidget *parent = 0);         //inicjacja ui
+    ~WyborKlienta();
 
 signals:
-    void id_klienta(int);                           //sygnał przekazujący wybranego lienta do MainWindow
+    void selectionChanged(const QSqlRecord&);           //sygnał przekazujący wybranego lienta do MainWindow
 
 private:
-    QString* s;
     Ui::WyborKlienta *ui;
 };
 

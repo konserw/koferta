@@ -28,13 +28,13 @@ namespace Ui {
     class NowyKlient;
 }
 
-class cNowyKlient : public QDialog
+class NowyKlient : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit cNowyKlient(QWidget *parent = 0);
-    ~cNowyKlient();
+    explicit NowyKlient(QWidget *parent = 0);
+    ~NowyKlient();
 public slots:
     void acc();
 

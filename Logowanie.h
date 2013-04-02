@@ -34,13 +34,13 @@ namespace Ui {
     class Logowanie;
 }
 
-class cLogowanie : public QDialog
+class Logowanie : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit cLogowanie(cUser**);                       //konstruktor inicjalizujący elementy interface, user** służy do przekazania zwrotnego danych wybranego użytkownika
-    ~cLogowanie();
+    explicit Logowanie();                       //konstruktor inicjalizujący elementy interface, user** służy do przekazania zwrotnego danych wybranego użytkownika
+    ~Logowanie();
 
 public slots:
     void ok();                                          //slot obsługujący przycisk ok - sprawdza zgodność skrótu wpisanego hasła ze skrótem zapisanym w klasie user i tworzy połączenie z bazą MySQL (klasa QSqlDatabase)
@@ -53,9 +53,7 @@ private:
 
     QStringList* hosts;                                 //lista dostępnych hostów, generowana na podstawie pliku tekstowego
     QPixmap* p;                                         //bufor grafiki loga systemu kOferta
-    cUser *u, **us;                                     //wskaźnik podwójny zapamiętany z konstruktora i roboczy wskaźnik
     QSqlDatabase* d;                                    //obiekt połączenia z bazą
-    QString* host;                                      //nazwa hosta bazy danych z którą aplikacja się łączy
 
     QNetworkAccessManager* manager;                     //objekt odpowiedzialny za pobieranie aktualizacji
     double ver;                                         //wersja programu pobieranego z serwera

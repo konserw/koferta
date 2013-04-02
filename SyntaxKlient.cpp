@@ -20,9 +20,9 @@
 #include "ui_SyntaxKlient.h"
 #include "Database.h"
 
-syntax_klient::syntax_klient(QWidget *parent, QString& str) :
+SyntaxKlient::SyntaxKlient(QWidget *parent, QString& str) :
     QDialog(parent),
-    ui(new Ui::syntax_klient)
+    ui(new Ui::SyntaxKlient)
 {
     ui->setupUi(this);
 
@@ -33,12 +33,12 @@ syntax_klient::syntax_klient(QWidget *parent, QString& str) :
 
 }
 
-syntax_klient::~syntax_klient()
+SyntaxKlient::~SyntaxKlient()
 {
     delete ui;
 }
 
-void syntax_klient::acc(){
+void SyntaxKlient::acc(){
 
     QString adres = ui->adres->toPlainText();
     adres.replace("\n", "<br>\n");

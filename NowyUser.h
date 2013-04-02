@@ -28,13 +28,13 @@ namespace Ui {
     class NowyUser;
 }
 
-class cNowyUser : public QDialog
+class NowyUser : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit cNowyUser(QWidget *parent = 0);
-    ~cNowyUser();
+    explicit NowyUser(QWidget *parent = 0);
+    ~NowyUser();
 
 public slots:
     void ok();                                          //Akceptacja

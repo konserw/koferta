@@ -28,6 +28,8 @@
     QTextStream* logFile = NULL;
 #endif
 
+cUser* currentUser = NULL;
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -53,10 +55,8 @@ int main(int argc, char *argv[])
     }
 #endif
 
-    cUser** u;
-    u = new cUser*;
-    cLogowanie* logw;
-    logw = new cLogowanie(u);
+    Logowanie* logw;
+    logw = new Logowanie;
 
     int result = logw->exec();
     DEBUG << "logw result: " << result;
@@ -65,9 +65,9 @@ int main(int argc, char *argv[])
     if(result == QDialog::Accepted)
     {
 
-        DEBUG << "Zalogowano jako uzytkownik " << (*u)->name();
+        DEBUG << "Zalogowano jako uzytkownik " << currentUser->name();
 
-        MainWindow w(*u);
+        MainWindow w;
         w.showMaximized();
 
         DEBUG << "wchodzę do głównej pętli";
@@ -76,11 +76,10 @@ int main(int argc, char *argv[])
     else
         DEBUG << "Zamknieto okno logowanie - wychodzę";
 
-    //delete *u;
-    delete u;
     DEBUG << "koniec programu, status: " << result;
 #ifdef WIN32
     delete logFile;
 #endif
+    delete currentUser;
     return result;
 }

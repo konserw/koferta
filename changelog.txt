@@ -157,22 +157,36 @@ v. 2.0
 * dodatkowy editbox na "uwagi"
 * małe poprawki w wydruku oferty
 
+<<<<<<< HEAD
 v. 2.01
 * poprawiony błąd przy wczytywaniu rabatu
 
 TODO:
+=======
+v. 2.1
+* drobne poprawki w różnych miejscach
+>>>>>>> devel
 * przeniesienie serwera na platformę Raspbery Pi
 * opcje comboboxów przeniesione do bazy
-* możliwość dodawania opcji komboboksów do bazy
 * zapisane ofery w formie odnośników do tabeli combosów
 * zapisywanie uwag w bazie jako tekstu
 * zapis ceny katalogowej towaru jako liczby w tabeli
-* zapisywanie informacji o wydruku w zapisanych ofertach
 * unifikacja stylu nazw plików i klas
+* ograniczenie ilości odwołań do bazy danych dzięki przekazywaniu rekordów między oknami
+* usunięcie okna ustawień bazy, które przestało być aktualne
+* usunięcie klasy wydruk i przeniesienie odpowiednich funkcji do MainWindow
+* wskaźnik na usera jako zmienna globalna
+* cena towaru jako zmienna numeryczna
+* konstruowanie okien dopiero przy ich wywołaniu
+
+
+TODO:
+* możliwość dodawania opcji komboboksów do bazy
+* zapisywanie informacji o wydruku w zapisanych ofertach
+* sprawdzanie skrótu SHA1 pobranej aktualizacji
+* lepszy skrypt aktualizujący wersję/url/hash nowego buildu w bazie
 
 * przygotowania do translacji
 * skróty klawiatórowe
 * ikony
-* sprawdzanie skrótu SHA1 pobranej aktualizacji
-* lepszy skrypt aktualizujący wersję/url/hash nowego buildu w bazie
 * przerobienie funkcji sha1 (?)

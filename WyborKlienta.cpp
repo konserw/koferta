@@ -23,28 +23,19 @@
 #include "Macros.h"
 
 
-cWyborKlienta::cWyborKlienta(QWidget *parent) :
+WyborKlienta::WyborKlienta(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::WyborKlienta)
 {
     ui->setupUi(this);
 
-    connect(ui->cancel, SIGNAL(clicked()), this, SLOT(close()));
-    connect(ui->ok, SIGNAL(clicked()), this, SLOT(ok()));
+    ui->pushButton_exit->setText(tr("Zakończ"));
+
+    connect(ui->pushButton_exit, SIGNAL(clicked()), this, SLOT(close()));
+    connect(ui->widget, SIGNAL(selectionChanged(QSqlRecord)), this, SIGNAL(selectionChanged(QSqlRecord)));
 }
 
-cWyborKlienta::~cWyborKlienta()
+WyborKlienta::~WyborKlienta()
 {
     delete ui;
 }
-
-void cWyborKlienta::ok()
-{
-    int r = ui->widget->selectedClient();
-    if (r != -1)
-    {
-        emit id_klienta(r);
-        this->close();
-    }
-}
-

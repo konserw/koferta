@@ -20,7 +20,7 @@
 #include "ui_NowyTowar.h"
 #include "Database.h"
 
-cNowyTowar::cNowyTowar(QWidget *parent) :
+NowyTowar::NowyTowar(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::NowyTowar)
 {
@@ -30,19 +30,19 @@ cNowyTowar::cNowyTowar(QWidget *parent) :
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(close()));
 }
 
-void cNowyTowar::acc()
+void NowyTowar::acc()
 {
     QString s;
     if(ui->r_m->isChecked())
         s = "mb.";
     else
         s = "szt.";
-    insert_towar(ui->kod->text(), ui->spec->text(), ui->cena->text(), s);
+    insert_towar(ui->kod->text(), ui->spec->text(), ui->cena->value(), s);
 
     this->accept();
 }
 
-cNowyTowar::~cNowyTowar()
+NowyTowar::~NowyTowar()
 {
     delete ui;
 }

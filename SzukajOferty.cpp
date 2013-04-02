@@ -59,7 +59,7 @@ SzukajOferty::SzukajOferty(QWidget *parent) :
         model->setHeaderData(i, Qt::Horizontal, sl[i]);
 
     ui->tableView->setModel(model);
-    for(int i=4; i<9; ++i)
+    for(int i=4; i<model->columnCount(); ++i)
         ui->tableView->hideColumn(i);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->resizeColumnToContents(3);
@@ -80,9 +80,9 @@ SzukajOferty::~SzukajOferty()
 void SzukajOferty::select(const QModelIndex& index)
 {
     int row = index.row();
-    QString id = model->record(row).value(0).toString();
-    DEBUG << "selected row: " << row << "id: " << id;
-    emit selectionChanged(id);
+    QSqlRecord rec = model->record(row);
+//    DEBUG << "selected row: " << row << "id: " << id;
+    emit selectionChanged(rec);
 }
 
 void SzukajOferty::refId(const QString& id)

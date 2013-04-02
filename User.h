@@ -48,7 +48,7 @@ public:
     QString mail()const;                                //zwraca adres email użytkownika
     QString adress()const;                              //zwraca adres bióra użytkownika w formacie htm
     bool male()const;                                   //zwraca: true - mężczyzna, false - kobieta
-    QString uid()const;                                 //zwraca nr. identyfikacyjny użytkownika, na potrzeby zapisu
+    int uid()const;                                     //zwraca nr. identyfikacyjny użytkownika, na potrzeby zapisu
     QString dbName()const;                              //zwraca nazwę użytkownika MySQL - generowane na podstawie nazwiska
     int nrOferty()const;                                //zwraca aktualny (pierwszy nieużyty) numer oferty
     void nrOfertyInkrement();                           //inkrementuje nr oferty

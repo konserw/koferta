@@ -24,6 +24,7 @@
 class QSqlRelationalTableModel;
 class QModelIndex;
 class QDate;
+class QSqlRecord;
 
 namespace Ui {
     class SzukajOferty;
@@ -45,7 +46,8 @@ public slots:
     void refUser(const QString &);
 
 signals:
-    void selectionChanged(const QString&);
+    void selectionChanged(const QSqlRecord&);
+
 private:
     QSqlRelationalTableModel* model;
     Ui::SzukajOferty *ui;

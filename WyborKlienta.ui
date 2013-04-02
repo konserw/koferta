@@ -40,16 +40,9 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="cancel">
+      <widget class="QPushButton" name="pushButton_exit">
        <property name="text">
         <string>Anuluj</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="ok">
-       <property name="text">
-        <string>Wybierz</string>
        </property>
       </widget>
      </item>

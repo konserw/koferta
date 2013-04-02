@@ -22,16 +22,16 @@
 #include <QDialog>
 
 namespace Ui {
-    class cEdycjaKlienta;
+    class EdycjaKlienta;
 }
 
-class cEdycjaKlienta : public QDialog
+class EdycjaKlienta : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit cEdycjaKlienta(QWidget *parent = 0);
-    ~cEdycjaKlienta();
+    explicit EdycjaKlienta(QWidget *parent = 0);
+    ~EdycjaKlienta();
 
 public slots:
     void app();
@@ -39,7 +39,7 @@ public slots:
     void del();
 
 private:
-    Ui::cEdycjaKlienta *ui;
+    Ui::EdycjaKlienta *ui;
     int id;
 };
 

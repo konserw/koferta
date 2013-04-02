@@ -63,20 +63,12 @@ cUser::cUser(int uid)
 {
     QSqlQuery q;
     QString s;
- //   QSqlDatabase* d = new QSqlDatabase(QSqlDatabase::database());//QSqlDatabase::connectionNames().at(0), false));
 
     DEBUG << "Pobieranie danych użytkownika uid:" << uid;
-/*
-    d->setUserName("kOferta_GetUsers");
-    d->setPassword(GET_PASS);
 
-    LOGIN
-*/
     s = "SELECT DISTINCT name, mail, adress, male, nrOferty  FROM users WHERE uid=";
     s += QString::number(uid);
-
     EXEC(s);
-
     q.next();
 
     _uid = uid;
@@ -85,8 +77,6 @@ cUser::cUser(int uid)
     _adress = new QString(q.value(2).toString());
     _male = q.value(3).toBool();
     _nrOferty = q.value(4).toInt();
-
- //   d->close();
 }
 
 void cUser::initID()
@@ -211,9 +201,9 @@ QString cUser::name() const
     return *_name;
 }
 
-QString cUser::uid() const
+int cUser::uid() const
 {
-    return QString::number(_uid);
+    return _uid;
 }
 int cUser::nrOferty() const
 {

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>syntax_klient</class>
- <widget class="QDialog" name="syntax_klient">
+ <class>SyntaxKlient</class>
+ <widget class="QDialog" name="SyntaxKlient">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>579</width>
-    <height>505</height>
+    <height>518</height>
    </rect>
   </property>
   <property name="windowTitle">

@@ -23,21 +23,15 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QHash>
-#include <QDate>
 
+class QSqlTableModel;
+class QModelIndex;
 class QTextDocument;
-class QStringList;
 class QTableWidgetItem;
-class cWyborKlienta;
-class WyborTowaru;
-class QMessageBox;
-class cLoadDialog;
-class QSqlDatabase;
-class QSqlQuery;
-class cWydruk;
 class cUser;
 class QSqlRecord;
+class QCalendarWidget;
+class QDate;
 
 
 namespace Ui {
@@ -49,17 +43,17 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(cUser*);                        //aktualny użytkownik przekazywany jako parametr
+    explicit MainWindow();                              //aktualny użytkownik przekazywany jako parametr
     ~MainWindow();
 
     int ileTowaru(const QString&);                      //ilość danego towaru do wyświetlenia w wyborzeTowaru
 
-    void setTowar(QString id, int ile);
 public slots:
-    void setTowar(const QSqlRecord&, int);              //dodawanie towarów do tabeli (wywoływane przez sygnał z dialogu dodajTowar)
-    void setKlient(int id);                             //ustawia wybranego klienta - połączone z sygnałem z dialogu klient
+    void popWyborKlienta();
+    void popWyborTowaru();
 
-    void wczytaj_oferte(QString);                       //wczytuje ofertę o zadanym id, połączone z dialogiem wczytywanie
+    void setTowar(const QSqlRecord&, int);              //dodawanie towarów do tabeli (wywoływane przez sygnał z dialogu dodajTowar)
+    void loadOffer(const QSqlRecord &rec, const QSqlTableModel &mod);              //wczytuje ofertę o połączone z dialogiem wczytywanie
 
     //obsługa głównej tabeli
     void change(QTableWidgetItem*);                     //wywoływane przeliczenia wartości kosztu i sumy w przypadku zmiany którejś wartości w tabeli
@@ -68,25 +62,34 @@ public slots:
     void del();                                         //usuwanie wiersza z tabeli
 
 
-    //odświerzanie texteditów po zmianie w comboboxie  w drugiej zakładce
-    void ref(QString);
-    void ref2(QString);
-    void ref3(QString);
-    void ref4(QString);
-    //zmiany daty
-    void calChanged();                                  //zmiana nastąpiła w kalendarzu, wprowadzenie jej do dateedita
-    void dateChanged(QDate);                            //zmiana w dateedicie, wprowadzenie jej do edita
+    //odświerzanie texteditów drugiej zakładce
+    void dostawaRef(int);
+    void platnoscRef(int);
+    void terminRef(int);
+    void ofertaRef(int);
+    void zapytanieRef();
+    void calChanged(const QDate&);                           //zmiana nastąpiła w kalendarzu, wprowadzenie jej do dateedita
+    void checkNr(bool);
+    void checkData(bool);
+    void clientChanged(const QSqlRecord&);              //ustawia wybranego klienta - połączone z sygnałem z dialogu klient
 
     //opcje wydruku
     void pln_on();                                      //włącza przeliczanie euro na pln
     void pln_off();                                     //wyłącza przeliczanie euro na pln
     void chKurs(QString);                               //zmienia kurs wymiany euro->pln
 
+    //wydruk
+    void printPrev();                                   //podgląd wydruku
+    void printPdf();                                    //export do pdf
+    void printHtm();                                    //zapis jako htm
+    void print(QPrinter *printer);                      //"drukowanie" dokumentu do podglądu lub pdf
+    void makeDocument(QString *sDoc);                   //tworzy dokument jako kod htm w QTextDocument
+
 /*menu*/
     //menu plik
     void nowa();
     void zapisz();
-    void wczytaj();
+    void popLoadDialog();
     void nowyNumer();
     //exit zaimplementowany
 
@@ -108,12 +111,6 @@ public slots:
 private:
     Ui::MainWindow *ui;
 
-    cWyborKlienta* kw;
-    WyborTowaru* tw;
-    QMessageBox* mb;
-    cLoadDialog* ww;
-    cWydruk* wyd;
-
     //obsługa głównej tabeli
     void sum();                                         //przelicza sumę wszystkich pozycji
     void przelicz(uint);                                //przelicza koszt towaru z zadanego wiersza
@@ -121,24 +118,23 @@ private:
     void tabupd();                                      //przeliczenie wartości w całej tabeli po zmianie waluty
 
     //pomocnicze funkcje
-    void setTitle(QString*);                             //ustawia tytuł okna
+    void setTitle(QString*);                            //ustawia tytuł okna
     void init();                                        //odblokowanie interfejsu i inicjacja tabeli
 
-    //domyślne wypełnienia textboxów z 2 zakładki wraz z odpowiednimi etykietami do comboboxów
-    QHash<QString, QString>* dostawa;
-    QHash<QString, QString>* platnosc;
-    QHash<QString, QString>* termin;
-    QHash<QString, QString>* oferta;
-   // QHash<QString, QString>* zapytanie;
-
     //wewnętrzne zmienne
-    int id_klienta;
     QString* nr_oferty;
     QString* data;
-    cUser* u;
     double kurs;
     bool pln;
+    bool htm;
 
+    QSqlTableModel* dostawaModel;
+    QSqlTableModel* platnoscModel;
+    QSqlTableModel* terminModel;
+    QSqlTableModel* ofertaModel;
+
+    QCalendarWidget* calendarWidget;
+    QSqlRecord* klient;    
 };
 
 #endif // MAINWINDOW_H

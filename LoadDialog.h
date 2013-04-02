@@ -23,6 +23,8 @@
 #define WCZYTYWANIE_H
 
 class QString;
+class QSqlRecord;
+class QSqlTableModel;
 
 #include <QDialog>
 
@@ -30,25 +32,26 @@ namespace Ui {
     class LoadDialog;
 }
 
-class cLoadDialog : public QDialog
+class LoadDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit cLoadDialog(QWidget *parent = 0);
-    ~cLoadDialog();
+    explicit LoadDialog(QWidget *parent = 0);
+    ~LoadDialog();
 
 public slots:
     void ok();
-    void ref(const QString &);
+    void ref(const QSqlRecord & rec);
 
 signals:
-    void sig(QString);
+    void offerSelected(const QSqlRecord&, const QSqlTableModel&);
 
 private:
     Ui::LoadDialog *ui;
 
-    QString* of;
+    QSqlRecord* cur;
+    QSqlTableModel* model;
 };
 
 #endif // WCZYTYWANIE_H
