@@ -75,9 +75,18 @@ void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& da
     EXEC(s);
 
     s = "INSERT INTO zapisane "
-        "(nr_oferty, id_klienta, data, uid, zapytanie_data, zapytanie_nr, dostawa, termin, platnosc, oferta, uwagi)";
-    s += QString(" VALUES ('%1', %2, '%3', %4, '%5', '%6', %7, %8, %9").arg(nr_oferty, QString::number(id_klienta), data, QString::number(uid), zapytanie_data, zapytanie_nr, QString::number(dostawa), QString::number(termin), QString::number(platnosc));
-    s += QString(", %1, '%2')").arg(QString::number(oferta), uwagi);
+        "(nr_oferty, id_klienta, data, uid, dostawa, termin, platnosc, oferta, uwagi, zapytanie_data, zapytanie_nr)";
+    s += QString(" VALUES ('%1', %2, '%3', %4, %7, %8, %9").arg(nr_oferty, QString::number(id_klienta), data, QString::number(uid), QString::number(dostawa), QString::number(termin), QString::number(platnosc));
+    s += QString(", %1, '%2'").arg(QString::number(oferta), uwagi);
+    if(zapytanie_data.isNull())
+        s += ", NULL";
+    else
+        s += QString(", '%1'").arg(zapytanie_data);
+    if(zapytanie_nr.isNull())
+        s += ", NULL";
+    else
+        s += QString(", '%1'").arg(zapytanie_nr);
+    s += ")";
 
     EXEC(s);
 }

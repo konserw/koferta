@@ -625,7 +625,18 @@ void MainWindow::zapisz()
     if(anr == currentUser->nrOferty())
         currentUser->nrOfertyInkrement();
 
-    insert_zapisane(*nr_oferty, klient->value("id").toInt(), *data, currentUser->uid(), ui->lineEdit_zapytanieData->text(), ui->lineEdit_zapytanieNr->text(), ui->comboBox_dostawa->currentIndex(), ui->comboBox_termin->currentIndex(), ui->comboBox_platnosc->currentIndex(), ui->comboBox_oferta->currentIndex(), ui->plainTextEdit_uwagi->toPlainText());
+    QString zData;
+    if(ui->checkBox_zapytanieData->isChecked())
+        zData = ui->lineEdit_zapytanieData->text();
+    else zData = QString::null;
+
+    QString zNumer;
+    if(ui->checkBox_zapytanieNr->isChecked())
+        zNumer =  ui->lineEdit_zapytanieNr->text();
+    else
+        zNumer = QString::null;
+
+    insert_zapisane(*nr_oferty, klient->value("id").toInt(), *data, currentUser->uid(), zData, zNumer, ui->comboBox_dostawa->currentIndex(), ui->comboBox_termin->currentIndex(), ui->comboBox_platnosc->currentIndex(), ui->comboBox_oferta->currentIndex(), ui->plainTextEdit_uwagi->toPlainText());
 
     for(int i=0; i < ui->tableWidget->rowCount() - 1; ++i)
         insert_zapisane_towary(*nr_oferty, ui->tableWidget->item(i, 0)->text(), ui->tableWidget->item(i, 5)->text().toDouble(), ui->tableWidget->item(i, 3)->text().toDouble());
