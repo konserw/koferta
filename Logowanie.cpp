@@ -74,7 +74,7 @@ Logowanie::Logowanie() :
 
     d = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"));
     d->setDatabaseName("kOferta");
-    d->setPort(3306);
+    d->setPort(13306);
 
 #ifdef NOSSL
     DEBUG << "NOSSL defined, pomijam ustawianie bezpiecznego połączenia";
@@ -138,7 +138,7 @@ Logowanie::Logowanie() :
         DEBUG << "otawrcie pliku host nie powiodło się";
     ui->ip->addItems(*hosts);
 #else
-    this->hostChanged("192.168.1.90");
+    this->hostChanged("koferta.no-ip.pl");
     ui->comboBox->setCurrentIndex(5);
     ui->lineEdit->setFocus();
 #endif
