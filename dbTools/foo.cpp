@@ -4,28 +4,6 @@
 #include <QTextStream>
 #include <QTextCodec>
 
-void insert_towar(const QString& id, const QString& nazwa, double cena, const QString& jednostka, bool checkExisting)
-{
-    QSqlQuery q;
-    QString s;
-
-    if(checkExisting)
-    {
-        s = QString("SELECT nazwa FROM towar WHERE id='%1'").arg(id);
-        EXEC_SILENT(s);
-        if(q.next())
-        {
-            DEBUG <<  "Towar o id: " << id << " istnieje w bazie, nastapi jego nadpisanie!";
-            s = QString("DELETE FROM towar WHERE id='%1'").arg(id);
-            EXEC_SILENT(s);
-        }
-    }
-
-    s = QString("INSERT INTO towar (id, nazwa, cena, jednostka) VALUES ('%1', '%2', %3, '%4')").arg(id, nazwa, QString::number(cena), jednostka);
-    EXEC_SILENT(s);
-}
-
-
 QStringList importTowar(const QString& fileName, bool dryRun)
 {
     static QStringList keys;
@@ -89,8 +67,7 @@ QStringList importTowar(const QString& fileName, bool dryRun)
         else
             s = "szt.";
 
-     //   if(1%50 == 0)
-            dbg <<  "\rPrzetworzono lini:\t" << i+1;
+        dbg <<  "\rPrzetworzono lini:\t" << i+1;
 
         if(!dryRun)
         {

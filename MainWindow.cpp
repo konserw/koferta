@@ -17,7 +17,7 @@
 **/
 
 #include "MainWindow.h"
-#include "ui_mainwindow.h"
+#include "ui_MainWindow.h"
 
 #include <QDate>
 #include <QSqlQuery>
@@ -38,7 +38,6 @@
 #include <QPrintDialog>
 
 #include "SyntaxKlient.h"
-#include "SyntaxTowar.h"
 #include "NowyKlient.h"
 #include "NowyTowar.h"
 #include "Database.h"
@@ -111,8 +110,6 @@ MainWindow::MainWindow ():
     connect(ui->klientEdycja, SIGNAL(triggered()), this, SLOT(edytujKlient()));
     //towar
     connect(ui->towarNowy, SIGNAL(triggered()), this, SLOT(dodajTowar()));
-    connect(ui->towarImport, SIGNAL(triggered()), this, SLOT(importTowar()));
-    connect(ui->towarEksport, SIGNAL(triggered()), this, SLOT(eksportTowar()));
     connect(ui->towarEdycja, SIGNAL(triggered()), this, SLOT(edytujTowar()));
     //export
     connect(ui->actionDo_HTML, SIGNAL(triggered()), this, SLOT(zapisz()));
@@ -741,108 +738,6 @@ void MainWindow::dodajTowar()
     NowyTowar* nowyTowar = new NowyTowar(this);
     nowyTowar->exec();
     delete nowyTowar;
-}
-
-void MainWindow::importTowar()
-{
-    QString s;
-    s = QFileDialog::getOpenFileName(this, "Otwórz plik cennika", "", "Plik CSV (*.csv)");
-    if(s.isEmpty())return;
-
-    QFile file(s);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        QMessageBox::critical(this, "Error","Nie udało się otworzyć pliku z danymi cennika");
-        if(!file.exists())DEBUG <<  "cennik nie iesnieje";
-        else DEBUG <<  "cennik niedostępny";
-        return;
-    }
-
-    QMessageBox* mb;
-    mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
-    mb->setStandardButtons(0);
-    mb->setModal(true);
-    mb->show();
-    mb->raise();
-
-    DEBUG <<  "wczytuje towar...";
-
-    QTextStream in(&file);
-    in.setCodec("UTF-8");
-
-    QStringList list;
-    QSqlQuery q;
-    QString sRead;
-    QString cena;
-
-    for(unsigned i=0; !in.atEnd(); ++i)
-    {
-        sRead = in.readLine();
-        list = sRead.split("|");
-        if(list.size() < 3)
-        {
-            DEBUG <<  "syntax error, wczyt towar, line: " << i;
-            SyntaxTowar sw(this, sRead);
-            sw.exec();
-            continue;
-        }
-
-        if(list.size() > 3 && (list.at(3) == "mb." || list.at(3) == "m" || list.at(3) == "metr"))
-            s = "mb.";
-        else
-            s = "szt.";
-
-        cena =  list.at(2);
-        cena.remove(' ');
-        cena.replace(',', '.');
-
-        insert_towar(list.at(1), list.at(0), cena.toDouble(), s);
-    }
-    mb->hide();
-    delete mb;
-    DEBUG <<  "koniec wczytywania";
-}
-
-void MainWindow::eksportTowar()
-{
-    QSqlQuery q;
-    QString s;
-
-    s = QFileDialog::getSaveFileName(this, "Zapisz plik cennika", "", "Plik CSV (*.csv)");
-    if(s.isEmpty())return;
-
-    QFile file(s);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        QMessageBox::critical(this, "Error","Nie udało się otworzyć plikudo zapisu");
-        DEBUG <<  "Plik do zapisu towarów niedostępny";
-        return;
-    }
-
-    QMessageBox* mb;
-    mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
-    mb->setStandardButtons(0);
-    mb->setModal(true);
-    mb->show();
-    mb->raise();
-
-    DEBUG <<  "zapis cennikow do pliku: " << s;
-
-    QTextStream out(&file);
-    out.setCodec("UTF-8");
-
-    s = "SELECT id, nazwa, cena, jednostka FROM towar";
-
-    EXEC(s);
-
-    while(q.next())
-    {
-        out << q.value(1).toString() << "|" << q.value(0).toString() << "|" << q.value(2).toString() << "|" << q.value(3).toString() << "\n";
-    }
-
-    mb->hide();
-    delete mb;
-    DEBUG <<  "koniec zapisu cennika";
 }
 
 void MainWindow::edytujTowar()
