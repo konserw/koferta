@@ -95,3 +95,14 @@ void insert_zapisane_towary(const QString& nr_oferty, const QString& kod, double
     s = QString("INSERT INTO zapisane_towary (nr_oferty, kod, ilosc, rabat) VALUES ('%1', '%2', %3, %4)").arg(nr_oferty, kod, QString::number(ilosc), QString::number(rabat));
     EXEC_SILENT(s);
 }
+
+void insert_combo(const QString& typ, const QString& sh, const QString& lo)
+{
+    OUTSTREAM << "Wstawianie opcji " << sh << " do kombosa " << typ;
+
+    QString s;
+    QSqlQuery q;
+
+    s = QString("INSERT INTO %1 VALUES (DEFAULT, '%2', '%3')").arg(typ, sh, lo);
+    EXEC_SILENT(s);
+}

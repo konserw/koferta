@@ -55,6 +55,12 @@ public slots:
     void setTowar(const QSqlRecord&, int);              //dodawanie towarów do tabeli (wywoływane przez sygnał z dialogu dodajTowar)
     void loadOffer(const QSqlRecord &rec, const QSqlTableModel &mod);              //wczytuje ofertę o połączone z dialogiem wczytywanie
 
+    //dodawanie opcji do kombosów
+    void dostawaNew();
+    void platnoscNew();
+    void terminNew();
+    void ofertaNew();
+
     //obsługa głównej tabeli
     void change(QTableWidgetItem*);                     //wywoływane przeliczenia wartości kosztu i sumy w przypadku zmiany którejś wartości w tabeli
     void clear();                                       //czyszczenie tabeli

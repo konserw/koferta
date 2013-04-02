@@ -48,6 +48,7 @@
 #include "LoadDialog.h"
 #include "User.h"
 #include "Macros.h"
+#include "EdycjaKombo.h"
 
 /*************************
 **      GŁÓWNE OKNO     **
@@ -127,6 +128,12 @@ MainWindow::MainWindow ():
     connect(ui->rabat, SIGNAL(clicked()), this, SLOT(rabat()));
     connect(ui->delw, SIGNAL(clicked()), this, SLOT(del()));
 
+    //dodawanie opcji do kombosów
+    connect(ui->pushButton_dostawa, SIGNAL(clicked()), this, SLOT(dostawaNew()));
+    connect(ui->pushButton_oferta, SIGNAL(clicked()), this, SLOT(ofertaNew()));
+    connect(ui->pushButton_platnosc, SIGNAL(clicked()), this, SLOT(platnoscNew()));
+    connect(ui->pushButton_termin, SIGNAL(clicked()), this, SLOT(terminNew()));
+
     //Pozostałe informacje - odświerzanie zawartości pól tekstowych
     connect(ui->pushButton_wyborKlienta, SIGNAL(clicked()), this, SLOT(popWyborKlienta()));
     connect(ui->comboBox_dostawa, SIGNAL(currentIndexChanged(int)), this, SLOT(dostawaRef(int)));
@@ -158,6 +165,11 @@ MainWindow::MainWindow ():
     ui->menuExport->setEnabled(false);
     ui->actionSave->setEnabled(false);
     ui->actionNR->setEnabled(false);
+
+    ui->pushButton_dostawa->setText(tr("Dodaj nową opcję"));
+    ui->pushButton_oferta->setText(tr("Dodaj nową opcję"));
+    ui->pushButton_platnosc->setText(tr("Dodaj nową opcję"));
+    ui->pushButton_termin->setText(tr("Dodaj nową opcję"));
 
 /**
  Pozostałe informacje
@@ -733,6 +745,13 @@ void MainWindow::loadOffer(const QSqlRecord& rec, const QSqlTableModel& mod)
     sum();
 }
 
+void MainWindow::dostawaNew()
+{
+    EdycjaKombo pop("dostawa");
+    pop.exec();
+    dostawaModel->select();
+}
+
 /*************************
 **      BAZA DANYCH     **
 *************************/
@@ -1152,4 +1171,25 @@ void MainWindow::makeDocument(QString *sDoc)
             "</table>\n"
             "</body>\n"
             "</html>\n";
+}
+
+void MainWindow::ofertaNew()
+{
+    EdycjaKombo pop("oferta");
+    pop.exec();
+    ofertaModel->select();
+}
+
+void MainWindow::terminNew()
+{
+    EdycjaKombo pop("termin");
+    pop.exec();
+    terminModel->select();
+}
+
+void MainWindow::platnoscNew()
+{
+    EdycjaKombo pop("platnosc");
+    pop.exec();
+    platnoscModel->select();
 }

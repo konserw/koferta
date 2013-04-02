@@ -5,7 +5,7 @@ TODO:
 * zapisywanie informacji o wydruku w zapisanych ofertach
 * sprawdzanie skrótu SHA1 pobranej aktualizacji
 * lepszy skrypt aktualizujący wersję/url/hash nowego buildu w bazie
-
+* user jako singleton
 * przygotowania do translacji
 * skróty klawiatórowe
 * ikony

@@ -297,6 +297,13 @@
            <widget class="QComboBox" name="comboBox_dostawa"/>
           </item>
           <item>
+           <widget class="QPushButton" name="pushButton_dostawa">
+            <property name="text">
+             <string>PushButton</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="verticalSpacer_2">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -334,6 +341,13 @@
            <widget class="QComboBox" name="comboBox_termin"/>
           </item>
           <item>
+           <widget class="QPushButton" name="pushButton_termin">
+            <property name="text">
+             <string>PushButton</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="verticalSpacer_3">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -369,6 +383,13 @@
           </item>
           <item>
            <widget class="QComboBox" name="comboBox_platnosc"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_platnosc">
+            <property name="text">
+             <string>PushButton</string>
+            </property>
+           </widget>
           </item>
           <item>
            <spacer name="verticalSpacer_4">
@@ -415,6 +436,13 @@
           </item>
           <item>
            <widget class="QComboBox" name="comboBox_oferta"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_oferta">
+            <property name="text">
+             <string>PushButton</string>
+            </property>
+           </widget>
           </item>
           <item>
            <spacer name="verticalSpacer_5">
