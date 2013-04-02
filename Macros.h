@@ -60,11 +60,23 @@ extern cUser* currentUser;
 
     #define EXEC(s) \
         do{ \
-            OUTSTREAM << __FILE__ << " (" << __LINE__ << "): zapytanie mysql: " << s; \
+            DEBUG << "zapytanie mysql: " << s; \
             if(q.exec(s) == false) \
                 { \
                 DEBUG << "Zapytanie mysql zkończone niepowodzeniem!"; \
                 OUTSTREAM << "\tError text: " <<  q.lastError().text(); \
+                QMessageBox::warning(NULL, "error", "Wystąpił błąd połączenia z bazą danych. Sprawdź połączenie i spróbuj ponownie"); \
+                return; \
+            } \
+        }while(0)
+
+    #define EXEC_SILENT(s) \
+        do{ \
+            if(q.exec(s) == false) \
+            { \
+                DEBUG << "Zapytanie mysql zkończone niepowodzeniem!"; \
+                OUTSTREAM  << "\tZapytanie mysql: " << s; \
+                OUTSTREAM  << "\tError text: " <<  q.lastError().text(); \
                 QMessageBox::warning(NULL, "error", "Wystąpił błąd połączenia z bazą danych. Sprawdź połączenie i spróbuj ponownie"); \
                 return; \
             } \
