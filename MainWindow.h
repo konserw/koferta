@@ -68,7 +68,7 @@ public slots:
     void terminRef(int);
     void ofertaRef(int);
     void zapytanieRef();
-    void calChanged(const QDate&);                           //zmiana nastąpiła w kalendarzu, wprowadzenie jej do dateedita
+    void calChanged(const QDate&);                      //zmiana nastąpiła w kalendarzu, wprowadzenie jej do dateedita
     void checkNr(bool);
     void checkData(bool);
     void clientChanged(const QSqlRecord&);              //ustawia wybranego klienta - połączone z sygnałem z dialogu klient
@@ -95,8 +95,6 @@ public slots:
 
     //klient
     void dodajKlient();                                 //wyświetla dialog dodający klienta - cDodajKlient
-    void importKlient();                                //import klientow z pliku csv
-    void eksportKlient();                               //ekport bazy klientów do pliku .csv
     void edytujKlient();                                //wyświetla dialog edycji klientów
 
     //towar

@@ -37,7 +37,6 @@
 #include <QPrinter>
 #include <QPrintDialog>
 
-#include "SyntaxKlient.h"
 #include "NowyKlient.h"
 #include "NowyTowar.h"
 #include "Database.h"
@@ -105,8 +104,6 @@ MainWindow::MainWindow ():
     connect(ui->actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
     //klient
     connect(ui->klientNowy, SIGNAL(triggered()), this, SLOT(dodajKlient()));
-    connect(ui->klientImport, SIGNAL(triggered()), this, SLOT(importKlient()));
-    connect(ui->klientEksport, SIGNAL(triggered()), this, SLOT(eksportKlient()));
     connect(ui->klientEdycja, SIGNAL(triggered()), this, SLOT(edytujKlient()));
     //towar
     connect(ui->towarNowy, SIGNAL(triggered()), this, SLOT(dodajTowar()));
@@ -766,104 +763,6 @@ void MainWindow::dodajKlient()
     NowyKlient* nowyKlient = new NowyKlient(this);
     nowyKlient->exec();
     delete nowyKlient;
-}
-
-void MainWindow::importKlient()
-{
-    QString s;
-    s = QFileDialog::getOpenFileName(this, "Otwórz plik bazy klientów", "", "Plik CSV (*.csv)");
-    if(s.isEmpty())return;
-
-    QFile file(s);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        QMessageBox::critical(this, "Error","Nie udało się otworzyć pliku z danymi klientów");
-        if(!file.exists()) DEBUG <<  "klienci nie iesnieje";
-        else DEBUG <<  "klienci niedostępny";
-        return;
-    }
-
-    QMessageBox* mb;
-    mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
-    mb->setStandardButtons(0);
-    mb->setModal(true);
-    mb->show();
-    mb->raise();
-
-    DEBUG <<  "wczytuje klientow...";
-
-    QTextStream in(&file);
-    in.setCodec("UTF-8");
-
-    QStringList list;
-    QString sRead;
-
-    for(unsigned i=0; !in.atEnd(); ++i)
-    {
-        sRead = in.readLine();
-        list = sRead.split("|");
-        if(list.size() < 8)
-        {
-            DEBUG <<  "syntax error, wczyt_klient line: " << i;
-            SyntaxKlient sw(this, sRead);
-            sw.exec();
-            continue;
-        }
-
-        s = list.at(5);
-        s += "<br>\n";
-        s += list.at(6);
-        s += " ";
-        s += list.at(7);
-        insert_klient(list.at(4), list.at(3), list.at(0), list.at(1), list.at(2), s);
-    }
-
-    DEBUG <<  "koniec wczytywania";
-    mb->hide();
-    delete mb;
-}
-
-void MainWindow::eksportKlient()
-{
-    QSqlQuery q;
-    QString s;
-
-    s = QFileDialog::getSaveFileName(this, "Zapisz plik bazy klientów", "", "Plik CSV (*.csv)");
-    if(s.isEmpty())return;
-
-    QFile file(s);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        QMessageBox::critical(this, "Error","Nie udało się otworzyć pliku do zapisu");
-        return;
-    }
-
-    QMessageBox* mb;
-    mb = new QMessageBox(QMessageBox::Information, tr("Przetwarzanie bazy"), tr("Przetwarzanie bazy, proszę czekać..."), QMessageBox::NoButton, this);
-    mb->setStandardButtons(0);
-    mb->setModal(true);
-    mb->show();
-    mb->raise();
-
-    DEBUG <<  "zapis klientow do pliku: " << s;
-
-    QTextStream out(&file);
-    out.setCodec("UTF-8");
-
-    s = "SELECT nazwisko, imie, short, full, tytul, adres FROM klient";
-
-    EXEC(s);
-
-    while(q.next())
-    {
-        for(int i=0; i<7; i++)
-            out << q.value(i).toString() << "|";
-        out << "\n";
-    }
-
-    mb->hide();
-    delete mb;
-    DEBUG <<  "koniec zapisu klientow";
 }
 
 void MainWindow::edytujKlient()
