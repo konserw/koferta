@@ -59,6 +59,8 @@ void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& da
 
     QString s;
     QSqlQuery q;
+    QString rep = uwagi;
+    rep.replace("\'", "\\\'");
 
     s = QString("DELETE FROM zapisane WHERE nr_oferty = '%1'").arg(nr_oferty);
     EXEC_SILENT(s);
@@ -68,8 +70,8 @@ void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& da
 
     s = "INSERT INTO zapisane "
         "(nr_oferty, id_klienta, data, uid, dostawa, termin, platnosc, oferta, uwagi, zapytanie_data, zapytanie_nr)";
-    s += QString(" VALUES ('%1', %2, '%3', %4, %7, %8, %9").arg(nr_oferty, QString::number(id_klienta), data, QString::number(uid), QString::number(dostawa), QString::number(termin), QString::number(platnosc));
-    s += QString(", %1, '%2'").arg(QString::number(oferta), uwagi);
+    s += QString(" VALUES ('%1', %2, '%3', %4, %5, %6, %7, %8, '%9'").arg(
+                nr_oferty, QString::number(id_klienta), data, QString::number(uid), QString::number(dostawa), QString::number(termin), QString::number(platnosc), QString::number(oferta), rep);
     if(zapytanie_data.isNull())
         s += ", NULL";
     else
