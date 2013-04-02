@@ -13,10 +13,10 @@ TODO:
 -------------------------------------------------------------------------
 
 v. 2.2
-* zapisywanie uwag w bazie jako tekstu
 * Odwrócenie kolejności tego changeloga
 * Usunięcie części funkcji administracyjnych z programu
 * możliwość dodawania opcji komboboksów do bazy
+* prawidłowy druk wieloliniowych uwag
 
 v. 2.1
 * drobne poprawki w różnych miejscach
@@ -30,6 +30,7 @@ v. 2.1
 * wskaźnik na usera jako zmienna globalna
 * cena towaru jako zmienna numeryczna (nie napis)
 * konstruowanie okien dopiero przy ich wywołaniu
+* zapisywanie uwag w bazie jako tekstu
 
 v. 2.01
 * poprawiony błąd przy wczytywaniu rabatu

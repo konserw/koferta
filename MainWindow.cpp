@@ -954,13 +954,13 @@ void MainWindow::makeDocument(QString *sDoc)
     *sDoc += "\t\t<td width=";
     *sDoc += QString::number(d);
     *sDoc += ">\n"
-            "\t\t\t";
+             "\t\t\t";
     if(htm)
         *sDoc += "<img src=logo.jpg align=center><br>\n";
     else
         *sDoc += "<img src=:/log align=center><br>\n";
-    *sDoc +=
-             "\t\t\t<b>Marley Polska Sp. z o.o.</b><br>\n"
+
+    *sDoc += "\t\t\t<b>Marley Polska Sp. z o.o.</b><br>\n"
              "\t\t\tul. Annopol 24<br>\n"
              "\t\t\t03-236 Warszawa<br>\n"
              "\t\t\t<br>\n"
@@ -969,22 +969,22 @@ void MainWindow::makeDocument(QString *sDoc)
     *sDoc += currentUser->adress().replace("\n", "\n\t\t\t");
     *sDoc += currentUser->mail();
     *sDoc += "\n"
-            "\t\t</td>\n"
-            "\t</tr>\n"
-            "\t<tr>\n"
-            "\t\t<td colspan=3><hr width=100%></td>\n"
-            "\t</tr>\n"
-            "\t</table>\n"
-            "</td></tr>\n"
-            "</thead>\n"
+             "\t\t</td>\n"
+             "\t</tr>\n"
+             "\t<tr>\n"
+             "\t\t<td colspan=3><hr width=100%></td>\n"
+             "\t</tr>\n"
+             "\t</table>\n"
+             "</td></tr>\n"
+             "</thead>\n"
    /*Właściwa oferta*/
-            "<tbody>\n"
-            "<tr><td>\n"
-            "\t";
+             "<tbody>\n"
+             "<tr><td>\n"
+             "\t";
     *sDoc += ui->plainTextEdit_zapytanie->toPlainText();
     *sDoc += "<br />\n"
-            "</td></tr>\n"
-            "<tr><td>\n";
+             "</td></tr>\n"
+             "<tr><td>\n";
  //tabela
     *sDoc += "\t<font face=\"Arial Narrow\" size=2>\n"
              "\t<table cellspacing=3>\n"
@@ -1037,7 +1037,7 @@ void MainWindow::makeDocument(QString *sDoc)
     *sDoc += " align = right>Wartość ";
     *sDoc += waluta;
     *sDoc += "</td>\n"
-          "\t</tr></thead>\n";
+             "\t</tr></thead>\n";
 
     for(uint i=0; i<rows; ++i){
         *sDoc += "\t<tr>\n\t\t<td>";
@@ -1092,7 +1092,7 @@ void MainWindow::makeDocument(QString *sDoc)
     *sDoc += " align=right>Razem ";
     *sDoc += waluta;
     *sDoc += ":</td>\n"
-            "\t\t<td align=right>";
+             "\t\t<td align=right>";
     *sDoc += ui->tableWidget->item(rows, 7)->text();
     *sDoc += "</td>\n"
             "\t</tr>\n"
@@ -1125,17 +1125,17 @@ void MainWindow::makeDocument(QString *sDoc)
     *sDoc += ui->plainTextEdit_platnosc->toPlainText();
     *sDoc += "</td>\n"
              "\t</tr>\n"
-            "\t<tr>\n"
-            "\t\t<td>Uwagi:</td>\n"
-            "\t\t<td>";
-   *sDoc += ui->plainTextEdit_uwagi->toPlainText();
-   *sDoc += "</td>\n"
-            "\t</tr>\n"
-            "\t</table>\n"
-            "</td></tr>\n";
+             "\t<tr>\n"
+             "\t\t<td>Uwagi:</td>\n"
+             "\t\t<td>";
+    *sDoc += ui->plainTextEdit_uwagi->toPlainText().replace("\n", "<br />\n");
+    *sDoc += "</td>\n"
+             "\t</tr>\n"
+             "\t</table>\n"
+             "</td></tr>\n";
 //Pozdrowienia
     *sDoc += "<tr><td>\n"
-            "\t";
+             "\t";
     *sDoc += ui->plainTextEdit_oferta->toPlainText();
     *sDoc += "<br>\n"
              "\tŁączymy pozdrowienia.\n"
