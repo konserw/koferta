@@ -83,11 +83,9 @@ MainWindow::MainWindow ():
     ui->setupUi(this);
     pln = false;
 
-    //Stringi
     nr_oferty = new QString;
     data = new QString(QDate::currentDate().toString("dd.MM.yyyy"));
 
-    //wyd = new cWydruk(ui, data, &id_klienta, nr_oferty);
     calendarWidget = new QCalendarWidget;
     klient = NULL;
 /**

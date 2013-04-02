@@ -61,7 +61,6 @@ public slots:
     void rabat();                                       //ustawia rabat dla wszystkich pozycji jednocześnie
     void del();                                         //usuwanie wiersza z tabeli
 
-
     //odświerzanie texteditów drugiej zakładce
     void dostawaRef(int);
     void platnoscRef(int);
@@ -100,6 +99,7 @@ public slots:
     //towar
     void dodajTowar();                                  //wyświetlenie dialogu  dodającego towar - cDodajTowar
     void edytujTowar();                                 //wyświetla dialog edycji towarów
+
     //help
     void about();                                       //wyświetla informacje o programie
     //o qt - wbudowane

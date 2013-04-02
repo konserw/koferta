@@ -1,140 +1,48 @@
 Changelog programu kOferta (c) Kamil Strzempowicz
 
-v1.5
-* początek tego loga
-* dodana możliwość zmiany nr. oferty na kolejny
-* oferty nie zapisane nie zajmują już nr. oferty
-* nr oferty na górenj belce
-* umożliwiono dodawanie (poj.) towaru do bazy
-* zmiana layout'u oferty
-* ulepszony export do htm
-* dodano zaokrąglanie w przeliczeniach
-* dodano usuwanie wiersza
-* domyslna maxymalizacja okna
-* poprawiony mechanizm zapisu
+--------------------------------------------------------------------------
+TODO:
+* zapisywanie informacji o wydruku w zapisanych ofertach
+* sprawdzanie skrótu SHA1 pobranej aktualizacji
+* lepszy skrypt aktualizujący wersję/url/hash nowego buildu w bazie
 
-v 1.52
-* suma EUR zmieniono na suma €
-* dodano sortowanie tabeli
-* możliwość kompilacji bez sprawdzania hasła
-* zmiany w layout oferty
+* przygotowania do translacji
+* skróty klawiatórowe
+* ikony
+* przerobienie funkcji sha1 (?)
+-------------------------------------------------------------------------
 
-v 1.53
-* dodano kolumnę Cena (jedn. po rabacie)
-* zmiany w layout oferty
-* pola "zapytanie" przeniesiono na górę okna
-* zunifikowanie windowsowego i linuxowego pliku projektu
+v. 2.2
+* zapisywanie uwag w bazie jako tekstu
+* Odwrócenie kolejności tego changeloga
+* Usunięcie części funkcji administracyjnych z programu
+* możliwość dodawania opcji komboboksów do bazy
 
-v 1.54
-* dodanie skrytu kompilującego
-* poprawiony błąd w otwieraniu oferty (nie uwzględniało rabatu)
-* usunięto najbardziej zewnętrzną tabelę w ofercie
-* zmiany w layout oferty
+v. 2.1
+* drobne poprawki w różnych miejscach
+* przeniesienie serwera na platformę Raspbery Pi
+* opcje comboboxów przeniesione do bazy
+* zapisane ofery w formie odnośników do tabeli combosów
+* unifikacja stylu nazw plików i klas
+* ograniczenie ilości odwołań do bazy danych dzięki przekazywaniu rekordów między oknami
+* usunięcie okna ustawień bazy, które przestało być aktualne
+* usunięcie klasy wydruk i przeniesienie odpowiednich funkcji do MainWindow
+* wskaźnik na usera jako zmienna globalna
+* cena towaru jako zmienna numeryczna (nie napis)
+* konstruowanie okien dopiero przy ich wywołaniu
 
-v 1.55
-* Przeniesienie kolumny ilość w lewo
-* Poprawiono kolejność pozycji w tabeli
-* Naprawa błędu w dodawaniu towaru
+v. 2.01
+* poprawiony błąd przy wczytywaniu rabatu
 
-v 1.56
-* zmiana szerokości kolumn w ofercie
-* poprawione błędy przy wczytywaniu oferty
-* usunięcie worningów "unused parameter"
-* dołączenie tego pliku do paczki z programem
-
-v 1.6
-* zmiana sposobu tworzenia wydruku
-* euro -> złotówki
-* zakładka konfiguracja
-* inne drobne usprawnienia
-
-v 1.7
-* wybór serwera na etapie ogowania
-* logo kOferta
-* możliwość logowania jako root
-* Dialog dla ustawień roota
-* help->o kOferta
-* duże zmiany w kodzie
-* menu klient i towar zmiast taba konfiguracja
-* bardziej bezpieczne nazwy/pasy użytkowników MySQL
-
-v 1.75
-* logowanie SSL
-* mainwindow nie powstaje jeżeli logowanie się nie powiedzie
-
-v 1.76
-* komentarze w nagłówkach
-* metr -> mb.
-* nr. wersji jako definicja, nie stała globalna
-* build date w info
-* wyrzucenie wspólnego nagłówka (?)
-
-v 1.77
-* zmiana nazw klas i plików na bardziej znaczące
-* poprawa logo i tytułów dialogów
-
-v 1.78
-* zmiana kompilatora dla wersji windows z MinGW na MSVC++
-* rezygnacja z biblioteki QCA (problem z kompilacją jej pod MSVC2010)
-* implementacja skrótu SHA1 na bazie klasy z http://tamale.net/
-* dane użytkowników przeniesione z binarki do bazy danych
-* dodano Dialog umożliwiający dodawanie użytkowników
-* poprawa drobnych błędów
-* numery ofert przeniesiono z osobnej tabeli do tabeli użytkowników
-* dedykowany serwer
-
-v 1.79
-* dodano wygodną funkcję tworzenia skrutów SHA1
-* dodano eksport towarów i klientów
-* przeniesiono konstrukcję części obiektów z konstruktora mainWindow do metod
-* uporządkowanie nagłówka MainWindow i nazw niektórych metod
-* poprawa informacji o połączeniu z bazą
-* dołączono informacje licencyjne
-
-v 1.8
-* zmiana hasła domyslnego uzytkownika bazy na bezpieczniejsze i przeniesienie go do definicji
-* mozliwosc czesciowego(z poprzedniej wersji bazy) importowania i eksportowania bazy danych
-* połączenie pól ulica i miasto w jedno pole adres w tabeli klientów
-* dodatkowy przycisk dodający standartowych użytkowaników w oknie roota
-* dodano wygodne funkcje dodawania danych do bazy
-* dodano sporo informacji debugowania
-* dołączenie aplikacji umożliwiającej odczyt informacji debugowania do paczki klienta windows
-
-v 1.81
-* okno edycji towarów
-* okno edycji klientów
-* drobne poprawki w kodzie
-* zmiana nazwy okna głównego przeniesiona do funkcji
-* wykorzystanie funkcji z database.cpp w oferta.cpp
-
-v 1.82
-* możliwość usuwania towarów i klientów
-* zmiana mechanizmu logowania
-* sprawdzanie wykonania się każdego zapytania mysql na wypadek błędu połączenia
-* drobne poprawki
-* Wybor Towaru - zachowanie ostatniego wyszukiwania
-* okno kalendarzowe do zapytania
-
-v. 1.83
-* niewielkie poprawki w oknie dodawania użytkownika
-* ikona
-* informacje debugowania przeniesione do makra DEBUG
-* otwieranie bazy i wykonywanie zapytania przeniesione do makr EXEC i LOGIN
-* wyłączenie informacji debugowania w wersji release
-* klasa user rozbudowana o konstruktory korzystające z bazy
-* uproszczenie procedury logowania
-* poprawione okno "o kOferta"
-* dane orginalnego autora na wydruku z zapisanej oferty
-
-v. 1.84
-* możliwośc dodawania użytkowników z poziomu nie-roota
-* drobne usprawnienia w kodzie
-* usunięcie wyskakującego okienka o niemożliwości połączenia z bazą na etapie logowania (info w pasku stanu)
-* usunięcie niepotrzebnych/nieaktualnych plików z paczki dla Windows
-
-v. 1.85
-* przebudowanie struktury plików źródłowych
-* auto-update
+v. 2.0
+* ponowne przebudowanie struktury plików źródłowych
+* update bibliotek qt dla systemu windows do wersji 4.8.4
+* przebudowana główna funkcja programu
+* lepsze radzenie sobie z problemami sterownika mysql
+* wyszukiwanie towarów zaimplementowane jako model-view w osobnym widżecie
+* nowe okno dodawania towarów
+* dodatkowy editbox na "uwagi"
+* małe poprawki w wydruku oferty
 
 v. 1.9
 * drobne poprawki w różnych miejscach
@@ -147,46 +55,138 @@ v. 1.9
 * wyszukiwanie klientów zaimplementowane jako model-view w osobnym widżecie
 * zapisywanie loga z działąnia aplikacja na systemie windows
 
-v. 2.0
-* ponowne przebudowanie struktury plików źródłowych
-* update bibliotek qt dla systemu windows do wersji 4.8.4
-* przebudowana główna funkcja programu
-* lepsze radzenie sobie z problemami sterownika mysql
-* wyszukiwanie towarów zaimplementowane jako model-view w osobnym widżecie
-* nowe okno dodawania towarów
-* dodatkowy editbox na "uwagi"
-* małe poprawki w wydruku oferty
+v. 1.85
+* przebudowanie struktury plików źródłowych
+* auto-update
 
-<<<<<<< HEAD
-v. 2.01
-* poprawiony błąd przy wczytywaniu rabatu
+v. 1.84
+* możliwośc dodawania użytkowników z poziomu nie-roota
+* drobne usprawnienia w kodzie
+* usunięcie wyskakującego okienka o niemożliwości połączenia z bazą na etapie logowania (info w pasku stanu)
+* usunięcie niepotrzebnych/nieaktualnych plików z paczki dla Windows
 
-TODO:
-=======
-v. 2.1
-* drobne poprawki w różnych miejscach
->>>>>>> devel
-* przeniesienie serwera na platformę Raspbery Pi
-* opcje comboboxów przeniesione do bazy
-* zapisane ofery w formie odnośników do tabeli combosów
-* zapisywanie uwag w bazie jako tekstu
-* zapis ceny katalogowej towaru jako liczby w tabeli
-* unifikacja stylu nazw plików i klas
-* ograniczenie ilości odwołań do bazy danych dzięki przekazywaniu rekordów między oknami
-* usunięcie okna ustawień bazy, które przestało być aktualne
-* usunięcie klasy wydruk i przeniesienie odpowiednich funkcji do MainWindow
-* wskaźnik na usera jako zmienna globalna
-* cena towaru jako zmienna numeryczna
-* konstruowanie okien dopiero przy ich wywołaniu
+v. 1.83
+* niewielkie poprawki w oknie dodawania użytkownika
+* ikona
+* informacje debugowania przeniesione do makra DEBUG
+* otwieranie bazy i wykonywanie zapytania przeniesione do makr EXEC i LOGIN
+* wyłączenie informacji debugowania w wersji release
+* klasa user rozbudowana o konstruktory korzystające z bazy
+* uproszczenie procedury logowania
+* poprawione okno "o kOferta"
+* dane orginalnego autora na wydruku z zapisanej oferty
 
+v 1.82
+* możliwość usuwania towarów i klientów
+* zmiana mechanizmu logowania
+* sprawdzanie wykonania się każdego zapytania mysql na wypadek błędu połączenia
+* drobne poprawki
+* Wybor Towaru - zachowanie ostatniego wyszukiwania
+* okno kalendarzowe do zapytania
 
-TODO:
-* możliwość dodawania opcji komboboksów do bazy
-* zapisywanie informacji o wydruku w zapisanych ofertach
-* sprawdzanie skrótu SHA1 pobranej aktualizacji
-* lepszy skrypt aktualizujący wersję/url/hash nowego buildu w bazie
+v 1.81
+* okno edycji towarów
+* okno edycji klientów
+* drobne poprawki w kodzie
+* zmiana nazwy okna głównego przeniesiona do funkcji
+* wykorzystanie funkcji z database.cpp w oferta.cpp
 
-* przygotowania do translacji
-* skróty klawiatórowe
-* ikony
-* przerobienie funkcji sha1 (?)
+v 1.8
+* zmiana hasła domyslnego uzytkownika bazy na bezpieczniejsze i przeniesienie go do definicji
+* mozliwosc czesciowego(z poprzedniej wersji bazy) importowania i eksportowania bazy danych
+* połączenie pól ulica i miasto w jedno pole adres w tabeli klientów
+* dodatkowy przycisk dodający standartowych użytkowaników w oknie roota
+* dodano wygodne funkcje dodawania danych do bazy
+* dodano sporo informacji debugowania
+* dołączenie aplikacji umożliwiającej odczyt informacji debugowania do paczki klienta windows
+
+v 1.79
+* dodano wygodną funkcję tworzenia skrutów SHA1
+* dodano eksport towarów i klientów
+* przeniesiono konstrukcję części obiektów z konstruktora mainWindow do metod
+* uporządkowanie nagłówka MainWindow i nazw niektórych metod
+* poprawa informacji o połączeniu z bazą
+* dołączono informacje licencyjne
+
+v 1.78
+* zmiana kompilatora dla wersji windows z MinGW na MSVC++
+* rezygnacja z biblioteki QCA (problem z kompilacją jej pod MSVC2010)
+* implementacja skrótu SHA1 na bazie klasy z http://tamale.net/
+* dane użytkowników przeniesione z binarki do bazy danych
+* dodano Dialog umożliwiający dodawanie użytkowników
+* poprawa drobnych błędów
+* numery ofert przeniesiono z osobnej tabeli do tabeli użytkowników
+* dedykowany serwer
+
+v 1.77
+* zmiana nazw klas i plików na bardziej znaczące
+* poprawa logo i tytułów dialogów
+
+v 1.76
+* komentarze w nagłówkach
+* metr -> mb.
+* nr. wersji jako definicja, nie stała globalna
+* build date w info
+* wyrzucenie wspólnego pliku nagłówka
+
+v 1.75
+* logowanie SSL
+* mainwindow nie powstaje jeżeli logowanie się nie powiedzie
+
+v 1.7
+* wybór serwera na etapie ogowania
+* logo kOferta
+* możliwość logowania jako root
+* Dialog dla ustawień roota
+* help->o kOferta
+* duże zmiany w kodzie
+* menu klient i towar zmiast taba konfiguracja
+* bardziej bezpieczne nazwy/pasy użytkowników MySQL
+
+v 1.6
+* zmiana sposobu tworzenia wydruku
+* euro -> złotówki
+* zakładka konfiguracja
+* inne drobne usprawnienia
+
+v 1.56
+* zmiana szerokości kolumn w ofercie
+* poprawione błędy przy wczytywaniu oferty
+* usunięcie worningów "unused parameter"
+* dołączenie tego pliku do paczki z programem
+
+v 1.55
+* Przeniesienie kolumny ilość w lewo
+* Poprawiono kolejność pozycji w tabeli
+* Naprawa błędu w dodawaniu towaru
+
+v 1.54
+* dodanie skrytu kompilującego
+* poprawiony błąd w otwieraniu oferty (nie uwzględniało rabatu)
+* usunięto najbardziej zewnętrzną tabelę w ofercie
+* zmiany w layout oferty
+
+v 1.53
+* dodano kolumnę Cena (jedn. po rabacie)
+* zmiany w layout oferty
+* pola "zapytanie" przeniesiono na górę okna
+* zunifikowanie windowsowego i linuxowego pliku projektu
+
+v 1.52
+* suma EUR zmieniono na suma €
+* dodano sortowanie tabeli
+* możliwość kompilacji bez sprawdzania hasła
+* zmiany w layout oferty
+
+v1.5
+* początek tego loga
+* dodana możliwość zmiany nr. oferty na kolejny
+* oferty nie zapisane nie zajmują już nr. oferty
+* nr oferty na górenj belce
+* umożliwiono dodawanie (poj.) towaru do bazy
+* zmiana layout'u oferty
+* ulepszony export do htm
+* dodano zaokrąglanie w przeliczeniach
+* dodano usuwanie wiersza
+* domyslna maxymalizacja okna
+* poprawiony mechanizm zapisu
