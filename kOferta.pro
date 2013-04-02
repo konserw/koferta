@@ -69,7 +69,6 @@ HEADERS += Database.h \
            NowyUser.h \
            SHA1.h \
            SyntaxKlient.h \
-           SyntaxTowar.h \
            SzukajKlienta.h \
            SzukajOferty.h \
            SzukajTowaru.h \
@@ -86,7 +85,6 @@ FORMS += EdycjaKlienta.ui \
          NowyTowar.ui \
          NowyUser.ui \
          SyntaxKlient.ui \
-         SyntaxTowar.ui \
          SzukajKlienta.ui \
          SzukajOferty.ui \
          SzukajTowaru.ui \
@@ -105,7 +103,6 @@ SOURCES += Database.cpp \
            NowyUser.cpp \
            SHA1.cpp \
            SyntaxKlient.cpp \
-           SyntaxTowar.cpp \
            SzukajKlienta.cpp \
            SzukajOferty.cpp \
            SzukajTowaru.cpp \

@@ -63,7 +63,8 @@ extern cUser* currentUser;
             OUTSTREAM << __FILE__ << " (" << __LINE__ << "): zapytanie mysql: " << s; \
             if(q.exec(s) == false) \
                 { \
-                OUTSTREAM << __FILE__ << " (" << __LINE__ << "): Zapytanie mysql zkończone niepowodzeniem!"; \
+                DEBUG << "Zapytanie mysql zkończone niepowodzeniem!"; \
+                OUTSTREAM << "\tError text: " <<  q.lastError().text(); \
                 QMessageBox::warning(NULL, "error", "Wystąpił błąd połączenia z bazą danych. Sprawdź połączenie i spróbuj ponownie"); \
                 return; \
             } \
@@ -72,7 +73,7 @@ extern cUser* currentUser;
     #define LOGIN \
         if (!d->open()) \
         { \
-            OUTSTREAM << __FILE__ << " (" << __LINE__ << "): Błąd: nie można się połączyć z bazą!"; \
+            DEBUG << "Błąd: nie można się połączyć z bazą!"; \
             OUTSTREAM << "\t\t\t connName: " << d->connectionName(); \
             OUTSTREAM << "\t\t\t driver: " << d->driverName(); \
             OUTSTREAM << "\t\t\t opcje " << d->connectOptions(); \
@@ -85,7 +86,7 @@ extern cUser* currentUser;
     #define LOGIN_ \
         if (!d->open()) \
         { \
-            OUTSTREAM << __FILE__ << " (" << __LINE__ << "): Błąd: nie można się połączyć z bazą!"; \
+            DEBUG << "Błąd: nie można się połączyć z bazą!"; \
             OUTSTREAM << "\t\t\t connName: " << d->connectionName(); \
             OUTSTREAM << "\t\t\t driver: " << d->driverName(); \
             OUTSTREAM << "\t\t\t opcje " << d->connectOptions(); \
