@@ -23,10 +23,15 @@ extern cUser* currentUser;
 #ifdef RELEASE
     #define DEBUG OUTSTREAM
 
+#define EXEC_SILENT(s) EXEC(x)
+
     #define EXEC(x) \
         do{ \
             if(q.exec(s) == false) \
-                { \
+            { \
+                DEBUG << "Zapytanie mysql zkończone niepowodzeniem!"; \
+                OUTSTREAM  << "\tZapytanie mysql: " << s; \
+                OUTSTREAM  << "\tError text: " <<  q.lastError().text(); \
                 QMessageBox::warning(NULL, "error", "Wystąpił błąd połączenia z bazą danych. Sprawdź połączenie i spróbuj ponownie"); \
                 return; \
             } \
