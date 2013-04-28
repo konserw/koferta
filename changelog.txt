@@ -13,6 +13,7 @@ TODO:
 -------------------------------------------------------------------------
 
 v. 2.21
+* Poprawiony tytuł okna dialogowego wstawiania opcji komboboksa
 * Poprawione odświerzanie szczegółowych danych produktu przy użyciu klawiatury
 * Zwężenie widgetu na szczegółoe dane produktu
 * Maksymalizacja okna dialogowego wyboru towaru
