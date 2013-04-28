@@ -41,6 +41,7 @@ public slots:
     void ref(const QString&);
     void ref2();
     void select(const QModelIndex &);
+    void currentRowChanged(const QModelIndex&, const QModelIndex &);
 
 signals:
     void selectionChanged(const QSqlRecord&);

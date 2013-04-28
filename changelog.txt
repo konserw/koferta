@@ -12,7 +12,13 @@ TODO:
 * przerobienie funkcji sha1 (?)
 -------------------------------------------------------------------------
 
+v. 2.21
+* Poprawione odświerzanie szczegółowych danych produktu przy użyciu klawiatury
+* Zwężenie widgetu na szczegółoe dane produktu
+* Maksymalizacja okna dialogowego wyboru towaru
+
 v. 2.2
+* Niewielkie poprawki w zapisie loga.
 * Odwrócenie kolejności tego changeloga
 * Usunięcie części funkcji administracyjnych z programu
 * możliwość dodawania opcji komboboksów do bazy

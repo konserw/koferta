@@ -41,21 +41,33 @@ SzukajTowaru::SzukajTowaru(QWidget *parent) :
 
     QStringList sl;
     sl << tr("Id") << tr("Nazwa");// << tr("Cena Katalogowa");
+    //model->setHorizontalHeaderLabels(sl);
     for(int i=0; i<sl.size(); ++i)
         model->setHeaderData(i, Qt::Horizontal, sl[i]);
 
     ui->tableView->setModel(model);
+
+
     ui->tableView->resizeColumnToContents(0);
-    ui->tableView->resizeColumnToContents(1);
+ //   ui->tableView->resizeColumnToContents(1);
     ui->tableView->hideColumn(2);
     ui->tableView->hideColumn(3);
+
+    QHeaderView* hdr = ui->tableView->horizontalHeader();
+ //   hdr->setResizeMode(0, QHeaderView::ResizeToContents);
+    hdr->setResizeMode(1, QHeaderView::Stretch);
+
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     connect(ui->radioButton_id, SIGNAL(clicked()), this, SLOT(ref2()));
     connect(ui->radioButton_name, SIGNAL(clicked()), this, SLOT(ref2()));
     connect(ui->lineEdit, SIGNAL(textEdited(QString)), this, SLOT(ref(QString)));
-    connect(ui->tableView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(select(const QModelIndex&)));
+    connect(ui->tableView, SIGNAL(clicked(QModelIndex)), this, SLOT(select(QModelIndex)));
+
+    QItemSelectionModel *sm = ui->tableView->selectionModel();
+    connect(sm, SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),
+                this, SLOT(currentRowChanged(QModelIndex,QModelIndex)));
 }
 
 SzukajTowaru::~SzukajTowaru()
@@ -85,4 +97,10 @@ void SzukajTowaru::ref(const QString & in)
     s += in;
     s += "%'";
     model->setFilter(s);
+}
+
+void SzukajTowaru::currentRowChanged(const QModelIndex &cur, const QModelIndex &prev)
+{
+    Q_UNUSED(prev);
+    select(cur);
 }

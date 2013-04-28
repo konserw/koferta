@@ -484,6 +484,7 @@ void MainWindow::popWyborTowaru()
 {
     WyborTowaru* pop = new WyborTowaru(this);
     connect(pop, SIGNAL(countChanged(QSqlRecord,int)), this, SLOT(setTowar(QSqlRecord,int)));
+    pop->showMaximized();
     pop->exec();
     delete pop;
 }
