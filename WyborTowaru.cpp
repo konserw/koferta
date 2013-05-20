@@ -32,7 +32,7 @@ WyborTowaru::WyborTowaru(QWidget *parent) :
     ui->plainTextEdit->setPlainText(tr("Wybierz towar z listy po lewej"));
     ui->spinBox->setMinimum(0);
     ui->spinBox->setSingleStep(1);
-    ui->spinBox->setMaximum(999);
+    ui->spinBox->setMaximum(99999);
     rec = NULL;
 
     QFont font("Monospace");

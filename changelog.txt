@@ -16,6 +16,9 @@ v. 2.3
 * poprawione wstawianie loga do oferty (issue #2)
 * poprawione przeliczanie wartości w tabeli po dodawaniu towaru do oferty (issue #3)
 * poprawiona edycja/dodawanie towaru (issue #4)
+* zwiększono max ilość produktów do 99999 (issue #6)
+* zwiększono max cenę produktów do 99999 (issue #6)
+* dodano sprawdzanie czy id dodawanego towaru istnieje
 
 v. 2.21
 * Poprawiony tytuł okna dialogowego wstawiania opcji komboboksa

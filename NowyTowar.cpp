@@ -19,25 +19,46 @@
 #include "NowyTowar.h"
 #include "ui_NowyTowar.h"
 #include "Database.h"
+#include <QtSql>
+#include <QMessageBox>
+#include "Macros.h"
 
 NowyTowar::NowyTowar(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::NowyTowar)
 {
     ui->setupUi(this);
+    ui->cena->setMaximum(99999);
+    ui->r_szt->setChecked(true);
+    ui->pushButton_cancel->setText(tr("Anuluj"));
+    ui->pushButton_ok->setText(tr("OK"));
+    ui->pushButton_ok->setDefault(true);
 
-    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(acc()));
-    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(close()));
+    connect(ui->pushButton_ok, SIGNAL(clicked()), this, SLOT(acc()));
+    connect(ui->pushButton_cancel, SIGNAL(clicked()), this, SLOT(close()));
 }
 
 void NowyTowar::acc()
 {
-    QString s;
+    ui->pushButton_ok->setEnabled(false);
+
+    QSqlQuery q;
+    QString kod = ui->kod->text();
+    QString s = QString("Select * FROM towar WHERE id='%1'").arg(kod);
+
+    EXEC(s);
+    if(q.next())
+    {
+        QMessageBox::warning(this, tr("Duplikat kodu"), tr("Kod towaru musi być unikalny. Spróbuj wprowadzić inny kod."));
+        ui->pushButton_ok->setEnabled(true);
+        return;
+    }
+
     if(ui->r_m->isChecked())
         s = "mb.";
     else
         s = "szt.";
-    insert_towar(ui->kod->text(), ui->spec->text(), ui->cena->value(), s);
+    insert_towar(kod, ui->spec->text(), ui->cena->value(), s);
 
     this->accept();
 }

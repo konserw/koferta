@@ -32,6 +32,7 @@ EdycjaTowaru::EdycjaTowaru(QWidget *parent) :
     DEBUG << "Konstruktor cEdycjaTowaru";
 
     ui->setupUi(this);
+    ui->cena->setMaximum(99999);
 
     connect(ui->close, SIGNAL(clicked()), this, SLOT(close()));
     connect(ui->apply, SIGNAL(clicked()), this, SLOT(app()));
