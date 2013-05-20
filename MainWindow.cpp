@@ -357,7 +357,7 @@ void MainWindow::setTowar(const QSqlRecord& rec, int ile)
         item = new QTableWidgetItem("0");
         ui->tableWidget->setItem(row, 3, item);
         //cana
-        item = new QTableWidgetItem("");
+        item = new QTableWidgetItem(QString::number(r, 'f', 2));
         ui->tableWidget->setItem(row, 4, item);
         //ilosc
         item = new QTableWidgetItem(QString::number(ile));
@@ -366,13 +366,14 @@ void MainWindow::setTowar(const QSqlRecord& rec, int ile)
         item = new QTableWidgetItem(rec.value("jednostka").toString());
         ui->tableWidget->setItem(row, 6, item);
         //koszt
-        item = new QTableWidgetItem("");
-        ui->tableWidget->setItem(row, 7, item);
-        przelicz(row);
+        item = new QTableWidgetItem(QString::number(r, 'f', 2));
+        ui->tableWidget->setItem(row, 7, item);    
     }
     else
     {
-        ui->tableWidget->item(list[0]->row(), 5)->setText(QString::number(ile));
+        unsigned row = list[0]->row();
+        ui->tableWidget->item(row, 5)->setText(QString::number(ile));
+        przelicz(row);
     }
 
     sum();
@@ -812,8 +813,6 @@ void MainWindow::printPrev()
 
 void MainWindow::printPdf()
 {
-    htm = false;
-
     QString s;
     s = QFileDialog::getSaveFileName(this, "Zapis pdfa", "", "Dokument PDF (*.pdf)");
     if(s.isEmpty())return;
@@ -821,6 +820,8 @@ void MainWindow::printPdf()
     QPrinter* printer = new QPrinter;
     printer->setOutputFormat(QPrinter::PdfFormat);
     printer->setOutputFileName(s);
+
+    htm = false;
     print(printer);
 
     delete printer;
@@ -828,8 +829,6 @@ void MainWindow::printPdf()
 
 void MainWindow::printHtm()
 {
-    htm = true;
-
     QString s;
     s = QFileDialog::getSaveFileName(this, "Zapis do HTML", "", "Dokument HTML (*.htm)");
     if(s.isEmpty())return;
@@ -841,6 +840,7 @@ void MainWindow::printHtm()
         return;
     }
 
+    htm = true;
     QString* sDoc = new QString;
     makeDocument(sDoc);
 
@@ -858,6 +858,7 @@ void MainWindow::print(QPrinter *printer)
     printer->setResolution(300);
     printer->setPageMargins(margin, margin, margin, margin, QPrinter::Millimeter);
 
+    htm = false;
     QString* sDoc = new QString;
     makeDocument(sDoc);
 

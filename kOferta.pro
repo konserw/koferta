@@ -24,7 +24,7 @@ QT = core gui sql network
 
 TEMPLATE = app
 
-DEFINES += VER=2.21
+DEFINES += VER=2.3
 DEFINES += GET_PASS=\\\"W7^Dz*mALE0UIOrEb\\\"
 
 win32 { #nmake & M$ compiler

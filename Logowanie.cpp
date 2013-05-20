@@ -138,7 +138,7 @@ Logowanie::Logowanie() :
         DEBUG << "otawrcie pliku host nie powiodło się";
     ui->ip->addItems(*hosts);
 #else
-    this->hostChanged("koferta.no-ip.pl");
+    this->hostChanged("konserw.no-ip.biz");
     ui->comboBox->setCurrentIndex(5);
     ui->lineEdit->setFocus();
 #endif

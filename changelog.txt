@@ -12,6 +12,10 @@ TODO:
 * przerobienie funkcji sha1 (?)
 -------------------------------------------------------------------------
 
+v. 2.3
+* poprawione wstawianie loga do oferty (issue #2)
+* poprawione przeliczanie wartości w tabeli po dodawaniu towaru do oferty (issue #3)
+
 v. 2.21
 * Poprawiony tytuł okna dialogowego wstawiania opcji komboboksa
 * Poprawione odświerzanie szczegółowych danych produktu przy użyciu klawiatury
