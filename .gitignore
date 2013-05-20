@@ -3,7 +3,8 @@
 temp/*
 Makefile
 kOferta
-*.user
+*.user*
 host
 stats
-
+*.autosave
+*.pdf
