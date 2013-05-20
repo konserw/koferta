@@ -75,7 +75,7 @@ void EdycjaTowaru::click(const QSqlRecord& rec)
 
     ui->kod->setText(rec.value(0).toString());
     ui->spec->setText(rec.value(1).toString());
-    ui->cena->setText(rec.value(2).toString());
+    ui->cena->setValue(rec.value(2).toDouble());
     if(rec.value(3).toString() == "szt.")
     {
         ui->r_szt->setChecked(true);
@@ -94,9 +94,9 @@ void EdycjaTowaru::app()
     QSqlQuery q;
     s = "UPDATE towar SET nazwa='";
     s += ui->spec->text();
-    s += "', cena_kat='";
-    s += ui->cena->text();
-    s += "', jednostka='";
+    s += "', cena=";
+    s += QString::number(ui->cena->value());
+    s += ", jednostka='";
     if(ui->r_m->isChecked())
         s += "mb.";
     else

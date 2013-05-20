@@ -15,6 +15,7 @@ TODO:
 v. 2.3
 * poprawione wstawianie loga do oferty (issue #2)
 * poprawione przeliczanie wartości w tabeli po dodawaniu towaru do oferty (issue #3)
+* poprawiona edycja/dodawanie towaru (issue #4)
 
 v. 2.21
 * Poprawiony tytuł okna dialogowego wstawiania opcji komboboksa
