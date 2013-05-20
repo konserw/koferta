@@ -55,7 +55,7 @@ void EdycjaTowaru::del()
 
     DEBUG << "usuwanie towaru, kod: " << ui->kod->text();
 
-    s = "DELETE FROM towar WHERE kod='";
+    s = "DELETE FROM towar WHERE id='";
     s += ui->kod->text();
     s += "'";
     EXEC(s);
