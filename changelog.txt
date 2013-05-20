@@ -19,6 +19,9 @@ v. 2.3
 * zwiększono max ilość produktów do 99999 (issue #6)
 * zwiększono max cenę produktów do 99999 (issue #6)
 * dodano sprawdzanie czy id dodawanego towaru istnieje
+* poprawione usuwanie towaru
+* dodano biblioteki msvs crt do paczki z programem
+* dodano poprawiony plik host do paczki z programem
 
 v. 2.21
 * Poprawiony tytuł okna dialogowego wstawiania opcji komboboksa
