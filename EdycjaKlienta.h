@@ -21,6 +21,8 @@
 
 #include <QDialog>
 
+class QSqlRecord;
+
 namespace Ui {
     class EdycjaKlienta;
 }
@@ -35,12 +37,12 @@ public:
 
 public slots:
     void app();
-    void change(int);
+    void change(const QSqlRecord&);
     void del();
 
 private:
     Ui::EdycjaKlienta *ui;
-    int id;
+    QString id;
 };
 
 #endif // EDYCJAKLIENTA_H

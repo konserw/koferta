@@ -21,7 +21,7 @@
 
 #include <QSqlQuery>
 #include <QString>
-
+#include <QtSql>
 #include "Macros.h"
 
 EdycjaKlienta::~EdycjaKlienta()
@@ -39,46 +39,21 @@ EdycjaKlienta::EdycjaKlienta(QWidget *parent) :
 
     connect(ui->apply, SIGNAL(clicked()), this, SLOT(app()));
     connect(ui->close, SIGNAL(clicked()), this, SLOT(close()));
-    connect(ui->widget, SIGNAL(selectionChanged(int)), this, SLOT(change(int)));
+    connect(ui->widget, SIGNAL(selectionChanged(QSqlRecord)), this, SLOT(change(QSqlRecord)));
     connect(ui->del, SIGNAL(clicked()), this, SLOT(del()));
-
-    id = -1;
 }
 
-void EdycjaKlienta::change(int _id)
+void EdycjaKlienta::change(const QSqlRecord& rec)
 {
-    if(id == _id)
-        return;
-
-    id = _id;
-
-    if(id == -1)
-    {
-        ui->skrocona->clear();
-        ui->pelna->clear();
-        ui->tytul->clear();
-        ui->imie->clear();
-        ui->nazwisko->clear();
-        ui->adres->clear();
-        return;
-    }
-
     QString s;
-    QSqlQuery q;
+    id = rec.value("id").toString();
 
-    DEBUG << "Zaznaczono klienta id " << id;
-
-    s = "SELECT DISTINCT short, full, tytul, imie, nazwisko, adres FROM klient WHERE id=";
-    s += QString::number(id);
-    EXEC(s);
-    q.next();
-
-    ui->skrocona->setText(q.value(0).toString());
-    ui->pelna->setText(q.value(1).toString());
-    ui->tytul->setText(q.value(2).toString());
-    ui->imie->setText(q.value(3).toString());
-    ui->nazwisko->setText(q.value(4).toString());
-    s = q.value(5).toString();
+    ui->skrocona->setText(rec.value("short").toString());
+    ui->pelna->setText(rec.value("full").toString());
+    ui->tytul->setText(rec.value("tytul").toString());
+    ui->imie->setText(rec.value("imie").toString());
+    ui->nazwisko->setText(rec.value("nazwisko").toString());
+    s = rec.value("adres").toString();
     s.remove("<br>");
     ui->adres->setPlainText(s);
 }
@@ -106,7 +81,7 @@ void EdycjaKlienta::app()
     tmp.replace("\n", "<br>\n");
     s += tmp;
     s += "' WHERE id=";
-    s += QString::number(id);
+    s += id;
 
     EXEC(s);
 }
@@ -120,9 +95,14 @@ void EdycjaKlienta::del()
     QSqlQuery q;
     QString s;
     s = "DELETE FROM klient WHERE id=";
-    s += QString::number(id);
+    s += id;
 
     EXEC(s);
 
-    change(-1);
+    ui->skrocona->clear();
+    ui->pelna->clear();
+    ui->tytul->clear();
+    ui->imie->clear();
+    ui->nazwisko->clear();
+    ui->adres->clear();
 }

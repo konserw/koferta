@@ -12,6 +12,11 @@ TODO:
 * przerobienie funkcji sha1 (?)
 -------------------------------------------------------------------------
 
+v. 2.31
+* przeniesienie wtyczki qjpg do odpowiedniego folderu (issue #8)
+* naprawiono edycję klienta (issue #7)
+* wyrzucenie niepotrzebnych plików z paczki
+
 v. 2.3
 * poprawione wstawianie loga do oferty (issue #2)
 * poprawione przeliczanie wartości w tabeli po dodawaniu towaru do oferty (issue #3)
