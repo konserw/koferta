@@ -45,6 +45,7 @@ signals:
 private:
     Ui::WyborTowaru *ui;
     QSqlRecord* rec;
+    static const QString m_info;
 };
 
 #endif // WYBORTOWARU_H

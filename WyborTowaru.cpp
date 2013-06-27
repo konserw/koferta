@@ -21,6 +21,8 @@
 #include "MainWindow.h"
 #include <QSqlRecord>
 
+const QString WyborTowaru::m_info = tr("Wybierz towar z listy po lewej.");
+
 WyborTowaru::WyborTowaru(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::WyborTowaru)
@@ -29,10 +31,11 @@ WyborTowaru::WyborTowaru(QWidget *parent) :
 
     ui->pushButton->setText(tr("Zamknij"));
     ui->label_add->setText(tr("Dodaj:"));
-    ui->plainTextEdit->setPlainText(tr("Wybierz towar z listy po lewej"));
+    ui->plainTextEdit->setPlainText(m_info);
     ui->spinBox->setMinimum(0);
     ui->spinBox->setSingleStep(1);
     ui->spinBox->setMaximum(99999);
+    ui->spinBox->setEnabled(false);
     rec = NULL;
 
     QFont font("Monospace");
@@ -51,8 +54,19 @@ WyborTowaru::~WyborTowaru()
 
 void WyborTowaru::refresh(const QSqlRecord& _rec)
 {
+    if(rec && *rec == _rec)
+        return;
+
     delete rec;
     rec = new QSqlRecord(_rec);
+
+    if(_rec.isEmpty() || rec->value(0).toString().isEmpty())
+    {
+        ui->plainTextEdit->setPlainText(m_info);
+        ui->spinBox->setValue(0);
+        ui->spinBox->setEnabled(false);
+        return;
+    }
 
     QString s;
     s = tr("Kod towaru:\t");
@@ -64,7 +78,9 @@ void WyborTowaru::refresh(const QSqlRecord& _rec)
     s += tr("\n\nJednostka:\t");
     s += rec->value(3).toString();
     ui->plainTextEdit->setPlainText(s);
-    ui->spinBox->setValue(static_cast<MainWindow*>(this->parent())->ileTowaru(rec->value(0).toString()));
+
+    ui->spinBox->setEnabled(true);
+    ui->spinBox->setValue(dynamic_cast<MainWindow*>(this->parent())->ileTowaru(rec->value(0).toString()));
 }
 
 void WyborTowaru::spin(int ile)

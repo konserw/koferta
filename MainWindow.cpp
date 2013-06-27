@@ -271,17 +271,20 @@ void MainWindow::setTitle(QString* nr)
 
 int MainWindow::ileTowaru(const QString& id)
 {
-    DEBUG << "search for existing idTowaru:" << id;
+    if(id.isEmpty() || id.isNull())
+        return 0;
+
+ //   DEBUG << "search for existing idTowaru:" << id;
     QList<QTableWidgetItem*> list = ui->tableWidget->findItems(id, Qt::MatchFixedString);
     if(list.isEmpty())
     {
-        DEBUG << "not found in table";
+ //       DEBUG << "not found in table";
         return 0;
     }
     else
     {
         int row = list[0]->row();
-        DEBUG << "found in row: " << row;
+   //     DEBUG << "found in row: " << row;
         return ui->tableWidget->item(row, 5)->text().toInt();
     }
 }
