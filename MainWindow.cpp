@@ -878,6 +878,9 @@ void MainWindow::print(QPrinter *printer)
 
 void MainWindow::makeDocument(QString *sDoc)
 {
+    if(klient == NULL)
+        klient = new QSqlRecord;
+
     int kolumn = 3;
     QString waluta;
     uint rows = ui->tableWidget->rowCount()-1;
@@ -1093,7 +1096,7 @@ void MainWindow::makeDocument(QString *sDoc)
         if(ui->kol_rabat->isChecked())
         {
             *sDoc += "\t\t<td align = right>";
-            *sDoc += ui->tableWidget->item(i, 3)->text();
+            *sDoc += QString::number(ui->tableWidget->item(i, 3)->text().toDouble(), 'f', 1);
             *sDoc += "%</td>\n";
         }
         if(ui->kol_cena->isChecked())

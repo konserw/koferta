@@ -12,6 +12,11 @@ TODO:
 * przerobienie funkcji sha1 (?)
 -------------------------------------------------------------------------
 
+v. 2.32
+* formatowanie rabatu (issue #9)
+* naprawiono CTD wystepujace po eksporcie oferty bez wybranego klienta
+
+
 v. 2.31
 * przeniesienie wtyczki qjpg do odpowiedniego folderu (issue #8)
 * naprawiono edycję klienta (issue #7)
