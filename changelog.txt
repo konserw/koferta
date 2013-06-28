@@ -16,6 +16,8 @@ v. 2.32
 * formatowanie rabatu (issue #9)
 * naprawiono CTD wystepujace po eksporcie oferty bez wybranego klienta
 * naprawiono CTD po zmianie filtru w czasie dodawania towaru (issue #10)
+* zmiany w gui
+* drobne zmiany w kodzie logowania
 
 v. 2.31
 * przeniesienie wtyczki qjpg do odpowiedniego folderu (issue #8)

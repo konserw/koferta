@@ -48,6 +48,8 @@ win32 { #nmake & M$ compiler
 unix {
     QMAKE_CXXFLAGS += -Wall -Werror -Wextra
     LIBS += -L/usr/lib/mysql -lmysqlclient
+    DEFINES += NOSSL
+    #DEFINES += RELEASE
 }
 
 OBJECTS_DIR =   temp/obj

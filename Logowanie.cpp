@@ -72,9 +72,14 @@ Logowanie::Logowanie() :
     p = new QPixmap(":/klog");
     ui->img->setPixmap(*p);
 
+    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
+    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(ui->add, SIGNAL(clicked()), this, SLOT(add()));
+    connect(ui->ip, SIGNAL(currentIndexChanged(QString)), this, SLOT(hostChanged(QString)));
+
     d = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"));
     d->setDatabaseName("kOferta");
-    d->setPort(13306);
+    d->setPort(13306); 
 
 #ifdef NOSSL
     DEBUG << "NOSSL defined, pomijam ustawianie bezpiecznego połączenia";
@@ -111,16 +116,10 @@ Logowanie::Logowanie() :
         return;
     }
 #endif
-
-    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
-    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    connect(ui->add, SIGNAL(clicked()), this, SLOT(add()));
-    connect(ui->ip, SIGNAL(currentIndexChanged(QString)), this, SLOT(hostChanged(QString)));
-
+#ifdef RELEASE
     hosts = new QStringList;
     hosts->append("localhost");
 
-#ifdef RELEASE
     QFile file("host");
     if(file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -138,7 +137,8 @@ Logowanie::Logowanie() :
         DEBUG << "otawrcie pliku host nie powiodło się";
     ui->ip->addItems(*hosts);
 #else
-    this->hostChanged("konserw.no-ip.biz");
+    hosts = NULL;
+    this->hostChanged(/*"konserw.no-ip.biz"*/"localhost");
     ui->comboBox->setCurrentIndex(5);
     ui->lineEdit->setFocus();
 #endif

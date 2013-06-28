@@ -29,7 +29,7 @@ WyborTowaru::WyborTowaru(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->pushButton->setText(tr("Zamknij"));
+    ui->pushButton->setText(tr("Ok"));
     ui->label_add->setText(tr("Dodaj:"));
     ui->plainTextEdit->setPlainText(m_info);
     ui->spinBox->setMinimum(0);
