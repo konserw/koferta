@@ -87,7 +87,7 @@ void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& da
 
 void insert_zapisane_towary(const QString& nr_oferty, const QString& kod, double ilosc, double rabat)
 {
-    OUTSTREAM << "\t\tZapisany towar kod: " << kod;
+   // OUTSTREAM << "\t\tZapisany towar kod: " << kod;
 
     QString s;
     QSqlQuery q;

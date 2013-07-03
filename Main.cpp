@@ -18,6 +18,7 @@
 
 #include <QApplication>
 #include <QTextCodec>
+#include <exception>
 
 #include "MainWindow.h"
 #include "Logowanie.h"
@@ -33,10 +34,14 @@ cUser* currentUser = NULL;
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+#ifndef WIN32
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
+#else
+    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1250"));
+    QTextCodec::setCodecForTr(QTextCodec::codecForName("Windows-1250"));
 
-#ifdef WIN32
     QFile file("log.txt");
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -58,7 +63,20 @@ int main(int argc, char *argv[])
     Logowanie* logw;
     logw = new Logowanie;
 
-    int result = logw->exec();
+    int result;
+    try
+    {
+        result = logw->exec();
+    }
+    catch (std::exception& e)
+    {
+        DEBUG << "[Logowanie] Standard exception: " << e.what();
+    }
+    catch(...)
+    {
+        DEBUG << "[Logowanie] Unknown exception";
+    }
+
     DEBUG << "logw result: " << result;
     delete logw;
 
@@ -71,7 +89,19 @@ int main(int argc, char *argv[])
         w.showMaximized();
 
         DEBUG << "wchodzę do głównej pętli";
-        result = a.exec();
+
+        try
+        {
+            result = a.exec();
+        }
+        catch (std::exception& e)
+        {
+            DEBUG << "[Mainwindow] Standard exception: " << e.what();
+        }
+        catch(...)
+        {
+            DEBUG << "[Mainwindow] Unknown exception";
+        }
     }
     else
         DEBUG << "Zamknieto okno logowanie - wychodzę";

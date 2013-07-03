@@ -336,6 +336,7 @@ void MainWindow::setTowar(const QSqlRecord& rec, int ile)
 
     if(list.isEmpty())
     {
+        DEBUG << "adding item to offer, id: " << id;
         QTableWidgetItem* item;
 
         int row = ui->tableWidget->rowCount()-1;

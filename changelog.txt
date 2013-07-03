@@ -12,6 +12,12 @@ TODO:
 * przerobienie funkcji sha1 (?)
 -------------------------------------------------------------------------
 
+v. 2.33
+* zmiana sortowania tabeli zapisanych ofert
+* umożliwienie sortowania tabel ofert i towarów
+* Zmiany w zapisie loga
+* przechwytywanie wyjątków
+
 v. 2.32
 * formatowanie rabatu (issue #9)
 * naprawiono CTD wystepujace po eksporcie oferty bez wybranego klienta

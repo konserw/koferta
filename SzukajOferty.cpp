@@ -65,6 +65,9 @@ SzukajOferty::SzukajOferty(QWidget *parent) :
     ui->tableView->resizeColumnToContents(3);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
+    ui->tableView->setSortingEnabled(true);
+    ui->tableView->sortByColumn(2, Qt::DescendingOrder);
+
     connect(ui->tableView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(select(const QModelIndex&)));
     connect(ui->lineEdit_Id, SIGNAL(textEdited(QString)), this, SLOT(refId(const QString&)));
     connect(ui->lineEdit_Client, SIGNAL(textEdited(QString)), this, SLOT(refClient(const QString&)));

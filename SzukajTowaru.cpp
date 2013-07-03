@@ -46,6 +46,7 @@ SzukajTowaru::SzukajTowaru(QWidget *parent) :
         model->setHeaderData(i, Qt::Horizontal, sl[i]);
 
     ui->tableView->setModel(model);
+    ui->tableView->setSortingEnabled(true);
 
 
     ui->tableView->resizeColumnToContents(0);
