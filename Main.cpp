@@ -19,44 +19,67 @@
 #include <QApplication>
 #include <QTextCodec>
 #include <exception>
-
+#include <QDate>
 #include "MainWindow.h"
 #include "Logowanie.h"
 #include "User.h"
 #include "Macros.h"
 
-#ifdef WIN32
-    QTextStream* logFile = NULL;
-#endif
-
 cUser* currentUser = NULL;
+
+#ifndef QT_NO_DEBUG_OUTPUT
+
+QTextStream *out = 0;
+
+void logOutput(QtMsgType type, const char *msg)
+{
+    QString debugdate = QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss");
+    switch (type)
+    {
+    case QtDebugMsg:
+        debugdate += "[D]";
+        break;
+    case QtWarningMsg:
+        debugdate += "[W]";
+        break;
+    case QtCriticalMsg:
+        debugdate += "[C]";
+        break;
+    case QtFatalMsg:
+        debugdate += "[F]";
+    }
+    (*out) << debugdate << " " << msg << endl;
+
+    if (QtFatalMsg == type)
+    {
+        abort();
+    }
+}
+#endif
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-#ifndef WIN32
     QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
-#else
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Windows-1250"));
-    QTextCodec::setCodecForTr(QTextCodec::codecForName("Windows-1250"));
 
-    QFile file("log.txt");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+#ifndef QT_NO_DEBUG_OUTPUT
+#ifdef WIN32
+    QString fileName = QCoreApplication::applicationFilePath().replace(".exe", ".log");
+#else
+    QString fileName = QCoreApplication::applicationFilePath() + ".log";
+#endif
+    QFile *log = new QFile(fileName);
+    if (log->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
     {
-        QMessageBox::critical(NULL, "Error", "Nie udało się otworzyć pliku z logiem");
-        logFile = new QTextStream(stderr);
+        out = new QTextStream(log);
+     //   out->setCodec(QTextCodec::codecForName("UTF-8"));
+        qInstallMsgHandler(logOutput);
     }
     else
     {
-        logFile = new QTextStream(&file);
-        logFile->setCodec("UTF-8");
-    }
-    if(logFile == NULL)
-    {
-        QMessageBox::critical(NULL, "Error", "Nie udało się otworzyć pliku z logiem, ani podpiąć do strumienia błędów.\nNastąpi zakończenie programu.");
-        return 2;
+        qDebug() << "Error opening log file '" << fileName << "'. All debug output redirected to console.";
     }
 #endif
 
@@ -107,9 +130,7 @@ int main(int argc, char *argv[])
         DEBUG << "Zamknieto okno logowanie - wychodzę";
 
     DEBUG << "koniec programu, status: " << result;
-#ifdef WIN32
-    delete logFile;
-#endif
+
     delete currentUser;
     return result;
 }

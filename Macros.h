@@ -12,16 +12,8 @@
 class cUser;
 extern cUser* currentUser;
 
-
-#ifdef WIN32
-    extern QTextStream* logFile;
-    #define OUTSTREAM *logFile << "\n"
-#else
-    #define OUTSTREAM qDebug()
-#endif
-
 #ifdef RELEASE
-    #define DEBUG OUTSTREAM
+    #define DEBUG qDebug()
 
 #define EXEC_SILENT(s) EXEC(x)
 
@@ -29,9 +21,9 @@ extern cUser* currentUser;
         do{ \
             if(q.exec(s) == false) \
             { \
-                DEBUG << "Zapytanie mysql zkończone niepowodzeniem!"; \
-                OUTSTREAM  << "\tZapytanie mysql: " << s; \
-                OUTSTREAM  << "\tError text: " <<  q.lastError().text(); \
+                DEBUG << "Zapytanie mysql zkonczone niepowodzeniem!"; \
+                qDebug()  << "\tZapytanie mysql: " << s; \
+                qDebug()  << "\tError text: " <<  q.lastError().text(); \
                 QMessageBox::warning(NULL, "error", "Wystąpił błąd połączenia z bazą danych. Sprawdź połączenie i spróbuj ponownie"); \
                 return; \
             } \
@@ -61,15 +53,20 @@ extern cUser* currentUser;
         }
 
 #else
-    #define DEBUG OUTSTREAM << __FILE__ << " (" << __LINE__ << "): "
+inline QDebug debug()
+{
+    return qDebug() << __FILE__ << " (" << __LINE__ << "): ";
+}
+//#define DEBUG debug()
+    #define DEBUG qDebug() << __FILE__ << " (" << __LINE__ << "): "
 
     #define EXEC(s) \
         do{ \
             DEBUG << "zapytanie mysql: " << s; \
             if(q.exec(s) == false) \
                 { \
-                DEBUG << "Zapytanie mysql zkończone niepowodzeniem!"; \
-                OUTSTREAM << "\tError text: " <<  q.lastError().text(); \
+                DEBUG << "Zapytanie mysql zkonczone niepowodzeniem!"; \
+                qDebug() << "\tError text: " <<  q.lastError().text(); \
                 QMessageBox::warning(NULL, "error", "Wystąpił błąd połączenia z bazą danych. Sprawdź połączenie i spróbuj ponownie"); \
                 return; \
             } \
@@ -80,8 +77,8 @@ extern cUser* currentUser;
             if(q.exec(s) == false) \
             { \
                 DEBUG << "Zapytanie mysql zkończone niepowodzeniem!"; \
-                OUTSTREAM  << "\tZapytanie mysql: " << s; \
-                OUTSTREAM  << "\tError text: " <<  q.lastError().text(); \
+                qDebug()  << "\tZapytanie mysql: " << s; \
+                qDebug()  << "\tError text: " <<  q.lastError().text(); \
                 QMessageBox::warning(NULL, "error", "Wystąpił błąd połączenia z bazą danych. Sprawdź połączenie i spróbuj ponownie"); \
                 return; \
             } \
@@ -91,11 +88,11 @@ extern cUser* currentUser;
         if (!d->open()) \
         { \
             DEBUG << "Błąd: nie można się połączyć z bazą!"; \
-            OUTSTREAM << "\t\t\t connName: " << d->connectionName(); \
-            OUTSTREAM << "\t\t\t driver: " << d->driverName(); \
-            OUTSTREAM << "\t\t\t opcje " << d->connectOptions(); \
-            OUTSTREAM << "\t\t\t host: " << d->hostName(); \
-            OUTSTREAM << "\t\t\t last error: " << d->lastError().text(); \
+            qDebug() << "\t\t\t connName: " << d->connectionName(); \
+            qDebug() << "\t\t\t driver: " << d->driverName(); \
+            qDebug() << "\t\t\t opcje " << d->connectOptions(); \
+            qDebug() << "\t\t\t host: " << d->hostName(); \
+            qDebug() << "\t\t\t last error: " << d->lastError().text(); \
             QMessageBox::warning(NULL, "error", "Nie udało się nawiązać połączenia z bazą danych."); \
             return; \
         }
@@ -104,11 +101,11 @@ extern cUser* currentUser;
         if (!d->open()) \
         { \
             DEBUG << "Błąd: nie można się połączyć z bazą!"; \
-            OUTSTREAM << "\t\t\t connName: " << d->connectionName(); \
-            OUTSTREAM << "\t\t\t driver: " << d->driverName(); \
-            OUTSTREAM << "\t\t\t opcje " << d->connectOptions(); \
-            OUTSTREAM << "\t\t\t host: " << d->hostName(); \
-            OUTSTREAM << "\t\t\t last error: " << d->lastError().text(); \
+            qDebug() << "\t\t\t connName: " << d->connectionName(); \
+            qDebug() << "\t\t\t driver: " << d->driverName(); \
+            qDebug() << "\t\t\t opcje " << d->connectOptions(); \
+            qDebug() << "\t\t\t host: " << d->hostName(); \
+            qDebug() << "\t\t\t last error: " << d->lastError().text(); \
             s = "Połączenie z bazą danych na "; \
             s += d->hostName(); \
             s += " nie powiodło się."; \

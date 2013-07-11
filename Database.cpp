@@ -87,7 +87,7 @@ void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& da
 
 void insert_zapisane_towary(const QString& nr_oferty, const QString& kod, double ilosc, double rabat)
 {
-   // OUTSTREAM << "\t\tZapisany towar kod: " << kod;
+   // qDebug() << "\t\tZapisany towar kod: " << kod;
 
     QString s;
     QSqlQuery q;
@@ -98,7 +98,7 @@ void insert_zapisane_towary(const QString& nr_oferty, const QString& kod, double
 
 void insert_combo(const QString& typ, const QString& sh, const QString& lo)
 {
-    OUTSTREAM << "Wstawianie opcji " << sh << " do kombosa " << typ;
+    qDebug() << "Wstawianie opcji " << sh << " do kombosa " << typ;
 
     QString s;
     QSqlQuery q;

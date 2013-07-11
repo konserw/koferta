@@ -12,6 +12,10 @@ TODO:
 * przerobienie funkcji sha1 (?)
 -------------------------------------------------------------------------
 
+v. 2.34
+* naprawa kodowania (issue #13)
+* poprawa zapisu loga
+
 v. 2.33
 * zmiana sortowania tabeli zapisanych ofert
 * umożliwienie sortowania tabel ofert i towarów
