@@ -13,7 +13,7 @@ signals:
     void update();
 
 public slots:
-
+/*
     void setIlosc(double x);
     void setRabat(double x);
 
@@ -28,6 +28,7 @@ protected:
     double m_rabat;
     double m_ilosc;
     bool m_metr;
+*/
 };
 
 #endif // TOWAR_H
