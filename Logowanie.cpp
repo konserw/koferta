@@ -79,7 +79,7 @@ Logowanie::Logowanie() :
 
     d = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"));
     d->setDatabaseName("kOferta");
-    d->setPort(13306); 
+    d->setPort(3306);
 
 #ifdef NOSSL
     DEBUG << "NOSSL defined, pomijam ustawianie bezpiecznego połączenia";
