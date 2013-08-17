@@ -52,7 +52,6 @@ void NowyUser::ok()
 
     QString s;
     QSqlQuery q;
-  //  bool a = true;
 
     cUser u(ui->name->text(),                                   //nazwisko i imie
             ui->mail->text(),                                   //e-mail
@@ -112,26 +111,13 @@ void NowyUser::ok()
 
     EXEC(s);
 
-    QString foo[4];
-    foo[0] = "SELECT";
-    foo[1] = "INSERT";
-    foo[2] = "UPDATE";
-    foo[3] = "DELETE";
-
-    for(int j=0; j<4; j++)
-    {
-        s = "GRANT ";
-        s += foo[j];
-        s += " ON kOferta.* TO '";
-        s += u.dbName();
-        s += "'";
+    s = "GRANT SELECT, INSERT, UPDATE, DELETE ON kOferta.* TO '";
+    s += u.dbName();
+    s += "'";
 #ifndef NOSSL
-        s += " REQUIRE SSL";
+    s += " REQUIRE SSL";
 #endif
-        EXEC(s);
-
-    }
-
+    EXEC(s);
 
     QMessageBox::information(this, "Pomyślnie dodano użytkownika", "Proces dodawania użytkownika zakończył się powodzeniem.");
     DEBUG <<  "dodano użytkownika " << u.name();
