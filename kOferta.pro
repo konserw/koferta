@@ -24,7 +24,7 @@ QT = core gui sql network
 
 TEMPLATE = app
 
-DEFINES += VER=2.34
+DEFINES += VER=2.35
 DEFINES += GET_PASS=\\\"W7^Dz*mALE0UIOrEb\\\"
 
 win32 { #nmake & M$ compiler
@@ -48,7 +48,7 @@ win32 { #nmake & M$ compiler
 unix {
     QMAKE_CXXFLAGS += -Wall -Werror -Wextra
     LIBS += -L/usr/lib/mysql -lmysqlclient
-    DEFINES += NOSSL
+    #DEFINES += NOSSL
     #DEFINES += RELEASE
 }
 

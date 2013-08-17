@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="ca-cert">ca-cert.pem</file>
+        <file alias="ca-cert">cacert.pem</file>
         <file alias="client-cert">client-cert.pem</file>
         <file alias="client-key">client-key.pem</file>
         <file alias="ico">kico.png</file>

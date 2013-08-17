@@ -12,6 +12,9 @@ TODO:
 * przerobienie funkcji sha1 (?)
 -------------------------------------------------------------------------
 
+v. 2.35
+* nowe certyfikaty SSL
+
 v. 2.34
 * naprawa kodowania (issue #13)
 * poprawa zapisu loga
