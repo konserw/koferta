@@ -36,7 +36,7 @@ cUser::cUser(QString name)
 
     QSqlDatabase* d = new QSqlDatabase(QSqlDatabase::database(QSqlDatabase::connectionNames().at(0), false));
 
-    d->setUserName("kOferta_GetUsers");
+    d->setUserName("kOf_GetUsers");
     d->setPassword(GET_PASS);
 
     LOGIN

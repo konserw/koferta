@@ -154,7 +154,7 @@ void Logowanie::hostChanged(QString ip)
     ui->comboBox->clear();
 
     d->setHostName(ip);
-    d->setUserName("kOferta_GetUsers");
+    d->setUserName("kOf_GetUsers");
     d->setPassword(GET_PASS);
 
     LOGIN_
@@ -292,7 +292,7 @@ void Logowanie::ok()
             return;
         }
         ui->lineEdit->clear();
-        d->setUserName("kOferta_GetUsers");
+        d->setUserName("kOf_GetUsers");
         d->setPassword(GET_PASS);
 
         LOGIN

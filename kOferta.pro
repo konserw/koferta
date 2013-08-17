@@ -25,7 +25,7 @@ QT = core gui sql network
 TEMPLATE = app
 
 DEFINES += VER=2.35
-DEFINES += GET_PASS=\\\"W7^Dz*mALE0UIOrEb\\\"
+DEFINES += GET_PASS=\\\"l4600QW197E3GAEP84PnV4SC5bz6YY1Q2f2CK4bN!56543R96\\\"
 
 win32 { #nmake & M$ compiler
     QMAKE_CXXFLAGS += /nologo /O2 #/Wall
@@ -49,7 +49,7 @@ unix {
     QMAKE_CXXFLAGS += -Wall -Werror -Wextra
     LIBS += -L/usr/lib/mysql -lmysqlclient
     #DEFINES += NOSSL
-    #DEFINES += RELEASE
+    DEFINES += RELEASE
 }
 
 OBJECTS_DIR =   temp/obj
