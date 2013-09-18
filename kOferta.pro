@@ -52,10 +52,10 @@ unix {
     DEFINES += RELEASE
 }
 
-OBJECTS_DIR =   temp/obj
-UI_DIR =        temp/ui
-MOC_DIR =       temp/moc
-RCC_DIR =       temp/rcc
+OBJECTS_DIR =   temp
+UI_DIR =        temp
+MOC_DIR =       temp
+RCC_DIR =       temp
 
 DEPENDPATH += . res 
 
