@@ -9,3 +9,7 @@ stats
 *.autosave
 *.pdf
 *.log
+common
+baza
+*.sqlite
+

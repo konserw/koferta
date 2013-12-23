@@ -1,22 +1,34 @@
-1. Wstęp
+#kOferta
+
+##Wstęp
+
+kOferta jest to kompletny system wspomagający tworzenie ofert handlowych
+
+##Co to jest oferta
+
 Oferta jest to formalna propozycja dokonania transakcji. Zawiera listę i ilość
 towarów ich ceny, dane klienta i sprzedającego. Dodatkowymi elementami mogą być
-informacje o sposobie płatności i terminie dostawy.
-Projekt kOferta ma ułatwić sprzedającemu tworzenie ofert handlowych poprzez
-łatwy dostęp do bazy danych z klientami i produktami. System umożliwia również
-archiwizowanie stworzonych już wcześniej ofert.
+informacje o sposobie płatności, czy terminie dostawy.
 
-2. Cel i zakres projektu
-Celem projektu było stworzenie systemu składającego się z dwóch
-zasadniczych części. Pierwszą z nich jest serwer przechowujący dane klientów
-firmy, oferowanych towarów, zarchiwizowanych ofert i danych sprzedawców.
-Drugą natomiast stanowi aplikacja umożliwiająca szybkie tworzenie ofert w
-oparciu o istniejącą bazę danych. Umożliwia ona też łatwą edycję danych w bazie –
-zarówno dodawanie nowych rekordów jak i edycję istniejących Dodatkowo
-możliwe jest szybkie uzupełnienie bazy importując dane klientów i towarów z
-pliku .csv. Aplikacja została tak zaprojektowana, że umożliwia korzystanie zarówno
-z lokalnej bazy danych jak i znajdującej się na serwerze.
-System ten wykorzystywany jest aktualnie przez przedstawicieli handlowych
-firmy Marley. W czasie projektowania systemu przeprowadzane były konsultacje z
-jej pracownikami.
+##Cel i zakres projektu
+
+Projekt kOferta ma ułatwić sprzedającemu tworzenie ofert handlowych poprzez dostęp do bazy danych z klientami i produktami.
+System umożliwia również archiwizowanie stworzonych już wcześniej ofert.
+
+Celem projektu jest stworzenie systemu składającego się z trzech zasadniczych części:
+
+1. Serwer przechowujący dane klientów firmy, oferowanych towarów, zarchiwizowanych ofert i danych sprzedawców.
+
+2. kDatabase - program, którego głównym zadaniem jest synchronizacja danych między serwerem a lokalną bazą danych.
+Umożliwia ona też łatwą edycję danych w bazie – zarówno dodawanie nowych rekordów jak i edycję istniejących Dodatkowo
+możliwe jest szybkie uzupełnienie bazy importując dane klientów i towarów z pliku .csv.
+
+3. Aplikacja umożliwiająca szybkie tworzenie ofert w oparciu o lokalną bazę danych.
+
+##Wykorzystanie
+
+System ten wykorzystywany jest aktualnie przez przedstawicieli handlowych firmy Marley.
+W czasie projektowania, systemu przeprowadzane były konsultacje z jej pracownikami.
+
+Podczas testów i wdrażania systemu wykorzystano issue tracker platformy bitbucklet.com
 
