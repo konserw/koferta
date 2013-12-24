@@ -20,29 +20,29 @@
 
 TARGET = kOferta
 
-QT = core gui sql network
+QT += sql network printsupport widgets #core gui
 
 TEMPLATE = app
 
-DEFINES += VER=2.35
+DEFINES += VER=2.36
 DEFINES += GET_PASS=\\\"l4600QW197E3GAEP84PnV4SC5bz6YY1Q2f2CK4bN!56543R96\\\"
 
 win32 { #nmake & M$ compiler
-    QMAKE_CXXFLAGS += /nologo /O2 #/Wall
+    QMAKE_CXXFLAGS += /nologo #/O2 /Wall
 
     QMAKE_LFLAGS_RELEASE += /NODEFAULTLIB:LIBCMT
     QMAKE_LFLAGS_DEBUG += /NODEFAULTLIB:LIBCMT
 
-    CONFIG += qt windows release
+    CONFIG += qt windows #release
 
-    INCLUDEPATH += C:\\mysql\\include
-    INCLUDEPATH += C:\\koferta_src
+    INCLUDEPATH += "C:/Program Files/MySQL/MySQL Server 5.7/include"
+#    INCLUDEPATH += C:\\koferta_src
 
-    LIBS += -L"C:\\Program Files\\Microsoft SDKs\\Windows\\v7.0A\\Lib" -lUser32 -lAdvAPI32
-    LIBS += -LC:\\mysql\\lib -lmysqlclient -llibmysql
+    LIBS += -L"C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x64" -lUser32 -lAdvAPI32
+    LIBS += -L"C:/Program Files/MySQL/MySQL Server 5.7/lib" -lmysqlclient -llibmysql
 
     DEFINES += WIN32
-    DEFINES += RELEASE
+#    DEFINES += RELEASE
 }
 
 unix {
@@ -52,10 +52,10 @@ unix {
     DEFINES += RELEASE
 }
 
-OBJECTS_DIR =   temp
-UI_DIR =        temp
-MOC_DIR =       temp
-RCC_DIR =       temp
+#OBJECTS_DIR =   temp
+#UI_DIR =        temp
+#MOC_DIR =       temp
+#RCC_DIR =       temp
 
 DEPENDPATH += . res 
 
