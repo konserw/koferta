@@ -76,7 +76,9 @@ HEADERS += Database.h \
            User.h \
            WyborKlienta.h \
     WyborTowaru.h \
-    EdycjaKombo.h 
+    EdycjaKombo.h  \
+functions.h \
+Logger.h
 
 FORMS += EdycjaKlienta.ui \
          EdycjaTowaru.ui \
@@ -92,7 +94,7 @@ FORMS += EdycjaKlienta.ui \
          WyborKlienta.ui \ 
     WyborTowaru.ui \
     EdycjaKombo.ui
-         
+
 SOURCES += Database.cpp \
            EdycjaKlienta.cpp \
            EdycjaTowaru.cpp \
@@ -110,7 +112,8 @@ SOURCES += Database.cpp \
            User.cpp \
            WyborKlienta.cpp \        
     WyborTowaru.cpp \
-    EdycjaKombo.cpp 
+    EdycjaKombo.cpp \
+Logger.cpp
 
 RESOURCES += res/zasoby.qrc
 

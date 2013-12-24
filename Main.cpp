@@ -19,7 +19,8 @@
 #include <QApplication>
 #include <QTextCodec>
 #include <exception>
-#include <QDate>
+#include "functions.h"
+#include "Logger.h"
 #include "MainWindow.h"
 #include "Logowanie.h"
 #include "User.h"
@@ -27,58 +28,16 @@
 
 cUser* currentUser = NULL;
 
-#ifndef QT_NO_DEBUG_OUTPUT
-
-QTextStream *out = 0;
-
-void logOutput(QtMsgType type, const char *msg)
-{
-    QString debugdate = QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss");
-    switch (type)
-    {
-    case QtDebugMsg:
-        debugdate += "[D]";
-        break;
-    case QtWarningMsg:
-        debugdate += "[W]";
-        break;
-    case QtCriticalMsg:
-        debugdate += "[C]";
-        break;
-    case QtFatalMsg:
-        debugdate += "[F]";
-    }
-    (*out) << debugdate << " " << msg << endl;
-
-    if (QtFatalMsg == type)
-    {
-        abort();
-    }
-}
-#endif
-
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
 #ifndef QT_NO_DEBUG_OUTPUT
-#ifdef WIN32
-    QString fileName = QCoreApplication::applicationFilePath().replace(".exe", ".log");
-#else
-    QString fileName = QCoreApplication::applicationFilePath() + ".log";
-#endif
-    QFile *log = new QFile(fileName);
-    if (log->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
-    {
-        out = new QTextStream(log);
-     //   out->setCodec(QTextCodec::codecForName("UTF-8"));
-        qInstallMsgHandler(logOutput);
-    }
+if(Logger::instance()->setFilePath(filePath(".log")))
+        qInstallMessageHandler(Logger::logHandler);
     else
-    {
-        qDebug() << "Error opening log file '" << fileName << "'. All debug output redirected to console.";
-    }
+        qDebug() << "Unable to create log file! Logging to std::cerr.";
 #endif
 
     Logowanie* logw;
