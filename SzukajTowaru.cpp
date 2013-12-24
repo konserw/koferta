@@ -54,9 +54,10 @@ SzukajTowaru::SzukajTowaru(QWidget *parent) :
     ui->tableView->hideColumn(2);
     ui->tableView->hideColumn(3);
 
-    QHeaderView* hdr = ui->tableView->horizontalHeader();
+  //  QHeaderView* hdr = ui->tableView->horizontalHeader();
  //   hdr->setResizeMode(0, QHeaderView::ResizeToContents);
-    hdr->setResizeMode(1, QHeaderView::Stretch);
+ //   hdr->setResizeMode(1, QHeaderView::Stretch);
+
 
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);

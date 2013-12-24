@@ -32,7 +32,7 @@ class cUser;
 class QSqlRecord;
 class QCalendarWidget;
 class QDate;
-
+class QPrinter;
 
 namespace Ui {
     class MainWindow;
