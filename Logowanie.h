@@ -25,10 +25,8 @@
 #include <QDialog>
 
 class QStringList;
-class QSqlDatabase;
-class QNetworkAccessManager;
-class QNetworkReply;
 class cUser;
+class Database;
 
 namespace Ui {
     class Logowanie;
@@ -46,17 +44,12 @@ public slots:
     void ok();                                          //slot obsługujący przycisk ok - sprawdza zgodność skrótu wpisanego hasła ze skrótem zapisanym w klasie user i tworzy połączenie z bazą MySQL (klasa QSqlDatabase)
     void add();                                         //slot obsługujący dodawanie dodatkowych adresów IP bazy danych, zarówno do listy jak i do pliku host
     void hostChanged(QString);                          //slot odświerzający listę dostępnych użytkowników po zmianie hosta
-    void downloadFinished(QNetworkReply*);              //koniec pobierania aktualizacji
 
 private:
     Ui::Logowanie *ui;
 
     QStringList* hosts;                                 //lista dostępnych hostów, generowana na podstawie pliku tekstowego
     QPixmap* p;                                         //bufor grafiki loga systemu kOferta
-    QSqlDatabase* d;                                    //obiekt połączenia z bazą
-
-    QNetworkAccessManager* manager;                     //objekt odpowiedzialny za pobieranie aktualizacji
-    double ver;                                         //wersja programu pobieranego z serwera
-
+    Database* m_db;
 };
 #endif // LOG_H
