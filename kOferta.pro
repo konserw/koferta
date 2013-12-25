@@ -20,13 +20,13 @@
 
 TARGET = kOferta
 
-QT += sql network printsupport widgets #core gui
+QT += sql printsupport widgets
 
 TEMPLATE = app
 
 DEFINES += VER=2.36
 
-win32 { #nmake & M$ compiler
+win32 {
     QMAKE_CXXFLAGS += /nologo #/O2 /Wall
 
     QMAKE_LFLAGS_RELEASE += /NODEFAULTLIB:LIBCMT
@@ -35,10 +35,9 @@ win32 { #nmake & M$ compiler
     CONFIG += qt windows #release
 
     INCLUDEPATH += "C:/Program Files/MySQL/MySQL Server 5.7/include"
-#    INCLUDEPATH += C:\\koferta_src
 
     LIBS += -L"C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x64" -lUser32 -lAdvAPI32
-    LIBS += -L"C:/Program Files/MySQL/MySQL Server 5.7/lib" -lmysqlclient -llibmysql
+    LIBS += -L"C:/Program Files/MySQL/MySQL Server 5.7/lib" -llibmysql
 
     DEFINES += WIN32
 #    DEFINES += RELEASE
@@ -51,60 +50,58 @@ unix {
     DEFINES += RELEASE
 }
 
-#OBJECTS_DIR =   temp
-#UI_DIR =        temp
-#MOC_DIR =       temp
-#RCC_DIR =       temp
-
 DEPENDPATH += . res 
 
-HEADERS += Database.h \
-           EdycjaKlienta.h \
-           LoadDialog.h \
-           Logowanie.h \
-           Macros.h \
-           MainWindow.h \
-           NowyKlient.h \
-           NowyTowar.h \
-           SzukajKlienta.h \
-           SzukajOferty.h \
-           SzukajTowaru.h \
-           User.h \
-           WyborKlienta.h \
+HEADERS += \
+    Database.h \
+    EdycjaKlienta.h \
+    LoadDialog.h \
+    Logowanie.h \
+    Macros.h \
+    MainWindow.h \
+    NowyKlient.h \
+    NowyTowar.h \
+    SzukajKlienta.h \
+    SzukajOferty.h \
+    SzukajTowaru.h \
+    User.h \
+    WyborKlienta.h \
     WyborTowaru.h \
     EdycjaKombo.h  \
-functions.h \
-Logger.h
+    functions.h \
+    Logger.h
 
-FORMS += EdycjaKlienta.ui \
-         LoadDialog.ui \
-         Logowanie.ui \
-         MainWindow.ui \
-         NowyKlient.ui \
-         NowyTowar.ui \
-         SzukajKlienta.ui \
-         SzukajOferty.ui \
-         SzukajTowaru.ui \
-         WyborKlienta.ui \ 
+FORMS += \
+    EdycjaKlienta.ui \
+    LoadDialog.ui \
+    Logowanie.ui \
+    MainWindow.ui \
+    NowyKlient.ui \
+    NowyTowar.ui \
+    SzukajKlienta.ui \
+    SzukajOferty.ui \
+    SzukajTowaru.ui \
+    WyborKlienta.ui \
     WyborTowaru.ui \
     EdycjaKombo.ui
 
-SOURCES += Database.cpp \
-           EdycjaKlienta.cpp \
-           LoadDialog.cpp \
-           Logowanie.cpp \
-           Main.cpp \
-           MainWindow.cpp \
-           NowyKlient.cpp \
-           NowyTowar.cpp \
-           SzukajKlienta.cpp \
-           SzukajOferty.cpp \
-           SzukajTowaru.cpp \
-           User.cpp \
-           WyborKlienta.cpp \        
+SOURCES += \
+    Database.cpp \
+    EdycjaKlienta.cpp \
+    LoadDialog.cpp \
+    Logowanie.cpp \
+    Main.cpp \
+    MainWindow.cpp \
+    NowyKlient.cpp \
+    NowyTowar.cpp \
+    SzukajKlienta.cpp \
+    SzukajOferty.cpp \
+    SzukajTowaru.cpp \
+    User.cpp \
+    WyborKlienta.cpp \
     WyborTowaru.cpp \
     EdycjaKombo.cpp \
-Logger.cpp
+    Logger.cpp
 
 RESOURCES += res/zasoby.qrc
 
