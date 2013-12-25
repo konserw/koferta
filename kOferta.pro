@@ -25,7 +25,6 @@ QT += sql network printsupport widgets #core gui
 TEMPLATE = app
 
 DEFINES += VER=2.36
-DEFINES += GET_PASS=\\\"l4600QW197E3GAEP84PnV4SC5bz6YY1Q2f2CK4bN!56543R96\\\"
 
 win32 { #nmake & M$ compiler
     QMAKE_CXXFLAGS += /nologo #/O2 /Wall
@@ -69,7 +68,6 @@ HEADERS += Database.h \
            NowyKlient.h \
            NowyTowar.h \
            NowyUser.h \
-           SHA1.h \
            SzukajKlienta.h \
            SzukajOferty.h \
            SzukajTowaru.h \
@@ -105,7 +103,6 @@ SOURCES += Database.cpp \
            NowyKlient.cpp \
            NowyTowar.cpp \
            NowyUser.cpp \
-           SHA1.cpp \
            SzukajKlienta.cpp \
            SzukajOferty.cpp \
            SzukajTowaru.cpp \
@@ -119,8 +116,8 @@ RESOURCES += res/zasoby.qrc
 
 OTHER_FILES += \
     changelog.txt \
-    res/LICENSE \
+    LICENSE.md \
     res/gpl-3.0.txt \
     res/gpl-3.0.html \
-    res/SHA1_LICENSE \
-    README.md
+    README.md \
+    hosts
