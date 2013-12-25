@@ -28,20 +28,11 @@ class QSqlDatabase;
 class cUser
 {
 public:
-   // user();
-    cUser(cUser& u);                                    //konstruktor kopiujący
-    cUser(cUser* u);                                    //konstruktor kopiujący
-
-    cUser(int uid);                                     //konstruktor tworzący użytkownika o podanym uid z danych w bazie
-    cUser(QString name);                                //konstruktor tworzący użytkownika o podanym nazwisku z danych w bazie
-
-    cUser(QString name, QString mail, QString adress, bool male);
-                                                        //konstruktor parametryczny wykorzystywany tylko przy tworzeniu
-                                                        //nowego użytkownika, zawsze należy wywołać po nim funkcję initID
-    void initID();                                      //inicjalizuje (z bazy) nr identyfikacyjny uzytkownika
-
+    ///konstruktor parametryczny inicjujący wszystkie pola
     cUser(int uid, QString name, QString mail, QString adress, bool male, int nrOferty);
-                                                        //konstruktor parametryczny inicjujący wszystkie pola
+    ///konstruktor kopiujący
+    cUser(cUser& u);
+
     ~cUser();
 
     QString name()const;                                //zwraca imię i nazwisko użytkownika - widoczne przy logowaniu i w tworzoych dokumentach

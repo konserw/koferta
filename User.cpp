@@ -15,9 +15,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
-
+#include <QSqlQuery>
+#include <QSqlError>
 #include <QString>
 #include <QStringList>
+#include <exception>
+#include <QtDebug>
 #include "User.h"
 
 cUser::cUser(cUser &u)
@@ -45,6 +48,21 @@ cUser::~cUser()
     delete _name;
     delete _mail;
     delete _adress;
+}
+
+void cUser::nrOfertyInkrement()
+{
+    _nrOferty++;
+
+    QString s = QString("UPDATE users SET nrOferty=%1 WHERE uid=%2").arg(_nrOferty).arg(_uid);
+    QSqlQuery q;
+
+    if(q.exec(s) == false)
+    {
+        qCritical() << "Zapytanie mysql zkonczone niepowodzeniem!";
+        qDebug() << "\tError text: " <<  q.lastError().text();
+        throw std::exception("Failed to execute query");
+    }
 }
 
 QString cUser::dbName() const
