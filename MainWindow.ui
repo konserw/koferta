@@ -25,7 +25,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -733,7 +733,7 @@
      <x>0</x>
      <y>0</y>
      <width>1065</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOferta">
@@ -744,8 +744,6 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
     <addaction name="actionNR"/>
-    <addaction name="separator"/>
-    <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuExport">
     <property name="title">
@@ -776,6 +774,16 @@
     <addaction name="towarNowy"/>
     <addaction name="towarEdycja"/>
    </widget>
+   <widget class="QMenu" name="menuConnect">
+    <property name="title">
+     <string>Connection</string>
+    </property>
+    <addaction name="actionConnect"/>
+    <addaction name="actionDisconnect"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <addaction name="menuConnect"/>
    <addaction name="menuOferta"/>
    <addaction name="menuExport"/>
    <addaction name="menuKlient"/>
@@ -882,6 +890,16 @@
    </property>
    <property name="text">
     <string>Edycja</string>
+   </property>
+  </action>
+  <action name="actionConnect">
+   <property name="text">
+    <string>Connect</string>
+   </property>
+  </action>
+  <action name="actionDisconnect">
+   <property name="text">
+    <string>Disconnect</string>
    </property>
   </action>
  </widget>
