@@ -69,19 +69,27 @@ Logowanie::Logowanie() :
     ui->ip->addItems(*hosts);
 
     m_db = new Database(this);
-/*
+
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
     connect(ui->add, SIGNAL(clicked()), this, SLOT(add()));
     connect(ui->ip, SIGNAL(currentIndexChanged(QString)), this, SLOT(hostChanged(QString)));
-*/
-//    connect(ui->)
+
+    QObject::connect(m_db, &Database::connectionSuccess, this, &Logowanie::connectionSuccess);
+    QObject::connect(m_db, &Database::newUsers, this, &Logowanie::updateUserList);
+    QObject::connect(m_db, &Database::changeStatus, ui->info, &QLabel::setText);
 }
 
 void Logowanie::hostChanged(QString ip)
 {
     ui->comboBox->clear();
     m_db->hostChanged(ip);
+}
+
+void Logowanie::updateUserList(const QStringList& users)
+{
+    ui->comboBox->clear();
+    ui->comboBox->addItems(users);
 }
 
 
