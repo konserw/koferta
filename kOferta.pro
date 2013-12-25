@@ -67,7 +67,6 @@ HEADERS += Database.h \
            MainWindow.h \
            NowyKlient.h \
            NowyTowar.h \
-           NowyUser.h \
            SzukajKlienta.h \
            SzukajOferty.h \
            SzukajTowaru.h \
@@ -85,7 +84,6 @@ FORMS += EdycjaKlienta.ui \
          MainWindow.ui \
          NowyKlient.ui \
          NowyTowar.ui \
-         NowyUser.ui \
          SzukajKlienta.ui \
          SzukajOferty.ui \
          SzukajTowaru.ui \
@@ -102,7 +100,6 @@ SOURCES += Database.cpp \
            MainWindow.cpp \
            NowyKlient.cpp \
            NowyTowar.cpp \
-           NowyUser.cpp \
            SzukajKlienta.cpp \
            SzukajOferty.cpp \
            SzukajTowaru.cpp \
