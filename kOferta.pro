@@ -60,7 +60,6 @@ DEPENDPATH += . res
 
 HEADERS += Database.h \
            EdycjaKlienta.h \
-           EdycjaTowaru.h \
            LoadDialog.h \
            Logowanie.h \
            Macros.h \
@@ -78,7 +77,6 @@ functions.h \
 Logger.h
 
 FORMS += EdycjaKlienta.ui \
-         EdycjaTowaru.ui \
          LoadDialog.ui \
          Logowanie.ui \
          MainWindow.ui \
@@ -93,7 +91,6 @@ FORMS += EdycjaKlienta.ui \
 
 SOURCES += Database.cpp \
            EdycjaKlienta.cpp \
-           EdycjaTowaru.cpp \
            LoadDialog.cpp \
            Logowanie.cpp \
            Main.cpp \

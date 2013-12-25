@@ -40,7 +40,6 @@
 #include "NowyKlient.h"
 #include "NowyTowar.h"
 #include "Database.h"
-#include "EdycjaTowaru.h"
 #include "EdycjaKlienta.h"
 #include "WyborTowaru.h"
 #include "WyborKlienta.h"
@@ -770,14 +769,6 @@ void MainWindow::dodajTowar()
     nowyTowar->exec();
     delete nowyTowar;
 }
-
-void MainWindow::edytujTowar()
-{
-    EdycjaTowaru* okno = new EdycjaTowaru(this);
-    okno->exec();
-    delete okno;
-}
-
 
 /* KLIENT */
 
