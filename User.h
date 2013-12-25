@@ -31,7 +31,7 @@ public:
     ///konstruktor parametryczny inicjujący wszystkie pola
     cUser(int uid, QString name, QString mail, QString adress, bool male, int nrOferty);
     ///konstruktor kopiujący
-    cUser(cUser& u);
+    cUser(const cUser& u);
 
     ~cUser();
 

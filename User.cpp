@@ -23,7 +23,7 @@
 #include <QtDebug>
 #include "User.h"
 
-cUser::cUser(cUser &u)
+cUser::cUser(const cUser &u)
 {
     _name = new QString(u.name());
     _mail = new QString(u.mail());
