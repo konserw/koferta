@@ -227,13 +227,28 @@ void Database::init(QSqlDatabase &db)
         MYSQL *handle = static_cast<MYSQL *>(v.data());
         if (handle != NULL)
         {
-            mysql_ssl_set(handle, ":/client-key", ":/client-cert", ":/ca-cacert", NULL, NULL);
+            try
+            {
+                mysql_ssl_set(handle, ":/client-key", ":/client-cert", ":/ca-cacert", NULL, NULL);
+            }
+            catch (std::exception& e)
+            {
+                qCritical() << "[mysql_ssl_set] Standard exception: " << e.what();
+            }
+            catch(...)
+            {
+                qCritical() << "[mysql_ssl_set] Unknown exception";
+            }
+        }
+        else
+        {
+            qCritical() << "invalid mysql handle - unable to setup ssl connection";
         }
     }
     else
     {
         QMessageBox::critical(nullptr, tr("Błąd"), tr("Bład sterownika bazy danych!\nNastąpi zamknięcie programu."));
-        qWarning() << "invalid driver";
+        qCritical() << "invalid driver";
 
         qDebug() << "library paths: ";
         QStringList list = qApp->libraryPaths();
