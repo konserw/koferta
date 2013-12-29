@@ -145,8 +145,8 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset>
-              <normaloff>:/gui/calendar</normaloff>:/gui/calendar</iconset>
+             <iconset resource="res/zasoby.qrc">
+              <normaloff>:/calendar</normaloff>:/calendar</iconset>
             </property>
             <property name="iconSize">
              <size>
