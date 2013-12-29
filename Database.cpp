@@ -27,11 +27,110 @@
 #ifndef NOSSL
     #ifdef WIN32
         #include <my_global.h>
-        #include  <mysql.h>
+        #include <mysql.h>
     #else
        #include <mysql/mysql.h>
     #endif
 #endif
+/*
+QStringList getUsersList()
+{
+    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL", "initialConnection");
+    if(!db.isValid())
+    {
+        qCritical() << "Initial connection invalid!";
+        return QStringList();
+    }
+    db.setHostName("192.168.1.2");
+    db.setPort(3306);
+    db.setUserName("kOf_GetUsers");
+    db.setPassword("");
+    db.setDatabaseName("kOferta");
+    db.setConnectOptions("CLIENT_SSL=1");
+    db.setConnectOptions("CLIENT_SSL=1;CLIENT_IGNORE_SPACE=1;MYSQL_OPT_RECONNECT=1");
+
+    qDebug() << "connName:" << db.connectionName();
+    qDebug() << "driver:" << db.driverName();
+    qDebug() << "options:" << db.connectOptions();
+    qDebug() << "host:" << db.hostName();
+    qDebug() << "database error:" << db.lastError().databaseText();
+    qDebug() << "driver error:" << db.lastError().driverText();
+
+    QSqlDriver* driver = db.driver();
+    qDebug() << "driver info";
+    driver->dumpObjectInfo();
+    driver->dumpObjectTree();
+
+    QVariant v = db.driver()->handle();
+    if (v.isValid() && qstrcmp(v.typeName(), "MYSQL*")==0)
+    {
+//        qDebug() << "v.typename:" << v.typeName();
+db.open();
+        MYSQL **hhandle = static_cast<MYSQL**>(v.data());
+        MYSQL *handle = *hhandle;
+        qDebug() << "hhandle:" << hhandle;
+        qDebug() << "handle:" << handle;
+        if (handle != NULL)
+        {
+  //          qDebug() << "handle:" << handle;
+    //        qDebug() << "mysql error:" << mysql_error(handle);
+
+            try
+            {
+      //          qDebug() << "mysql ping:" << mysql_ping(handle);
+      //          qDebug() << "mysql error:" << mysql_error(handle);
+//mysql_ssl_set(handle, NULL, NULL, ":/ca-cacert", NULL, NULL);
+        //         mysql_ssl_set(handle, ":/client-key", ":/client-cert", ":/ca-cacert", NULL, NULL);
+         //       mysql_ssl_set(handle, "D:/git/build-kOferta/client-key.pem", "D:/git/build-kOferta/client-cert.pem", "D:/git/build-kOferta/ca-cacert.pem", "D:/git/build-kOferta/", "DHE-RSA-AES256-SHA");
+                mysql_ssl_set(handle, "D:/git/build-kOferta/client-key.pem", "D:/git/build-kOferta/client-cert.pem", "D:/git/build-kOferta/ca-cacert.pem", NULL, NULL);
+            qWarning() << mysql_get_ssl_cipher(handle);
+            }
+            catch (std::exception& e)
+            {
+                qCritical() << "[mysql_ssl_set] Standard exception: " << e.what();
+            }
+            catch(...)
+            {
+                qCritical() << "[mysql_ssl_set] Unknown exception";
+            }
+        }
+        else
+        {
+            QMessageBox::critical(nullptr, "error", "null mysql pointer");
+            qApp->quit();
+        }
+    }
+
+
+    if(!db.open())
+    {
+        qWarning() << "Error! Unable to connect to database!";
+        qDebug() << "connName:" << db.connectionName();
+        qDebug() << "driver:" << db.driverName();
+        qDebug() << "options:" << db.connectOptions();
+        qDebug() << "host:" << db.hostName();
+        //db.driver()->dumpObjectInfo();
+        qDebug() << "error number:" << db.lastError().number();
+        qDebug() << "database error:" << db.lastError().databaseText();
+        qDebug() << "driver error:" << db.lastError().driverText();
+        QMessageBox::critical(nullptr, "error", QString::number(db.lastError().number()));
+        qApp->quit();
+    }
+
+    QSqlTableModel* m_usersTable = new QSqlTableModel(0, db);
+    m_usersTable->setTable("users");
+    m_usersTable->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    m_usersTable->setFilter("");
+    m_usersTable->select();
+    while (m_usersTable->canFetchMore())
+         m_usersTable->fetchMore();
+    QStringList userList;
+    for (int r = 0; r < m_usersTable->rowCount(); ++r)
+        userList << m_usersTable->data(m_usersTable->index(r,1)).toString();
+    delete m_usersTable;
+    return userList;
+}
+*/
 
 void insert_towar(const QString& id, const QString& nazwa, double cena, const QString& jednostka)
 {
@@ -120,7 +219,6 @@ void insert_combo(const QString& typ, const QString& sh, const QString& lo)
     EXEC_SILENT(s);
 }
 
-
 Database::Database(QObject* parent) :
     QObject(parent), m_usersTable(nullptr)
 {
@@ -133,13 +231,14 @@ Database::Database(QObject* parent) :
 
 Database::~Database()
 {
+    m_initialConnection->close();
     delete m_initialConnection;
 }
 
 void Database::hostChanged(QString ip)
 {
     qDebug() << "Host changed for:" << ip;
-    emit changeStatus(tr("Łączenie z bazą danych na %1").arg(ip));
+ //   emit changeStatus(tr("Łączenie z bazą danych na %1").arg(ip));
 
     m_initialConnection->setHostName(ip);
 
@@ -169,10 +268,9 @@ void Database::hostChanged(QString ip)
     //m_db->close();
 }
 
-void Database::connect(const QString &name, const QString &pass)
+void Database::connect(const QString& name, const QString &pass)
 {
-    qDebug() << "Downloading user info for:" << name;
-
+/*
     if(m_initialConnection->userName() != "kOf_GetUsers" || !m_initialConnection->isOpen())
     {
         qDebug() << "Reconnecting as kOf_GetUsers";
@@ -188,25 +286,31 @@ void Database::connect(const QString &name, const QString &pass)
         emit changeStatus(tr("Połączenie z bazą danych na %1 jest zerwane!").arg(m_initialConnection->hostName()));
         return;
     }
-    m_usersTable->setFilter(QString("name == '%1'").arg(name));
-    m_usersTable->select();
-    QSqlRecord r = m_usersTable->record(0);
+    */
+    QString dbName = cUser::dbName(name);
 
-    cUser currentUser(r.value("uid").toInt(), name, r.value("mail").toString(), r.value("adress").toString(), r.value("male").toBool(), r.value("nrOferty").toInt());
-
-    QSqlDatabase finalConnection = QSqlDatabase::addDatabase("QMYSQL", "finalConnection");
+    QSqlDatabase finalConnection = QSqlDatabase::addDatabase("QMYSQL"/*, "finalConnection"*/);
+    init(finalConnection);
     finalConnection.setHostName(m_initialConnection->hostName());
-    finalConnection.setUserName(currentUser.dbName());
+    finalConnection.setUserName(dbName);
     finalConnection.setPassword(pass);
 
-    qDebug() << "Logowanie jako " << name;
+    qDebug() << "Loging in as" << dbName;
     login(finalConnection);
 
     if(!finalConnection.isOpen())
     {
-        emit changeStatus(tr("%1: Błąd logowania jako %1").arg(finalConnection.hostName(), name));
+        emit changeStatus(tr("%1: Błąd logowania jako %2").arg(finalConnection.hostName(), name));
         return;
     }
+
+    qDebug() << "Downloading user info for" << name;
+
+    m_usersTable->setFilter(QString("name = '%1'").arg(name));
+    m_usersTable->select();
+    QSqlRecord r = m_usersTable->record(0);
+
+    cUser currentUser(r.value("uid").toInt(), name, r.value("mail").toString(), r.value("adress").toString(), r.value("male").toBool(), r.value("nrOferty").toInt());
 
     emit connectionSuccess(currentUser);
 }
@@ -224,12 +328,17 @@ void Database::init(QSqlDatabase &db)
     QVariant v = db.driver()->handle();
     if (v.isValid() && qstrcmp(v.typeName(), "MYSQL*")==0)
     {
-        MYSQL *handle = static_cast<MYSQL *>(v.data());
+        MYSQL *handle = *static_cast<MYSQL **>(v.data());
         if (handle != NULL)
         {
             try
             {
+                qDebug() << "v.typename:" << v.typeName();
+                qDebug() << "handle:" << handle;
+                qDebug() << "mysql error:" << mysql_error(handle);
+
                 mysql_ssl_set(handle, ":/client-key", ":/client-cert", ":/ca-cacert", NULL, NULL);
+//                mysql_ssl_set(handle, "D:/git/build-kOferta/client-key.pem", "D:/git/build-kOferta/client-cert.pem", "D:/git/build-kOferta/ca-cacert.pem", "D:/git/build-kOferta/", "DHE-RSA-AES256-SHA");
             }
             catch (std::exception& e)
             {
@@ -267,13 +376,14 @@ void Database::init(QSqlDatabase &db)
 
 void Database::login(QSqlDatabase& db)
 {
-    if (db.open())
+    if (!db.open())
     {
-        qWarning() << "Error! Unable to connect to database!";
+        qCritical() << "Error! Unable to connect to database!";
         qDebug() << "connName:" << db.connectionName();
         qDebug() << "driver:" << db.driverName();
         qDebug() << "options:" << db.connectOptions();
         qDebug() << "host:" << db.hostName();
+        qDebug() << "error number:" << db.lastError().number();
         qDebug() << "database error:" << db.lastError().databaseText();
         qDebug() << "driver error:" << db.lastError().driverText();
     }

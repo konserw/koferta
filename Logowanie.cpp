@@ -76,12 +76,16 @@ Logowanie::Logowanie() :
     connect(ui->ip, SIGNAL(currentIndexChanged(QString)), this, SLOT(hostChanged(QString)));
 
     QObject::connect(m_db, &Database::connectionSuccess, this, &Logowanie::connectionSuccess);
+    QObject::connect(m_db, &Database::connectionSuccess, this, &Logowanie::accept);
     QObject::connect(m_db, &Database::newUsers, this, &Logowanie::updateUserList);
     QObject::connect(m_db, &Database::changeStatus, ui->info, &QLabel::setText);
+
+   // updateUserList(getUsersList());
 }
 
 void Logowanie::hostChanged(QString ip)
 {
+    ui->info->setText(tr("Łączenie z bazą danych na %1").arg(ip));
     ui->comboBox->clear();
     m_db->hostChanged(ip);
 }
@@ -91,7 +95,6 @@ void Logowanie::updateUserList(const QStringList& users)
     ui->comboBox->clear();
     ui->comboBox->addItems(users);
 }
-
 
 void Logowanie::add()
 {

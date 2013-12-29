@@ -1,7 +1,4 @@
 /**
-  dialog umożliwiający zalogowanie się do systemu
-  **/
-/**
     kOferta - system usprawniajacy proces ofertowania
     Copyright (C) 2011  Kamil 'konserw' Strzempowicz, konserw@gmail.com
 
@@ -44,7 +41,7 @@ public slots:
     void ok();                                          //slot obsługujący przycisk ok - sprawdza zgodność skrótu wpisanego hasła ze skrótem zapisanym w klasie user i tworzy połączenie z bazą MySQL (klasa QSqlDatabase)
     void add();                                         //slot obsługujący dodawanie dodatkowych adresów IP bazy danych, zarówno do listy jak i do pliku host
     void hostChanged(QString);                          //slot odświerzający listę dostępnych użytkowników po zmianie hosta
-    void updateUserList(const QStringList &);
+    void updateUserList(const QStringList&);
 
 signals:
     void connectionSuccess(const cUser&);

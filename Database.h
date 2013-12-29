@@ -18,7 +18,7 @@ public:
 
 public slots:
     void hostChanged(QString ip);
-    void connect(const QString& name, const QString& pass);
+    void connect(const QString &uid, const QString& pass);
 
 signals:
     void newUsers(const QStringList&);
@@ -31,7 +31,7 @@ protected:
     QSqlTableModel* m_usersTable;
 
     inline void init(QSqlDatabase &db);
-    void login(QSqlDatabase &db);
+    inline void login(QSqlDatabase &db);
 };
 
 
@@ -41,5 +41,5 @@ void insert_zapisane_towary(const QString &nr_oferty, const QString &kod, double
 void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& data, int uid, const QString& zapytanie_data, const QString& zapytanie_nr, int dostawa, int termin, int platnosc, int oferta, const QString& uwagi);
 void insert_combo(const QString& typ, const QString& sh, const QString& lo);
 
-
+//QStringList getUsersList();
 #endif // DATABASE_H

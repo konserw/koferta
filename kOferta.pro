@@ -22,9 +22,11 @@ TARGET = kOferta
 
 QT += sql printsupport widgets
 
+CONFIG += c++11
+
 TEMPLATE = app
 
-DEFINES += VER=2.36
+DEFINES += VER=2.4
 
 win32 {
     QMAKE_CXXFLAGS += /nologo #/O2 /Wall
@@ -34,13 +36,17 @@ win32 {
 
     CONFIG += qt windows #release
 
-    INCLUDEPATH += "C:/Program Files/MySQL/MySQL Server 5.7/include"
+    #INCLUDEPATH += "C:/Program Files/MySQL/MySQL Server 5.7/include"
 
     LIBS += -L"C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x64" -lUser32 -lAdvAPI32
-    LIBS += -L"C:/Program Files/MySQL/MySQL Server 5.7/lib" -llibmysql
+    #LIBS += -L"C:/Program Files/MySQL/MySQL Server 5.7/lib" -llibmysql
 
     DEFINES += WIN32
 #    DEFINES += RELEASE
+    DEFINES += NOSSL
+
+#    INCLUDEPATH += "C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/include"
+    LIBS += -L"C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/lib" -llibmysql
 }
 
 unix {
