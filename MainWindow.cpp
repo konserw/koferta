@@ -72,6 +72,19 @@ void MainWindow::setMenusEnabled(bool en)
     ui->actionConnect->setEnabled(!en);
 }
 
+void MainWindow::uiReset()
+{
+    ui->tabWidget->setCurrentIndex(0);
+
+    this->setTitle(NULL);
+    ui->tab->setEnabled(false);
+    ui->tab_2->setEnabled(false);
+
+    ui->menuExport->setEnabled(false);
+    ui->actionSave->setEnabled(false);
+    ui->actionNR->setEnabled(false);
+}
+
 MainWindow::MainWindow():
     QMainWindow(nullptr),
     ui(new Ui::MainWindow)
@@ -154,23 +167,13 @@ MainWindow::MainWindow():
 /**
   ui
 **/
-    DEBUG << "user interface";
+    uiReset();
 
-    ui->tabWidget->setCurrentIndex(0);
-
-    //stan początkowy
-    this->setTitle(NULL);
-    ui->tab->setEnabled(false);
-    ui->tab_2->setEnabled(false);
-
-    ui->menuExport->setEnabled(false);
-    ui->actionSave->setEnabled(false);
-    ui->actionNR->setEnabled(false);
-
-    ui->pushButton_dostawa->setText(tr("Dodaj nową opcję"));
-    ui->pushButton_oferta->setText(tr("Dodaj nową opcję"));
-    ui->pushButton_platnosc->setText(tr("Dodaj nową opcję"));
-    ui->pushButton_termin->setText(tr("Dodaj nową opcję"));
+    const QString addOpt = tr("Dodaj nową opcję");
+    ui->pushButton_dostawa->setText(addOpt);
+    ui->pushButton_oferta->setText(addOpt);
+    ui->pushButton_platnosc->setText(addOpt);
+    ui->pushButton_termin->setText(addOpt);
 
 /**
  Pozostałe informacje
@@ -188,36 +191,19 @@ MainWindow::MainWindow():
     ui->checkBox_zapytanieNr->setChecked(false);
     ui->plainTextEdit_zapytanie->setReadOnly(true);
 
-    dostawaModel = new QSqlTableModel;
-    dostawaModel->setTable("dostawa");
-    dostawaModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    dostawaModel->select();
-    ui->comboBox_dostawa->setModel(dostawaModel);
-    ui->comboBox_dostawa->setModelColumn(1);
+    dostawaModel = nullptr;
     ui->plainTextEdit_dostawa->setReadOnly(true);
     ui->label_dostawa->setText(tr("Warunki dostawy:"));
 
-    terminModel = new QSqlTableModel;
-    terminModel->setTable("termin");
-    terminModel->select();
-    ui->comboBox_termin->setModel(terminModel);
-    ui->comboBox_termin->setModelColumn(1);
+    terminModel = nullptr;
     ui->plainTextEdit_termin->setReadOnly(true);
     ui->label_termin->setText(tr("Termin dostawy:"));
 
-    platnoscModel = new QSqlTableModel;
-    platnoscModel->setTable("platnosc");
-    platnoscModel->select();
-    ui->comboBox_platnosc->setModel(platnoscModel);
-    ui->comboBox_platnosc->setModelColumn(1);
+    platnoscModel = nullptr;
     ui->plainTextEdit_platnosc->setReadOnly(true);
     ui->label_platnosc->setText(tr("Warunki płatności:"));
 
-    ofertaModel = new QSqlTableModel;
-    ofertaModel->setTable("oferta");
-    ofertaModel->select();
-    ui->comboBox_oferta->setModel(ofertaModel);
-    ui->comboBox_oferta->setModelColumn(1);
+    ofertaModel = nullptr;
     ui->plainTextEdit_oferta->setReadOnly(true);
     ui->label_oferta->setText(tr("Warunki Oferty:"));
 
@@ -265,6 +251,32 @@ void MainWindow::connectedAs(const User &user)
     qDebug() << "Zalogowano jako uzytkownik " << m_currentUser->name();
 
     setMenusEnabled(true);
+
+    dostawaModel = new QSqlTableModel;
+    dostawaModel->setTable("dostawa");
+    dostawaModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    dostawaModel->select();
+    ui->comboBox_dostawa->setModel(dostawaModel);
+    ui->comboBox_dostawa->setModelColumn(1);
+
+    terminModel = new QSqlTableModel;
+    terminModel->setTable("termin");
+    terminModel->select();
+    ui->comboBox_termin->setModel(terminModel);
+    ui->comboBox_termin->setModelColumn(1);
+
+    platnoscModel = new QSqlTableModel;
+    platnoscModel->setTable("platnosc");
+    platnoscModel->select();
+    ui->comboBox_platnosc->setModel(platnoscModel);
+    ui->comboBox_platnosc->setModelColumn(1);
+
+    ofertaModel = new QSqlTableModel;
+    ofertaModel->setTable("oferta");
+    ofertaModel->select();
+    ui->comboBox_oferta->setModel(ofertaModel);
+    ui->comboBox_oferta->setModelColumn(1);
+
 }
 
 void MainWindow::connect()
@@ -289,9 +301,23 @@ void MainWindow::connect()
 
 void MainWindow::disconnect()
 {
+    uiReset();
     setMenusEnabled(false);
+
     delete m_currentUser;
-    //todo uporzadkowanie okna
+    m_currentUser = nullptr;
+
+    delete klient;
+    klient = nullptr;
+
+    delete dostawaModel;
+    dostawaModel = nullptr;
+    delete terminModel;
+    terminModel = nullptr;
+    delete platnoscModel;
+    terminModel = nullptr;
+    delete ofertaModel;
+    dostawaModel = nullptr;
 }
 
 void MainWindow::setTitle(QString* nr)
@@ -888,9 +914,9 @@ void MainWindow::printHtm()
 
 void MainWindow::print(QPrinter *printer)
 {
-    const int margin = 5;                        //szerokość marginesu
+    const qreal margin = 5;                        //szerokość marginesu
     printer->setPaperSize(QPrinter::A4);
-    printer->setResolution(300);
+    printer->setResolution(96);
     printer->setPageMargins(margin, margin, margin, margin, QPrinter::Millimeter);
 
     htm = false;
@@ -904,6 +930,7 @@ void MainWindow::print(QPrinter *printer)
     QTextDocument* doc = new QTextDocument;
     doc->setDefaultFont(*font);
     doc->setHtml(*sDoc);
+    doc->setPageSize(QSizeF(printer->pageRect().size()));
     doc->print(printer);
 
     delete doc;

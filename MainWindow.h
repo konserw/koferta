@@ -48,6 +48,7 @@ public:
 
     int ileTowaru(const QString&);                      //ilość danego towaru do wyświetlenia w wyborzeTowaru
 
+    void uiReset();
 public slots:
     void popWyborKlienta();
     void popWyborTowaru();
