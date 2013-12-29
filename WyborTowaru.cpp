@@ -21,8 +21,6 @@
 #include "MainWindow.h"
 #include <QSqlRecord>
 
-const QString WyborTowaru::m_info = tr("Wybierz towar z listy po lewej.");
-
 WyborTowaru::WyborTowaru(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::WyborTowaru)
@@ -31,7 +29,7 @@ WyborTowaru::WyborTowaru(QWidget *parent) :
 
     ui->pushButton->setText(tr("Ok"));
     ui->label_add->setText(tr("Dodaj:"));
-    ui->plainTextEdit->setPlainText(m_info);
+    ui->plainTextEdit->setPlainText("m_info");
     ui->spinBox->setMinimum(0);
     ui->spinBox->setSingleStep(1);
     ui->spinBox->setMaximum(99999);
@@ -62,7 +60,7 @@ void WyborTowaru::refresh(const QSqlRecord& _rec)
 
     if(_rec.isEmpty() || rec->value(0).toString().isEmpty())
     {
-        ui->plainTextEdit->setPlainText(m_info);
+        ui->plainTextEdit->setPlainText("m_info");
         ui->spinBox->setValue(0);
         ui->spinBox->setEnabled(false);
         return;
