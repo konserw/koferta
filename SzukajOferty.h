@@ -21,7 +21,7 @@
 
 #include <QWidget>
 
-class QSqlRelationalTableModel;
+class QSqlTableModel;
 class QModelIndex;
 class QDate;
 class QSqlRecord;
@@ -49,7 +49,7 @@ signals:
     void selectionChanged(const QSqlRecord&);
 
 private:
-    QSqlRelationalTableModel* model;
+    QSqlTableModel* model;
     Ui::SzukajOferty *ui;
 };
 

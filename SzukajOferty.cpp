@@ -18,7 +18,7 @@
 
 #include "SzukajOferty.h"
 #include "ui_SzukajOferty.h"
-#include <QSqlRelationalTableModel>
+#include <QSqlTableModel>
 #include <QSqlRecord>
 #include "Macros.h"
 
@@ -47,7 +47,7 @@ SzukajOferty::SzukajOferty(QWidget *parent) :
     sl << tr("Nr oferty") << tr("Klient") << tr("Data") << tr("Oferent");
     for(int i=0; i<sl.size(); ++i)
         ui->tabWidget->setTabText(i, sl[i]);
-
+/*
     model = new QSqlRelationalTableModel(this);
     model->setTable("zapisane");
     model->setEditStrategy(QSqlRelationalTableModel::OnManualSubmit);
@@ -64,7 +64,15 @@ SzukajOferty::SzukajOferty(QWidget *parent) :
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->resizeColumnToContents(3);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+*/
+    model = new QSqlTableModel(this);
+    model->setTable("savedOffersView");
+    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    model->select();
 
+    ui->tableView->setModel(model);
+    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableView->setSortingEnabled(true);
     ui->tableView->sortByColumn(2, Qt::DescendingOrder);
 
@@ -84,45 +92,28 @@ void SzukajOferty::select(const QModelIndex& index)
 {
     int row = index.row();
     QSqlRecord rec = model->record(row);
-//    DEBUG << "selected row: " << row << "id: " << id;
+    qDebug() << "selected row: " << row << "id: " << rec.value(0).toString();
     emit selectionChanged(rec);
 }
 
 void SzukajOferty::refId(const QString& id)
 {
-    QString s;
-    s = "nr_oferty like '";
-    s += id;
-    s += "%'";
-    model->setFilter(s);
+    model->setFilter(QString("number like '%1%'").arg(id));
 }
 
 void SzukajOferty::refClient(const QString& client)
 {
-    QString s;
-    s = "short like '";
-    s += client;
-    s += "%'";
-    model->setFilter(s);
+    model->setFilter(QString("customerCompany like '%1%'").arg(client));
 }
 
 void SzukajOferty::refDate(const QDate& date)
 {
     QString sd = date.toString("MM.yyyy");
-    DEBUG << "date: " << sd;
-    QString s;
-    s = "data like '%";
-    s += sd;
-    s += "'";
-    model->setFilter(s);
+    model->setFilter(QString("date >= str_to_date('1.%1', '%d.%m.%Y') AND  date <= str_to_date('31.%1', '%d.%m.%Y')").arg(sd));
 }
 
 
 void SzukajOferty::refUser(const QString& user)
 {
-    QString s;
-    s = "name = '";
-    s += user;
-    s += "'";
-    model->setFilter(s);
+    model->setFilter(QString("author = '%1'").arg(user));
 }

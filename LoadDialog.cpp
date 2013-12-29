@@ -61,6 +61,12 @@ LoadDialog::~LoadDialog()
 
 void LoadDialog::ok()
 {
+    if(!cur)
+    {
+        this->reject();
+        return;
+    }
+
     emit offerSelected(*cur, *model);
     this->accept();
 }
@@ -70,6 +76,6 @@ void LoadDialog::ref(const QSqlRecord& rec)
     delete cur;
     cur = new QSqlRecord(rec);
 
-    model->setFilter(QString("nr_oferty = '%1'").arg(rec.value("nr_oferty").toString()));
+    model->setFilter(QString("nr_oferty = '%1'").arg(rec.value("number").toString()));
     model->select();
 }
