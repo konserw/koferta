@@ -25,15 +25,15 @@
 class QString;
 class QSqlDatabase;
 
-class cUser
+class User
 {
 public:
     ///konstruktor parametryczny inicjujący wszystkie pola
-    cUser(int uid, QString name, QString mail, QString adress, bool male, int nrOferty);
+    User(int uid, QString name, QString mail, QString adress, bool male, int nrOferty);
     ///konstruktor kopiujący
-    cUser(const cUser& u);
+    User(const User& u);
 
-    ~cUser();
+    ~User();
 
     QString name()const;                                //zwraca imię i nazwisko użytkownika - widoczne przy logowaniu i w tworzoych dokumentach
     QString mail()const;                                //zwraca adres email użytkownika

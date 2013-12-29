@@ -287,7 +287,7 @@ void Database::connect(const QString& name, const QString &pass)
         return;
     }
     */
-    QString dbName = cUser::dbName(name);
+    QString dbName = User::dbName(name);
 
     QSqlDatabase finalConnection = QSqlDatabase::addDatabase("QMYSQL"/*, "finalConnection"*/);
     init(finalConnection);
@@ -310,7 +310,7 @@ void Database::connect(const QString& name, const QString &pass)
     m_usersTable->select();
     QSqlRecord r = m_usersTable->record(0);
 
-    cUser currentUser(r.value("uid").toInt(), name, r.value("mail").toString(), r.value("adress").toString(), r.value("male").toBool(), r.value("nrOferty").toInt());
+    User currentUser(r.value("uid").toInt(), name, r.value("mail").toString(), r.value("adress").toString(), r.value("male").toBool(), r.value("nrOferty").toInt());
 
     emit connectionSuccess(currentUser);
 }

@@ -28,7 +28,7 @@ class QSqlTableModel;
 class QModelIndex;
 class QTextDocument;
 class QTableWidgetItem;
-class cUser;
+class User;
 class QSqlRecord;
 class QCalendarWidget;
 class QDate;
@@ -113,7 +113,7 @@ public slots:
     void about();                                       //wyświetla informacje o programie
     //o qt - wbudowane
 
-    void connectedAs(const cUser& user);
+    void connectedAs(const User& user);
 
 private:
     Ui::MainWindow *ui;
@@ -143,7 +143,7 @@ private:
 
     QCalendarWidget* calendarWidget;
     QSqlRecord* klient;
-    cUser* m_currentUser;
+    User* m_currentUser;
 };
 
 #endif // MAINWINDOW_H

@@ -259,9 +259,9 @@ void MainWindow::about()
     QMessageBox::about(this, "O kOferta", s);
 }
 
-void MainWindow::connectedAs(const cUser &user)
+void MainWindow::connectedAs(const User &user)
 {
-    m_currentUser = new cUser(user);
+    m_currentUser = new User(user);
     qDebug() << "Zalogowano jako uzytkownik " << m_currentUser->name();
 
     setMenusEnabled(true);

@@ -22,7 +22,7 @@
 #include <QDialog>
 
 class QStringList;
-class cUser;
+class User;
 class Database;
 
 namespace Ui {
@@ -44,7 +44,7 @@ public slots:
     void updateUserList(const QStringList&);
 
 signals:
-    void connectionSuccess(const cUser&);
+    void connectionSuccess(const User&);
 
 private:
     Ui::Logowanie *ui;

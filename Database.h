@@ -5,7 +5,7 @@
 
 class QSqlDatabase;
 class QString;
-class cUser;
+class User;
 class QSqlTableModel;
 
 class Database : public QObject
@@ -22,7 +22,7 @@ public slots:
 
 signals:
     void newUsers(const QStringList&);
-    void connectionSuccess(const cUser&);
+    void connectionSuccess(const User&);
     void changeStatus(const QString&);
 
 protected:

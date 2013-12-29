@@ -23,7 +23,7 @@
 #include <QtDebug>
 #include "User.h"
 
-cUser::cUser(const cUser &u)
+User::User(const User &u)
 {
     _name = new QString(u.name());
     _mail = new QString(u.mail());
@@ -33,7 +33,7 @@ cUser::cUser(const cUser &u)
     _uid = u._uid;
 }
 
-cUser::cUser(int uid, QString name, QString mail, QString adress, bool male, int nrOferty)
+User::User(int uid, QString name, QString mail, QString adress, bool male, int nrOferty)
 {
     qDebug() << "new user:" << uid << name << mail << adress << male << nrOferty;
 
@@ -45,14 +45,14 @@ cUser::cUser(int uid, QString name, QString mail, QString adress, bool male, int
     _nrOferty = nrOferty;
 }
 
-cUser::~cUser()
+User::~User()
 {
     delete _name;
     delete _mail;
     delete _adress;
 }
 
-void cUser::nrOfertyInkrement()
+void User::nrOfertyInkrement()
 {
     _nrOferty++;
 
@@ -68,37 +68,37 @@ void cUser::nrOfertyInkrement()
     }
 }
 
-QString cUser::adress() const
+QString User::adress() const
 {
    return *_adress;
 }
 
-QString cUser::mail() const
+QString User::mail() const
 {
     return *_mail;
 }
 
-bool cUser::male() const
+bool User::male() const
 {
     return _male;
 }
 
-QString cUser::name() const
+QString User::name() const
 {
     return *_name;
 }
 
-int cUser::uid() const
+int User::uid() const
 {
     return _uid;
 }
 
-int cUser::nrOferty() const
+int User::nrOferty() const
 {
     return _nrOferty;
 }
 
-QString cUser::dbName(const QString& name)
+QString User::dbName(const QString& name)
 {
     QString s;
     s = name.split(' ').last();
