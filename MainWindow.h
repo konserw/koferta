@@ -127,6 +127,7 @@ private:
     //pomocnicze funkcje
     void setTitle(QString*);                            //ustawia tytuł okna
     void init();                                        //odblokowanie interfejsu i inicjacja tabeli
+    void setMenusEnabled(bool en);
 
     //wewnętrzne zmienne
     QString* nr_oferty;

@@ -45,6 +45,8 @@
 #include "Macros.h"
 #include "EdycjaKombo.h"
 
+#include <QTimer>
+
 /*************************
 **      GŁÓWNE OKNO     **
 *************************/
@@ -64,6 +66,15 @@ MainWindow::~MainWindow()
     delete klient;
 
     DEBUG << "destruktor mainwindow - koniec";
+}
+
+void MainWindow::setMenusEnabled(bool en)
+{
+    ui->menuOferta->setEnabled(en);
+    ui->menuKlient->setEnabled(en);
+    ui->menuTowar->setEnabled(en);
+    ui->actionDisconnect->setEnabled(en);
+    ui->actionConnect->setEnabled(!en);
 }
 
 MainWindow::MainWindow():
@@ -216,6 +227,9 @@ MainWindow::MainWindow():
     ui->label_oferta->setText(tr("Warunki Oferty:"));
 
     ui->label_uwagi->setText(tr("Uwagi:"));
+
+    setMenusEnabled(false);
+    QTimer::singleShot(10, this, SLOT(connect()));
 }
 
 void MainWindow::about()
@@ -254,11 +268,15 @@ void MainWindow::connectedAs(const cUser &user)
 {
     m_currentUser = new cUser(user);
     qDebug() << "Zalogowano jako uzytkownik " << m_currentUser->name();
+
+    setMenusEnabled(true);
 }
 
 void MainWindow::connect()
 {
     Logowanie loginWindow;
+
+    QObject::connect(&loginWindow, &Logowanie::connectionSuccess, this, &MainWindow::connectedAs);
 
     try
     {
@@ -276,7 +294,9 @@ void MainWindow::connect()
 
 void MainWindow::disconnect()
 {
-    //todo
+    setMenusEnabled(false);
+    delete m_currentUser;
+    //todo uporzadkowanie okna
 }
 
 void MainWindow::setTitle(QString* nr)
