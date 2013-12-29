@@ -33,6 +33,7 @@ class QSqlRecord;
 class QCalendarWidget;
 class QDate;
 class QPrinter;
+class MerchandiseListModel;
 
 namespace Ui {
     class MainWindow;
@@ -63,8 +64,6 @@ public slots:
     void ofertaNew();
 
     //obsługa głównej tabeli
-    void change(QTableWidgetItem*);                     //wywoływane przeliczenia wartości kosztu i sumy w przypadku zmiany którejś wartości w tabeli
-    void clear();                                       //czyszczenie tabeli
     void rabat();                                       //ustawia rabat dla wszystkich pozycji jednocześnie
     void del();                                         //usuwanie wiersza z tabeli
 
@@ -119,12 +118,6 @@ public slots:
 private:
     Ui::MainWindow *ui;
 
-    //obsługa głównej tabeli
-    void sum();                                         //przelicza sumę wszystkich pozycji
-    void przelicz(uint);                                //przelicza koszt towaru z zadanego wiersza
-    double ev(unsigned row, unsigned col);              //odczytuje wartość numeryczną z komórki o podanych koordynatach
-    void tabupd();                                      //przeliczenie wartości w całej tabeli po zmianie waluty
-
     //pomocnicze funkcje
     void setTitle(QString*);                            //ustawia tytuł okna
     void init();                                        //odblokowanie interfejsu i inicjacja tabeli
@@ -144,7 +137,9 @@ private:
 
     QCalendarWidget* calendarWidget;
     QSqlRecord* klient;
+
     User* m_currentUser;
+    MerchandiseListModel* m_towarModel;
 };
 
 #endif // MAINWINDOW_H

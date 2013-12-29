@@ -6,5 +6,6 @@
         <file alias="ico">kico.png</file>
         <file alias="klog">klog.png</file>
         <file alias="log">logo.jpg</file>
+        <file alias="calendar">schedule.png</file>
     </qresource>
 </RCC>
