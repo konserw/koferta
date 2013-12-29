@@ -30,7 +30,6 @@
 #include <QPrintDialog>
 #include <QTimer>
 #include "NowyKlient.h"
-#include "NowyTowar.h"
 #include "Database.h"
 #include "EdycjaKlienta.h"
 #include "WyborKlienta.h"
@@ -73,7 +72,6 @@ void MainWindow::setMenusEnabled(bool en)
 {
     ui->menuOferta->setEnabled(en);
     ui->menuKlient->setEnabled(en);
-    ui->menuTowar->setEnabled(en);
     ui->actionDisconnect->setEnabled(en);
     ui->actionConnect->setEnabled(!en);
 }
@@ -145,7 +143,6 @@ MainWindow::MainWindow():
     //opcje wydruku
     QObject::connect(ui->pln, SIGNAL(pressed()), this, SLOT(pln_on()));
     QObject::connect(ui->eur, SIGNAL(pressed()), this, SLOT(pln_off()));
-    QObject::connect(ui->kursSpinBox, SIGNAL(textChanged(QString)), this, SLOT(chKurs(QString)));
 
     //buttony w tabach
     QObject::connect(ui->addTowar, SIGNAL(clicked()), this, SLOT(popWyborTowaru()));
@@ -170,9 +167,6 @@ MainWindow::MainWindow():
     QObject::connect(ui->lineEdit_zapytanieNr, SIGNAL(textChanged(QString)), this, SLOT(zapytanieRef()));
     QObject::connect(ui->checkBox_zapytanieData, SIGNAL(toggled(bool)), this, SLOT(checkData(bool)));
     QObject::connect(ui->checkBox_zapytanieNr, SIGNAL(toggled(bool)), this, SLOT(checkNr(bool)));
-
-    //inne
-    //QObject::connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(change(QTableWidgetItem*)));
 
 /**
   ui
@@ -606,15 +600,6 @@ void MainWindow::dostawaNew()
 /*************************
 **      BAZA DANYCH     **
 *************************/
-
-/* TOWAR */
-
-void MainWindow::dodajTowar()
-{
-    NowyTowar* nowyTowar = new NowyTowar(this);
-    nowyTowar->exec();
-    delete nowyTowar;
-}
 
 /* KLIENT */
 

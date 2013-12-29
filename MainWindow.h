@@ -47,14 +47,10 @@ public:
     explicit MainWindow();                              //aktualny użytkownik przekazywany jako parametr
     ~MainWindow();
 
-    int ileTowaru(const QString&);                      //ilość danego towaru do wyświetlenia w wyborzeTowaru
-
-    void uiReset();
 public slots:
     void popWyborKlienta();
     void popWyborTowaru();
 
-    void setTowar(const QSqlRecord&, int);              //dodawanie towarów do tabeli (wywoływane przez sygnał z dialogu dodajTowar)
     void loadOffer(const QSqlRecord &rec, const QSqlTableModel &mod);              //wczytuje ofertę o połączone z dialogiem wczytywanie
 
     //dodawanie opcji do kombosów
@@ -81,7 +77,6 @@ public slots:
     //opcje wydruku
     void pln_on();                                      //włącza przeliczanie euro na pln
     void pln_off();                                     //wyłącza przeliczanie euro na pln
-    void chKurs(QString);                               //zmienia kurs wymiany euro->pln
 
     //wydruk
     void printPrev();                                   //podgląd wydruku
@@ -106,9 +101,6 @@ public slots:
     void dodajKlient();                                 //wyświetla dialog dodający klienta - cDodajKlient
     void edytujKlient();                                //wyświetla dialog edycji klientów
 
-    //towar
-    void dodajTowar();                                  //wyświetlenie dialogu  dodającego towar - cDodajTowar
-
     //help
     void about();                                       //wyświetla informacje o programie
     //o qt - wbudowane
@@ -122,6 +114,7 @@ private:
     void setTitle(QString*);                            //ustawia tytuł okna
     void init();                                        //odblokowanie interfejsu i inicjacja tabeli
     void setMenusEnabled(bool en);
+    void uiReset();
 
     //wewnętrzne zmienne
     QString* nr_oferty;
