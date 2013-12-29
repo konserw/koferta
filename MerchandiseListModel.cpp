@@ -239,11 +239,16 @@ void MerchandiseListModel::changeItemCount(int id, double ile)
     Merchandise* t = new Merchandise(id);
     if(m_list.contains(t))
     {
-        Merchandise* x = m_list[m_list.indexOf(t)];
-        x->setIlosc(ile);
-        delete t;
+        if(ile > 0)
+        {
+            Merchandise* x = m_list[m_list.indexOf(t)];
+            x->setIlosc(ile);
+        }
+        else
+            removeRow(m_list.indexOf(t));
+
     }
-    else
+    else if(ile > 0)
     {
         /********************************* TO DO **********************
             databse object should handle retriving data from db
@@ -256,8 +261,8 @@ void MerchandiseListModel::changeItemCount(int id, double ile)
         beginInsertRows(QModelIndex(), m_list.size(), m_list.size());
         m_list.append(x);
         endInsertRows();
-        delete t;
     }
+    delete t;
 }
 
 bool MerchandiseListModel::removeRows(int row, int count, const QModelIndex & /*parent*/)
@@ -313,10 +318,11 @@ void MerchandiseListModel::addItem(Merchandise *towar)
 
 void MerchandiseListModel::loadOffer(const QSqlTableModel &mod)
 {
-    // TODO
-    /*
+    /**************** TO DO **************
+     * bez iterowania - view w bazie czy cos
+
     QSqlTableModel towary;
-    towary.setTable("towar");
+    towary.setTable("merchandise");
     towary.select();
 
     Merchandise* t;
@@ -335,6 +341,6 @@ void MerchandiseListModel::loadOffer(const QSqlTableModel &mod)
 
         addItem(t);
     }
-    */
+    ********************************************/
 }
 
