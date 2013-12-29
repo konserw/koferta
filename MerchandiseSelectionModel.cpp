@@ -20,7 +20,7 @@ Qt::ItemFlags MerchandiseSelectionModel::flags(const QModelIndex &index) const
     if(index.column() == 0)
         return Qt::ItemIsEditable|Qt::ItemIsSelectable|Qt::ItemIsEnabled;
 
-    return 0;
+    return Qt::ItemIsEnabled;
 }
 
 bool MerchandiseSelectionModel::setData(const QModelIndex &index, const QVariant &value, int role)
