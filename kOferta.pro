@@ -66,13 +66,10 @@ HEADERS += \
     Macros.h \
     MainWindow.h \
     NowyKlient.h \
-    NowyTowar.h \
     SzukajKlienta.h \
     SzukajOferty.h \
-    SzukajTowaru.h \
     User.h \
     WyborKlienta.h \
-    WyborTowaru.h \
     EdycjaKombo.h  \
     functions.h \
     Logger.h \
@@ -81,7 +78,9 @@ HEADERS += \
     MerchandiseSearchModel.h \
     MerchandiseSelection.h \
     MerchandiseSelectionModel.h \
-    MerchendiseSelectionDelegate.h
+    MerchendiseSelectionDelegate.h \
+    MerchandiseListDelegate.h \
+    MerchandiseListModel.h
 
 FORMS += \
     EdycjaKlienta.ui \
@@ -89,12 +88,9 @@ FORMS += \
     Logowanie.ui \
     MainWindow.ui \
     NowyKlient.ui \
-    NowyTowar.ui \
     SzukajKlienta.ui \
     SzukajOferty.ui \
-    SzukajTowaru.ui \
     WyborKlienta.ui \
-    WyborTowaru.ui \
     EdycjaKombo.ui \
     MerchandiseSearch.ui
 
@@ -106,13 +102,10 @@ SOURCES += \
     Main.cpp \
     MainWindow.cpp \
     NowyKlient.cpp \
-    NowyTowar.cpp \
     SzukajKlienta.cpp \
     SzukajOferty.cpp \
-    SzukajTowaru.cpp \
     User.cpp \
     WyborKlienta.cpp \
-    WyborTowaru.cpp \
     EdycjaKombo.cpp \
     Logger.cpp \
     Merchandise.cpp \
@@ -120,7 +113,9 @@ SOURCES += \
     MerchandiseSearchModel.cpp \
     MerchandiseSelection.cpp \
     MerchandiseSelectionModel.cpp \
-    MerchendiseSelectionDelegate.cpp
+    MerchendiseSelectionDelegate.cpp \
+    MerchandiseListDelegate.cpp \
+    MerchandiseListModel.cpp
 
 RESOURCES += res/zasoby.qrc
 

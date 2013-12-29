@@ -651,13 +651,6 @@
     <addaction name="klientNowy"/>
     <addaction name="klientEdycja"/>
    </widget>
-   <widget class="QMenu" name="menuTowar">
-    <property name="title">
-     <string>Towar</string>
-    </property>
-    <addaction name="towarNowy"/>
-    <addaction name="towarEdycja"/>
-   </widget>
    <widget class="QMenu" name="menuConnect">
     <property name="title">
      <string>Connection</string>
@@ -671,7 +664,6 @@
    <addaction name="menuOferta"/>
    <addaction name="menuExport"/>
    <addaction name="menuKlient"/>
-   <addaction name="menuTowar"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="actionNew">
