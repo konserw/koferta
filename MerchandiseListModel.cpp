@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <QSqlTableModel>
 #include <QSqlRecord>
-#include "LocalDatabase.h"
+#include <QSqlQuery>
 
 MerchandiseListModel::MerchandiseListModel(QObject *parent) :
     QAbstractTableModel(parent), m_pln(false), m_kurs(1)
@@ -239,18 +239,26 @@ void MerchandiseListModel::changeItemCount(int id, double ile)
     Merchandise* t = new Merchandise(id);
     if(m_list.contains(t))
     {
-        t = m_list[m_list.indexOf(t)];
-        t->setIlosc(ile);
+        Merchandise* x = m_list[m_list.indexOf(t)];
+        x->setIlosc(ile);
+        delete t;
     }
     else
     {
+        /********************************* TO DO **********************
+            databse object should handle retriving data from db
+            *************************************************************/
+        QSqlQuery r;
+        r.exec(QString("select * from merchandise where id = %1").arg(id));
+        r.next();
+        Merchandise* x = new Merchandise(id, r.value("code").toString(), r.value("desc").toString(), r.value("price").toDouble(), r.value("unit").toString() == "mb.");
+        x->setIlosc(ile);
         beginInsertRows(QModelIndex(), m_list.size(), m_list.size());
-        t = localDatabase()->merchandise(id);
-        t->setIlosc(ile);
-        m_list.append(t);
+        m_list.append(x);
+        endInsertRows();
+        delete t;
     }
 }
-
 
 bool MerchandiseListModel::removeRows(int row, int count, const QModelIndex & /*parent*/)
 {

@@ -19,13 +19,16 @@
 #include "MerchandiseSelection.h"
 #include "MerchandiseSelectionModel.h"
 #include "MerchendiseSelectionDelegate.h"
-#include "LocalDatabase.h"
 #include <QSqlTableModel>
 
 MerchandiseSelection::MerchandiseSelection(const QHash<int, double> &hash, QWidget *parent) :
     MerchandiseSearch(new MerchandiseSelectionModel(hash, parent), parent)
 {
-    m_merchandiseModel = localDatabase()->merchandiseModel();
+    m_merchandiseModel = new QSqlTableModel(0);
+    m_merchandiseModel->setTable("merchandise");
+    m_merchandiseModel->select();
+    m_merchandiseModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
+
     m_model->setSourceModel(m_merchandiseModel);
     MerchendiseSelectionDelegate* delegate = new MerchendiseSelectionDelegate(this);
     ui->tableView->setItemDelegate(delegate);

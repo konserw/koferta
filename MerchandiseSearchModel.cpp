@@ -17,6 +17,10 @@ bool MerchandiseSearchModel::lessThan(const QModelIndex &left, const QModelIndex
 
 bool MerchandiseSearchModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
+    return true;
+    /****************** TO DO **********************
+     * filtering by valid dates *****************/
+
     QString d1 = sourceModel()->data(sourceModel()->index(sourceRow, 5, sourceParent)).toString();
     QString d2 = sourceModel()->data(sourceModel()->index(sourceRow, 6, sourceParent)).toString();
 
