@@ -12,11 +12,7 @@
 class cUser;
 extern cUser* currentUser;
 
-#ifdef RELEASE
-    #define DEBUG qDebug()
-#else
-    #define DEBUG qDebug() << __FILE__ << " (" << __LINE__ << "): "
-#endif
+#define DEBUG qDebug()
 
 #define EXEC(s) \
 do{ \
