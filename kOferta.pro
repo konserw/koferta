@@ -75,7 +75,13 @@ HEADERS += \
     WyborTowaru.h \
     EdycjaKombo.h  \
     functions.h \
-    Logger.h
+    Logger.h \
+    Merchandise.h \
+    MerchandiseSearch.h \
+    MerchandiseSearchModel.h \
+    MerchandiseSelection.h \
+    MerchandiseSelectionModel.h \
+    MerchendiseSelectionDelegate.h
 
 FORMS += \
     EdycjaKlienta.ui \
@@ -89,7 +95,8 @@ FORMS += \
     SzukajTowaru.ui \
     WyborKlienta.ui \
     WyborTowaru.ui \
-    EdycjaKombo.ui
+    EdycjaKombo.ui \
+    MerchandiseSearch.ui
 
 SOURCES += \
     Database.cpp \
@@ -107,7 +114,13 @@ SOURCES += \
     WyborKlienta.cpp \
     WyborTowaru.cpp \
     EdycjaKombo.cpp \
-    Logger.cpp
+    Logger.cpp \
+    Merchandise.cpp \
+    MerchandiseSearch.cpp \
+    MerchandiseSearchModel.cpp \
+    MerchandiseSelection.cpp \
+    MerchandiseSelectionModel.cpp \
+    MerchendiseSelectionDelegate.cpp
 
 RESOURCES += res/zasoby.qrc
 
