@@ -24,6 +24,7 @@
 #include <QTextCodec>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QTimer>
 #include "Logowanie.h"
 #include "ui_Logowanie.h"
 #include "User.h"
@@ -81,6 +82,10 @@ Logowanie::Logowanie() :
     QObject::connect(m_db, &Database::changeStatus, ui->info, &QLabel::setText);
 
    // updateUserList(getUsersList());
+#ifndef RELEASE
+    m_db->hostChanged("192.168.1.2");
+    QTimer::singleShot(100, this, SLOT(ok()));
+#endif
 }
 
 void Logowanie::hostChanged(QString ip)
@@ -122,6 +127,7 @@ void Logowanie::add()
 }
 void Logowanie::ok()
 {
+#ifdef RELEASE
     QString pass = ui->lineEdit->text();
     if(pass.isEmpty())
     {
@@ -130,4 +136,7 @@ void Logowanie::ok()
     }
 
     m_db->connect(ui->comboBox->currentText(), pass);
+#else
+    m_db->connect("Admin", "");
+#endif
 }
