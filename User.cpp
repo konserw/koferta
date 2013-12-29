@@ -35,6 +35,8 @@ cUser::cUser(const cUser &u)
 
 cUser::cUser(int uid, QString name, QString mail, QString adress, bool male, int nrOferty)
 {
+    qDebug() << "new user:" << uid << name << mail << adress << male << nrOferty;
+
     _uid = uid;
     _name = new QString(name);
     _mail = new QString(mail);
@@ -59,28 +61,11 @@ void cUser::nrOfertyInkrement()
 
     if(q.exec(s) == false)
     {
+        _nrOferty--;
         qCritical() << "Zapytanie mysql zkonczone niepowodzeniem!";
         qDebug() << "\tError text: " <<  q.lastError().text();
-        throw std::exception("Failed to execute query");
+   //     throw std::exception("Failed to execute query");
     }
-}
-
-QString cUser::dbName() const
-{
-    QString s;
-    s = _name->split(' ').last();
-    s.truncate(12);
-    s.replace("ł", "l");
-    s.replace("ą", "a");
-    s.replace("ę", "e");
-    s.replace("ó", "o");
-    s.replace("ś", "s");
-    s.replace("ż", "z");
-    s.replace("ź", "z");
-    s.replace("ć", "c");
-    s.replace("ń", "n");
-    s = "kOf_" + s;
-    return s;
 }
 
 QString cUser::adress() const
@@ -106,6 +91,27 @@ QString cUser::name() const
 int cUser::uid() const
 {
     return _uid;
+}
+
+QString cUser::dbName(const QString& name)
+{
+    if(name == "Admin")
+        return "konserw";
+
+    QString s;
+    s = name.split(' ').last();
+    s.truncate(12);
+    s.replace("ł", "l");
+    s.replace("ą", "a");
+    s.replace("ę", "e");
+    s.replace("ó", "o");
+    s.replace("ś", "s");
+    s.replace("ż", "z");
+    s.replace("ź", "z");
+    s.replace("ć", "c");
+    s.replace("ń", "n");
+    s = "kOf_" + s;
+    return s;
 }
 int cUser::nrOferty() const
 {
