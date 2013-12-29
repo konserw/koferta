@@ -15,10 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
-
-#include "MainWindow.h"
-#include "ui_MainWindow.h"
-
 #include <QDate>
 #include <QSqlQuery>
 #include <QInputDialog>
@@ -32,7 +28,7 @@
 #include <QTextDocument>
 #include <QtPrintSupport>
 #include <QPrintDialog>
-
+#include <QTimer>
 #include "NowyKlient.h"
 #include "NowyTowar.h"
 #include "Database.h"
@@ -44,9 +40,8 @@
 #include "User.h"
 #include "Macros.h"
 #include "EdycjaKombo.h"
-
-#include <QTimer>
-
+#include "MainWindow.h"
+#include "ui_MainWindow.h"
 /*************************
 **      GŁÓWNE OKNO     **
 *************************/

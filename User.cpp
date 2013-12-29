@@ -93,11 +93,13 @@ int cUser::uid() const
     return _uid;
 }
 
+int cUser::nrOferty() const
+{
+    return _nrOferty;
+}
+
 QString cUser::dbName(const QString& name)
 {
-    if(name == "Admin")
-        return "konserw";
-
     QString s;
     s = name.split(' ').last();
     s.truncate(12);
@@ -112,8 +114,4 @@ QString cUser::dbName(const QString& name)
     s.replace("ń", "n");
     s = "kOf_" + s;
     return s;
-}
-int cUser::nrOferty() const
-{
-    return _nrOferty;
 }
