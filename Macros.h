@@ -9,9 +9,6 @@
 #include <QSqlQuery>
 #include <QFile>
 
-class cUser;
-extern cUser* currentUser;
-
 #define DEBUG qDebug()
 
 #define EXEC(s) \
@@ -37,40 +34,5 @@ do{ \
         return; \
     } \
 }while(0)
-
-#define LOGIN \
-if (!d->open()) \
-{ \
-    DEBUG << "Błąd: nie można się połączyć z bazą!"; \
-    qDebug() << "\t\t\t connName: " << d->connectionName(); \
-    qDebug() << "\t\t\t driver: " << d->driverName(); \
-    qDebug() << "\t\t\t opcje " << d->connectOptions(); \
-    qDebug() << "\t\t\t host: " << d->hostName(); \
-    qDebug() << "\t\t\t last error: " << d->lastError().text(); \
-    QMessageBox::warning(NULL, "error", "Nie udało się nawiązać połączenia z bazą danych."); \
-    return; \
-}
-
-#define LOGIN_ \
-if (!d->open()) \
-{ \
-    DEBUG << "Błąd: nie można się połączyć z bazą!"; \
-    qDebug() << "\t\t\t connName: " << d->connectionName(); \
-    qDebug() << "\t\t\t driver: " << d->driverName(); \
-    qDebug() << "\t\t\t opcje " << d->connectOptions(); \
-    qDebug() << "\t\t\t host: " << d->hostName(); \
-    qDebug() << "\t\t\t last error: " << d->lastError().text(); \
-    s = "Połączenie z bazą danych na "; \
-    s += d->hostName(); \
-    s += " nie powiodło się."; \
-    ui->info->setText(s); \
-    return; \
-} \
-else \
-{ \
-    s = "Połączono z bazą danych na "; \
-    s += d->hostName(); \
-    ui->info->setText(s); \
-}
 
 #endif // MACROS_H

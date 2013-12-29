@@ -91,12 +91,16 @@ public slots:
     void makeDocument(QString *sDoc);                   //tworzy dokument jako kod htm w QTextDocument
 
 /*menu*/
-    //menu plik
+    //connect
+    void connect();
+    void disconnect();
+
+    //menu oferta
     void nowa();
     void zapisz();
     void popLoadDialog();
     void nowyNumer();
-    //exit zaimplementowany
+
 
     //klient
     void dodajKlient();                                 //wyświetla dialog dodający klienta - cDodajKlient
@@ -104,11 +108,12 @@ public slots:
 
     //towar
     void dodajTowar();                                  //wyświetlenie dialogu  dodającego towar - cDodajTowar
-    void edytujTowar();                                 //wyświetla dialog edycji towarów
 
     //help
     void about();                                       //wyświetla informacje o programie
     //o qt - wbudowane
+
+    void connectedAs(const cUser& user);
 
 private:
     Ui::MainWindow *ui;
@@ -122,6 +127,7 @@ private:
     //pomocnicze funkcje
     void setTitle(QString*);                            //ustawia tytuł okna
     void init();                                        //odblokowanie interfejsu i inicjacja tabeli
+    void setMenusEnabled(bool en);
 
     //wewnętrzne zmienne
     QString* nr_oferty;
@@ -136,7 +142,8 @@ private:
     QSqlTableModel* ofertaModel;
 
     QCalendarWidget* calendarWidget;
-    QSqlRecord* klient;    
+    QSqlRecord* klient;
+    cUser* m_currentUser;
 };
 
 #endif // MAINWINDOW_H

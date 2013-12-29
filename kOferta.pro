@@ -20,14 +20,15 @@
 
 TARGET = kOferta
 
-QT += sql network printsupport widgets #core gui
+QT += sql printsupport widgets
+
+CONFIG += c++11
 
 TEMPLATE = app
 
-DEFINES += VER=2.36
-DEFINES += GET_PASS=\\\"l4600QW197E3GAEP84PnV4SC5bz6YY1Q2f2CK4bN!56543R96\\\"
+DEFINES += VER=2.4
 
-win32 { #nmake & M$ compiler
+win32 {
     QMAKE_CXXFLAGS += /nologo #/O2 /Wall
 
     QMAKE_LFLAGS_RELEASE += /NODEFAULTLIB:LIBCMT
@@ -35,14 +36,17 @@ win32 { #nmake & M$ compiler
 
     CONFIG += qt windows #release
 
-    INCLUDEPATH += "C:/Program Files/MySQL/MySQL Server 5.7/include"
-#    INCLUDEPATH += C:\\koferta_src
+    #INCLUDEPATH += "C:/Program Files/MySQL/MySQL Server 5.7/include"
 
     LIBS += -L"C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x64" -lUser32 -lAdvAPI32
-    LIBS += -L"C:/Program Files/MySQL/MySQL Server 5.7/lib" -lmysqlclient -llibmysql
+    #LIBS += -L"C:/Program Files/MySQL/MySQL Server 5.7/lib" -llibmysql
 
     DEFINES += WIN32
 #    DEFINES += RELEASE
+    DEFINES += NOSSL
+
+#    INCLUDEPATH += "C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/include"
+    LIBS += -L"C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/lib" -llibmysql
 }
 
 unix {
@@ -52,75 +56,65 @@ unix {
     DEFINES += RELEASE
 }
 
-#OBJECTS_DIR =   temp
-#UI_DIR =        temp
-#MOC_DIR =       temp
-#RCC_DIR =       temp
-
 DEPENDPATH += . res 
 
-HEADERS += Database.h \
-           EdycjaKlienta.h \
-           EdycjaTowaru.h \
-           LoadDialog.h \
-           Logowanie.h \
-           Macros.h \
-           MainWindow.h \
-           NowyKlient.h \
-           NowyTowar.h \
-           NowyUser.h \
-           SHA1.h \
-           SzukajKlienta.h \
-           SzukajOferty.h \
-           SzukajTowaru.h \
-           User.h \
-           WyborKlienta.h \
+HEADERS += \
+    Database.h \
+    EdycjaKlienta.h \
+    LoadDialog.h \
+    Logowanie.h \
+    Macros.h \
+    MainWindow.h \
+    NowyKlient.h \
+    NowyTowar.h \
+    SzukajKlienta.h \
+    SzukajOferty.h \
+    SzukajTowaru.h \
+    User.h \
+    WyborKlienta.h \
     WyborTowaru.h \
     EdycjaKombo.h  \
-functions.h \
-Logger.h
+    functions.h \
+    Logger.h
 
-FORMS += EdycjaKlienta.ui \
-         EdycjaTowaru.ui \
-         LoadDialog.ui \
-         Logowanie.ui \
-         MainWindow.ui \
-         NowyKlient.ui \
-         NowyTowar.ui \
-         NowyUser.ui \
-         SzukajKlienta.ui \
-         SzukajOferty.ui \
-         SzukajTowaru.ui \
-         WyborKlienta.ui \ 
+FORMS += \
+    EdycjaKlienta.ui \
+    LoadDialog.ui \
+    Logowanie.ui \
+    MainWindow.ui \
+    NowyKlient.ui \
+    NowyTowar.ui \
+    SzukajKlienta.ui \
+    SzukajOferty.ui \
+    SzukajTowaru.ui \
+    WyborKlienta.ui \
     WyborTowaru.ui \
     EdycjaKombo.ui
 
-SOURCES += Database.cpp \
-           EdycjaKlienta.cpp \
-           EdycjaTowaru.cpp \
-           LoadDialog.cpp \
-           Logowanie.cpp \
-           Main.cpp \
-           MainWindow.cpp \
-           NowyKlient.cpp \
-           NowyTowar.cpp \
-           NowyUser.cpp \
-           SHA1.cpp \
-           SzukajKlienta.cpp \
-           SzukajOferty.cpp \
-           SzukajTowaru.cpp \
-           User.cpp \
-           WyborKlienta.cpp \        
+SOURCES += \
+    Database.cpp \
+    EdycjaKlienta.cpp \
+    LoadDialog.cpp \
+    Logowanie.cpp \
+    Main.cpp \
+    MainWindow.cpp \
+    NowyKlient.cpp \
+    NowyTowar.cpp \
+    SzukajKlienta.cpp \
+    SzukajOferty.cpp \
+    SzukajTowaru.cpp \
+    User.cpp \
+    WyborKlienta.cpp \
     WyborTowaru.cpp \
     EdycjaKombo.cpp \
-Logger.cpp
+    Logger.cpp
 
 RESOURCES += res/zasoby.qrc
 
 OTHER_FILES += \
     changelog.txt \
-    res/LICENSE \
+    LICENSE.md \
     res/gpl-3.0.txt \
     res/gpl-3.0.html \
-    res/SHA1_LICENSE \
-    README.md
+    README.md \
+    hosts

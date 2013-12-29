@@ -23,24 +23,19 @@
 #include <QSqlQuery>
 #include <QInputDialog>
 #include <QList>
-#include <QTableWidget>
-#include <QTableWidgetItem>
+#include <QtWidgets>
 #include <QFile>
 #include <QTextStream>
 #include <QTextCodec>
-#include <QFileDialog>
 #include <QSqlRecord>
 #include <QSqlTableModel>
-#include <QCalendarWidget>
-#include <QPrintPreviewDialog>
 #include <QTextDocument>
-#include <QPrinter>
+#include <QtPrintSupport>
 #include <QPrintDialog>
 
 #include "NowyKlient.h"
 #include "NowyTowar.h"
 #include "Database.h"
-#include "EdycjaTowaru.h"
 #include "EdycjaKlienta.h"
 #include "WyborTowaru.h"
 #include "WyborKlienta.h"
@@ -49,6 +44,8 @@
 #include "User.h"
 #include "Macros.h"
 #include "EdycjaKombo.h"
+
+#include <QTimer>
 
 /*************************
 **      GŁÓWNE OKNO     **
@@ -71,8 +68,17 @@ MainWindow::~MainWindow()
     DEBUG << "destruktor mainwindow - koniec";
 }
 
-MainWindow::MainWindow ():
-    QMainWindow(NULL),
+void MainWindow::setMenusEnabled(bool en)
+{
+    ui->menuOferta->setEnabled(en);
+    ui->menuKlient->setEnabled(en);
+    ui->menuTowar->setEnabled(en);
+    ui->actionDisconnect->setEnabled(en);
+    ui->actionConnect->setEnabled(!en);
+}
+
+MainWindow::MainWindow():
+    QMainWindow(nullptr),
     ui(new Ui::MainWindow)
 {
     DEBUG << "konstruktor mainwindow";   
@@ -95,60 +101,60 @@ MainWindow::MainWindow ():
     DEBUG << "połaczenia sygnałów i slotów";
 
     /*menu:*/
-    //plik
-    connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(nowa()));
-    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(popLoadDialog()));
-    connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(zapisz()));
-    connect(ui->actionNR, SIGNAL(triggered()), this, SLOT(nowyNumer()));
-    connect(ui->actionExit, SIGNAL(triggered()), qApp, SLOT(quit()));
+    //oferta
+    QObject::connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(nowa()));
+    QObject::connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(popLoadDialog()));
+    QObject::connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(zapisz()));
+    QObject::connect(ui->actionNR, SIGNAL(triggered()), this, SLOT(nowyNumer()));
     //klient
-    connect(ui->klientNowy, SIGNAL(triggered()), this, SLOT(dodajKlient()));
-    connect(ui->klientEdycja, SIGNAL(triggered()), this, SLOT(edytujKlient()));
-    //towar
-    connect(ui->towarNowy, SIGNAL(triggered()), this, SLOT(dodajTowar()));
-    connect(ui->towarEdycja, SIGNAL(triggered()), this, SLOT(edytujTowar()));
+    QObject::connect(ui->klientNowy, SIGNAL(triggered()), this, SLOT(dodajKlient()));
+    QObject::connect(ui->klientEdycja, SIGNAL(triggered()), this, SLOT(edytujKlient()));
     //export
-    connect(ui->actionDo_HTML, SIGNAL(triggered()), this, SLOT(zapisz()));
-    connect(ui->actionDo_HTML, SIGNAL(triggered()), this, SLOT(printHtm()));
-    connect(ui->actionDo_PDF, SIGNAL(triggered()), this, SLOT(zapisz()));
-    connect(ui->actionDo_PDF, SIGNAL(triggered()), this, SLOT(printPdf()));
-    connect(ui->actionDruk, SIGNAL(triggered()), this, SLOT(zapisz()));
-    connect(ui->actionDruk, SIGNAL(triggered()), this, SLOT(printPrev()));
+    QObject::connect(ui->actionDo_HTML, SIGNAL(triggered()), this, SLOT(zapisz()));
+    QObject::connect(ui->actionDo_HTML, SIGNAL(triggered()), this, SLOT(printHtm()));
+    QObject::connect(ui->actionDo_PDF, SIGNAL(triggered()), this, SLOT(zapisz()));
+    QObject::connect(ui->actionDo_PDF, SIGNAL(triggered()), this, SLOT(printPdf()));
+    QObject::connect(ui->actionDruk, SIGNAL(triggered()), this, SLOT(zapisz()));
+    QObject::connect(ui->actionDruk, SIGNAL(triggered()), this, SLOT(printPrev()));
     //info:
-    connect(ui->actionO_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-    connect(ui->actionO_kOferta, SIGNAL(triggered()), this, SLOT(about()));
+    QObject::connect(ui->actionO_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
+    QObject::connect(ui->actionO_kOferta, SIGNAL(triggered()), this, SLOT(about()));
+    //connect
+    QObject::connect(ui->actionConnect, &QAction::triggered, this, &MainWindow::connect);
+    QObject::connect(ui->actionDisconnect, &QAction::triggered, this, &MainWindow::disconnect);
+    QObject::connect(ui->actionExit, &QAction::triggered, qApp, &QApplication::quit);
 
     //opcje wydruku
-    connect(ui->pln, SIGNAL(pressed()), this, SLOT(pln_on()));
-    connect(ui->eur, SIGNAL(pressed()), this, SLOT(pln_off()));
-    connect(ui->kurs, SIGNAL(textChanged(QString)), this, SLOT(chKurs(QString)));
+    QObject::connect(ui->pln, SIGNAL(pressed()), this, SLOT(pln_on()));
+    QObject::connect(ui->eur, SIGNAL(pressed()), this, SLOT(pln_off()));
+    QObject::connect(ui->kurs, SIGNAL(textChanged(QString)), this, SLOT(chKurs(QString)));
 
     //buttony w tabach
-    connect(ui->addTowar, SIGNAL(clicked()), this, SLOT(popWyborTowaru()));
-    connect(ui->rabat, SIGNAL(clicked()), this, SLOT(rabat()));
-    connect(ui->delw, SIGNAL(clicked()), this, SLOT(del()));
+    QObject::connect(ui->addTowar, SIGNAL(clicked()), this, SLOT(popWyborTowaru()));
+    QObject::connect(ui->rabat, SIGNAL(clicked()), this, SLOT(rabat()));
+    QObject::connect(ui->delw, SIGNAL(clicked()), this, SLOT(del()));
 
     //dodawanie opcji do kombosów
-    connect(ui->pushButton_dostawa, SIGNAL(clicked()), this, SLOT(dostawaNew()));
-    connect(ui->pushButton_oferta, SIGNAL(clicked()), this, SLOT(ofertaNew()));
-    connect(ui->pushButton_platnosc, SIGNAL(clicked()), this, SLOT(platnoscNew()));
-    connect(ui->pushButton_termin, SIGNAL(clicked()), this, SLOT(terminNew()));
+    QObject::connect(ui->pushButton_dostawa, SIGNAL(clicked()), this, SLOT(dostawaNew()));
+    QObject::connect(ui->pushButton_oferta, SIGNAL(clicked()), this, SLOT(ofertaNew()));
+    QObject::connect(ui->pushButton_platnosc, SIGNAL(clicked()), this, SLOT(platnoscNew()));
+    QObject::connect(ui->pushButton_termin, SIGNAL(clicked()), this, SLOT(terminNew()));
 
     //Pozostałe informacje - odświerzanie zawartości pól tekstowych
-    connect(ui->pushButton_wyborKlienta, SIGNAL(clicked()), this, SLOT(popWyborKlienta()));
-    connect(ui->comboBox_dostawa, SIGNAL(currentIndexChanged(int)), this, SLOT(dostawaRef(int)));
-    connect(ui->comboBox_oferta, SIGNAL(currentIndexChanged(int)), this, SLOT(ofertaRef(int)));
-    connect(ui->comboBox_platnosc, SIGNAL(currentIndexChanged(int)), this, SLOT(platnoscRef(int)));
-    connect(ui->comboBox_termin, SIGNAL(currentIndexChanged(int)), this, SLOT(terminRef(int)));
-    connect(calendarWidget, SIGNAL(clicked(QDate)), this, SLOT(calChanged(QDate)));
-    connect(ui->pushButton_zapytanieData, SIGNAL(clicked()), calendarWidget, SLOT(show()));
-    connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), this, SLOT(zapytanieRef()));
-    connect(ui->lineEdit_zapytanieNr, SIGNAL(textChanged(QString)), this, SLOT(zapytanieRef()));
-    connect(ui->checkBox_zapytanieData, SIGNAL(toggled(bool)), this, SLOT(checkData(bool)));
-    connect(ui->checkBox_zapytanieNr, SIGNAL(toggled(bool)), this, SLOT(checkNr(bool)));
+    QObject::connect(ui->pushButton_wyborKlienta, SIGNAL(clicked()), this, SLOT(popWyborKlienta()));
+    QObject::connect(ui->comboBox_dostawa, SIGNAL(currentIndexChanged(int)), this, SLOT(dostawaRef(int)));
+    QObject::connect(ui->comboBox_oferta, SIGNAL(currentIndexChanged(int)), this, SLOT(ofertaRef(int)));
+    QObject::connect(ui->comboBox_platnosc, SIGNAL(currentIndexChanged(int)), this, SLOT(platnoscRef(int)));
+    QObject::connect(ui->comboBox_termin, SIGNAL(currentIndexChanged(int)), this, SLOT(terminRef(int)));
+    QObject::connect(calendarWidget, SIGNAL(clicked(QDate)), this, SLOT(calChanged(QDate)));
+    QObject::connect(ui->pushButton_zapytanieData, SIGNAL(clicked()), calendarWidget, SLOT(show()));
+    QObject::connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), this, SLOT(zapytanieRef()));
+    QObject::connect(ui->lineEdit_zapytanieNr, SIGNAL(textChanged(QString)), this, SLOT(zapytanieRef()));
+    QObject::connect(ui->checkBox_zapytanieData, SIGNAL(toggled(bool)), this, SLOT(checkData(bool)));
+    QObject::connect(ui->checkBox_zapytanieNr, SIGNAL(toggled(bool)), this, SLOT(checkNr(bool)));
 
     //inne
-    connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(change(QTableWidgetItem*)));
+    QObject::connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(change(QTableWidgetItem*)));
 
 /**
   ui
@@ -221,6 +227,9 @@ MainWindow::MainWindow ():
     ui->label_oferta->setText(tr("Warunki Oferty:"));
 
     ui->label_uwagi->setText(tr("Uwagi:"));
+
+    setMenusEnabled(false);
+    QTimer::singleShot(10, this, SLOT(connect()));
 }
 
 void MainWindow::about()
@@ -253,6 +262,41 @@ void MainWindow::about()
          "autorstwa Michael D. Leonhard na warunkach licencyjnych opisanych w pliku SHA1_LICENSE\n"
          "\n\n\t\t\tBuild date: " __DATE__;
     QMessageBox::about(this, "O kOferta", s);
+}
+
+void MainWindow::connectedAs(const cUser &user)
+{
+    m_currentUser = new cUser(user);
+    qDebug() << "Zalogowano jako uzytkownik " << m_currentUser->name();
+
+    setMenusEnabled(true);
+}
+
+void MainWindow::connect()
+{
+    Logowanie loginWindow;
+
+    QObject::connect(&loginWindow, &Logowanie::connectionSuccess, this, &MainWindow::connectedAs);
+
+    try
+    {
+        loginWindow.exec();
+    }
+    catch (std::exception& e)
+    {
+        qCritical() << "[Logowanie] Standard exception: " << e.what();
+    }
+    catch(...)
+    {
+        qCritical() << "[Logowanie] Unknown exception";
+    }
+}
+
+void MainWindow::disconnect()
+{
+    setMenusEnabled(false);
+    delete m_currentUser;
+    //todo uporzadkowanie okna
 }
 
 void MainWindow::setTitle(QString* nr)
@@ -480,7 +524,7 @@ void MainWindow::checkData(bool ch)
 void MainWindow::popWyborKlienta()
 {
     WyborKlienta* pop = new WyborKlienta(this);
-    connect(pop, SIGNAL(selectionChanged(QSqlRecord)), this, SLOT(clientChanged(QSqlRecord)));
+    QObject::connect(pop, SIGNAL(selectionChanged(QSqlRecord)), this, SLOT(clientChanged(QSqlRecord)));
     pop->exec();
     delete pop;
 }
@@ -488,7 +532,7 @@ void MainWindow::popWyborKlienta()
 void MainWindow::popWyborTowaru()
 {
     WyborTowaru* pop = new WyborTowaru(this);
-    connect(pop, SIGNAL(countChanged(QSqlRecord,int)), this, SLOT(setTowar(QSqlRecord,int)));
+    QObject::connect(pop, SIGNAL(countChanged(QSqlRecord,int)), this, SLOT(setTowar(QSqlRecord,int)));
     pop->showMaximized();
     pop->exec();
     delete pop;
@@ -584,7 +628,7 @@ void MainWindow::nowyNumer()
     *data = d.toString("dd.MM.yyyy");
     calendarWidget->setSelectedDate(d);
 
-    *nr_oferty = QString::number(currentUser->nrOferty());
+    *nr_oferty = QString::number(m_currentUser->nrOferty());
     nr_oferty->append("/");
     nr_oferty->append(d.toString("yyyy"));
 
@@ -635,8 +679,8 @@ void MainWindow::zapisz()
 
     int anr = nr_oferty->split("/").first().toInt();
 
-    if(anr == currentUser->nrOferty())
-        currentUser->nrOfertyInkrement();
+    if(anr == m_currentUser->nrOferty())
+        m_currentUser->nrOfertyInkrement();
 
     QString zData;
     if(ui->checkBox_zapytanieData->isChecked())
@@ -649,7 +693,7 @@ void MainWindow::zapisz()
     else
         zNumer = QString::null;
 
-    insert_zapisane(*nr_oferty, klient->value("id").toInt(), *data, currentUser->uid(), zData, zNumer, ui->comboBox_dostawa->currentIndex(), ui->comboBox_termin->currentIndex(), ui->comboBox_platnosc->currentIndex(), ui->comboBox_oferta->currentIndex(), ui->plainTextEdit_uwagi->toPlainText());
+    insert_zapisane(*nr_oferty, klient->value("id").toInt(), *data, m_currentUser->uid(), zData, zNumer, ui->comboBox_dostawa->currentIndex(), ui->comboBox_termin->currentIndex(), ui->comboBox_platnosc->currentIndex(), ui->comboBox_oferta->currentIndex(), ui->plainTextEdit_uwagi->toPlainText());
 
     for(int i=0; i < ui->tableWidget->rowCount() - 1; ++i)
         insert_zapisane_towary(*nr_oferty, ui->tableWidget->item(i, 0)->text(), ui->tableWidget->item(i, 5)->text().toDouble(), ui->tableWidget->item(i, 3)->text().toDouble());
@@ -658,7 +702,7 @@ void MainWindow::zapisz()
 void MainWindow::popLoadDialog()
 {
     LoadDialog* pop = new LoadDialog(this);
-    connect(pop, SIGNAL(offerSelected(QSqlRecord, QSqlTableModel)), this, SLOT(loadOffer(QSqlRecord, QSqlTableModel)));
+    QObject::connect(pop, SIGNAL(offerSelected(QSqlRecord, QSqlTableModel)), this, SLOT(loadOffer(QSqlRecord, QSqlTableModel)));
     pop->exec();
     delete pop;
 }
@@ -771,14 +815,6 @@ void MainWindow::dodajTowar()
     delete nowyTowar;
 }
 
-void MainWindow::edytujTowar()
-{
-    EdycjaTowaru* okno = new EdycjaTowaru(this);
-    okno->exec();
-    delete okno;
-}
-
-
 /* KLIENT */
 
 void MainWindow::dodajKlient()
@@ -808,7 +844,7 @@ void MainWindow::printPrev()
 
     QPrintPreviewDialog* preview = new QPrintPreviewDialog(printer, this);
     preview->setWindowFlags(Qt::Window);
-    connect(preview, SIGNAL(paintRequested(QPrinter *)), SLOT(print(QPrinter *)));
+    QObject::connect(preview, SIGNAL(paintRequested(QPrinter *)), SLOT(print(QPrinter *))); //????
     preview->exec();
 
     delete preview;
@@ -994,8 +1030,8 @@ void MainWindow::makeDocument(QString *sDoc)
              "\t\t\t<br>\n"
              "\t\t\t";
     /*adres bióra*/
-    *sDoc += currentUser->adress().replace("\n", "\n\t\t\t");
-    *sDoc += currentUser->mail();
+    *sDoc += m_currentUser->adress().replace("\n", "\n\t\t\t");
+    *sDoc += m_currentUser->mail();
     *sDoc += "\n"
              "\t\t</td>\n"
              "\t</tr>\n"
@@ -1169,10 +1205,10 @@ void MainWindow::makeDocument(QString *sDoc)
              "\tŁączymy pozdrowienia.\n"
              "\t<p align = right style = \"margin-right: 100\">\n"
              "\t\tOfertę przygotował";
-    if(!currentUser->male()) *sDoc += "a";
+    if(!m_currentUser->male()) *sDoc += "a";
     *sDoc += "<br>\n"
             "\t\t";
-    *sDoc += currentUser->name();
+    *sDoc += m_currentUser->name();
     *sDoc += "\n"
             "\t</p>\n"
             "</td></tr>\n"
