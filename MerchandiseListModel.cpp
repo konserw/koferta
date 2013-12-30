@@ -300,6 +300,103 @@ QHash<int, double> MerchandiseListModel::hash() const
     return hash;
 }
 
+QString MerchandiseListModel::print(const int w, bool kod, bool towar, bool ilosc, bool cenaKat, bool rabat, bool cena) const
+{
+    uint rows = m_list.count();
+
+    QString waluta;
+    if(pln()) waluta = "zł";
+    else waluta= "€";
+
+    //szerokosc komorek tabeli
+    int kolumn = 3;
+    int z[8];
+    z[0] = 20; //lp
+    z[1] = 80; //kod
+    //z2 - reszta szerokości
+    z[3] = 60; //cena
+    z[4] = 40; //rabat
+    z[5] = 55; //cena2
+    z[6] = 50; //ilosc+jedn
+    z[7] = 60; //wartość
+
+    z[2] = w - z[0] - z[7];
+    if(kod)
+    {
+        z[2] -= z[1];
+        kolumn++;
+    }
+    if(cenaKat)
+    {
+        z[2] -= z[3];
+        kolumn++;
+    }
+    if(rabat)
+    {
+        z[2] -= z[4];
+        kolumn++;
+    }
+    if(cena)
+    {
+        z[2] -= z[5];
+        kolumn++;
+    }
+    if(ilosc)
+    {
+        z[2] -= z[6];
+        kolumn++;
+    }
+    z[2] -= kolumn*4;
+
+    QString doc;
+    doc = QString("\t<table cellspacing=3>\n"
+            "\t<thead><tr>\n"
+            "\t\t<td width=%1>LP</td>\n").arg(z[0]);
+    if(kod)
+        doc += QString("\t\t<td width=%1>Kod</td>\n").arg(z[1]);
+    if(towar)
+        doc += QString("\t\t<td width=%1>Specyfikacja</td>\n").arg(z[2]);
+    if(ilosc)
+        doc += QString("\t\t<td width=%1 align = right>Ilość</td>\n").arg(z[6]);
+    if(cenaKat)
+        doc += QString("\t\t<td width=%1 align = right>Cena kat. %2</td>\n").arg(z[3]).arg(waluta);
+    if(rabat)
+        doc += QString("\t\t<td width=%1 align = right>Rabat</td>\n").arg(z[4]);
+    if(cena)
+        doc += QString("\t\t<td width=%1 align = right>Cena %2</td>\n").arg(z[5]).arg(waluta);
+    doc += QString("\t\t<td width=%1 align = right>Wartosc %2</td>\n").arg(z[7]).arg(waluta);
+    doc += "\t</tr></thead>\n";
+
+    for(uint i=0; i<rows; ++i)
+    {
+        Merchandise* item = m_list[i];
+        doc += "\t<tr>\n";
+        doc += QString("\t\t<td>%1</td>\n").arg(i+1);
+        if(kod)
+            doc += QString("\t\t<td>%1</td>\n").arg(item->kod());
+        if(towar)
+            doc += QString("\t\t<td>%1</td>\n").arg(item->nazwa());
+        if(ilosc)
+            doc += QString("\t\t<td align = right>%1 %2</td>\n").arg(item->ilosc()).arg(item->unit());
+        if(cenaKat)
+            doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cenaKat());
+        if(rabat)
+            doc += QString("\t\t<td align = right>%1</td>\n").arg(item->rabat());
+        if(cena)
+            doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cena());
+        doc += QString("\t\t<td align = right>%1</td>\n").arg(item->wartosc());
+        doc += "\t</tr>\n";
+    }
+
+    doc += "\t<tr>\n";
+    doc += QString("\t\t<td align = right colspan=%1>Razem %2:</td>\n").arg(kolumn-1).arg(waluta);
+    doc += QString("\t\t<td align = right>%1</td>\n").arg(przeliczSume());
+    doc += "\t</tr>\n";
+    doc += "\t</table>\n";
+
+    return doc;
+}
+
 double MerchandiseListModel::przeliczSume() const
 {
     double suma = 0;
@@ -316,31 +413,28 @@ void MerchandiseListModel::addItem(Merchandise *towar)
     endInsertRows();
 }
 
-void MerchandiseListModel::loadOffer(const QSqlTableModel &mod)
+void MerchandiseListModel::loadOffer(const QString& number)
 {
-    /**************** TO DO **************
-     * bez iterowania - view w bazie czy cos
-
+    /**************** TO DO ********************
+     * wszystkie takie w klasie bazy danych
+     * *********************************************/
     QSqlTableModel towary;
-    towary.setTable("merchandise");
+    towary.setTable("savedOffersMerchandiseView");
+    towary.setFilter(QString("nr_oferty = '%1'").arg(number));
     towary.select();
 
     Merchandise* t;
-    QSqlRecord record, towarRecord;
+    QSqlRecord record;
 
-    for(int row=0; row<mod.rowCount(); ++row)
+    for(int row=0; row < towary.rowCount(); ++row)
     {
-        record = mod.record(row);
+        record = towary.record(row);
 
-        towary.setFilter(QString("id='%1'").arg(record.value("kod").toString()));
-        towarRecord = towary.record(0);
-
-        t = new Merchandise(towarRecord);
+        t = new Merchandise(record.value("merchandise_id").toInt(), record.value("code").toString(), record.value("desc").toString(), record.value("price").toDouble(), record.value("unit").toString() == "mb.");
         t->setRabat(record.value("rabat").toDouble());
         t->setIlosc(record.value("ilosc").toInt());
 
         addItem(t);
     }
-    ********************************************/
 }
 

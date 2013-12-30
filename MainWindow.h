@@ -51,7 +51,7 @@ public slots:
     void popWyborKlienta();
     void popWyborTowaru();
 
-    void loadOffer(const QSqlRecord &rec, const QSqlTableModel &mod);              //wczytuje ofertę o połączone z dialogiem wczytywanie
+    void loadOffer(const QSqlRecord &rec);              //wczytuje ofertę o połączone z dialogiem wczytywanie
 
     //dodawanie opcji do kombosów
     void dostawaNew();

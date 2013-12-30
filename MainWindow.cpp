@@ -549,12 +549,12 @@ void MainWindow::zapisz()
 void MainWindow::popLoadDialog()
 {
     LoadDialog* pop = new LoadDialog(this);
-    QObject::connect(pop, SIGNAL(offerSelected(QSqlRecord, QSqlTableModel)), this, SLOT(loadOffer(QSqlRecord, QSqlTableModel)));
+    QObject::connect(pop, &LoadDialog::offerSelected, this, &MainWindow::loadOffer);
     pop->exec();
     delete pop;
 }
 
-void MainWindow::loadOffer(const QSqlRecord& rec, const QSqlTableModel& mod)
+void MainWindow::loadOffer(const QSqlRecord& rec)
 {
     *nr_oferty = rec.value("nr_oferty").toString();
     *data = rec.value("data").toString();
@@ -587,7 +587,7 @@ void MainWindow::loadOffer(const QSqlRecord& rec, const QSqlTableModel& mod)
     ui->comboBox_oferta->setCurrentIndex(rec.value("platnosc").toInt());
     ui->plainTextEdit_uwagi->setPlainText(rec.value("uwagi").toString());
 
-    m_towarModel->loadOffer(mod);
+    m_towarModel->loadOffer(*nr_oferty);
 }
 
 void MainWindow::dostawaNew()
@@ -708,54 +708,9 @@ void MainWindow::makeDocument(QString *sDoc)
     if(klient == NULL)
         klient = new QSqlRecord;
 
-    int kolumn = 3;
-    QString waluta;
-    uint rows = m_towarModel->rowCount() - 1;
-
     const int w = 745;                           //szerokosc szkieletu dokumentu
     const int d = (w-5)/2;                       //szerokość kolumny w szkielecie
     const int dw = 140;                          //szerokosc pierwszej kolumny w szkielecie poniżej tabeli
-    int z[8];                                    //szerokosc komorek tabeli
-    z[0] = 20; //lp
-    z[1] = 80; //kod
-    //z2 - reszta szerokości
-    z[3] = 60; //cena
-    z[4] = 40; //rabat
-    z[5] = 55; //cena2
-    z[6] = 50; //ilosc+jedn
-    z[7] = 60; //wartość
-
-    z[2] = w - z[0] - z[7];
-    if(ui->kol_kod->isChecked())
-    {
-        z[2] -= z[1];
-        kolumn++;
-    }
-    if(ui->kol_cenaKat->isChecked())
-    {
-        z[2] -= z[3];
-        kolumn++;
-    }
-    if(ui->kol_rabat->isChecked())
-    {
-        z[2] -= z[4];
-        kolumn++;
-    }
-    if(ui->kol_cena->isChecked())
-    {
-        z[2] -= z[5];
-        kolumn++;
-    }
-    if(ui->kol_ilosc->isChecked())
-    {
-        z[2] -= z[6];
-        kolumn++;
-    }
-    z[2] -= kolumn*4;
-
-    if(ui->eur->isChecked()) waluta= "€";
-    else waluta = "zł";
-
 
     *sDoc = "<html>\n"
             "<head>\n"
@@ -837,122 +792,16 @@ void MainWindow::makeDocument(QString *sDoc)
              "</td></tr>\n"
              "<tr><td>\n";
  //tabela
-    *sDoc += "\t<font face=\"Arial Narrow\" size=2>\n";
-    /********************** TO DO ! ********************************
-             "\t<table cellspacing=3>\n"
-             "\t<thead><tr>\n"
-             "\t\t<td width=";
-    *sDoc += QString::number(z[0]);
-    *sDoc += ">LP</td>\n";
-    if(ui->kol_kod->isChecked())
-    {
-        *sDoc += "\t\t<td width=";
-        *sDoc += QString::number(z[1]);
-        *sDoc += ">Kod</td>\n";
-    }
-    if(ui->kol_towar->isChecked())
-    {
-        *sDoc += "\t\t<td width=";
-        *sDoc += QString::number(z[2]);
-        *sDoc += ">Specyfikacja</td>\n";
-    }
-    if(ui->kol_ilosc->isChecked())
-    {
-        *sDoc += "\t\t<td width=";
-        *sDoc += QString::number(z[6]);
-        *sDoc += " align = right>Ilość</td>\n";
-    }
-    if(ui->kol_cenaKat->isChecked())
-    {
-        *sDoc += "\t\t<td width=";
-        *sDoc += QString::number(z[3]);
-        *sDoc += " align = right>Cena kat. ";
-        *sDoc += waluta;
-        *sDoc += "</td>\n";
-    }
-    if(ui->kol_rabat->isChecked())
-    {
-        *sDoc += "\t\t<td width=";
-        *sDoc += QString::number(z[4]);
-        *sDoc += " align = right>Rabat</td>\n";
-    }
-    if(ui->kol_cena->isChecked())
-    {
-        *sDoc += "\t\t<td width=";
-        *sDoc += QString::number(z[5]);
-        *sDoc += " align = right>Cena ";
-        *sDoc += waluta;
-        *sDoc += "</td>\n";
-    }
-    *sDoc += "\t\t<td width=";
-    *sDoc += QString::number(z[7]);
-    *sDoc += " align = right>Wartość ";
-    *sDoc += waluta;
-    *sDoc += "</td>\n"
-             "\t</tr></thead>\n";
-
-    for(uint i=0; i<rows; ++i){
-        *sDoc += "\t<tr>\n\t\t<td>";
-        *sDoc += QString::number(i+1);
-        *sDoc += "</td>\n";
-        if(ui->kol_kod->isChecked())
-        {
-            *sDoc += "\t\t<td>";
-            m_towarModel->data(m_towarModel->index(i, 0)).toString();
-            *sDoc += ui->tableWidget->item(i, 0)->text();
-            *sDoc += "</td>\n";
-        }
-        if(ui->kol_towar->isChecked())
-        {
-            *sDoc += "\t\t<td>";
-            *sDoc += ui->tableWidget->item(i, 1)->text();
-            *sDoc += "</td>\n";
-        }
-        if(ui->kol_ilosc->isChecked())
-        {
-            *sDoc += "\t\t<td align=right>";
-            *sDoc += ui->tableWidget->item(i, 5)->text();
-            *sDoc += " ";
-            *sDoc += ui->tableWidget->item(i, 6)->text();
-            *sDoc += "</td>\n";
-        }
-        if(ui->kol_cenaKat->isChecked())
-        {
-            *sDoc += "\t\t<td align = right>";
-            *sDoc += ui->tableWidget->item(i, 2)->text();
-            *sDoc += "</td>\n";
-        }
-        if(ui->kol_rabat->isChecked())
-        {
-            *sDoc += "\t\t<td align = right>";
-            *sDoc += QString::number(ui->tableWidget->item(i, 3)->text().toDouble(), 'f', 1);
-            *sDoc += "%</td>\n";
-        }
-        if(ui->kol_cena->isChecked())
-        {
-            *sDoc += "\t\t<td align = right>";
-            *sDoc += ui->tableWidget->item(i, 4)->text();
-            *sDoc += "</td>\n";
-        }
-        *sDoc += "\t\t<td align = right>";
-        *sDoc += ui->tableWidget->item(i, 7)->text();
-        *sDoc += "</td>\n"
-                 "\t</tr>\n";
-    }
-
-    *sDoc += "\t<tr>\n"
-            "\t\t<td colspan=";
-    *sDoc += QString::number(kolumn-1);
-    *sDoc += " align=right>Razem ";
-    *sDoc += waluta;
-    *sDoc += ":</td>\n"
-             "\t\t<td align=right>";
-    *sDoc += ui->tableWidget->item(rows, 7)->text();
-    *sDoc += "</td>\n"
-            "\t</tr>\n"
-            "\t</table>
-*/
-    *sDoc += "</font>\n"
+    *sDoc += "\t<font face=\"Arial Narrow\" size=2>\n";   
+    *sDoc += m_towarModel->print(w,
+                                 ui->kol_kod->isChecked(),
+                                 ui->kol_towar->isChecked(),
+                                 ui->kol_ilosc->isChecked(),
+                                 ui->kol_cenaKat->isChecked(),
+                                 ui->kol_rabat->isChecked(),
+                                 ui->kol_cena->isChecked()
+                                 );
+    *sDoc += "\t</font>\n"
             "</td></tr>\n"
             "<tr><td>\n"
             "\tPodane ceny nie zawierają podatku VAT<br>\n"

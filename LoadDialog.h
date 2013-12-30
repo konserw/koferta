@@ -45,7 +45,7 @@ public slots:
     void ref(const QSqlRecord & rec);
 
 signals:
-    void offerSelected(const QSqlRecord&, const QSqlTableModel&);
+    void offerSelected(const QSqlRecord &);
 
 private:
     Ui::LoadDialog *ui;

@@ -34,7 +34,7 @@ public:
     void setGlobalRabat(double r);
 
     void addItem(Merchandise* towar);
-    void loadOffer(const QSqlTableModel& mod);
+    void loadOffer(const QString &number);
 
     bool pln() const;
     double kurs() const;
@@ -43,6 +43,7 @@ public:
     bool isIlosc(const QModelIndex & i) const;
 
     QHash<int, double> hash() const;
+    QString print(const int w, bool kod, bool towar, bool ilosc, bool cenaKat, bool rabat, bool cena) const;
 
 public slots:
     void clear();

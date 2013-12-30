@@ -3,8 +3,6 @@
 
 #include <QString>
 
-class QSqlRecord;
-
 /*!
  * \brief Klasa reprezentująca towar w ofercie
  */
@@ -14,7 +12,6 @@ public:
     explicit Merchandise();
     explicit Merchandise(int id);
     Merchandise(int id, const QString& kod, const QString& nazwa, double cena, bool metr = false, int ilosc = 0);
-    //Towar(const QSqlRecord& rec);
 
     double cenaPln(double kurs) const;
     
@@ -35,6 +32,7 @@ public:
 
     bool metr() const;
     void setMetr(bool metr);
+    QString unit() const;
 
     double cena() const;
     double wartosc() const;

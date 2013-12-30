@@ -82,6 +82,14 @@ void Merchandise::setMetr(bool metr)
     m_metr = metr;
 }
 
+QString Merchandise::unit() const
+{
+    if(m_metr)
+        return QObject::tr("mb.");
+    else
+        return QObject::tr("szt.");
+}
+
 double Merchandise::cena() const
 {
     return m_cenaKat * (100 - m_rabat) /100;

@@ -67,7 +67,7 @@ void LoadDialog::ok()
         return;
     }
 
-    emit offerSelected(*cur, *model);
+    emit offerSelected(*cur);
     this->accept();
 }
 
