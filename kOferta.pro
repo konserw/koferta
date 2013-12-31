@@ -45,7 +45,7 @@ win32 {
 #    DEFINES += RELEASE
     DEFINES += NOSSL
 
-#    INCLUDEPATH += "C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/include"
+    #INCLUDEPATH += "C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/include"
     LIBS += -L"C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/lib" -llibmysql
 }
 

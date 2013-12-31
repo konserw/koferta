@@ -70,6 +70,7 @@ Logowanie::Logowanie() :
     ui->ip->addItems(*hosts);
 
     m_db = new Database(this);
+    m_db->setupInitialConnection();
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
@@ -81,7 +82,6 @@ Logowanie::Logowanie() :
     QObject::connect(m_db, &Database::newUsers, this, &Logowanie::updateUserList);
     QObject::connect(m_db, &Database::changeStatus, ui->info, &QLabel::setText);
 
-   // updateUserList(getUsersList());
 #ifndef RELEASE
     m_db->hostChanged("192.168.1.2");
     QTimer::singleShot(100, this, SLOT(ok()));
