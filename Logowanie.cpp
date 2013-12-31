@@ -69,6 +69,7 @@ Logowanie::Logowanie() :
     ui->ip->addItems(*hosts);
 
     m_db = new Database(this);
+    m_db->setupInitialConnection();
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
@@ -79,8 +80,6 @@ Logowanie::Logowanie() :
     QObject::connect(m_db, &Database::connectionSuccess, this, &Logowanie::accept);
     QObject::connect(m_db, &Database::newUsers, this, &Logowanie::updateUserList);
     QObject::connect(m_db, &Database::changeStatus, ui->info, &QLabel::setText);
-
-   // updateUserList(getUsersList());
 }
 
 void Logowanie::hostChanged(QString ip)

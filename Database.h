@@ -16,6 +16,8 @@ public:
     explicit Database(QObject *parent = NULL);
     ~Database();
 
+    void setupInitialConnection();
+    QStringList getUsersList(const QSqlDatabase &db);
 public slots:
     void hostChanged(QString ip);
     void connect(const QString &uid, const QString& pass);
@@ -30,8 +32,8 @@ protected:
     QSqlDatabase* m_initialConnection;
     QSqlTableModel* m_usersTable;
 
-    inline void init(QSqlDatabase &db);
-    inline void login(QSqlDatabase &db);
+    inline void setupSSL(QSqlDatabase &db);
+    inline bool openDatabaseConnection(QSqlDatabase &db);
 };
 
 

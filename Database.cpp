@@ -32,105 +32,6 @@
        #include <mysql/mysql.h>
     #endif
 #endif
-/*
-QStringList getUsersList()
-{
-    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL", "initialConnection");
-    if(!db.isValid())
-    {
-        qCritical() << "Initial connection invalid!";
-        return QStringList();
-    }
-    db.setHostName("192.168.1.2");
-    db.setPort(3306);
-    db.setUserName("kOf_GetUsers");
-    db.setPassword("");
-    db.setDatabaseName("kOferta");
-    db.setConnectOptions("CLIENT_SSL=1");
-    db.setConnectOptions("CLIENT_SSL=1;CLIENT_IGNORE_SPACE=1;MYSQL_OPT_RECONNECT=1");
-
-    qDebug() << "connName:" << db.connectionName();
-    qDebug() << "driver:" << db.driverName();
-    qDebug() << "options:" << db.connectOptions();
-    qDebug() << "host:" << db.hostName();
-    qDebug() << "database error:" << db.lastError().databaseText();
-    qDebug() << "driver error:" << db.lastError().driverText();
-
-    QSqlDriver* driver = db.driver();
-    qDebug() << "driver info";
-    driver->dumpObjectInfo();
-    driver->dumpObjectTree();
-
-    QVariant v = db.driver()->handle();
-    if (v.isValid() && qstrcmp(v.typeName(), "MYSQL*")==0)
-    {
-//        qDebug() << "v.typename:" << v.typeName();
-db.open();
-        MYSQL **hhandle = static_cast<MYSQL**>(v.data());
-        MYSQL *handle = *hhandle;
-        qDebug() << "hhandle:" << hhandle;
-        qDebug() << "handle:" << handle;
-        if (handle != NULL)
-        {
-  //          qDebug() << "handle:" << handle;
-    //        qDebug() << "mysql error:" << mysql_error(handle);
-
-            try
-            {
-      //          qDebug() << "mysql ping:" << mysql_ping(handle);
-      //          qDebug() << "mysql error:" << mysql_error(handle);
-//mysql_ssl_set(handle, NULL, NULL, ":/ca-cacert", NULL, NULL);
-        //         mysql_ssl_set(handle, ":/client-key", ":/client-cert", ":/ca-cacert", NULL, NULL);
-         //       mysql_ssl_set(handle, "D:/git/build-kOferta/client-key.pem", "D:/git/build-kOferta/client-cert.pem", "D:/git/build-kOferta/ca-cacert.pem", "D:/git/build-kOferta/", "DHE-RSA-AES256-SHA");
-                mysql_ssl_set(handle, "D:/git/build-kOferta/client-key.pem", "D:/git/build-kOferta/client-cert.pem", "D:/git/build-kOferta/ca-cacert.pem", NULL, NULL);
-            qWarning() << mysql_get_ssl_cipher(handle);
-            }
-            catch (std::exception& e)
-            {
-                qCritical() << "[mysql_ssl_set] Standard exception: " << e.what();
-            }
-            catch(...)
-            {
-                qCritical() << "[mysql_ssl_set] Unknown exception";
-            }
-        }
-        else
-        {
-            QMessageBox::critical(nullptr, "error", "null mysql pointer");
-            qApp->quit();
-        }
-    }
-
-
-    if(!db.open())
-    {
-        qWarning() << "Error! Unable to connect to database!";
-        qDebug() << "connName:" << db.connectionName();
-        qDebug() << "driver:" << db.driverName();
-        qDebug() << "options:" << db.connectOptions();
-        qDebug() << "host:" << db.hostName();
-        //db.driver()->dumpObjectInfo();
-        qDebug() << "error number:" << db.lastError().number();
-        qDebug() << "database error:" << db.lastError().databaseText();
-        qDebug() << "driver error:" << db.lastError().driverText();
-        QMessageBox::critical(nullptr, "error", QString::number(db.lastError().number()));
-        qApp->quit();
-    }
-
-    QSqlTableModel* m_usersTable = new QSqlTableModel(0, db);
-    m_usersTable->setTable("users");
-    m_usersTable->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    m_usersTable->setFilter("");
-    m_usersTable->select();
-    while (m_usersTable->canFetchMore())
-         m_usersTable->fetchMore();
-    QStringList userList;
-    for (int r = 0; r < m_usersTable->rowCount(); ++r)
-        userList << m_usersTable->data(m_usersTable->index(r,1)).toString();
-    delete m_usersTable;
-    return userList;
-}
-*/
 
 void insert_towar(const QString& id, const QString& nazwa, double cena, const QString& jednostka)
 {
@@ -199,8 +100,6 @@ void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& da
 
 void insert_zapisane_towary(const QString& nr_oferty, const QString& kod, double ilosc, double rabat)
 {
-   // qqDebug()() << "\t\tZapisany towar kod: " << kod;
-
     QString s;
     QSqlQuery q;
 
@@ -219,20 +118,49 @@ void insert_combo(const QString& typ, const QString& sh, const QString& lo)
     EXEC_SILENT(s);
 }
 
-Database::Database(QObject* parent) :
-    QObject(parent), m_usersTable(nullptr)
+void Database::setupInitialConnection()
 {
     m_initialConnection = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL", "initialConnection"));
+    m_initialConnection->setDatabaseName("kOferta");
+    m_initialConnection->setPort(3306);
     m_initialConnection->setUserName("kOf_GetUsers");
-    init(*m_initialConnection);
 
-    m_usersTable = new QSqlTableModel(this, *m_initialConnection);
+    setupSSL(*m_initialConnection);
+}
+
+Database::Database(QObject* parent) :
+    QObject(parent), m_usersTable(nullptr)
+{  
 }
 
 Database::~Database()
 {
     m_initialConnection->close();
     delete m_initialConnection;
+}
+
+QStringList Database::getUsersList(const QSqlDatabase& db = QSqlDatabase())
+{
+    QStringList userList;
+
+    if(m_usersTable)
+        delete m_usersTable;
+    m_usersTable = new QSqlTableModel(this, db);
+    m_usersTable->setTable("users");
+    m_usersTable->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    m_usersTable->select();
+
+    // make sure the complete result set is fetched
+    while (m_usersTable->canFetchMore())
+         m_usersTable->fetchMore();
+
+    int rows = m_usersTable->rowCount();
+    qDebug() << "Users list count" << rows;
+
+    for (int r = 0; r < rows; ++r)
+        userList << m_usersTable->data(m_usersTable->index(r,1)).toString();
+
+    return userList;
 }
 
 void Database::hostChanged(QString ip)
@@ -242,63 +170,31 @@ void Database::hostChanged(QString ip)
 
     m_initialConnection->setHostName(ip);
 
-    login(*m_initialConnection);
-    if(!m_initialConnection->isOpen())
+    if(!openDatabaseConnection(*m_initialConnection))
     {
         emit changeStatus(tr("Połączenie z bazą danych na %1 nie powiodło się.").arg(ip));
         return;
     }
     emit changeStatus(tr("Połączono z bazą danych na %1").arg(ip));
 
-    QStringList userList;
-
-    m_usersTable->setTable("users");
-    m_usersTable->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    m_usersTable->setFilter("");
-    m_usersTable->select();
-
-    // make sure the complete result set is fetched
-    while (m_usersTable->canFetchMore())
-         m_usersTable->fetchMore();
-
-    for (int r = 0; r < m_usersTable->rowCount(); ++r)
-        userList << m_usersTable->data(m_usersTable->index(r,1)).toString();
-
+    QStringList userList = getUsersList(*m_initialConnection);
     emit newUsers(userList);
-    //m_db->close();
 }
 
 void Database::connect(const QString& name, const QString &pass)
 {
-/*
-    if(m_initialConnection->userName() != "kOf_GetUsers" || !m_initialConnection->isOpen())
-    {
-        qDebug() << "Reconnecting as kOf_GetUsers";
-
-        m_initialConnection->close();
-        m_initialConnection->setUserName("kOf_GetUsers");
-
-        login(*m_initialConnection);
-    }
-
-    if(!m_initialConnection->isOpen())
-    {
-        emit changeStatus(tr("Połączenie z bazą danych na %1 jest zerwane!").arg(m_initialConnection->hostName()));
-        return;
-    }
-    */
     QString dbName = cUser::dbName(name);
 
     QSqlDatabase finalConnection = QSqlDatabase::addDatabase("QMYSQL"/*, "finalConnection"*/);
-    init(finalConnection);
+    finalConnection.setDatabaseName("kOferta");
+    finalConnection.setPort(3306);
     finalConnection.setHostName(m_initialConnection->hostName());
     finalConnection.setUserName(dbName);
     finalConnection.setPassword(pass);
+    setupSSL(finalConnection);
 
     qDebug() << "Loging in as" << dbName;
-    login(finalConnection);
-
-    if(!finalConnection.isOpen())
+    if(!openDatabaseConnection(finalConnection))
     {
         emit changeStatus(tr("%1: Błąd logowania jako %2").arg(finalConnection.hostName(), name));
         return;
@@ -315,12 +211,10 @@ void Database::connect(const QString& name, const QString &pass)
     emit connectionSuccess(currentUser);
 }
 
-void Database::init(QSqlDatabase &db)
+void Database::setupSSL(QSqlDatabase &db)
 {
-    db.setDatabaseName("kOferta");
-    db.setPort(3306);
-
 #ifdef NOSSL
+    Q_UNUSED(db);
     qWarning() << "NOSSL defined, pomijam ustawianie bezpiecznego połączenia";
 #else
     db.setConnectOptions("CLIENT_SSL=1;CLIENT_IGNORE_SPACE=1");
@@ -374,9 +268,9 @@ void Database::init(QSqlDatabase &db)
 #endif
 }
 
-void Database::login(QSqlDatabase& db)
+bool Database::openDatabaseConnection(QSqlDatabase& db)
 {
-    if (!db.open())
+    if(!db.open())
     {
         qCritical() << "Error! Unable to connect to database!";
         qDebug() << "connName:" << db.connectionName();
@@ -386,5 +280,7 @@ void Database::login(QSqlDatabase& db)
         qDebug() << "error number:" << db.lastError().number();
         qDebug() << "database error:" << db.lastError().databaseText();
         qDebug() << "driver error:" << db.lastError().driverText();
+        return false;
     }
+    return true;
 }
