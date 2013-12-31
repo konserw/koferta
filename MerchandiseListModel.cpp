@@ -51,6 +51,11 @@ QVariant MerchandiseListModel::data(const QModelIndex &index, int role) const
         return QVariant();
 
     Merchandise* t = static_cast<Merchandise*>(index.internalPointer());
+    if(t == nullptr && index.row() < m_list.count())
+    {
+        qWarning() << "NULL internal pointer";
+        return QVariant();
+    }
 
     if(role == Qt::EditRole)
     {
@@ -64,13 +69,7 @@ QVariant MerchandiseListModel::data(const QModelIndex &index, int role) const
         }
         return QVariant();
     }
-/*
-    if(t == NULL)
-    {
-        qWarning() << "Unable to cast index internal pointer to Towar";
-        return QVariant();
-    }
-*/
+
     if(m_pln)
     {
         if(index.row() == m_list.count())
@@ -415,6 +414,8 @@ void MerchandiseListModel::addItem(Merchandise *towar)
 
 void MerchandiseListModel::loadOffer(const QString& number)
 {
+    clear();
+    qDebug() << "number" << number;
     /**************** TO DO ********************
      * wszystkie takie w klasie bazy danych
      * *********************************************/
@@ -423,10 +424,14 @@ void MerchandiseListModel::loadOffer(const QString& number)
     towary.setFilter(QString("nr_oferty = '%1'").arg(number));
     towary.select();
 
+    while(towary.canFetchMore())
+        towary.fetchMore();
+
     Merchandise* t;
     QSqlRecord record;
+    int rows = towary.rowCount();
 
-    for(int row=0; row < towary.rowCount(); ++row)
+    for(int row=0; row < rows; ++row)
     {
         record = towary.record(row);
 
