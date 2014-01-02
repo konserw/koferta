@@ -33,28 +33,6 @@
     #endif
 #endif
 
-void insert_towar(const QString& id, const QString& nazwa, double cena, const QString& jednostka)
-{
-    qDebug() <<  "Wstawianie towaru, id: " << id;
-
-    QSqlQuery q;
-    QString s;
-
-    s = QString("SELECT nazwa FROM towar WHERE id='%1'").arg(id);
-    EXEC_SILENT(s);
-
-    if(q.next())
-    {
-        qDebug() <<  "Towar o id: " << id << " istnieje w bazie, nastapi jego nadpisanie!";
-        s = QString("DELETE FROM towar WHERE id='%1'").arg(id);
-        EXEC(s);
-    }
-
-    s = QString("INSERT INTO towar (id, nazwa, cena, jednostka) VALUES ('%1', '%2', '%3', '%4')").arg(id, nazwa, QString::number(cena), jednostka);
-
-    EXEC_SILENT(s);
-}
-
 void insert_klient(const QString& skrot, const QString& full, const QString& tytul, const QString& imie, const QString& nazwisko, const QString& adres)
 {
     qDebug() <<  "Wstawianie klienta, nazwisko: " << nazwisko;
@@ -95,15 +73,6 @@ void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& da
         s += QString(", '%1'").arg(zapytanie_nr);
     s += ")";
 
-    EXEC_SILENT(s);
-}
-
-void insert_zapisane_towary(const QString& nr_oferty, const QString& kod, double ilosc, double rabat)
-{
-    QString s;
-    QSqlQuery q;
-
-    s = QString("INSERT INTO zapisane_towary (nr_oferty, kod, ilosc, rabat) VALUES ('%1', '%2', %3, %4)").arg(nr_oferty, kod, QString::number(ilosc), QString::number(rabat));
     EXEC_SILENT(s);
 }
 
