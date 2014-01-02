@@ -44,6 +44,7 @@ win32 {
     DEFINES += WIN32
     DEFINES += RELEASE
     DEFINES += NOSSL
+    DEFINES += QT_NO_DEBUG_OUTPUT
 
     #INCLUDEPATH += "C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/include"
     LIBS += -L"C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/lib" -llibmysql

@@ -28,12 +28,12 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
-#ifndef QT_NO_DEBUG_OUTPUT
+//#ifndef QT_NO_DEBUG_OUTPUT
     if(Logger::instance()->setFilePath(filePath(".log")))
         qInstallMessageHandler(Logger::logHandler);
     else
         qWarning() << "Unable to create log file! Logging to std::cerr.";
-#endif
+//#endif
 
     MainWindow w;
     w.showMaximized();
