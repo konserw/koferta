@@ -183,7 +183,7 @@ void Database::hostChanged(QString ip)
 
 void Database::connect(const QString& name, const QString &pass)
 {
-    QString dbName = cUser::dbName(name);
+    QString dbName = User::dbName(name);
 
     QSqlDatabase finalConnection = QSqlDatabase::addDatabase("QMYSQL"/*, "finalConnection"*/);
     finalConnection.setDatabaseName("kOferta");
