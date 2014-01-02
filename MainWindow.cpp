@@ -552,17 +552,22 @@ void MainWindow::popLoadDialog()
     delete pop;
 }
 
-void MainWindow::loadOffer(const QSqlRecord& rec)
+void MainWindow::loadOffer(const QString& offerId)
 {
-    *nr_oferty = rec.value("nr_oferty").toString();
-    *data = rec.value("data").toString();
+    *nr_oferty = offerId;
 
     this->init();
     this->setTitle(nr_oferty);
 
-    QSqlQueryModel klientModel;
-    klientModel.setQuery(QString("SELECT DISTINCT klient.* FROM klient, zapisane WHERE klient.id = zapisane.id_klienta AND zapisane.nr_oferty = '%1'").arg(rec.value("nr_oferty").toString()));
-    clientChanged(klientModel.record(0));
+    QSqlTableModel model;
+    model.setTable("savedOffersFullView");
+    model.setFilter(QString("number = '%1'").arg(offerId));
+    model.select();
+
+    QSqlRecord rec = model.record(0);
+    *data = rec.value("date").toString();
+
+    clientChanged(rec);
 
     if(rec.value("zapytanie_data").isNull())
         ui->checkBox_zapytanieData->setChecked(false);

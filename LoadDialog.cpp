@@ -34,48 +34,47 @@ LoadDialog::LoadDialog(QWidget *parent) :
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    connect(ui->widget, SIGNAL(selectionChanged(const QSqlRecord&)), this, SLOT(ref(const QSqlRecord&)));
+    connect(ui->widget, &SzukajOferty::selectionChanged, this, &LoadDialog::ref);
 
     model = new QSqlTableModel(this);
-    model->setTable("zapisane_towary");
+    model->setTable("savedOffersMerchandiseView");
     model->setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-    QStringList sl;
-    sl << tr("Kod") << tr("Ilość") << tr("Rabat");
-    for(int i=1; i<4; ++i)
-        model->setHeaderData(i, Qt::Horizontal, sl[i-1]);
+    model->setHeaderData(4, Qt::Horizontal, tr("Kod"));
+    model->setHeaderData(1, Qt::Horizontal, tr("Ilość"));
+    model->setHeaderData(2, Qt::Horizontal, tr("Rabat"));
 
     ui->tableView->setModel(model);
+    ui->tableView->horizontalHeader()->swapSections(0, 4);
     ui->tableView->hideColumn(0);
+    ui->tableView->hideColumn(3);
+    for(int i=5; i<8; ++i)
+        ui->tableView->hideColumn(i);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-    cur = NULL;
 }
 
 LoadDialog::~LoadDialog()
 {
     delete ui;
-    delete cur;
 }
 
 void LoadDialog::ok()
 {
-    if(!cur)
+    QString offerId = ui->widget->currentOffer();
+
+    if(offerId.isNull())
     {
         this->reject();
         return;
     }
 
-    emit offerSelected(*cur);
+    emit offerSelected(offerId);
     this->accept();
 }
 
-void LoadDialog::ref(const QSqlRecord& rec)
+void LoadDialog::ref(const QString& offerId)
 {
-    delete cur;
-    cur = new QSqlRecord(rec);
-
-    model->setFilter(QString("nr_oferty = '%1'").arg(rec.value("number").toString()));
+    model->setFilter(QString("nr_oferty = '%1'").arg(offerId));
     model->select();
 }

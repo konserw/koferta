@@ -98,17 +98,20 @@ void Database::setupInitialConnection()
 }
 
 Database::Database(QObject* parent) :
-    QObject(parent), m_usersTable(nullptr)
+    QObject(parent), m_usersTable(nullptr), m_initialConnection(nullptr)
 {  
 }
 
 Database::~Database()
 {
-    m_initialConnection->close();
-    delete m_initialConnection;
+    if(m_initialConnection)
+    {
+        m_initialConnection->close();
+        delete m_initialConnection;
+    }
 }
 
-QStringList Database::getUsersList(const QSqlDatabase& db = QSqlDatabase())
+QStringList Database::getUsersList(const QSqlDatabase& db)
 {
     QStringList userList;
 

@@ -42,15 +42,14 @@ public:
 
 public slots:
     void ok();
-    void ref(const QSqlRecord & rec);
+    void ref(const QString &offerId);
 
 signals:
-    void offerSelected(const QSqlRecord &);
+    void offerSelected(const QString &);
 
 private:
     Ui::LoadDialog *ui;
 
-    QSqlRecord* cur;
     QSqlTableModel* model;
 };
 

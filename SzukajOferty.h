@@ -38,6 +38,8 @@ public:
     explicit SzukajOferty(QWidget *parent = 0);
     ~SzukajOferty();
 
+    QString currentOffer();
+
 public slots:
     void select(const QModelIndex &);
     void refId(const QString&);
@@ -46,7 +48,7 @@ public slots:
     void refUser(const QString &);
 
 signals:
-    void selectionChanged(const QSqlRecord&);
+    void selectionChanged(const QString&);
 
 private:
     QSqlTableModel* model;

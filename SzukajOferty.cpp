@@ -20,7 +20,8 @@
 #include "ui_SzukajOferty.h"
 #include <QSqlTableModel>
 #include <QSqlRecord>
-#include "Macros.h"
+#include <QtDebug>
+#include "Database.h"
 
 SzukajOferty::SzukajOferty(QWidget *parent) :
   QWidget(parent),
@@ -28,43 +29,19 @@ SzukajOferty::SzukajOferty(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QString s;
-    QSqlQuery q;
-    QStringList sl;
-
     ui->label_wybierz->setText(tr("Wybierz ofertę do wczytania:"));
     ui->label_filtruj->setText(tr("Filtr:"));
     ui->dateEdit->setDisplayFormat("MMMM yy");
     ui->dateEdit->setDate(QDate::currentDate());
 
-    s = "SELECT name FROM users";
-    EXEC(s);
-    while(q.next())
-        sl << q.value(0).toString();
-    ui->comboBox->insertItems(0, sl);
+    Database db;
+    ui->comboBox->insertItems(0, db.getUsersList());
 
-    sl.clear();
+    QStringList sl;
     sl << tr("Nr oferty") << tr("Klient") << tr("Data") << tr("Oferent");
     for(int i=0; i<sl.size(); ++i)
         ui->tabWidget->setTabText(i, sl[i]);
-/*
-    model = new QSqlRelationalTableModel(this);
-    model->setTable("zapisane");
-    model->setEditStrategy(QSqlRelationalTableModel::OnManualSubmit);
-    model->setRelation(1, QSqlRelation("klient", "id", "short"));
-    model->setRelation(3, QSqlRelation("users", "uid", "name"));
-    model->select();
 
-    for(int i=0; i<sl.size(); ++i)
-        model->setHeaderData(i, Qt::Horizontal, sl[i]);
-
-    ui->tableView->setModel(model);
-    for(int i=4; i<model->columnCount(); ++i)
-        ui->tableView->hideColumn(i);
-    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->tableView->resizeColumnToContents(3);
-    ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-*/
     model = new QSqlTableModel(this);
     model->setTable("savedOffersView");
     model->setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -88,12 +65,18 @@ SzukajOferty::~SzukajOferty()
     delete ui;
 }
 
+QString SzukajOferty::currentOffer()
+{
+    QModelIndex idx = ui->tableView->currentIndex();
+    return model->data(idx.sibling(idx.row(), 0)).toString();
+}
+
 void SzukajOferty::select(const QModelIndex& index)
 {
     int row = index.row();
-    QSqlRecord rec = model->record(row);
-    qDebug() << "selected row: " << row << "id: " << rec.value(0).toString();
-    emit selectionChanged(rec);
+    QString offerId = model->data(index.sibling(row, 0)).toString();
+    qDebug() << "selected row:" << row << "id:" << offerId;
+    emit selectionChanged(offerId);
 }
 
 void SzukajOferty::refId(const QString& id)
@@ -103,7 +86,7 @@ void SzukajOferty::refId(const QString& id)
 
 void SzukajOferty::refClient(const QString& client)
 {
-    model->setFilter(QString("customerCompany like '%1%'").arg(client));
+    model->setFilter(QString("customerCompany like '%1%' OR customerName like '%1%'").arg(client));
 }
 
 void SzukajOferty::refDate(const QDate& date)

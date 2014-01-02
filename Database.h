@@ -2,8 +2,8 @@
 #define DATABASE_H
 
 #include <QObject>
+#include <QSqlDatabase>
 
-class QSqlDatabase;
 class QString;
 class User;
 class QSqlTableModel;
@@ -17,7 +17,8 @@ public:
     ~Database();
 
     void setupInitialConnection();
-    QStringList getUsersList(const QSqlDatabase &db);
+    QStringList getUsersList(const QSqlDatabase &db = QSqlDatabase());
+
 public slots:
     void hostChanged(QString ip);
     void connect(const QString &uid, const QString& pass);
