@@ -29,7 +29,7 @@ TEMPLATE = app
 DEFINES += VER=2.4
 
 win32 {
-    QMAKE_CXXFLAGS += /nologo #/O2 /Wall
+    QMAKE_CXXFLAGS += /nologo /O2 /Wall
 
     QMAKE_LFLAGS_RELEASE += /NODEFAULTLIB:LIBCMT
     QMAKE_LFLAGS_DEBUG += /NODEFAULTLIB:LIBCMT
@@ -42,7 +42,7 @@ win32 {
     #LIBS += -L"C:/Program Files/MySQL/MySQL Server 5.7/lib" -llibmysql
 
     DEFINES += WIN32
-#    DEFINES += RELEASE
+    DEFINES += RELEASE
     DEFINES += NOSSL
 
     #INCLUDEPATH += "C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/include"
@@ -120,9 +120,6 @@ SOURCES += \
 RESOURCES += res/zasoby.qrc
 
 OTHER_FILES += \
-    changelog.txt \
     LICENSE.md \
-    res/gpl-3.0.txt \
-    res/gpl-3.0.html \
     README.md \
     hosts
