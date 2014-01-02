@@ -45,6 +45,8 @@ public:
     QHash<int, double> hash() const;
     QString print(const int w, bool kod, bool towar, bool ilosc, bool cenaKat, bool rabat, bool cena) const;
 
+    void save(const QString& offerId);
+
 public slots:
     void clear();
 

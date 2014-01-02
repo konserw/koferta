@@ -540,10 +540,8 @@ void MainWindow::zapisz()
         zNumer = QString::null;
 
     insert_zapisane(*nr_oferty, klient->value("id").toInt(), *data, m_currentUser->uid(), zData, zNumer, ui->comboBox_dostawa->currentIndex(), ui->comboBox_termin->currentIndex(), ui->comboBox_platnosc->currentIndex(), ui->comboBox_oferta->currentIndex(), ui->plainTextEdit_uwagi->toPlainText());
-/***************** TO DO !!! ******************************
-    for(int i=0; i < ui->tableWidget->rowCount() - 1; ++i)
-        insert_zapisane_towary(*nr_oferty, ui->tableWidget->item(i, 0)->text(), ui->tableWidget->item(i, 5)->text().toDouble(), ui->tableWidget->item(i, 3)->text().toDouble());
-*/
+
+    m_towarModel->save(*nr_oferty);
 }
 
 void MainWindow::popLoadDialog()

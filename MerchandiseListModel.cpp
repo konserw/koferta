@@ -2,8 +2,8 @@
 #include "Merchandise.h"
 #include <QDebug>
 #include <QSqlTableModel>
-#include <QSqlRecord>
-#include <QSqlQuery>
+#include <QtSql>
+#include <QMessageBox>
 
 MerchandiseListModel::MerchandiseListModel(QObject *parent) :
     QAbstractTableModel(parent), m_pln(false), m_kurs(1)
@@ -394,6 +394,43 @@ QString MerchandiseListModel::print(const int w, bool kod, bool towar, bool ilos
     doc += "\t</table>\n";
 
     return doc;
+}
+
+void MerchandiseListModel::save(const QString &offerId)
+{
+    QSqlTableModel model;
+    model.setTable("savedOffersMerchandise");
+    model.setEditStrategy(QSqlTableModel::OnManualSubmit);
+    model.select();
+
+    qDebug() << "savedMerchandise table row count:" << model.rowCount();
+
+    model.database().transaction();
+    Merchandise* merch;
+    foreach(merch, m_list)
+    {
+        QSqlRecord rec = model.record();
+        rec.setValue("nr_oferty", offerId);
+        rec.setValue("rabat", merch->rabat());
+        rec.setValue("ilosc", merch->ilosc());
+        rec.setValue("merchandise_id", merch->id());
+        model.insertRecord(-1, rec);
+        qDebug() << "inserting row:" << rec;
+    }
+
+    if(model.submitAll())
+    {
+        model.database().commit();
+        qDebug() << "savedMerchandise table row count:" << model.rowCount();
+    }
+    else
+    {
+        model.database().rollback();
+        QString error = model.lastError().text();
+        qCritical() << "Database Write Error:" << error;
+        QMessageBox::critical(nullptr, tr("Błąd"), tr("Wystąpił nastepujący bład podczas zapisu oferty do bazy danych:\n%1").arg(error));
+
+    }
 }
 
 double MerchandiseListModel::przeliczSume() const
