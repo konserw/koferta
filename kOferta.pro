@@ -29,6 +29,8 @@ TEMPLATE = app
 DEFINES += VER=2.4
 
 win32 {
+    RC_FILE = res/koferta.rc
+
     QMAKE_CXXFLAGS += /nologo /O2
 
     QMAKE_LFLAGS_RELEASE += /NODEFAULTLIB:LIBCMT
@@ -123,4 +125,5 @@ RESOURCES += res/zasoby.qrc
 OTHER_FILES += \
     LICENSE.md \
     README.md \
-    hosts
+    hosts \
+    res/koferta.rc

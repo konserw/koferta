@@ -5,7 +5,7 @@
         <file alias="client-key">client-key.pem</file>
         <file alias="ico">kico.png</file>
         <file alias="klog">klog.png</file>
-        <file alias="log">logo.jpg</file>
         <file alias="calendar">schedule.png</file>
+        <file alias="logo">logo.png</file>
     </qresource>
 </RCC>

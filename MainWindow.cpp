@@ -765,13 +765,13 @@ void MainWindow::makeDocument(QString *sDoc)
     *sDoc += ">\n"
              "\t\t\t";
     if(htm)
-        *sDoc += "<img src=logo.jpg align=center><br>\n";
+        *sDoc += "<img src=logo.png align=center><br>\n";
     else
-        *sDoc += "<img src=:/log align=center><br>\n";
+        *sDoc += "<img src=:/logo align=center><br>\n";
 
     *sDoc += "\t\t\t<b>Marley Polska Sp. z o.o.</b><br>\n"
-             "\t\t\tul. Annopol 24<br>\n"
-             "\t\t\t03-236 Warszawa<br>\n"
+             "\t\t\tul. Dabrówki 6<br>\n"
+             "\t\t\t03-909 Warszawa<br>\n"
              "\t\t\t<br>\n"
              "\t\t\t";
     /*adres bióra*/
