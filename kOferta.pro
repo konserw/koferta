@@ -45,6 +45,7 @@ win32 {
 
     DEFINES += WIN32
     DEFINES += RELEASE
+    DEFINES += ADMIN_PASS=\\\"\\\"
     DEFINES += NOSSL
     DEFINES += QT_NO_DEBUG_OUTPUT
 

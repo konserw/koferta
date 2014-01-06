@@ -137,6 +137,6 @@ void Logowanie::ok()
 
     m_db->connect(ui->comboBox->currentText(), pass);
 #else
-    m_db->connect("Admin", "");
+    m_db->connect("Admin", ADMIN_PASS);
 #endif
 }
