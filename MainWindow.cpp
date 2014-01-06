@@ -770,7 +770,7 @@ void MainWindow::makeDocument(QString *sDoc)
         *sDoc += "<img src=:/logo align=center><br>\n";
 
     *sDoc += "\t\t\t<b>Marley Polska Sp. z o.o.</b><br>\n"
-             "\t\t\tul. Dabrówki 6<br>\n"
+             "\t\t\tul. Dąbrówki 6<br>\n"
              "\t\t\t03-909 Warszawa<br>\n"
              "\t\t\t<br>\n"
              "\t\t\t";

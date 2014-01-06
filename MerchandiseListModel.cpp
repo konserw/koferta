@@ -376,14 +376,14 @@ QString MerchandiseListModel::print(const int w, bool kod, bool towar, bool ilos
         if(towar)
             doc += QString("\t\t<td>%1</td>\n").arg(item->nazwa());
         if(ilosc)
-            doc += QString("\t\t<td align = right>%1 %2</td>\n").arg(item->ilosc()).arg(item->unit());
+            doc += QString("\t\t<td align = right>%1 %2</td>\n").arg(item->ilosc(), 0, 'f', 0).arg(item->unit());
         if(cenaKat)
-            doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cenaKat());
+            doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cenaKat(), 0, 'f', 2);
         if(rabat)
-            doc += QString("\t\t<td align = right>%1</td>\n").arg(item->rabat());
+            doc += QString("\t\t<td align = right>%1%</td>\n").arg(item->rabat());
         if(cena)
-            doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cena());
-        doc += QString("\t\t<td align = right>%1</td>\n").arg(item->wartosc());
+            doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cena(), 0, 'f', 2);
+        doc += QString("\t\t<td align = right>%1</td>\n").arg(item->wartosc(), 0, 'f', 2);
         doc += "\t</tr>\n";
     }
 
