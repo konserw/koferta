@@ -18,10 +18,8 @@
 
 #include "NowyTowar.h"
 #include "ui_NowyTowar.h"
-#include "Database.h"
 #include <QtSql>
-#include <QMessageBox>
-#include "Macros.h"
+#include <QtDebug>
 
 NowyTowar::NowyTowar(QWidget *parent) :
     QDialog(parent),
@@ -43,22 +41,14 @@ void NowyTowar::acc()
     ui->pushButton_ok->setEnabled(false);
 
     QSqlQuery q;
-    QString kod = ui->kod->text();
-    QString s = QString("Select * FROM towar WHERE id='%1'").arg(kod);
+    q.exec(QString("INSERT INTO `kOferta`.`merchandise` (`id`, `code`, `desc`, `price`, `unit`) VALUES (NULL, '%1', '%2', '%3', '%4')")
+           .arg(ui->kod->text())
+           .arg(ui->spec->text())
+           .arg(ui->cena->value())
+           .arg(ui->r_m->isChecked() ? "mb." : "szt.")
+          );
 
-    EXEC(s);
-    if(q.next())
-    {
-        QMessageBox::warning(this, tr("Duplikat kodu"), tr("Kod towaru musi być unikalny. Spróbuj wprowadzić inny kod."));
-        ui->pushButton_ok->setEnabled(true);
-        return;
-    }
-
-    if(ui->r_m->isChecked())
-        s = "mb.";
-    else
-        s = "szt.";
-    insert_towar(kod, ui->spec->text(), ui->cena->value(), s);
+    qDebug() << "Inserted merchandise  with id:" << ui->kod->text();
 
     this->accept();
 }

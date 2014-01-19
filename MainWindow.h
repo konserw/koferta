@@ -97,9 +97,10 @@ public slots:
     void nowyNumer();
 
 
-    //klient
+    //baza
     void dodajKlient();                                 //wyświetla dialog dodający klienta - cDodajKlient
     void edytujKlient();                                //wyświetla dialog edycji klientów
+    void dodajTowar();
 
     //help
     void about();                                       //wyświetla informacje o programie

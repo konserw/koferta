@@ -45,8 +45,8 @@ win32 {
     #LIBS += -L"C:/Program Files/MySQL/MySQL Server 5.7/lib" -llibmysql
 
     DEFINES += WIN32
-    DEFINES += RELEASE
-    DEFINES += ADMIN_PASS=\\\"\\\"
+#    DEFINES += RELEASE
+    DEFINES += ADMIN_PASS=\\\"admin_pass\\\"
     DEFINES += NOSSL
     DEFINES += QT_NO_DEBUG_OUTPUT
 

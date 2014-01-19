@@ -40,7 +40,7 @@
 #include "EdycjaKombo.h"
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
-
+#include "NowyTowar.h"
 
 #include "MerchandiseSelection.h"
 #include "MerchandiseListModel.h"
@@ -122,9 +122,10 @@ MainWindow::MainWindow():
     QObject::connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(popLoadDialog()));
     QObject::connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(zapisz()));
     QObject::connect(ui->actionNR, SIGNAL(triggered()), this, SLOT(nowyNumer()));
-    //klient
+    //baza danych
     QObject::connect(ui->klientNowy, SIGNAL(triggered()), this, SLOT(dodajKlient()));
     QObject::connect(ui->klientEdycja, SIGNAL(triggered()), this, SLOT(edytujKlient()));
+    QObject::connect(ui->actionNowy_Towar, SIGNAL(triggered()), this, SLOT(dodajTowar()));
     //export
     QObject::connect(ui->actionDo_HTML, SIGNAL(triggered()), this, SLOT(zapisz()));
     QObject::connect(ui->actionDo_HTML, SIGNAL(triggered()), this, SLOT(printHtm()));
@@ -604,8 +605,6 @@ void MainWindow::dostawaNew()
 **      BAZA DANYCH     **
 *************************/
 
-/* KLIENT */
-
 void MainWindow::dodajKlient()
 {
     NowyKlient* nowyKlient = new NowyKlient(this);
@@ -616,6 +615,13 @@ void MainWindow::dodajKlient()
 void MainWindow::edytujKlient()
 {
     EdycjaKlienta* okno = new EdycjaKlienta(this);
+    okno->exec();
+    delete okno;
+}
+
+void MainWindow::dodajTowar()
+{
+    NowyTowar* okno = new NowyTowar(this);
     okno->exec();
     delete okno;
 }
