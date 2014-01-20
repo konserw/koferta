@@ -1,7 +1,4 @@
 /**
-  Dialog wyboru oferty do wczytania
-  **/
-/**
     kOferta - system usprawniajacy proces ofertowania
     Copyright (C) 2011  Kamil 'konserw' Strzempowicz, konserw@gmail.com
 
@@ -31,7 +28,9 @@ class QSqlTableModel;
 namespace Ui {
     class LoadDialog;
 }
-
+/*!
+ * \brief Dialog wyboru oferty do wczytania
+ */
 class LoadDialog : public QDialog
 {
     Q_OBJECT

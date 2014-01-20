@@ -1,7 +1,4 @@
 /**
-  Dialog umożliwiający dodanie nowego klienta do bazy
-  **/
-/**
     kOferta - system usprawniajacy proces ofertowania
     Copyright (C) 2011  Kamil 'konserw' Strzempowicz, konserw@gmail.com
 
@@ -27,7 +24,9 @@
 namespace Ui {
     class NowyKlient;
 }
-
+/*!
+ * \brief Dialog umożliwiający dodanie nowego klienta do bazy
+ */
 class NowyKlient : public QDialog
 {
     Q_OBJECT

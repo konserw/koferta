@@ -1,7 +1,4 @@
 /**
-  Dialog umożliwiający dodanie nowego towaru do bazy
-  **/
-/**
     kOferta - system usprawniajacy proces ofertowania
     Copyright (C) 2011  Kamil 'konserw' Strzempowicz, konserw@gmail.com
 
@@ -28,6 +25,9 @@ namespace Ui {
     class NowyTowar;
 }
 
+/*!
+ * \brief Dialog umożliwiający dodanie nowego towaru do bazy
+ */
 class NowyTowar : public QDialog
 {
     Q_OBJECT

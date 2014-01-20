@@ -1,5 +1,5 @@
 /**
-  klasa przechowująca dane użytkownika
+
 **/
 /**
     kOferta - system usprawniajacy proces ofertowania
@@ -24,7 +24,9 @@
 
 class QString;
 class QSqlDatabase;
-
+/*!
+ * \briefklasa przechowująca dane użytkownika
+ */
 class User
 {
 public:
@@ -35,14 +37,22 @@ public:
 
     ~User();
 
-    QString name()const;                                //zwraca imię i nazwisko użytkownika - widoczne przy logowaniu i w tworzoych dokumentach
-    QString mail()const;                                //zwraca adres email użytkownika
-    QString adress()const;                              //zwraca adres bióra użytkownika w formacie htm
-    bool male()const;                                   //zwraca: true - mężczyzna, false - kobieta
-    int uid()const;                                     //zwraca nr. identyfikacyjny użytkownika, na potrzeby zapisu
-    static QString dbName(const QString &name);                              //zwraca nazwę użytkownika MySQL - generowane na podstawie nazwiska
-    int nrOferty()const;                                //zwraca aktualny (pierwszy nieużyty) numer oferty
-    void nrOfertyInkrement();                           //inkrementuje nr oferty
+    ///zwraca imię i nazwisko użytkownika - widoczne przy logowaniu i w tworzoych dokumentach
+    QString name()const;
+    ///zwraca adres email użytkownika
+    QString mail()const;
+    ///zwraca adres bióra użytkownika w formacie htm
+    QString adress()const;
+    ///zwraca: true - mężczyzna, false - kobieta
+    bool male()const;
+    ///zwraca nr. identyfikacyjny użytkownika, na potrzeby zapisu
+    int uid()const;
+    ///zwraca nazwę użytkownika MySQL - generowane na podstawie nazwiska
+    static QString dbName(const QString &name);
+    ///zwraca aktualny (pierwszy nieużyty) numer oferty
+    int nrOferty()const;
+    ///inkrementuje nr oferty
+    void nrOfertyInkrement();
 
 private:
     QString* _name;

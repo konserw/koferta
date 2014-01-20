@@ -1,7 +1,4 @@
 /**
-  Główne okno programu
-  **/
-/**
     kOferta - system usprawniajacy proces ofertowania
     Copyright (C) 2011  Kamil 'konserw' Strzempowicz, konserw@gmail.com
 
@@ -38,20 +35,23 @@ class MerchandiseListModel;
 namespace Ui {
     class MainWindow;
 }
-
+/*!
+ * \brief Główne okno programu
+ */
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow();                              //aktualny użytkownik przekazywany jako parametr
+    explicit MainWindow();
     ~MainWindow();
 
 public slots:
     void popWyborKlienta();
     void popWyborTowaru();
 
-    void loadOffer(const QString &offerId);              //wczytuje ofertę o połączone z dialogiem wczytywanie
+    ///wczytuje ofertę o połączone z dialogiem wczytywanie
+    void loadOffer(const QString &offerId);
 
     //dodawanie opcji do kombosów
     void dostawaNew();
@@ -60,8 +60,10 @@ public slots:
     void ofertaNew();
 
     //obsługa głównej tabeli
-    void rabat();                                       //ustawia rabat dla wszystkich pozycji jednocześnie
-    void del();                                         //usuwanie wiersza z tabeli
+    ///ustawia rabat dla wszystkich pozycji jednocześnie
+    void rabat();
+    ///usuwanie wiersza z tabeli
+    void del();
 
     //odświerzanie texteditów drugiej zakładce
     void dostawaRef(int);
@@ -69,21 +71,30 @@ public slots:
     void terminRef(int);
     void ofertaRef(int);
     void zapytanieRef();
-    void calChanged(const QDate&);                      //zmiana nastąpiła w kalendarzu, wprowadzenie jej do dateedita
+    ///zmiana nastąpiła w kalendarzu, wprowadzenie jej do dateedita
+    void calChanged(const QDate&);
     void checkNr(bool);
     void checkData(bool);
-    void clientChanged(const QSqlRecord&);              //ustawia wybranego klienta - połączone z sygnałem z dialogu klient
+    ///ustawia wybranego klienta - połączone z sygnałem z dialogu klient
+    void clientChanged(const QSqlRecord&);
 
     //opcje wydruku
-    void pln_on();                                      //włącza przeliczanie euro na pln
-    void pln_off();                                     //wyłącza przeliczanie euro na pln
+    ///włącza przeliczanie euro na pln
+    void pln_on();
+    ///wyłącza przeliczanie euro na pln
+    void pln_off();
 
     //wydruk
-    void printPrev();                                   //podgląd wydruku
-    void printPdf();                                    //export do pdf
-    void printHtm();                                    //zapis jako htm
-    void print(QPrinter *printer);                      //"drukowanie" dokumentu do podglądu lub pdf
-    void makeDocument(QString *sDoc);                   //tworzy dokument jako kod htm w QTextDocument
+    ///podgląd wydruku
+    void printPrev();
+    ///export do pdf
+    void printPdf();
+    ///zapis jako htm
+    void printHtm();
+    ///"drukowanie" dokumentu do podglądu lub pdf
+    void print(QPrinter *printer);
+    ///tworzy dokument jako kod htm do QTextDocument
+    void makeDocument(QString *sDoc);
 
 /*menu*/
     //connect
@@ -98,12 +109,16 @@ public slots:
 
 
     //baza
-    void dodajKlient();                                 //wyświetla dialog dodający klienta - cDodajKlient
-    void edytujKlient();                                //wyświetla dialog edycji klientów
+    ///wyświetla dialog dodający klienta
+    void dodajKlient();
+    ///wyświetla dialog edycji klientów
+    void edytujKlient();
+    ///wyświetla dialog dodający towar
     void dodajTowar();
 
     //help
-    void about();                                       //wyświetla informacje o programie
+    ///wyświetla informacje o programie
+    void about();
     //o qt - wbudowane
 
     void connectedAs(const User& user);
@@ -112,8 +127,10 @@ private:
     Ui::MainWindow *ui;
 
     //pomocnicze funkcje
-    void setTitle(QString*);                            //ustawia tytuł okna
-    void init();                                        //odblokowanie interfejsu i inicjacja tabeli
+    ///ustawia tytuł okna
+    void setTitle(QString*);
+    ///odblokowanie interfejsu i inicjacja tabeli
+    void init();
     void setMenusEnabled(bool en);
     void uiReset();
 
