@@ -7,7 +7,7 @@ MerchendiseSelectionDelegate::MerchendiseSelectionDelegate(QObject *parent) :
 {   
 }
 
-QWidget *MerchendiseSelectionDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
+QWidget *MerchendiseSelectionDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &/*option*/, const QModelIndex &index) const
 {
     if(!index.isValid() || index.column() != 0)
         return new QWidget(parent);
@@ -40,7 +40,7 @@ void MerchendiseSelectionDelegate::setModelData(QWidget *editor, QAbstractItemMo
  //   emit itemCountChanged(model->data(index, Qt::UserRole).toInt(), count);
 }
 
-void MerchendiseSelectionDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
+void MerchendiseSelectionDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &/*index*/) const
 {
     editor->setGeometry(option.rect);
 }
