@@ -98,8 +98,8 @@ public slots:
 
 /*menu*/
     //connect
-    void connect();
-    void disconnect();
+    void databaseConnect();
+    void databaseDisconnect();
 
     //menu oferta
     void nowa();
