@@ -28,6 +28,8 @@ TEMPLATE = app
 
 DEFINES += VER=2.4
 DEFINES += ADMIN_PASS=\\\"\\\"
+DEFINES += RELEASE
+DEFINES += NOSSL
 
 win32 {
     RC_FILE = res/koferta.rc
@@ -39,17 +41,11 @@ win32 {
 
     CONFIG += qt windows #release
 
-    #INCLUDEPATH += "C:/Program Files/MySQL/MySQL Server 5.7/include"
+    DEFINES += WIN32    
+    DEFINES += QT_NO_DEBUG_OUTPUT
 
     #LIBS += -L"C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x86" -lUser32 -lAdvAPI32
     #LIBS += -L"C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x64" -lUser32 -lAdvAPI32
-    #LIBS += -L"C:/Program Files/MySQL/MySQL Server 5.7/lib" -llibmysql
-
-    DEFINES += WIN32
-    DEFINES += RELEASE
-    DEFINES += NOSSL
-    DEFINES += QT_NO_DEBUG_OUTPUT
-
     #INCLUDEPATH += "C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/include"
     #LIBS += -L"C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/lib" -llibmysql
     LIBS += -L"C:/Program Files (x86)/MySQL/MySQL Connector C 6.1/lib" -llibmysql
@@ -58,8 +54,6 @@ win32 {
 unix {
     QMAKE_CXXFLAGS += -Wall -Werror -Wextra
     LIBS += -L/usr/lib/mysql -lmysqlclient
-    DEFINES += NOSSL
-    #DEFINES += RELEASE
 }
 
 DEPENDPATH += . res 
