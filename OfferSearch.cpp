@@ -16,16 +16,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#include "SzukajOferty.h"
-#include "ui_SzukajOferty.h"
+#include "OfferSearch.h"
+#include "ui_OfferSearch.h"
 #include <QSqlTableModel>
 #include <QSqlRecord>
 #include <QtDebug>
 #include "Database.h"
 
-SzukajOferty::SzukajOferty(QWidget *parent) :
+OfferSearch::OfferSearch(QWidget *parent) :
   QWidget(parent),
-    ui(new Ui::SzukajOferty)
+    ui(new Ui::OfferSearch)
 {
     ui->setupUi(this);
 
@@ -60,18 +60,18 @@ SzukajOferty::SzukajOferty(QWidget *parent) :
     connect(ui->comboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(refUser(const QString&)));
 }
 
-SzukajOferty::~SzukajOferty()
+OfferSearch::~OfferSearch()
 {
     delete ui;
 }
 
-QString SzukajOferty::currentOffer()
+QString OfferSearch::currentOffer()
 {
     QModelIndex idx = ui->tableView->currentIndex();
     return model->data(idx.sibling(idx.row(), 0)).toString();
 }
 
-void SzukajOferty::select(const QModelIndex& index)
+void OfferSearch::select(const QModelIndex& index)
 {
     int row = index.row();
     QString offerId = model->data(index.sibling(row, 0)).toString();
@@ -79,24 +79,24 @@ void SzukajOferty::select(const QModelIndex& index)
     emit selectionChanged(offerId);
 }
 
-void SzukajOferty::refId(const QString& id)
+void OfferSearch::refId(const QString& id)
 {
     model->setFilter(QString("number like '%1%'").arg(id));
 }
 
-void SzukajOferty::refClient(const QString& client)
+void OfferSearch::refClient(const QString& client)
 {
     model->setFilter(QString("customerCompany like '%1%' OR customerName like '%1%'").arg(client));
 }
 
-void SzukajOferty::refDate(const QDate& date)
+void OfferSearch::refDate(const QDate& date)
 {
     QString sd = date.toString("MM.yyyy");
     model->setFilter(QString("date >= str_to_date('1.%1', '%d.%m.%Y') AND  date <= str_to_date('31.%1', '%d.%m.%Y')").arg(sd));
 }
 
 
-void SzukajOferty::refUser(const QString& user)
+void OfferSearch::refUser(const QString& user)
 {
     model->setFilter(QString("author = '%1'").arg(user));
 }

@@ -18,11 +18,9 @@
 
 #include "LoadDialog.h"
 #include "ui_LoadDialog.h"
-
-#include <QSqlQuery>
 #include "Macros.h"
-#include "SzukajOferty.h"
-#include <QSqlRecord>
+#include "OfferSearch.h"
+
 #include <QSqlTableModel>
 
 LoadDialog::LoadDialog(QWidget *parent) :
@@ -34,7 +32,7 @@ LoadDialog::LoadDialog(QWidget *parent) :
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    connect(ui->widget, &SzukajOferty::selectionChanged, this, &LoadDialog::ref);
+    connect(ui->widget, &OfferSearch::selectionChanged, this, &LoadDialog::ref);
 
     model = new QSqlTableModel(this);
     model->setTable("savedOffersMerchandiseView");

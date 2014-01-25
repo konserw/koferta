@@ -15,7 +15,7 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="SzukajOferty" name="widget" native="true">
+    <widget class="OfferSearch" name="widget" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -67,9 +67,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>SzukajOferty</class>
+   <class>OfferSearch</class>
    <extends>QWidget</extends>
-   <header>SzukajOferty.h</header>
+   <header>OfferSearch.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

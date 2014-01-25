@@ -27,16 +27,16 @@ class QDate;
 class QSqlRecord;
 
 namespace Ui {
-    class SzukajOferty;
+    class OfferSearch;
 }
 
-class SzukajOferty : public QWidget
+class OfferSearch : public QWidget
 {
     Q_OBJECT
     
 public:
-    explicit SzukajOferty(QWidget *parent = 0);
-    ~SzukajOferty();
+    explicit OfferSearch(QWidget *parent = 0);
+    ~OfferSearch();
 
     QString currentOffer();
 
@@ -52,7 +52,7 @@ signals:
 
 private:
     QSqlTableModel* model;
-    Ui::SzukajOferty *ui;
+    Ui::OfferSearch *ui;
 };
 
 #endif // SZUKAJOFERTY_H
