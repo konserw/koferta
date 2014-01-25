@@ -55,7 +55,7 @@
 
 MainWindow::~MainWindow()
 {
-    DEBUG << "destruktor mainwindow - start";
+    qDebug() << "destruktor mainwindow - start";
 
     delete ui;
     delete nr_oferty;
@@ -67,7 +67,7 @@ MainWindow::~MainWindow()
     delete ofertaModel;
     delete klient;
 
-    DEBUG << "destruktor mainwindow - koniec";
+    qDebug() << "destruktor mainwindow - koniec";
 }
 
 void MainWindow::setMenusEnabled(bool en)
@@ -95,13 +95,19 @@ MainWindow::MainWindow():
     QMainWindow(nullptr),
     ui(new Ui::MainWindow)
 {
-    DEBUG << "konstruktor mainwindow";   
+    qDebug() << "konstruktor mainwindow";
+/**
+  ui
+**/
+    qDebug() << "setup ui";
+    ui->setupUi(this);
+    uiReset();
+
 /**
   zmienne
  **/
-    DEBUG << "inicjalizacja zmiennych";
+    qDebug() << "inicjalizacja zmiennych";
 
-    ui->setupUi(this);
     pln = false;
 
     nr_oferty = new QString;
@@ -116,7 +122,7 @@ MainWindow::MainWindow():
 /**
  connections
 **/
-    DEBUG << "połaczenia sygnałów i slotów";
+    qDebug() << "połaczenia sygnałów i slotów";
 
     /*menu:*/
     //oferta
@@ -153,13 +159,13 @@ MainWindow::MainWindow():
     connect(ui->delw, SIGNAL(clicked()), this, SLOT(del()));
 
     //dodawanie opcji do kombosów
-    connect(ui->pushButton_dostawa, SIGNAL(clicked()), this, SLOT(dostawaNew()));
-    connect(ui->pushButton_oferta, SIGNAL(clicked()), this, SLOT(ofertaNew()));
-    connect(ui->pushButton_platnosc, SIGNAL(clicked()), this, SLOT(platnoscNew()));
-    connect(ui->pushButton_termin, SIGNAL(clicked()), this, SLOT(terminNew()));
+    connect(ui->actionDodaj_termin_dostawy, &QAction::triggered, this, &MainWindow::terminNew);
+    connect(ui->actionDodaj_warunki_oferty, &QAction::triggered, this, &MainWindow::ofertaNew);
+    connect(ui->actionDodaj_warunki_ostawy, &QAction::triggered, this, &MainWindow::dostawaNew);
+    connect(ui->actionDodaj_warunki_platnosci, &QAction::triggered, this, &MainWindow::platnoscNew);
 
     //Pozostałe informacje - odświerzanie zawartości pól tekstowych
-    connect(ui->pushButton_wyborKlienta, SIGNAL(clicked()), this, SLOT(popWyborKlienta()));
+    connect(ui->commandLinkButton_klient, &QCommandLinkButton::clicked, this, &MainWindow::popWyborKlienta);
     connect(ui->comboBox_dostawa, SIGNAL(currentIndexChanged(int)), this, SLOT(dostawaRef(int)));
     connect(ui->comboBox_oferta, SIGNAL(currentIndexChanged(int)), this, SLOT(ofertaRef(int)));
     connect(ui->comboBox_platnosc, SIGNAL(currentIndexChanged(int)), this, SLOT(platnoscRef(int)));
@@ -172,25 +178,8 @@ MainWindow::MainWindow():
     connect(ui->checkBox_zapytanieNr, SIGNAL(toggled(bool)), this, SLOT(checkNr(bool)));
 
 /**
-  ui
-**/
-    uiReset();
-
-    const QString addOpt = tr("Dodaj");
-    ui->pushButton_dostawa->setText(addOpt);
-    ui->pushButton_oferta->setText(addOpt);
-    ui->pushButton_platnosc->setText(addOpt);
-    ui->pushButton_termin->setText(addOpt);
-
-/**
  Pozostałe informacje
 **/
-
-    ui->label_klient->setText(tr("Klient:"));
-    ui->pushButton_wyborKlienta->setText(tr("Wybór klienta"));
-    ui->plainTextEdit_klient->setReadOnly(true);
-
-    ui->label_zapytanie->setText(tr("Zapytanie:"));
     ui->checkBox_zapytanieData->setText(tr("Data zapytania:"));
     ui->checkBox_zapytanieData->setChecked(true);
     ui->checkBox_zapytanieNr->setText(tr("Numer zapytania:"));

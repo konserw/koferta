@@ -18,7 +18,7 @@
     <normaloff>:/ico</normaloff>:/ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_10">
+   <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="tabPosition">
@@ -79,134 +79,157 @@
        <attribute name="title">
         <string>Pozostałe informacje</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <widget class="QLabel" name="label_zapytanie">
-            <property name="text">
-             <string>Zapytanie:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_5">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="checkBox_zapytanieNr">
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="lineEdit_zapytanieNr"/>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QCheckBox" name="checkBox_zapytanieData">
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_6">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="lineEdit_zapytanieData"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_zapytanieData">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="res/zasoby.qrc">
-              <normaloff>:/calendar</normaloff>:/calendar</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>32</width>
-              <height>32</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QPlainTextEdit" name="plainTextEdit_zapytanie">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
+         <widget class="QGroupBox" name="grupBox_zapytanie">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
+          <property name="title">
+           <string>Zapytanie</string>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <property name="sizeConstraint">
+              <enum>QLayout::SetDefaultConstraint</enum>
+             </property>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout">
+               <item>
+                <widget class="QCheckBox" name="checkBox_zapytanieData">
+                 <property name="text">
+                  <string>CheckBox</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="lineEdit_zapytanieData">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_zapytanieData">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="res/zasoby.qrc">
+                   <normaloff>:/calendar</normaloff>:/calendar</iconset>
+                 </property>
+                 <property name="iconSize">
+                  <size>
+                   <width>32</width>
+                   <height>32</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_11">
+               <item>
+                <widget class="QCheckBox" name="checkBox_zapytanieNr">
+                 <property name="text">
+                  <string>CheckBox</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="lineEdit_zapytanieNr">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>200</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>500</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="baseSize">
+                  <size>
+                   <width>500</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QPlainTextEdit" name="plainTextEdit_zapytanie">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
-           <widget class="QLabel" name="label_klient">
-            <property name="text">
-             <string>Kilent:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_wyborKlienta">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
+           <widget class="QCommandLinkButton" name="commandLinkButton_klient">
             <property name="text">
              <string>Wybór klienta</string>
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QPlainTextEdit" name="plainTextEdit_klient">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="tabChangesFocus">
+             <bool>true</bool>
+            </property>
+            <property name="lineWrapMode">
+             <enum>QPlainTextEdit::NoWrap</enum>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
-        </item>
-        <item>
-         <widget class="QPlainTextEdit" name="plainTextEdit_klient"/>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -232,13 +255,6 @@
           </item>
           <item>
            <widget class="QComboBox" name="comboBox_dostawa"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_dostawa">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
           </item>
          </layout>
         </item>
@@ -277,13 +293,6 @@
           <item>
            <widget class="QComboBox" name="comboBox_termin"/>
           </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_termin">
-            <property name="text">
-             <string>PushButton</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </item>
         <item>
@@ -320,13 +329,6 @@
           </item>
           <item>
            <widget class="QComboBox" name="comboBox_platnosc"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_platnosc">
-            <property name="text">
-             <string>PushButton</string>
-            </property>
-           </widget>
           </item>
          </layout>
         </item>
@@ -374,13 +376,6 @@
           <item>
            <widget class="QComboBox" name="comboBox_oferta"/>
           </item>
-          <item>
-           <widget class="QPushButton" name="pushButton_oferta">
-            <property name="text">
-             <string>PushButton</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </item>
         <item>
@@ -409,6 +404,19 @@
            </size>
           </property>
          </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </widget>
@@ -651,6 +659,11 @@
     <addaction name="klientNowy"/>
     <addaction name="klientEdycja"/>
     <addaction name="actionNowy_Towar"/>
+    <addaction name="separator"/>
+    <addaction name="actionDodaj_warunki_ostawy"/>
+    <addaction name="actionDodaj_termin_dostawy"/>
+    <addaction name="actionDodaj_warunki_platnosci"/>
+    <addaction name="actionDodaj_warunki_oferty"/>
    </widget>
    <widget class="QMenu" name="menuConnect">
     <property name="title">
@@ -782,6 +795,26 @@
   <action name="actionNowy_Towar">
    <property name="text">
     <string>Nowy Towar</string>
+   </property>
+  </action>
+  <action name="actionDodaj_warunki_ostawy">
+   <property name="text">
+    <string>Dodaj warunki ostawy</string>
+   </property>
+  </action>
+  <action name="actionDodaj_termin_dostawy">
+   <property name="text">
+    <string>Dodaj termin dostawy</string>
+   </property>
+  </action>
+  <action name="actionDodaj_warunki_platnosci">
+   <property name="text">
+    <string>dodaj warunki platnosci</string>
+   </property>
+  </action>
+  <action name="actionDodaj_warunki_oferty">
+   <property name="text">
+    <string>dodaj warunki oferty</string>
    </property>
   </action>
  </widget>
