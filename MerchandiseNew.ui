@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>NowyTowar</class>
- <widget class="QDialog" name="NowyTowar">
+ <class>MerchandiseNew</class>
+ <widget class="QDialog" name="MerchandiseNew">
   <property name="geometry">
    <rect>
     <x>0</x>

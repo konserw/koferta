@@ -84,9 +84,9 @@ HEADERS += \
     MerchendiseSelectionDelegate.h \
     MerchandiseListDelegate.h \
     MerchandiseListModel.h \
-    NowyTowar.h \
     CustomerNew.h \
-    CustomerEdit.h
+    CustomerEdit.h \
+    MerchandiseNew.h
 
 FORMS += \
     LoadDialog.ui \
@@ -97,9 +97,9 @@ FORMS += \
     WyborKlienta.ui \
     EdycjaKombo.ui \
     MerchandiseSearch.ui \
-    NowyTowar.ui \
     CustomerNew.ui \
-    CustomerEdit.ui
+    CustomerEdit.ui \
+    MerchandiseNew.ui
 
 SOURCES += \
     Database.cpp \
@@ -121,9 +121,9 @@ SOURCES += \
     MerchendiseSelectionDelegate.cpp \
     MerchandiseListDelegate.cpp \
     MerchandiseListModel.cpp \
-    NowyTowar.cpp \
     CustomerNew.cpp \
-    CustomerEdit.cpp
+    CustomerEdit.cpp \
+    MerchandiseNew.cpp
 
 RESOURCES += res/zasoby.qrc
 

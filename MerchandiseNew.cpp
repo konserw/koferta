@@ -16,14 +16,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#include "NowyTowar.h"
-#include "ui_NowyTowar.h"
+#include "MerchandiseNew.h"
+#include "ui_MerchandiseNew.h"
 #include <QtSql>
 #include <QtDebug>
 
-NowyTowar::NowyTowar(QWidget *parent) :
+MerchandiseNew::MerchandiseNew(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::NowyTowar)
+    ui(new Ui::MerchandiseNew)
 {
     ui->setupUi(this);
     ui->cena->setMaximum(99999);
@@ -36,7 +36,7 @@ NowyTowar::NowyTowar(QWidget *parent) :
     connect(ui->pushButton_cancel, SIGNAL(clicked()), this, SLOT(close()));
 }
 
-void NowyTowar::acc()
+void MerchandiseNew::acc()
 {
     ui->pushButton_ok->setEnabled(false);
 
@@ -53,7 +53,7 @@ void NowyTowar::acc()
     this->accept();
 }
 
-NowyTowar::~NowyTowar()
+MerchandiseNew::~MerchandiseNew()
 {
     delete ui;
 }

@@ -22,25 +22,25 @@
 #include <QDialog>
 
 namespace Ui {
-    class NowyTowar;
+    class MerchandiseNew;
 }
 
 /*!
  * \brief Dialog umożliwiający dodanie nowego towaru do bazy
  */
-class NowyTowar : public QDialog
+class MerchandiseNew : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit NowyTowar(QWidget *parent = 0);
-    ~NowyTowar();
+    explicit MerchandiseNew(QWidget *parent = 0);
+    ~MerchandiseNew();
 
 public slots:
     void acc();
 
 private:
-    Ui::NowyTowar *ui;
+    Ui::MerchandiseNew *ui;
 };
 
 #endif // NOWYTOWAR_H

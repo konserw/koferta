@@ -29,24 +29,26 @@
 #include <QtPrintSupport>
 #include <QPrintDialog>
 #include <QTimer>
-#include "CustomerNew.h"
+
+#include "MainWindow.h"
+#include "ui_MainWindow.h"
+
 #include "Database.h"
-#include "CustomerEdit.h"
 #include "WyborKlienta.h"
 #include "Logowanie.h"
 #include "LoadDialog.h"
 #include "User.h"
 #include "Macros.h"
 #include "EdycjaKombo.h"
-#include "MainWindow.h"
-#include "ui_MainWindow.h"
-#include "NowyTowar.h"
 
+#include "CustomerEdit.h"
+#include "CustomerNew.h"
+
+#include "Merchandise.h"
+#include "MerchandiseNew.h"
+#include "MerchandiseListDelegate.h"
 #include "MerchandiseSelection.h"
 #include "MerchandiseListModel.h"
-#include "Merchandise.h"
-#include "MerchandiseListDelegate.h"
-
 /*************************
 **      GŁÓWNE OKNO     **
 *************************/
@@ -621,7 +623,7 @@ void MainWindow::edytujKlient()
 
 void MainWindow::dodajTowar()
 {
-    NowyTowar* okno = new NowyTowar(this);
+    MerchandiseNew* okno = new MerchandiseNew(this);
     okno->exec();
     delete okno;
 }
