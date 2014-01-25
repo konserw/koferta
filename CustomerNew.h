@@ -22,22 +22,22 @@
 #include <QDialog>
 
 namespace Ui {
-    class NowyKlient;
+    class CustomerNew;
 }
 /*!
  * \brief Dialog umożliwiający dodanie nowego klienta do bazy
  */
-class NowyKlient : public QDialog
+class CustomerNew : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit NowyKlient(QWidget *parent = 0);
-    ~NowyKlient();
+    explicit CustomerNew(QWidget *parent = 0);
+    ~CustomerNew();
 public slots:
     void acc();
 
 private:
-    Ui::NowyKlient *ui;
+    Ui::CustomerNew *ui;
 };
 #endif // NOWY_H

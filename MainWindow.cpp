@@ -29,7 +29,7 @@
 #include <QtPrintSupport>
 #include <QPrintDialog>
 #include <QTimer>
-#include "NowyKlient.h"
+#include "CustomerNew.h"
 #include "Database.h"
 #include "EdycjaKlienta.h"
 #include "WyborKlienta.h"
@@ -607,7 +607,7 @@ void MainWindow::dostawaNew()
 
 void MainWindow::dodajKlient()
 {
-    NowyKlient* nowyKlient = new NowyKlient(this);
+    CustomerNew* nowyKlient = new CustomerNew(this);
     nowyKlient->exec();
     delete nowyKlient;
 }

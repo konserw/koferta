@@ -70,7 +70,6 @@ HEADERS += \
     Logowanie.h \
     Macros.h \
     MainWindow.h \
-    NowyKlient.h \
     SzukajKlienta.h \
     SzukajOferty.h \
     User.h \
@@ -86,20 +85,21 @@ HEADERS += \
     MerchendiseSelectionDelegate.h \
     MerchandiseListDelegate.h \
     MerchandiseListModel.h \
-    NowyTowar.h
+    NowyTowar.h \
+    CustomerNew.h
 
 FORMS += \
     EdycjaKlienta.ui \
     LoadDialog.ui \
     Logowanie.ui \
     MainWindow.ui \
-    NowyKlient.ui \
     SzukajKlienta.ui \
     SzukajOferty.ui \
     WyborKlienta.ui \
     EdycjaKombo.ui \
     MerchandiseSearch.ui \
-    NowyTowar.ui
+    NowyTowar.ui \
+    CustomerNew.ui
 
 SOURCES += \
     Database.cpp \
@@ -108,7 +108,6 @@ SOURCES += \
     Logowanie.cpp \
     Main.cpp \
     MainWindow.cpp \
-    NowyKlient.cpp \
     SzukajKlienta.cpp \
     SzukajOferty.cpp \
     User.cpp \
@@ -123,7 +122,8 @@ SOURCES += \
     MerchendiseSelectionDelegate.cpp \
     MerchandiseListDelegate.cpp \
     MerchandiseListModel.cpp \
-    NowyTowar.cpp
+    NowyTowar.cpp \
+    CustomerNew.cpp
 
 RESOURCES += res/zasoby.qrc
 

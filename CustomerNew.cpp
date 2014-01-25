@@ -16,26 +16,26 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#include "NowyKlient.h"
-#include "ui_NowyKlient.h"
+#include "CustomerNew.h"
+#include "ui_CustomerNew.h"
 #include "Database.h"
 
 
-NowyKlient::NowyKlient(QWidget *parent) :
+CustomerNew::CustomerNew(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::NowyKlient)
+    ui(new Ui::CustomerNew)
 {
     ui->setupUi(this);
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(acc()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(close()));
 }
 
-NowyKlient::~NowyKlient()
+CustomerNew::~CustomerNew()
 {
     delete ui;
 }
 
-void NowyKlient::acc(){
+void CustomerNew::acc(){
     QString adres = ui->adres->toPlainText();
     adres.replace("\n", "<br>\n");
     insert_klient(ui->skrocona->text(), ui->pelna->text(), ui->tytul->text(), ui->imie->text(), ui->nazwisko->text(), adres);
