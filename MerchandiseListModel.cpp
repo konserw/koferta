@@ -389,7 +389,7 @@ QString MerchandiseListModel::print(const int w, bool kod, bool towar, bool ilos
 
     doc += "\t<tr>\n";
     doc += QString("\t\t<td align = right colspan=%1>Razem %2:</td>\n").arg(kolumn-1).arg(waluta);
-    doc += QString("\t\t<td align = right>%1</td>\n").arg(przeliczSume());
+    doc += QString("\t\t<td align = right>%1</td>\n").arg(przeliczSume(), 0, 'f', 2);
     doc += "\t</tr>\n";
     doc += "\t</table>\n";
 
