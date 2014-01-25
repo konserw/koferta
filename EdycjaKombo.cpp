@@ -11,10 +11,7 @@ EdycjaKombo::EdycjaKombo(const QString &typ, QWidget *parent) :
     m_typ = typ;
 
     this->setWindowTitle(tr("Nowa opcja w menu %1").arg(m_typ));
-
     ui->label_typ->setText(tr("Dodaj nową opcję dla pola %1").arg(m_typ));
-    ui->label_short->setText(tr("Tekst widoczny w menu rozwijalnym:"));
-    ui->label_long->setText(tr("Drukowany tekst:"));
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
 //    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(close()));

@@ -119,7 +119,13 @@ SOURCES += \
     OfferSearch.cpp \
     CustomerSelection.cpp
 
-RESOURCES += res/zasoby.qrc
+RESOURCES += \
+    res/zasoby.qrc
+
+TRANSLATIONS = \
+    kOferta_pl.ts \
+    kOferta_en.ts \
+    kOferta_de.ts
 
 OTHER_FILES += \
     LICENSE.md \

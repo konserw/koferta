@@ -18,31 +18,44 @@
 #include <QtDebug>
 #include <QApplication>
 #include <QTextCodec>
+#include <QTranslator>
 #include <exception>
+
 #include "functions.h"
 #include "Logger.h"
 #include "MainWindow.h"
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QApplication app(argc, argv);
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
-//#ifndef QT_NO_DEBUG_OUTPUT
     if(Logger::instance()->setFilePath(filePath(".log")))
         qInstallMessageHandler(Logger::logHandler);
     else
         qWarning() << "Unable to create log file! Logging to std::cerr.";
-//#endif
+
+    qDebug() << "loading translation files";
+/*
+    QTranslator qtTranslator;
+    qtTranslator.load("qt" + QLocale::system().name());
+    app.installTranslator(&qtTranslator);
+*/
+    QString translationFile = QString("kOferta_%1").arg(QLocale::system().name());
+    QTranslator myappTranslator;
+    if(myappTranslator.load(translationFile))
+        app.installTranslator(&myappTranslator);
+    else
+        qWarning() << "could not load translations from file" << translationFile;
 
     MainWindow w;
     w.showMaximized();
 
-    qDebug() << "wchodzę do głównej pętli";
+    qDebug() << "launching application";
 
     try
     {
-        return a.exec();
+        return app.exec();
     }
     catch (std::exception& e)
     {
@@ -52,4 +65,5 @@ int main(int argc, char *argv[])
     {
         qCritical() << "[Mainwindow] Unknown exception";
     }
+    return 1;
 }
