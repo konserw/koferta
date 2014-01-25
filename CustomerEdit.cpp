@@ -16,22 +16,22 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#include "EdycjaKlienta.h"
-#include "ui_EdycjaKlienta.h"
+#include "CustomerEdit.h"
+#include "ui_CustomerEdit.h"
 
 #include <QSqlQuery>
 #include <QString>
 #include <QtSql>
 #include "Macros.h"
 
-EdycjaKlienta::~EdycjaKlienta()
+CustomerEdit::~CustomerEdit()
 {
     delete ui;
 }
 
-EdycjaKlienta::EdycjaKlienta(QWidget *parent) :
+CustomerEdit::CustomerEdit(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::EdycjaKlienta)
+    ui(new Ui::CustomerEdit)
 {
     DEBUG << "konstruktor";
 
@@ -43,7 +43,7 @@ EdycjaKlienta::EdycjaKlienta(QWidget *parent) :
     connect(ui->del, SIGNAL(clicked()), this, SLOT(del()));
 }
 
-void EdycjaKlienta::change(const QSqlRecord& rec)
+void CustomerEdit::change(const QSqlRecord& rec)
 {
     QString s;
     id = rec.value("id").toString();
@@ -59,7 +59,7 @@ void EdycjaKlienta::change(const QSqlRecord& rec)
 }
 
 
-void EdycjaKlienta::app()
+void CustomerEdit::app()
 {
     if(id == 0) return;
 
@@ -86,7 +86,7 @@ void EdycjaKlienta::app()
     EXEC(s);
 }
 
-void EdycjaKlienta::del()
+void CustomerEdit::del()
 {
     if(QMessageBox::warning(this, "Usuń klienta", "Czy na pewno chcesz usunąć tego klienta z bazy danych?", QMessageBox::Ok, QMessageBox::Cancel)==QMessageBox::Cancel)
         return;

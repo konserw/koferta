@@ -31,7 +31,7 @@
 #include <QTimer>
 #include "CustomerNew.h"
 #include "Database.h"
-#include "EdycjaKlienta.h"
+#include "CustomerEdit.h"
 #include "WyborKlienta.h"
 #include "Logowanie.h"
 #include "LoadDialog.h"
@@ -614,7 +614,7 @@ void MainWindow::dodajKlient()
 
 void MainWindow::edytujKlient()
 {
-    EdycjaKlienta* okno = new EdycjaKlienta(this);
+    CustomerEdit* okno = new CustomerEdit(this);
     okno->exec();
     delete okno;
 }

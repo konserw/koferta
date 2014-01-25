@@ -24,16 +24,16 @@
 class QSqlRecord;
 
 namespace Ui {
-    class EdycjaKlienta;
+    class CustomerEdit;
 }
 
-class EdycjaKlienta : public QDialog
+class CustomerEdit : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit EdycjaKlienta(QWidget *parent = 0);
-    ~EdycjaKlienta();
+    explicit CustomerEdit(QWidget *parent = 0);
+    ~CustomerEdit();
 
 public slots:
     void app();
@@ -41,7 +41,7 @@ public slots:
     void del();
 
 private:
-    Ui::EdycjaKlienta *ui;
+    Ui::CustomerEdit *ui;
     QString id;
 };
 

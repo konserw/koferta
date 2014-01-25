@@ -65,7 +65,6 @@ DEPENDPATH += . res
 
 HEADERS += \
     Database.h \
-    EdycjaKlienta.h \
     LoadDialog.h \
     Logowanie.h \
     Macros.h \
@@ -86,10 +85,10 @@ HEADERS += \
     MerchandiseListDelegate.h \
     MerchandiseListModel.h \
     NowyTowar.h \
-    CustomerNew.h
+    CustomerNew.h \
+    CustomerEdit.h
 
 FORMS += \
-    EdycjaKlienta.ui \
     LoadDialog.ui \
     Logowanie.ui \
     MainWindow.ui \
@@ -99,11 +98,11 @@ FORMS += \
     EdycjaKombo.ui \
     MerchandiseSearch.ui \
     NowyTowar.ui \
-    CustomerNew.ui
+    CustomerNew.ui \
+    CustomerEdit.ui
 
 SOURCES += \
     Database.cpp \
-    EdycjaKlienta.cpp \
     LoadDialog.cpp \
     Logowanie.cpp \
     Main.cpp \
@@ -123,7 +122,8 @@ SOURCES += \
     MerchandiseListDelegate.cpp \
     MerchandiseListModel.cpp \
     NowyTowar.cpp \
-    CustomerNew.cpp
+    CustomerNew.cpp \
+    CustomerEdit.cpp
 
 RESOURCES += res/zasoby.qrc
 
