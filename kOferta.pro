@@ -51,7 +51,8 @@ win32 {
     DEFINES += QT_NO_DEBUG_OUTPUT
 
     #INCLUDEPATH += "C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/include"
- #   LIBS += -L"C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/lib" -llibmysql
+    #LIBS += -L"C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/lib" -llibmysql
+    LIBS += -L"C:/Program Files (x86)/MySQL/MySQL Connector C 6.1/lib" -llibmysql
 }
 
 unix {
