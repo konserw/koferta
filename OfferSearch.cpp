@@ -51,7 +51,7 @@ OfferSearch::OfferSearch(QWidget *parent) :
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableView->setSortingEnabled(true);
-    ui->tableView->sortByColumn(2, Qt::DescendingOrder);
+    ui->tableView->sortByColumn(1, Qt::DescendingOrder);
 
     connect(ui->tableView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(select(const QModelIndex&)));
     connect(ui->lineEdit_Id, SIGNAL(textEdited(QString)), this, SLOT(refId(const QString&)));
