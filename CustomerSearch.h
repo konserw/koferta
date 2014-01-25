@@ -21,21 +21,23 @@
 
 #include <QWidget>
 
+QT_BEGIN_NAMESPACE
 class QSqlTableModel;
 class QSqlRecord;
 class QModelIndex;
+class QVBoxLayout;
+class QRadioButton;
+class QLineEdit;
+class QTableView;
+QT_END_NAMESPACE
 
-namespace Ui {
-    class SzukajKlienta;
-}
-
-class SzukajKlienta : public QWidget
+class CustomerSearch : public QWidget
 {
     Q_OBJECT
     
 public:
-    explicit SzukajKlienta(QWidget *parent = 0);
-    ~SzukajKlienta();
+    explicit CustomerSearch(QWidget *parent = 0);
+    ~CustomerSearch();
 
 public slots:
     void ref(const QString&);
@@ -47,8 +49,16 @@ signals:
 
 private:
     QSqlTableModel* model;
-    Ui::SzukajKlienta *ui;
-    int id;
+
+    //ui
+    void setupUi();
+    void retranslateUi();
+
+    QVBoxLayout *verticalLayout;
+    QRadioButton *radioButton_nazwa;
+    QRadioButton *radioButton_nazwisko;
+    QLineEdit *lineEdit;
+    QTableView *tableView;
 };
 
 #endif // SZUKAJKLIENTA_H

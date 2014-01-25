@@ -69,7 +69,6 @@ HEADERS += \
     Logowanie.h \
     Macros.h \
     MainWindow.h \
-    SzukajKlienta.h \
     SzukajOferty.h \
     User.h \
     WyborKlienta.h \
@@ -86,13 +85,13 @@ HEADERS += \
     MerchandiseListModel.h \
     CustomerNew.h \
     CustomerEdit.h \
-    MerchandiseNew.h
+    MerchandiseNew.h \
+    CustomerSearch.h
 
 FORMS += \
     LoadDialog.ui \
     Logowanie.ui \
     MainWindow.ui \
-    SzukajKlienta.ui \
     SzukajOferty.ui \
     WyborKlienta.ui \
     EdycjaKombo.ui \
@@ -107,7 +106,6 @@ SOURCES += \
     Logowanie.cpp \
     Main.cpp \
     MainWindow.cpp \
-    SzukajKlienta.cpp \
     SzukajOferty.cpp \
     User.cpp \
     WyborKlienta.cpp \
@@ -123,7 +121,8 @@ SOURCES += \
     MerchandiseListModel.cpp \
     CustomerNew.cpp \
     CustomerEdit.cpp \
-    MerchandiseNew.cpp
+    MerchandiseNew.cpp \
+    CustomerSearch.cpp
 
 RESOURCES += res/zasoby.qrc
 
