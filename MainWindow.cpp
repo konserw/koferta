@@ -34,15 +34,15 @@
 #include "ui_MainWindow.h"
 
 #include "Database.h"
-#include "WyborKlienta.h"
 #include "Logowanie.h"
 #include "LoadDialog.h"
 #include "User.h"
 #include "Macros.h"
 #include "EdycjaKombo.h"
 
-#include "CustomerEdit.h"
 #include "CustomerNew.h"
+#include "CustomerEdit.h"
+#include "CustomerSelection.h"
 
 #include "Merchandise.h"
 #include "MerchandiseNew.h"
@@ -417,7 +417,7 @@ void MainWindow::checkData(bool ch)
 
 void MainWindow::popWyborKlienta()
 {
-    WyborKlienta* pop = new WyborKlienta(this);
+    CustomerSelection* pop = new CustomerSelection(this);
     QObject::connect(pop, SIGNAL(selectionChanged(QSqlRecord)), this, SLOT(clientChanged(QSqlRecord)));
     pop->exec();
     delete pop;

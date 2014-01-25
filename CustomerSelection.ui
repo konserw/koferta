@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>WyborKlienta</class>
- <widget class="QDialog" name="WyborKlienta">
+ <class>CustomerSelection</class>
+ <widget class="QDialog" name="CustomerSelection">
   <property name="geometry">
    <rect>
     <x>0</x>

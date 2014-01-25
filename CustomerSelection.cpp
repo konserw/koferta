@@ -1,7 +1,4 @@
 /**
-  Dialog cWyborKlienta umożliwiający wybór klienta z bazy dla którego adresowana jest oferta
-  **/
-/**
     kOferta - system usprawniajacy proces ofertowania
     Copyright (C) 2011  Kamil 'konserw' Strzempowicz, konserw@gmail.com
 
@@ -19,30 +16,26 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef KLIENT_H
-#define KLIENT_H
+#include "CustomerSelection.h"
+#include "ui_CustomerSelection.h"
 
-#include <QDialog>
-class QSqlRecord;
+#include <QSqlQuery>
+#include "Macros.h"
 
-namespace Ui {
-    class WyborKlienta;
+
+CustomerSelection::CustomerSelection(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::CustomerSelection)
+{
+    ui->setupUi(this);
+
+    ui->pushButton_exit->setText(tr("Zakończ"));
+
+    connect(ui->pushButton_exit, SIGNAL(clicked()), this, SLOT(close()));
+    connect(ui->widget, SIGNAL(selectionChanged(QSqlRecord)), this, SIGNAL(selectionChanged(QSqlRecord)));
 }
 
-class WyborKlienta : public QDialog
+CustomerSelection::~CustomerSelection()
 {
-    Q_OBJECT
-
-public:
-    explicit WyborKlienta(QWidget *parent = 0);         //inicjacja ui
-    ~WyborKlienta();
-
-signals:
-    void selectionChanged(const QSqlRecord&);           //sygnał przekazujący wybranego lienta do MainWindow
-
-private:
-    Ui::WyborKlienta *ui;
-};
-
-#endif // KLIENT_H
-
+    delete ui;
+}
