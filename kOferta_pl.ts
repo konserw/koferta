@@ -415,7 +415,7 @@ Nastąpi zamknięcie programu.</source>
     <message>
         <location filename="MainWindow.ui" line="642"/>
         <source>Export</source>
-        <translation type="unfinished"></translation>
+        <translation>Druk</translation>
     </message>
     <message>
         <location filename="MainWindow.ui" line="650"/>
