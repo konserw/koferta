@@ -9,9 +9,9 @@ class MerchandiseSelectionModel : public MerchandiseSearchModel
     Q_OBJECT
 
 public:  
-    MerchandiseSelectionModel(const QHash<int, double>& hash =  QHash<int, double>(), QObject *parent = nullptr);
+    MerchandiseSelectionModel(const QHash<int, double>& hash, QObject *parent = nullptr);
 
-    virtual int columnCount();
+    virtual int columnCount(const QModelIndex &) const;
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 
     virtual bool setData(const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);

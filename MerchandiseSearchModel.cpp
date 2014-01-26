@@ -29,7 +29,7 @@ bool MerchandiseSearchModel::filterAcceptsRow(int sourceRow, const QModelIndex &
     return (QDate::currentDate() > from) && (QDate::currentDate() < to);
 }
 
-int MerchandiseSearchModel::columnCount()
+int MerchandiseSearchModel::columnCount(const QModelIndex &/*index*/) const
 {
     return 4;
 }

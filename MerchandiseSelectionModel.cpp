@@ -7,7 +7,7 @@ MerchandiseSelectionModel::MerchandiseSelectionModel(const QHash<int, double> &h
 {
 }
 
-int MerchandiseSelectionModel::columnCount()
+int MerchandiseSelectionModel::columnCount(const QModelIndex &) const
 {
     return 5;
 }

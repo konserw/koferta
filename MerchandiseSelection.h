@@ -33,7 +33,7 @@ class MerchandiseSelection : public MerchandiseSearch
     Q_OBJECT
     
 public:
-    explicit MerchandiseSelection(const QHash<int, double>& hash = QHash<int, double>(), QWidget *parent = 0);
+    explicit MerchandiseSelection(const QHash<int, double>& hash, QWidget *parent = 0);
     ~MerchandiseSelection();
 
 signals:

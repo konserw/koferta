@@ -98,7 +98,7 @@ void Database::setupInitialConnection()
 }
 
 Database::Database(QObject* parent) :
-    QObject(parent), m_usersTable(nullptr), m_initialConnection(nullptr)
+    QObject(parent), m_initialConnection(nullptr), m_usersTable(nullptr)
 {  
 }
 

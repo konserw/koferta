@@ -28,7 +28,6 @@ TEMPLATE = app
 
 DEFINES += VER=2.4
 DEFINES += ADMIN_PASS=\\\"\\\"
-DEFINES += RELEASE
 DEFINES += NOSSL
 
 win32 {
@@ -41,7 +40,8 @@ win32 {
 
     CONFIG += qt windows #release
 
-    DEFINES += WIN32    
+    DEFINES += RELEASE
+    DEFINES += WIN32
     DEFINES += QT_NO_DEBUG_OUTPUT
 
     #LIBS += -L"C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x86" -lUser32 -lAdvAPI32
@@ -52,8 +52,8 @@ win32 {
 }
 
 unix {
-    QMAKE_CXXFLAGS += -Wall -Werror -Wextra
-    LIBS += -L/usr/lib/mysql -lmysqlclient
+    QMAKE_CXXFLAGS += -Werror
+    LIBS += -L/lib64/mysql -lmysqlclient
 }
 
 DEPENDPATH += . res 

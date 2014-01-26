@@ -12,7 +12,7 @@ public:
     virtual bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
     virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
 
-    virtual int columnCount();
+    virtual int columnCount(const QModelIndex &/*index*/) const;
    // virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
