@@ -420,15 +420,17 @@ void MerchandiseListModel::save(const QString &offerId)
 
     if(model.submitAll())
     {
-        model.database().commit();
+        db.commit();
         qDebug() << "savedMerchandise table row count:" << model.rowCount();
     }
     else
     {
-        model.database().rollback();
+        db.rollback();
         QString error = model.lastError().text();
-        qCritical() << "Database Write Error:" << error;
-        QMessageBox::critical(nullptr, tr("Błąd"), tr("Wystąpił nastepujący bład podczas zapisu oferty do bazy danych:\n%1").arg(error));
+        QString error2 = deleteQuery.lastError().text();
+        qCritical() << "Database delete error:" << error2;
+        qCritical() << "Database write error:" << error;
+        QMessageBox::critical(nullptr, tr("Błąd"), tr("Wystąpił nastepujący bład podczas zapisu oferty do bazy danych:\n%1\n%2").arg(error2).arg(error));
 
     }
 }
