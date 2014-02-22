@@ -709,28 +709,31 @@ void MainWindow::makeDocument(QString *sDoc)
         klient = new QSqlRecord;
 
     const int w = 745;                           //szerokosc szkieletu dokumentu
-    const int d = (w-5)/2;                       //szerokość kolumny w szkielecie
+    //const int d = (w-5)/2;                       //szerokość kolumny w szkielecie
+    const int dd = 225;
     const int dw = 140;                          //szerokosc pierwszej kolumny w szkielecie poniżej tabeli
 
-    *sDoc = "<html>\n"
-            "<head>\n"
-            "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head>\n"
-            "<title>Oferta</title>\n"
-            "</head>\n"
-            "<body>\n"
-            "<table cellspacing=3>\n"
-/*NAGŁÓWEK*/
-            "<thead>\n"
-            "<tr><td>\n"
-            "\t<table>\n"
-            "\t<tr>\n"
-            "\t\t<td colspan=3><hr width=100%></td>\n"
-            "\t</tr>\n"
-            "\t<tr>\n"
-            "\t\t<td valign=top width=";
-    *sDoc += QString::number(d);
-    *sDoc += ">\n"
-             "\t\t\tNumer oferty: <font size=4>";
+    *sDoc = QString(
+                "<html>\n"
+                "<head>\n"
+                "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head>\n"
+                "<title>Oferta</title>\n"
+                "</head>\n"
+                "<body>\n"
+                "<table cellspacing=3>\n"
+    /*NAGŁÓWEK*/
+                "<thead>\n"
+                "<tr><td>\n"
+                "\t<table>\n"
+           /* pozioma linia na gorze
+                "\t<tr>\n"
+                "\t\t<td colspan=3><hr width=100%></td>\n"
+                "\t</tr>\n"
+           */
+                "\t<tr>\n"
+                "\t\t<td valign=top width=%1>\n"
+                "\t\t\tNumer oferty: <font size=4>"
+                ).arg(dd);
     *sDoc += *nr_oferty;
     *sDoc += "</font><br>\n"
              "\t\t\tData oferty: ";
@@ -757,29 +760,43 @@ void MainWindow::makeDocument(QString *sDoc)
              "\t\t\t<br />\n"
              "\t\t</td>\n";
 /*OD*/
-    *sDoc += "\t\t<td width=";
-    *sDoc += QString::number(d);
-    *sDoc += ">\n"
-             "\t\t\t";
-    if(htm)
-        *sDoc += "<img src=logo.png align=center><br>\n";
-    else
-        *sDoc += "<img src=:/logo align=center><br>\n";
+    *sDoc += QString("\t\t<td width=%1>\n").arg(w-dd);
 
-    *sDoc += "\t\t\t<b>Marley Polska Sp. z o.o.</b><br>\n"
-             "\t\t\tul. Dąbrówki 6<br>\n"
-             "\t\t\t03-909 Warszawa<br>\n"
-             "\t\t\t<br>\n"
-             "\t\t\t";
+    *sDoc += QString("\t\t\t<img src=%1 halign=left valign=top width=%2><br>\n")
+            .arg(htm ? "logo2.png" : ":/logo2")
+            .arg(w-dd);
+
+    *sDoc += "\t\t\t<table><tr>\n"
+             "\t\t\t\t<td width=33%>\n"
+             "\t\t\t\t\t<b>Marley Polska Sp. z o.o.</b><br>\n"
+             "\t\t\t\t\tul. Dąbrówki 6<br>\n"
+             "\t\t\t\t\t03-909 Warszawa<br>\n"
+             "\t\t\t\t</td>\n"
+             "\t\t\t\t<td width=33%>\n";
+           //  "\t\t\t\t\t";
     /*adres bióra*/
-    *sDoc += m_currentUser->adress().replace("\n", "\n\t\t\t");
-    *sDoc += m_currentUser->mail();
-    *sDoc += "\n"
+    *sDoc += m_currentUser->adress();//.replace("\n", "\n\t\t\t\t\t");
+    *sDoc += QString(
+                "\t\t\t\t</td>\n"
+                "\t\t\t\t<td width=33%>\n"
+                "\t\t\t\t\t%1<br />\n"
+                "\t\t\t\t\t%2<br />\n"
+                )
+            .arg(m_currentUser->name())
+            .arg(m_currentUser->mail());
+    if(m_currentUser->hasPhone())
+        *sDoc += QString("\t\t\t\t\t%3<\n")
+                .arg(m_currentUser->phone());
+
+    *sDoc += "\t\t\t\t</td>\n"
+             "\t\t\t</tr></table>\n"
              "\t\t</td>\n"
              "\t</tr>\n"
+         /* pozioma linia na dole
              "\t<tr>\n"
              "\t\t<td colspan=3><hr width=100%></td>\n"
              "\t</tr>\n"
+            */
              "\t</table>\n"
              "</td></tr>\n"
              "</thead>\n"
@@ -792,7 +809,7 @@ void MainWindow::makeDocument(QString *sDoc)
              "</td></tr>\n"
              "<tr><td>\n";
  //tabela
-    *sDoc += "\t<font face=\"Arial Narrow\" size=2>\n";   
+    *sDoc += "\t<font face=\"Arial Narrow\" size=10pt>\n";
     *sDoc += m_towarModel->print(w,
                                  ui->kol_kod->isChecked(),
                                  ui->kol_towar->isChecked(),

@@ -31,7 +31,7 @@ class User
 {
 public:
     ///konstruktor parametryczny inicjujący wszystkie pola
-    User(int uid, QString name, QString mail, QString adress, bool male, int nrOferty);
+    User(int uid, QString name, QString phone, QString mail, QString adress, bool male, int nrOferty);
     ///konstruktor kopiujący
     User(const User& u);
 
@@ -39,6 +39,10 @@ public:
 
     ///zwraca imię i nazwisko użytkownika - widoczne przy logowaniu i w tworzoych dokumentach
     QString name()const;
+    ///returns true if user has phone number
+    bool hasPhone() const;
+    ///zwraca nr telefonu
+    QString phone()const;
     ///zwraca adres email użytkownika
     QString mail()const;
     ///zwraca adres bióra użytkownika w formacie htm
@@ -56,6 +60,7 @@ public:
 
 private:
     QString* _name;
+    QString* m_phone;
     QString* _mail;
     QString* _adress;
     bool _male;

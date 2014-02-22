@@ -27,19 +27,21 @@ User::User(const User &u)
 {
     _name = new QString(u.name());
     _mail = new QString(u.mail());
+    m_phone = new QString(u.phone());
     _adress = new QString(u.adress());
     _male = u._male;
     _nrOferty = u._nrOferty;
     _uid = u._uid;
 }
 
-User::User(int uid, QString name, QString mail, QString adress, bool male, int nrOferty)
+User::User(int uid, QString name, QString phone, QString mail, QString adress, bool male, int nrOferty)
 {
-    qDebug() << "new user:" << uid << name << mail << adress << male << nrOferty;
+    qDebug() << "new user:" << uid << name << phone << mail << adress << male << nrOferty;
 
     _uid = uid;
     _name = new QString(name);
     _mail = new QString(mail);
+    m_phone = new QString(phone);
     _adress = new QString(adress);
     _male = male;
     _nrOferty = nrOferty;
@@ -48,6 +50,7 @@ User::User(int uid, QString name, QString mail, QString adress, bool male, int n
 User::~User()
 {
     delete _name;
+    delete m_phone;
     delete _mail;
     delete _adress;
 }
@@ -86,6 +89,16 @@ bool User::male() const
 QString User::name() const
 {
     return *_name;
+}
+
+bool User::hasPhone() const
+{
+    return !(m_phone->isEmpty());
+}
+
+QString User::phone() const
+{
+    return *m_phone;
 }
 
 int User::uid() const

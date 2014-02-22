@@ -350,20 +350,20 @@ QString MerchandiseListModel::print(const int w, bool kod, bool towar, bool ilos
     QString doc;
     doc = QString("\t<table cellspacing=3>\n"
             "\t<thead><tr>\n"
-            "\t\t<td width=%1>LP</td>\n").arg(z[0]);
+            "\t\t<td width=%1><b>%2</b></td>\n").arg(z[0]).arg("Lp.");
     if(kod)
-        doc += QString("\t\t<td width=%1>Kod</td>\n").arg(z[1]);
+        doc += QString("\t\t<td width=%1><b>%2</b></td>\n").arg(z[1]).arg("Kod");
     if(towar)
-        doc += QString("\t\t<td width=%1>Specyfikacja</td>\n").arg(z[2]);
+        doc += QString("\t\t<td width=%1><b>%2</b></td>\n").arg(z[2]).arg("Specyfikacja");
     if(ilosc)
-        doc += QString("\t\t<td width=%1 align = right>Ilość</td>\n").arg(z[6]);
+        doc += QString("\t\t<td width=%1 align = right><b>%2</b></td>\n").arg(z[6]).arg("Ilość");
     if(cenaKat)
-        doc += QString("\t\t<td width=%1 align = right>Cena kat. %2</td>\n").arg(z[3]).arg(waluta);
+        doc += QString("\t\t<td width=%1 align = right><b>%3 %2</b></td>\n").arg(z[3]).arg(waluta).arg("Cena kat.");
     if(rabat)
-        doc += QString("\t\t<td width=%1 align = right>Rabat</td>\n").arg(z[4]);
+        doc += QString("\t\t<td width=%1 align = right><b>%2</b></td>\n").arg(z[4]).arg("Rabat");
     if(cena)
-        doc += QString("\t\t<td width=%1 align = right>Cena %2</td>\n").arg(z[5]).arg(waluta);
-    doc += QString("\t\t<td width=%1 align = right>Wartosc %2</td>\n").arg(z[7]).arg(waluta);
+        doc += QString("\t\t<td width=%1 align = right><b>%3 %2</b></td>\n").arg(z[5]).arg(waluta).arg("Cena");
+    doc += QString("\t\t<td width=%1 align = right><b>%3 %2</b></td>\n").arg(z[7]).arg(waluta).arg("Wartość");
     doc += "\t</tr></thead>\n";
 
     for(uint i=0; i<rows; ++i)
@@ -398,6 +398,12 @@ QString MerchandiseListModel::print(const int w, bool kod, bool towar, bool ilos
 
 void MerchandiseListModel::save(const QString &offerId)
 {
+    QSqlDatabase db;
+    db.transaction();
+
+    QSqlQuery deleteQuery;
+    deleteQuery.exec(QString("delete from savedOfferMerchandise where nr_oferty = '%1'").arg(offerId));
+
     QSqlTableModel model;
     model.setTable("savedOffersMerchandise");
     model.setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -405,7 +411,6 @@ void MerchandiseListModel::save(const QString &offerId)
 
     qDebug() << "savedMerchandise table row count:" << model.rowCount();
 
-    model.database().transaction();
     Merchandise* merch;
     foreach(merch, m_list)
     {
