@@ -398,15 +398,29 @@ QString MerchandiseListModel::print(const int w, bool kod, bool towar, bool ilos
 
 void MerchandiseListModel::save(const QString &offerId)
 {
+    QString error;
     QSqlDatabase db;
     db.transaction();
-
-    QSqlQuery deleteQuery;
-    deleteQuery.exec(QString("delete from savedOfferMerchandise where nr_oferty = '%1'").arg(offerId));
 
     QSqlTableModel model;
     model.setTable("savedOffersMerchandise");
     model.setEditStrategy(QSqlTableModel::OnManualSubmit);
+    model.select();
+
+    qDebug() << "savedMerchandise table row count:" << model.rowCount();
+
+    QSqlQuery deleteQuery;
+    if(!deleteQuery.exec(QString("DELETE FROM savedOffersMerchandise WHERE nr_oferty = '%1'").arg(offerId)))
+    {
+        error = deleteQuery.lastError().text();
+        qWarning() << "Delete query execution failed!";
+        qDebug() << "Query string:" << deleteQuery.lastQuery();
+        qDebug() << "Error string:" << error;
+        db.rollback();
+        QMessageBox::critical(nullptr, tr("Błąd"), tr("Wystąpił nastepujący bład podczas zapisu oferty do bazy danych:\n%1").arg(error));
+        return;
+    }
+
     model.select();
 
     qDebug() << "savedMerchandise table row count:" << model.rowCount();
@@ -430,13 +444,10 @@ void MerchandiseListModel::save(const QString &offerId)
     }
     else
     {
+        error = model.lastError().text();
+        qWarning() << "Database delete error:" << error;
         db.rollback();
-        QString error = model.lastError().text();
-        QString error2 = deleteQuery.lastError().text();
-        qCritical() << "Database delete error:" << error2;
-        qCritical() << "Database write error:" << error;
-        QMessageBox::critical(nullptr, tr("Błąd"), tr("Wystąpił nastepujący bład podczas zapisu oferty do bazy danych:\n%1\n%2").arg(error2).arg(error));
-
+        QMessageBox::critical(nullptr, tr("Błąd"), tr("Wystąpił nastepujący bład podczas zapisu oferty do bazy danych:\n%1").arg(error));
     }
 }
 
