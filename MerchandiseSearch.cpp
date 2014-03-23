@@ -50,7 +50,6 @@ MerchandiseSearch::MerchandiseSearch(MerchandiseSearchModel* model, QWidget *par
 MerchandiseSearch::~MerchandiseSearch()
 {
     delete ui;
-  //  delete m_model;
 }
 
 void MerchandiseSearch::ref2()
@@ -59,14 +58,7 @@ void MerchandiseSearch::ref2()
 }
 
 void MerchandiseSearch::ref(const QString & in)
-{/*
-    QString s;
-    if(ui->radioButton_id->isChecked())
-        s = "id like '";
-    else
-        s = "nazwa like '";
-    s += in;
-    s += "%'";
-    */
-    m_model->setFilter(QString("%1 like '%2%'").arg(ui->radioButton_id->isChecked() ? "code" : "desc").arg(in));
+{
+    static const QString filter("%1 like '%2%'");
+    m_model->setFilter(filter.arg(ui->radioButton_id->isChecked() ? "code" : "kOferta.merchandise.desc").arg(in));
 }

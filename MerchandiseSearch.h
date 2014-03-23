@@ -38,13 +38,9 @@ public:
     explicit MerchandiseSearch(MerchandiseSearchModel *model, QWidget *parent = 0);
     virtual ~MerchandiseSearch() = 0;
 
-public slots:
-   // virtual void select(const QModelIndex &) = 0;
-
 private slots:
     void ref(const QString&);
     void ref2();
-  //  void currentRowChanged(const QModelIndex&, const QModelIndex &);
 
 protected:
     MerchandiseSearchModel* m_model;
