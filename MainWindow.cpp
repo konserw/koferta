@@ -709,8 +709,7 @@ void MainWindow::makeDocument(QString *sDoc)
         klient = new QSqlRecord;
 
     const int w = 745;                           //szerokosc szkieletu dokumentu
-    //const int d = (w-5)/2;                       //szerokość kolumny w szkielecie
-    const int dd = 225;
+    const int dd = 248;
     const int dw = 140;                          //szerokosc pierwszej kolumny w szkielecie poniżej tabeli
 
     *sDoc = QString(
@@ -720,83 +719,70 @@ void MainWindow::makeDocument(QString *sDoc)
                 "<title>Oferta</title>\n"
                 "</head>\n"
                 "<body>\n"
-                "<table cellspacing=3>\n"
+                "<table >\n" //cellspacing=1
     /*NAGŁÓWEK*/
                 "<thead>\n"
                 "<tr><td>\n"
                 "\t<table>\n"
-           /* pozioma linia na gorze
                 "\t<tr>\n"
-                "\t\t<td colspan=3><hr width=100%></td>\n"
+   //logo
+                "\t\t<td colspan=3>\n"
+                "\t\t\t<img src=%1 halign=left valign=top ><br>\n" //width=%2
+                "\t\t</td>\n"
                 "\t</tr>\n"
-           */
+    //adresy itp
                 "\t<tr>\n"
-                "\t\t<td valign=top width=%1>\n"
-                "\t\t\tNumer oferty: <font size=4>"
-                ).arg(dd);
-    *sDoc += *nr_oferty;
-    *sDoc += "</font><br>\n"
-             "\t\t\tData oferty: ";
-    *sDoc += *data;
-    *sDoc += "\n"
-             "\t\t\t<hr width=100%>\n"
-             "\t\t\tDla:<br>\n"
-             "\t\t\t";
-    *sDoc += klient->value("full").toString();
-    *sDoc += "<br>\n"
-             "\t\t\t";
-    *sDoc += klient->value("adres").toString();
-    *sDoc += "<br>\n"
-             "\t\t\t";
-    *sDoc += klient->value("tytul").toString();
-    *sDoc += " ";
-    *sDoc += klient->value("imie").toString();
-    *sDoc += " ";
-    *sDoc += klient->value("nazwisko").toString();
-    *sDoc += "\n"
-             "\t\t</td>\n";
-/*linia pionowa*/
-    *sDoc += "\t\t<td width=1 bgcolor=#000000>\n"
-             "\t\t\t<br />\n"
-             "\t\t</td>\n";
-/*OD*/
-    *sDoc += QString("\t\t<td width=%1>\n").arg(w-dd);
-
-    *sDoc += QString("\t\t\t<img src=%1 halign=left valign=top width=%2><br>\n")
-            .arg(htm ? "logo2.png" : ":/logo2")
-            .arg(w-dd);
-
-    *sDoc += "\t\t\t<table><tr>\n"
-             "\t\t\t\t<td width=33%>\n"
-             "\t\t\t\t\t<b>Marley Polska Sp. z o.o.</b><br>\n"
-             "\t\t\t\t\tul. Dąbrówki 6<br>\n"
-             "\t\t\t\t\t03-909 Warszawa<br>\n"
-             "\t\t\t\t</td>\n"
-             "\t\t\t\t<td width=33%>\n";
-           //  "\t\t\t\t\t";
-    /*adres bióra*/
-    *sDoc += m_currentUser->adress();//.replace("\n", "\n\t\t\t\t\t");
-    *sDoc += QString(
-                "\t\t\t\t</td>\n"
-                "\t\t\t\t<td width=33%>\n"
-                "\t\t\t\t\t%1<br />\n"
-                "\t\t\t\t\t%2<br />\n"
+                "\t\t<td valign=top width=%3>\n"
+                "\t\t\tOferta nr: <b> %4 </b><br />\n"
+                "\t\t\tZ dnia: %5 <br />\n"
+                "\t\t\tDla:<br />\n"
+                "\t\t\t<b> %6 </b><br />\n"
+                "\t\t\t%7 <br>\n"
+                "\t\t\t%8 %9 %10 \n"
+                "\t\t</td>\n"
                 )
+            .arg(htm ? "logo2.png" : ":/logo2")
+      //      .arg(w)
+            .arg(dd)
+            .arg(*nr_oferty)
+            .arg(*data)
+            .arg(klient->value("full").toString())
+            .arg(klient->value("adres").toString())
+            .arg(klient->value("tytul").toString())
+            .arg(klient->value("imie").toString())
+            .arg(klient->value("nazwisko").toString());
+
+    *sDoc += QString(
+                "\t\t<td width=%1>\n"
+                 "\t\t\t<b>Marley Polska Sp. z o.o.</b><br />\n"
+                 "\t\t\tul. Dąbrówki 6<br />\n"
+                 "\t\t\t03-909 Warszawa<br />\n"
+                 "\t\t\t<br />\n"
+                 "\t\t\t<b> %2 </b><br />\n"
+                 "\t\t\t%3<br />\n")
+            .arg(dd)
             .arg(m_currentUser->name())
             .arg(m_currentUser->mail());
     if(m_currentUser->hasPhone())
-        *sDoc += QString("\t\t\t\t\t%3<\n")
+        *sDoc += QString("\t\t\tTel.: %3 \n")
                 .arg(m_currentUser->phone());
 
-    *sDoc += "\t\t\t\t</td>\n"
-             "\t\t\t</tr></table>\n"
+    *sDoc += QString(
+                "\t\t</td>\n"
+                "\t\t<td width=%1>\n"
+                "%2\n"
+                "\t\t</td>\n"
+           )
+            .arg(dd)
+            .arg(m_currentUser->adress());
+
+    *sDoc +=
+             "\t</tr>\n"
+             "\t<tr>\n"
+             "\t\t<td colspan=3>\n"
+             "\t\t\t<hr width=100%>\n"
              "\t\t</td>\n"
              "\t</tr>\n"
-         /* pozioma linia na dole
-             "\t<tr>\n"
-             "\t\t<td colspan=3><hr width=100%></td>\n"
-             "\t</tr>\n"
-            */
              "\t</table>\n"
              "</td></tr>\n"
              "</thead>\n"
@@ -805,7 +791,7 @@ void MainWindow::makeDocument(QString *sDoc)
              "<tr><td>\n"
              "\t";
     *sDoc += ui->plainTextEdit_zapytanie->toPlainText();
-    *sDoc += "<br />\n"
+    *sDoc += "\n"
              "</td></tr>\n"
              "<tr><td>\n";
  //tabela

@@ -348,7 +348,7 @@ QString MerchandiseListModel::print(const int w, bool kod, bool towar, bool ilos
     z[2] -= kolumn*4;
 
     QString doc;
-    doc = QString("\t<table cellspacing=3>\n"
+    doc = QString("\t<table cellspacing=1>\n"
             "\t<thead><tr>\n"
             "\t\t<td width=%1><b>%2</b></td>\n").arg(z[0]).arg("Lp.");
     if(kod)
