@@ -802,7 +802,7 @@ void MainWindow::makeDocument(QString *sDoc)
              "</td></tr>\n"
              "<tr><td>\n";
  //tabela
-    *sDoc += "\t<font face=\"Arial Narrow\" size=10pt>\n";
+    *sDoc += "\t<font face=\"Arial Narrow\" size=11pt>\n";
     *sDoc += m_towarModel->print(w,
                                  ui->kol_kod->isChecked(),
                                  ui->kol_towar->isChecked(),
