@@ -217,16 +217,17 @@ bool MerchandiseListModel::isIlosc(const QModelIndex &i) const
 
 void MerchandiseListModel::setKurs(double kurs)
 {
-    if(m_pln && (m_kurs == 0 || m_kurs == 1 || m_kurs == -1))
+    m_kurs = kurs;
+
+    if(m_pln && kurs == -1)
     {
         m_kurs = 1;
         beginRemoveColumns(QModelIndex(), 3, 3);
         m_pln = false;
         endRemoveColumns();
     }
-    else
-    {
-        m_kurs = kurs;
+    else if(!m_pln)
+    {   
         beginInsertColumns(QModelIndex(), 3, 3);
         m_pln = true;
         endInsertColumns();

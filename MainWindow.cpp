@@ -152,6 +152,8 @@ MainWindow::MainWindow():
     //opcje wydruku
     connect(ui->pln, SIGNAL(pressed()), this, SLOT(pln_on()));
     connect(ui->eur, SIGNAL(pressed()), this, SLOT(pln_off()));
+//    connect(ui->kursSpinBox, &QDoubleSpinBox::valueChanged, m_towarModel, &MerchandiseListModel::setKurs);
+    connect(ui->kursSpinBox, SIGNAL(valueChanged(double)), m_towarModel, SLOT(setKurs(double)));
 
     //buttony w tabach
     connect(ui->addTowar, SIGNAL(clicked()), this, SLOT(popWyborTowaru()));
@@ -453,7 +455,7 @@ void MainWindow::pln_off()
 {
     ui->kursSpinBox->setEnabled(false);
     ui->kurs_label->setEnabled(false);
-    m_towarModel->setKurs(0);
+    m_towarModel->setKurs(-1);
 }
 
 /*************************
