@@ -212,14 +212,18 @@ MainWindow::MainWindow():
 
 void MainWindow::about()
 {
-    QString s;
-    s = "System wspomagający ofertowanie kOferta v. ";
-    s += QString::number(VER);
-    s += "\n"
-         "Głównym elementem systemu jest aplikacja kliencka stanowiąca front-end dla danych znajdujących się w bazie danych. "
-         "Baza ta przechowuje nie tylko dane klientów i towarów przedsiębiorstwa, ale także utworzone do tej pory oferty. "
-         "Aplikacja kliencka ma także możliwość edycji bazy danych.\n\n"
-         "\t\tLicencja:\n"
+    static const QString aboutText = tr(
+         "\tSystem wspomagający ofertowanie kOferta v. %1 beta 8\n"
+         "\n"
+         "Projekt kOferta ma ułatwić sprzedającemu tworzenie ofert handlowych poprzez "
+         "łatwy dostęp do bazy danych z klientami i produktami.\n"
+         "Po wybraniu pozostałych danych do oferty, "
+         "jak sposób i termin dostawy umożliwia wydruk ofery według standadowego szablonu.\n"
+         "Dodatkowo w bazie danych przechowywane są utworzone do tej pory oferty, "
+         "co pozwala na szybką reedycję i wydruk nowej wersji odpowiedzi na zapytanie.\n"
+         "Aplikacja kliencka ma także możliwość częściowej edycji bazy danych.\n"
+         "\n"
+         "\tLicencja:\n"
          "kOferta - system usprawniajacy proces ofertowania\n"
          "Copyright (C) 2011  Kamil 'konserw' Strzempowicz, konserw@gmail.com\n"
          "\n"
@@ -238,8 +242,9 @@ void MainWindow::about()
          "\n"
          "W programie wykorzystano klasę implementującą szyfrowanie SHA1 "
          "autorstwa Michael D. Leonhard na warunkach licencyjnych opisanych w pliku SHA1_LICENSE\n"
-         "\n\n\t\t\tBuild date: " __DATE__;
-    QMessageBox::about(this, "O kOferta", s);
+         "\n\nBuild date: %2");
+
+    QMessageBox::about(this, tr("O kOferta"), aboutText.arg(VER).arg(__DATE__));
 }
 
 void MainWindow::connectedAs(const User &user)
