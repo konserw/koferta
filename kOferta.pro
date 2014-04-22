@@ -28,7 +28,7 @@ TEMPLATE = app
 
 DEFINES += VER=2.4
 DEFINES += ADMIN_PASS=\\\"\\\"
-DEFINES += NOSSL
+#DEFINES += NOSSL
 
 win32 {
     RC_FILE = res/koferta.rc
@@ -42,7 +42,7 @@ win32 {
 
     DEFINES += RELEASE
     DEFINES += WIN32
-    DEFINES += QT_NO_DEBUG_OUTPUT
+ #   DEFINES += QT_NO_DEBUG_OUTPUT
 
     #LIBS += -L"C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x86" -lUser32 -lAdvAPI32
     #LIBS += -L"C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x64" -lUser32 -lAdvAPI32
