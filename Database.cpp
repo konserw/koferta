@@ -24,14 +24,6 @@
 #include "User.h"
 #include "Database.h"
 #include "Macros.h"
-#ifndef NOSSL
-    #ifdef WIN32
-        #include <my_global.h>
-        #include <mysql.h>
-    #else
-       #include <mysql/mysql.h>
-    #endif
-#endif
 
 void insert_klient(const QString& skrot, const QString& full, const QString& tytul, const QString& imie, const QString& nazwisko, const QString& adres)
 {
@@ -189,54 +181,12 @@ void Database::setupSSL(QSqlDatabase &db)
     Q_UNUSED(db);
     qWarning() << "NOSSL defined, pomijam ustawianie bezpiecznego połączenia";
 #else
-    db.setConnectOptions("CLIENT_SSL=1;CLIENT_IGNORE_SPACE=1");
 
-    QVariant v = db.driver()->handle();
-    if (v.isValid() && qstrcmp(v.typeName(), "MYSQL*")==0)
-    {
-        MYSQL *handle = *static_cast<MYSQL **>(v.data());
-        if (handle != NULL)
-        {
-            try
-            {
-                qDebug() << "v.typename:" << v.typeName();
-                qDebug() << "handle:" << handle;
-                qDebug() << "mysql error:" << mysql_error(handle);
+    db.setConnectOptions("CLIENT_SSL=1");//;CLIENT_IGNORE_SPACE=1");
+    db.setSslCertificateCaFilename("D:/git/koferta/res/ca-cert.pem");
+    db.setSslCertificateFilename("D:/git/koferta/res/client-cert.pem");
+    db.setSslKeyFilename("D:/git/koferta/res/client-key.pem");
 
-                mysql_ssl_set(handle, ":/client-key", ":/client-cert", ":/ca-cacert", NULL, NULL);
-//                mysql_ssl_set(handle, "D:/git/build-kOferta/client-key.pem", "D:/git/build-kOferta/client-cert.pem", "D:/git/build-kOferta/ca-cacert.pem", "D:/git/build-kOferta/", "DHE-RSA-AES256-SHA");
-            }
-            catch (std::exception& e)
-            {
-                qCritical() << "[mysql_ssl_set] Standard exception: " << e.what();
-            }
-            catch(...)
-            {
-                qCritical() << "[mysql_ssl_set] Unknown exception";
-            }
-        }
-        else
-        {
-            qCritical() << "invalid mysql handle - unable to setup ssl connection";
-        }
-    }
-    else
-    {
-        QMessageBox::critical(nullptr, tr("Błąd"), tr("Bład sterownika bazy danych!\nNastąpi zamknięcie programu."));
-        qCritical() << "invalid driver";
-
-        qDebug() << "library paths: ";
-        QStringList list = qApp->libraryPaths();
-        for(int i=0; i<list.size(); i++)
-            qDebug() << "\t" << list[i];
-
-        qDebug() << "aviable drivers: ";
-        list = QSqlDatabase::drivers();
-        for(int i=0; i<list.size(); i++)
-            qDebug() << "\t" << list[i];
-
-        throw std::exception("invalid driver");
-    }
 #endif
 }
 
@@ -254,5 +204,6 @@ bool Database::openDatabaseConnection(QSqlDatabase& db)
         qDebug() << "driver error:" << db.lastError().driverText();
         return false;
     }
+
     return true;
 }
