@@ -177,17 +177,11 @@ void Database::connect(const QString& name, const QString &pass)
 
 void Database::setupSSL(QSqlDatabase &db)
 {
-#ifdef NOSSL
-    Q_UNUSED(db);
-    qWarning() << "NOSSL defined, pomijam ustawianie bezpiecznego połączenia";
-#else
-
     db.setConnectOptions("CLIENT_SSL=1");//;CLIENT_IGNORE_SPACE=1");
-    db.setSslCertificateCaFilename("D:/git/koferta/res/ca-cert.pem");
-    db.setSslCertificateFilename("D:/git/koferta/res/client-cert.pem");
-    db.setSslKeyFilename("D:/git/koferta/res/client-key.pem");
-
-#endif
+    QString filePath = QString("%1/certs/%2").arg(qApp->applicationDirPath());
+    db.setSslCertificateCaFilename(filePath.arg("ca-cert.pem"));
+    db.setSslCertificateFilename(filePath.arg("client-cert.pem"));
+    db.setSslKeyFilename(filePath.arg("client-key.pem"));
 }
 
 bool Database::openDatabaseConnection(QSqlDatabase& db)
