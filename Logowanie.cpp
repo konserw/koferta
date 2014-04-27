@@ -18,13 +18,9 @@
 #include <QtWidgets>
 #include <QPixmap>
 #include <QStringList>
-#include <QFile>
-#include <QTextStream>
 #include <QString>
-#include <QTextCodec>
-#include <QInputDialog>
-#include <QMessageBox>
-#include <QTimer>
+#include <QSettings>
+
 #include "Logowanie.h"
 #include "ui_Logowanie.h"
 #include "User.h"
@@ -36,7 +32,6 @@ Logowanie::~Logowanie()
 
     delete ui;
     delete p;
-    delete hosts;
 }
 
 Logowanie::Logowanie() :
@@ -50,84 +45,33 @@ Logowanie::Logowanie() :
     p = new QPixmap(":/klog");
     ui->img->setPixmap(*p);
 
-    hosts = new QStringList;
-
-    QFile file("hosts");
-    if(file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        qDebug() << "otworzono plik hosts";
-        QTextStream in(&file);
-        in.setCodec("UTF-8");
-        QString s;
-        do{
-            s = in.readLine();
-            if(!s.isEmpty())hosts->append(s);
-        }while(!s.isNull());
-        qDebug() << "hostów na liście: " << hosts->count();
-    }
-    else
-        qWarning() << "otawrcie pliku hosts nie powiodło się";
-    ui->ip->addItems(*hosts);
-
     m_db = new Database(this);
-    m_db->setupInitialConnection();
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    connect(ui->add, SIGNAL(clicked()), this, SLOT(add()));
-    connect(ui->ip, SIGNAL(currentIndexChanged(QString)), this, SLOT(hostChanged(QString)));
 
     QObject::connect(m_db, &Database::connectionSuccess, this, &Logowanie::connectionSuccess);
     QObject::connect(m_db, &Database::connectionSuccess, this, &Logowanie::accept);
     QObject::connect(m_db, &Database::newUsers, this, &Logowanie::updateUserList);
     QObject::connect(m_db, &Database::changeStatus, ui->info, &QLabel::setText);
 
-#ifndef RELEASE
-    m_db->hostChanged("192.168.1.2");
-    QTimer::singleShot(100, this, SLOT(ok()));
-#endif
-}
-
-void Logowanie::hostChanged(QString ip)
-{
-    ui->info->setText(tr("Łączenie z bazą danych na %1").arg(ip));
-    ui->comboBox->clear();
-    m_db->hostChanged(ip);
+    m_db->setupInitialConnection();
 }
 
 void Logowanie::updateUserList(const QStringList& users)
 {
     ui->comboBox->clear();
     ui->comboBox->addItems(users);
+
+    QSettings settings;
+    settings.beginGroup("connection");
+    if(settings.contains("last user"))
+        ui->comboBox->setCurrentText(settings.value("last user").toString());
+    settings.endGroup();
 }
 
-void Logowanie::add()
-{
-    QString s;
-    bool ok;
-
-    s = QInputDialog::getText(this, "Host", "Podaj adres IP hosta bazy danych MySql", QLineEdit::Normal, "", &ok);
-    if(!ok) return;
-
-    QFile file("hosts");
-    if(file.open(QIODevice::Append | QIODevice::Text))
-    {
-        QTextStream out(&file);
-        out.setCodec("UTF-8");
-
-        out << "\n" << s;
-        ui->ip->addItem(s);
-    }
-    else
-    {
-        QMessageBox::warning(this, "error!", "Plik hosts niedostepny.");
-        qWarning() <<  "Plik host niedostepny.";
-    }
-
-}
 void Logowanie::ok()
 {
-#ifdef RELEASE
     QString pass = ui->lineEdit->text();
     if(pass.isEmpty())
     {
@@ -135,8 +79,10 @@ void Logowanie::ok()
         return;
     }
 
+    QSettings settings;
+    settings.beginGroup("connection");
+    settings.setValue("last user", ui->comboBox->currentText());
+    settings.endGroup();
+
     m_db->connect(ui->comboBox->currentText(), pass);
-#else
-    m_db->connect("Admin", ADMIN_PASS);
-#endif
 }

@@ -20,7 +20,7 @@
 #include <QtDebug>
 #include <QVariant>
 #include <QMessageBox>
-#include <exception>
+#include <QSettings>
 #include "User.h"
 #include "Database.h"
 #include "Macros.h"
@@ -86,7 +86,24 @@ void Database::setupInitialConnection()
     m_initialConnection->setPort(3306);
     m_initialConnection->setUserName("kOf_GetUsers");
 
-    setupSSL(*m_initialConnection);
+
+    QSettings settings;
+    settings.beginGroup("connection");
+
+    if(settings.value("SSL enabled").toBool())
+    {
+        setupSSL(*m_initialConnection);
+    }
+    else
+    {
+        qWarning() << "SSL has been disabled";
+    }
+    QString host = settings.value("selected host", "localhost").toString();
+
+    settings.endGroup();
+
+    emit changeStatus(tr("Łączenie z bazą danych na %1").arg(host));
+    hostChanged(host);
 }
 
 Database::Database(QObject* parent) :
@@ -129,8 +146,7 @@ QStringList Database::getUsersList(const QSqlDatabase& db)
 
 void Database::hostChanged(QString ip)
 {
-    qDebug() << "Host changed for:" << ip;
- //   emit changeStatus(tr("Łączenie z bazą danych na %1").arg(ip));
+    qDebug() << "Database host:" << ip;
 
     m_initialConnection->setHostName(ip);
 

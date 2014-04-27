@@ -97,9 +97,10 @@ public slots:
     void makeDocument(QString *sDoc);
 
 /*menu*/
-    //connect
+    //kOferta
     void databaseConnect();
     void databaseDisconnect();
+    void changeSettings();
 
     //menu oferta
     void nowa();
@@ -122,6 +123,11 @@ public slots:
     //o qt - wbudowane
 
     void connectedAs(const User& user);
+
+protected:
+    void writeSettings();
+    void readSettings();
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::MainWindow *ui;

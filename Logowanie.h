@@ -39,8 +39,6 @@ public:
 
 public slots:
     void ok();                                          //slot obsługujący przycisk ok - sprawdza zgodność skrótu wpisanego hasła ze skrótem zapisanym w klasie user i tworzy połączenie z bazą MySQL (klasa QSqlDatabase)
-    void add();                                         //slot obsługujący dodawanie dodatkowych adresów IP bazy danych, zarówno do listy jak i do pliku host
-    void hostChanged(QString);                          //slot odświerzający listę dostępnych użytkowników po zmianie hosta
     void updateUserList(const QStringList&);
 
 signals:
@@ -49,7 +47,6 @@ signals:
 private:
     Ui::Logowanie *ui;
 
-    QStringList* hosts;                                 //lista dostępnych hostów, generowana na podstawie pliku tekstowego
     QPixmap* p;                                         //bufor grafiki loga systemu kOferta
     Database* m_db;
 };

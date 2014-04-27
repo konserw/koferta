@@ -25,7 +25,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -672,6 +672,8 @@
     <addaction name="actionConnect"/>
     <addaction name="actionDisconnect"/>
     <addaction name="separator"/>
+    <addaction name="actionUstawienia"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuConnect"/>
@@ -815,6 +817,11 @@
   <action name="actionDodaj_warunki_oferty">
    <property name="text">
     <string>dodaj warunki oferty</string>
+   </property>
+  </action>
+  <action name="actionUstawienia">
+   <property name="text">
+    <string>Ustawienia</string>
    </property>
   </action>
  </widget>

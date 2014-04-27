@@ -38,11 +38,7 @@ int main(int argc, char *argv[])
         qWarning() << "Unable to create log file! Logging to std::cerr.";
 
     qDebug() << "loading translation files";
-/*
-    QTranslator qtTranslator;
-    qtTranslator.load("qt" + QLocale::system().name());
-    app.installTranslator(&qtTranslator);
-*/
+
     QString translationFile = QString("kOferta_%1").arg(QLocale::system().name());
     QTranslator myappTranslator;
     if(myappTranslator.load(translationFile))
@@ -70,8 +66,11 @@ int main(int argc, char *argv[])
         return 2;
     }
 
+    QCoreApplication::setOrganizationName("Konserw  Software");
+    QCoreApplication::setOrganizationDomain("koferta.no-ip.biz");
+    QCoreApplication::setApplicationName("kOferta");
+
     MainWindow w;
-    w.showMaximized();
 
     qDebug() << "launching application";
 

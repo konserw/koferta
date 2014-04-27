@@ -39,6 +39,7 @@
 #include "User.h"
 #include "Macros.h"
 #include "EdycjaKombo.h"
+#include "SettingsDialog.h"
 
 #include "CustomerNew.h"
 #include "CustomerEdit.h"
@@ -101,6 +102,7 @@ MainWindow::MainWindow():
 **/
     qDebug() << "setup ui";
     ui->setupUi(this);
+    readSettings();
     uiReset();
 
 /**
@@ -141,12 +143,13 @@ MainWindow::MainWindow():
     connect(ui->actionDo_PDF, SIGNAL(triggered()), this, SLOT(printPdf()));
     connect(ui->actionDruk, SIGNAL(triggered()), this, SLOT(zapisz()));
     connect(ui->actionDruk, SIGNAL(triggered()), this, SLOT(printPrev()));
-    //info:
+    //info
     connect(ui->actionO_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui->actionO_kOferta, SIGNAL(triggered()), this, SLOT(about()));
-    //connect
+    //kOferta
     connect(ui->actionConnect, &QAction::triggered, this, &MainWindow::databaseConnect);
     connect(ui->actionDisconnect, &QAction::triggered, this, &MainWindow::databaseDisconnect);
+    connect(ui->actionUstawienia, &QAction::triggered, this, &MainWindow::changeSettings);
     connect(ui->actionExit, &QAction::triggered, qApp, &QApplication::quit);
 
     //opcje wydruku
@@ -207,7 +210,55 @@ MainWindow::MainWindow():
     ui->label_uwagi->setText(tr("Uwagi:"));
 
     setMenusEnabled(false);
-    QTimer::singleShot(10, this, SLOT(databaseConnect()));
+
+    QSettings settings;
+    settings.beginGroup("connection");
+    if(settings.value("autoconnect", false).toBool())
+        QTimer::singleShot(10, this, SLOT(databaseConnect()));
+    settings.endGroup();
+    if(!settings.value("settings set", false).toBool())
+        QTimer::singleShot(10, this, SLOT(changeSettings()));
+}
+
+void MainWindow::writeSettings()
+{
+    QSettings settings;
+
+    settings.beginGroup("MainWindow");
+    settings.setValue("maximized", isMaximized());
+    settings.setValue("size", size());
+    settings.setValue("pos", pos());
+    settings.endGroup();
+}
+
+void MainWindow::readSettings()
+{
+    QSettings settings;
+
+    settings.beginGroup("MainWindow");
+    if(settings.value("maximized", false).toBool())
+        this->showMaximized();
+    else
+    {
+        resize(settings.value("size", QSize(400, 400)).toSize());
+        move(settings.value("pos", QPoint(200, 200)).toPoint());
+        this->show();
+    }
+    settings.endGroup();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    writeSettings();
+    event->accept();
+    /*
+    if (userReallyWantsToQuit()) {
+        writeSettings();
+        event->accept();
+    } else {
+        event->ignore();
+    }
+    */
 }
 
 void MainWindow::about()
@@ -320,6 +371,12 @@ void MainWindow::databaseDisconnect()
     terminModel = nullptr;
     delete ofertaModel;
     dostawaModel = nullptr;
+}
+
+void MainWindow::changeSettings()
+{
+    SettingsDialog dialog;
+    dialog.exec();
 }
 
 void MainWindow::setTitle(QString* nr)
@@ -646,13 +703,28 @@ void MainWindow::printPrev()
 
 void MainWindow::printPdf()
 {
-    QString s;
-    s = QFileDialog::getSaveFileName(this, "Zapis pdfa", "", "Dokument PDF (*.pdf)");
-    if(s.isEmpty())return;
+    QString filePath;
+    QString dir;
+
+    QSettings settings;
+    settings.beginGroup("offer");
+    dir = settings.value("pdf directory", qApp->applicationDirPath()).toString();
+    settings.endGroup();
+
+    filePath = QFileDialog::getSaveFileName(this, "Zapis pdfa", dir, "Dokument PDF (*.pdf)");
+    if(filePath.isEmpty())return;
+
+    if(QFileInfo(filePath).absolutePath() != dir)
+    {
+        QSettings settings;
+        settings.beginGroup("offer");
+        settings.setValue("pdf directory", QFileInfo(filePath).absolutePath());
+        settings.endGroup();
+    }
 
     QPrinter* printer = new QPrinter;
     printer->setOutputFormat(QPrinter::PdfFormat);
-    printer->setOutputFileName(s);
+    printer->setOutputFileName(filePath);
 
     htm = false;
     print(printer);
@@ -662,13 +734,28 @@ void MainWindow::printPdf()
 
 void MainWindow::printHtm()
 {
-    QString s;
-    s = QFileDialog::getSaveFileName(this, "Zapis do HTML", "", "Dokument HTML (*.htm)");
-    if(s.isEmpty())return;
+    QString filePath;
+    QString dir;
 
-    QFile file(s);
+    QSettings settings;
+    settings.beginGroup("offer");
+    dir = settings.value("html directory", qApp->applicationDirPath()).toString();
+    settings.endGroup();
+
+    filePath = QFileDialog::getSaveFileName(this, "Zapis do HTML", "", "Dokument HTML (*.html)");
+    if(filePath.isEmpty())return;
+
+    if(QFileInfo(filePath).absolutePath() != dir)
+    {
+        QSettings settings;
+        settings.beginGroup("offer");
+        settings.setValue("html directory", QFileInfo(filePath).absolutePath());
+        settings.endGroup();
+    }
+
+    QFile file(filePath);
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
-        DEBUG << "plik " << s << " niedostępny";
+        DEBUG << "plik " << filePath << " niedostępny";
         QMessageBox::warning(NULL, "error", "Nie udało się uzyskać dostępu do pliku");
         return;
     }

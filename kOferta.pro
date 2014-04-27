@@ -26,9 +26,7 @@ CONFIG += c++11
 
 TEMPLATE = app
 
-DEFINES += VER=2.4
-DEFINES += ADMIN_PASS=\\\"\\\"
-#DEFINES += NOSSL
+DEFINES += VER=2.41
 
 win32 {
     RC_FILE = res/koferta.rc
@@ -81,7 +79,8 @@ HEADERS += \
     MerchandiseNew.h \
     CustomerSearch.h \
     OfferSearch.h \
-    CustomerSelection.h
+    CustomerSelection.h \
+    SettingsDialog.h
 
 FORMS += \
     LoadDialog.ui \
@@ -93,7 +92,8 @@ FORMS += \
     CustomerEdit.ui \
     MerchandiseNew.ui \
     OfferSearch.ui \
-    CustomerSelection.ui
+    CustomerSelection.ui \
+    SettingsDialog.ui
 
 SOURCES += \
     Database.cpp \
@@ -117,7 +117,8 @@ SOURCES += \
     MerchandiseNew.cpp \
     CustomerSearch.cpp \
     OfferSearch.cpp \
-    CustomerSelection.cpp
+    CustomerSelection.cpp \
+    SettingsDialog.cpp
 
 RESOURCES += \
     res/zasoby.qrc
