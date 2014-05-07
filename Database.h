@@ -16,12 +16,12 @@ public:
     explicit Database(QObject *parent = NULL);
     ~Database();
 
-    void setupInitialConnection();
-    QStringList getUsersList(const QSqlDatabase &db = QSqlDatabase());
+    static QStringList usersList();
+    static User userInfo(const QString& name);
 
 public slots:
-    void hostChanged(QString ip);
     void connect(const QString &uid, const QString& pass);
+    void getUsersList();
 
 signals:
     void newUsers(const QStringList&);
@@ -30,11 +30,16 @@ signals:
 
 protected:
     ///Database object
-    QSqlDatabase* m_initialConnection;
-    QSqlTableModel* m_usersTable;
+    QSqlDatabase* m_database;
 
-    inline void setupSSL(QSqlDatabase &db);
-    inline bool openDatabaseConnection(QSqlDatabase &db);
+    void setupConnection(const QString &user, const QString pass = QString::null);
+
+    inline void setupSSL();
+    inline bool openDatabaseConnection();
+
+    QString m_host;
+    bool m_sslEnabled;
+
 };
 
 void insert_klient(const QString &skrot, const QString &full, const QString &tytul, const QString &imie, const QString &nazwisko, const QString &adres);

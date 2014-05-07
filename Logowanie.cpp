@@ -31,7 +31,7 @@ Logowanie::~Logowanie()
     qDebug() <<  "destruktor Logowanie";
 
     delete ui;
-    delete p;
+    delete m_kOfertaLogo;
 }
 
 Logowanie::Logowanie() :
@@ -42,10 +42,18 @@ Logowanie::Logowanie() :
 
     ui->setupUi(this);
 
-    p = new QPixmap(":/klog");
-    ui->img->setPixmap(*p);
+    m_kOfertaLogo = new QPixmap(":/klog");
+    ui->img->setPixmap(*m_kOfertaLogo);
 
     m_db = new Database(this);
+
+    QSettings settings;
+    settings.beginGroup("connection");
+
+    if(settings.contains("last user"))
+        m_lastUser = settings.value("last user").toString();
+
+    settings.endGroup();
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
@@ -54,8 +62,9 @@ Logowanie::Logowanie() :
     QObject::connect(m_db, &Database::connectionSuccess, this, &Logowanie::accept);
     QObject::connect(m_db, &Database::newUsers, this, &Logowanie::updateUserList);
     QObject::connect(m_db, &Database::changeStatus, ui->info, &QLabel::setText);
-
-    m_db->setupInitialConnection();
+    connect(this, &Logowanie::userListRequested, m_db, &Database::getUsersList);
+//    m_db->setupInitialConnection();
+    emit(userListRequested());
 }
 
 void Logowanie::updateUserList(const QStringList& users)
@@ -63,11 +72,8 @@ void Logowanie::updateUserList(const QStringList& users)
     ui->comboBox->clear();
     ui->comboBox->addItems(users);
 
-    QSettings settings;
-    settings.beginGroup("connection");
-    if(settings.contains("last user"))
-        ui->comboBox->setCurrentText(settings.value("last user").toString());
-    settings.endGroup();
+    if(!m_lastUser.isEmpty())
+        ui->comboBox->setCurrentText(m_lastUser);
 }
 
 void Logowanie::ok()

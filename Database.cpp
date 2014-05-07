@@ -79,139 +79,133 @@ void insert_combo(const QString& typ, const QString& sh, const QString& lo)
     EXEC_SILENT(s);
 }
 
-void Database::setupInitialConnection()
-{
-    m_initialConnection = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL", "initialConnection"));
-    m_initialConnection->setDatabaseName("kOferta");
-    m_initialConnection->setPort(3306);
-    m_initialConnection->setUserName("kOf_GetUsers");
-
-
+Database::Database(QObject* parent) :
+    QObject(parent)
+{  
     QSettings settings;
     settings.beginGroup("connection");
 
-    if(settings.value("SSL enabled").toBool())
+    m_sslEnabled = settings.value("SSL enabled").toBool();
+    m_host = settings.value("selected host", "localhost").toString();
+
+    settings.endGroup();
+
+    m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"));
+}
+
+Database::~Database()
+{
+    delete m_database;
+}
+
+
+
+void Database::connect(const QString& name, const QString &pass)
+{
+    QString databaseUserName = User::dbName(name);
+
+    setupConnection(databaseUserName, pass);
+
+    qDebug() << "Loging in as" << databaseUserName;
+    if(!openDatabaseConnection())
     {
-        setupSSL(*m_initialConnection);
+        emit changeStatus(tr("%1: Błąd logowania jako %2").arg(m_host, name));
+        return;
+    }
+
+    emit connectionSuccess(userInfo(name));
+}
+
+void Database::getUsersList()
+{
+    setupConnection("kOf_GetUsers");
+
+    if(!openDatabaseConnection())
+    {
+        emit changeStatus(tr("Połączenie z bazą danych na %1 nie powiodło się.").arg(m_host));
+        return;
+    }
+    emit changeStatus(tr("Połączono z bazą danych na %1").arg(m_host));
+
+    QStringList userList = usersList();
+    emit newUsers(userList);
+}
+
+void Database::setupConnection(const QString& user, const QString pass)
+{
+    emit changeStatus(tr("Łączenie z bazą danych na %1").arg(m_host)); //??
+
+    m_database->setHostName(m_host);
+    m_database->setPort(3306);
+    m_database->setDatabaseName("kOferta");
+    m_database->setUserName(user);
+    m_database->setPassword(pass);
+
+    if(m_sslEnabled)
+    {
+        setupSSL();
     }
     else
     {
         qWarning() << "SSL has been disabled";
     }
-    QString host = settings.value("selected host", "localhost").toString();
-
-    settings.endGroup();
-
-    emit changeStatus(tr("Łączenie z bazą danych na %1").arg(host));
-    hostChanged(host);
 }
 
-Database::Database(QObject* parent) :
-    QObject(parent), m_initialConnection(nullptr), m_usersTable(nullptr)
-{  
-}
-
-Database::~Database()
-{
-    if(m_initialConnection)
-    {
-        m_initialConnection->close();
-        delete m_initialConnection;
-    }
-}
-
-QStringList Database::getUsersList(const QSqlDatabase& db)
+QStringList Database::usersList()
 {
     QStringList userList;
+    QSqlTableModel usersTable;
 
-    if(m_usersTable)
-        delete m_usersTable;
-    m_usersTable = new QSqlTableModel(this, db);
-    m_usersTable->setTable("users");
-    m_usersTable->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    m_usersTable->select();
+    usersTable.setTable("users");
+    usersTable.select();
 
     // make sure the complete result set is fetched
-    while (m_usersTable->canFetchMore())
-         m_usersTable->fetchMore();
+    while (usersTable.canFetchMore())
+         usersTable.fetchMore();
 
-    int rows = m_usersTable->rowCount();
+    int rows = usersTable.rowCount();
     qDebug() << "Users list count" << rows;
 
     for (int r = 0; r < rows; ++r)
-        userList << m_usersTable->data(m_usersTable->index(r,1)).toString();
+        userList << usersTable.data(usersTable.index(r,1)).toString();
 
     return userList;
 }
 
-void Database::hostChanged(QString ip)
+User Database::userInfo(const QString &name)
 {
-    qDebug() << "Database host:" << ip;
-
-    m_initialConnection->setHostName(ip);
-
-    if(!openDatabaseConnection(*m_initialConnection))
-    {
-        emit changeStatus(tr("Połączenie z bazą danych na %1 nie powiodło się.").arg(ip));
-        return;
-    }
-    emit changeStatus(tr("Połączono z bazą danych na %1").arg(ip));
-
-    QStringList userList = getUsersList(*m_initialConnection);
-    emit newUsers(userList);
-}
-
-void Database::connect(const QString& name, const QString &pass)
-{
-    QString dbName = User::dbName(name);
-
-    QSqlDatabase finalConnection = QSqlDatabase::addDatabase("QMYSQL"/*, "finalConnection"*/);
-    finalConnection.setDatabaseName("kOferta");
-    finalConnection.setPort(3306);
-    finalConnection.setHostName(m_initialConnection->hostName());
-    finalConnection.setUserName(dbName);
-    finalConnection.setPassword(pass);
-    setupSSL(finalConnection);
-
-    qDebug() << "Loging in as" << dbName;
-    if(!openDatabaseConnection(finalConnection))
-    {
-        emit changeStatus(tr("%1: Błąd logowania jako %2").arg(finalConnection.hostName(), name));
-        return;
-    }
-
     qDebug() << "Downloading user info for" << name;
 
-    m_usersTable->setFilter(QString("name = '%1'").arg(name));
-    m_usersTable->select();
-    QSqlRecord r = m_usersTable->record(0);
+    QSqlTableModel usersTable;
+    usersTable.setTable("users");
+    usersTable.setFilter(QString("name = '%1'").arg(name));
+    usersTable.select();
+    QSqlRecord r = usersTable.record(0);
 
-    User currentUser(r.value("uid").toInt(), name, r.value("phone").toString(), r.value("mail").toString(), r.value("adress").toString(), r.value("male").toBool(), r.value("nrOferty").toInt());
-
-    emit connectionSuccess(currentUser);
+    return User(r.value("uid").toInt(), name, r.value("phone").toString(), r.value("mail").toString(), r.value("adress").toString(), r.value("male").toBool(), r.value("nrOferty").toInt());
 }
 
-void Database::setupSSL(QSqlDatabase &db)
+void Database::setupSSL()
 {
-    db.setConnectOptions("CLIENT_SSL=1");//;CLIENT_IGNORE_SPACE=1");
+    m_database->setConnectOptions("CLIENT_SSL=1");//;CLIENT_IGNORE_SPACE=1");
     QString filePath = QString("%1/certs/%2").arg(qApp->applicationDirPath());
-    db.setSslCertificateCaFilename(filePath.arg("ca-cert.pem"));
-    db.setSslCertificateFilename(filePath.arg("client-cert.pem"));
-    db.setSslKeyFilename(filePath.arg("client-key.pem"));
+    m_database->setSslCertificateCaFilename(filePath.arg("ca-cert.pem"));
+    m_database->setSslCertificateFilename(filePath.arg("client-cert.pem"));
+    m_database->setSslKeyFilename(filePath.arg("client-key.pem"));
 }
 
-bool Database::openDatabaseConnection(QSqlDatabase& db)
+bool Database::openDatabaseConnection()
 {
-    if(!db.open())
+    if(!m_database->open())
     {
         qCritical() << "Error! Unable to connect to database!";
-        qDebug() << "connName:" << db.connectionName();
-        qDebug() << "driver:" << db.driverName();
-        qDebug() << "options:" << db.connectOptions();
-        qDebug() << "host:" << db.hostName();
-        qDebug() << "error number:" << db.lastError().number();
-        qDebug() << "database error:" << db.lastError().databaseText();
-        qDebug() << "driver error:" << db.lastError().driverText();
+        qDebug() << "connName:" << m_database->connectionName();
+        qDebug() << "driver:" << m_database->driverName();
+        qDebug() << "options:" << m_database->connectOptions();
+        qDebug() << "host:" << m_database->hostName();
+        qDebug() << "error number:" << m_database->lastError().number();
+        qDebug() << "database error:" << m_database->lastError().databaseText();
+        qDebug() << "driver error:" << m_database->lastError().driverText();
         return false;
     }
 

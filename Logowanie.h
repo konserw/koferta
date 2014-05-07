@@ -43,11 +43,14 @@ public slots:
 
 signals:
     void connectionSuccess(const User&);
+    void userListRequested();
 
 private:
     Ui::Logowanie *ui;
 
-    QPixmap* p;                                         //bufor grafiki loga systemu kOferta
+    QPixmap* m_kOfertaLogo;
     Database* m_db;
+
+    QString m_lastUser;
 };
 #endif // LOG_H

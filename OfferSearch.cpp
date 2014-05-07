@@ -34,8 +34,7 @@ OfferSearch::OfferSearch(QWidget *parent) :
     ui->dateEdit->setDisplayFormat("MMMM yy");
     ui->dateEdit->setDate(QDate::currentDate());
 
-    Database db;
-    ui->comboBox->insertItems(0, db.getUsersList());
+    ui->comboBox->insertItems(0, Database::usersList());
 
     QStringList sl;
     sl << tr("Nr oferty") << tr("Klient") << tr("Data") << tr("Oferent");
