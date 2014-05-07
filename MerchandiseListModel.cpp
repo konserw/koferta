@@ -311,51 +311,45 @@ QString MerchandiseListModel::print(const int w, bool kod, bool towar, bool ilos
     //szerokosc komorek tabeli
     int kolumn = 3;
     int z[8];
-    z[0] = 20; //lp
-    z[1] = 80; //kod
+    z[0] = 40; //lp
+   // z[1] = 80; //kod
     //z2 - reszta szerokości
-    z[3] = 60; //cena
-    z[4] = 40; //rabat
-    z[5] = 55; //cena2
-    z[6] = 50; //ilosc+jedn
-    z[7] = 60; //wartość
+    z[3] = 90; //cena
+    z[4] = 60; //rabat
+    z[5] = 90; //cena2
+    z[6] = 70; //ilosc+jedn
+    z[7] = 90; //wartość
 
-    z[2] = w - z[0] - z[7];
-    if(kod)
-    {
-        z[2] -= z[1];
-        kolumn++;
-    }
+    z[1] = w - z[0] - z[7];
+
     if(cenaKat)
     {
-        z[2] -= z[3];
+        z[1] -= z[3];
         kolumn++;
     }
     if(rabat)
     {
-        z[2] -= z[4];
+        z[1] -= z[4];
         kolumn++;
     }
     if(cena)
     {
-        z[2] -= z[5];
+        z[1] -= z[5];
         kolumn++;
     }
     if(ilosc)
     {
-        z[2] -= z[6];
+        z[1] -= z[6];
         kolumn++;
     }
-    z[2] -= kolumn*4;
+    z[1] -= kolumn*4;
 
     QString doc;
-    doc = QString("\t<table cellspacing=1>\n"
+    doc = QString("\t<table cellspacing=2>\n"
             "\t<thead><tr>\n"
             "\t\t<td width=%1><b>%2</b></td>\n").arg(z[0]).arg("Lp.");
     if(kod)
-        doc += QString("\t\t<td width=%1><b>%2</b></td>\n").arg(z[1]).arg("Kod");
-    if(towar)
-        doc += QString("\t\t<td width=%1><b>%2</b></td>\n").arg(z[2]).arg("Specyfikacja");
+        doc += QString("\t\t<td width=%1><b>%2</b></td>\n").arg(z[1]).arg("Towar");
     if(ilosc)
         doc += QString("\t\t<td width=%1 align = right><b>%2</b></td>\n").arg(z[6]).arg("Ilość");
     if(cenaKat)
@@ -374,8 +368,6 @@ QString MerchandiseListModel::print(const int w, bool kod, bool towar, bool ilos
         doc += QString("\t\t<td>%1</td>\n").arg(i+1);
         if(kod)
             doc += QString("\t\t<td>%1</td>\n").arg(item->kod());
-        if(towar)
-            doc += QString("\t\t<td>%1</td>\n").arg(item->nazwa());
         if(ilosc)
             doc += QString("\t\t<td align = right>%1 %2</td>\n").arg(item->ilosc(), 0, 'f', 0).arg(item->unit());
         if(cenaKat)
@@ -386,9 +378,16 @@ QString MerchandiseListModel::print(const int w, bool kod, bool towar, bool ilos
             doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cena(), 0, 'f', 2);
         doc += QString("\t\t<td align = right>%1</td>\n").arg(item->wartosc(), 0, 'f', 2);
         doc += "\t</tr>\n";
+        if(towar)
+        {
+            doc += "\t<tr style=\"font-size:12px; font-family:\"Times New Roman\",Georgia,Serif;\">\n";
+            doc += "\t\t<td></td>\n";
+            doc += QString("\t\t<td colspan=%1>%2</td>\n").arg(kolumn-1).arg(item->nazwa());
+            doc += "\t</tr>\n";
+        }
     }
 
-    doc += "\t<tr>\n";
+    doc += "\t<tr style=\"font-weight:bold;\">\n";
     doc += QString("\t\t<td align = right colspan=%1>Razem %2:</td>\n").arg(kolumn-1).arg(waluta);
     doc += QString("\t\t<td align = right>%1</td>\n").arg(przeliczSume(), 0, 'f', 2);
     doc += "\t</tr>\n";

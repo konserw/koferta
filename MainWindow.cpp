@@ -781,19 +781,19 @@ void MainWindow::print(QPrinter *printer)
     htm = false;
     QString* sDoc = new QString;
     makeDocument(sDoc);
-
+/*
     QFont* font = new QFont;
     font->setPointSize(10);
     font->setFamily("Arial");
-
+*/
     QTextDocument* doc = new QTextDocument;
-    doc->setDefaultFont(*font);
+//    doc->setDefaultFont(*font);
     doc->setHtml(*sDoc);
     doc->setPageSize(QSizeF(printer->pageRect().size()));
     doc->print(printer);
 
     delete doc;
-    delete font;
+    //delete font;
     delete sDoc;
 }
 
@@ -812,7 +812,7 @@ void MainWindow::makeDocument(QString *sDoc)
                 "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head>\n"
                 "<title>Oferta</title>\n"
                 "</head>\n"
-                "<body>\n"
+                "<body style=\"font-family:Arial, Helvetica, sans-serif; font-size:14px;\">\n"
                 "<table >\n" //cellspacing=1
     /*NAGŁÓWEK*/
                 "<thead>\n"
@@ -889,7 +889,7 @@ void MainWindow::makeDocument(QString *sDoc)
              "</td></tr>\n"
              "<tr><td>\n";
  //tabela
-    *sDoc += "\t<font face=\"Arial Narrow\" size=11pt>\n";
+ //   *sDoc += "\t<font size=\"24px\">\n";
     *sDoc += m_towarModel->print(w,
                                  ui->kol_kod->isChecked(),
                                  ui->kol_towar->isChecked(),
@@ -898,7 +898,8 @@ void MainWindow::makeDocument(QString *sDoc)
                                  ui->kol_rabat->isChecked(),
                                  ui->kol_cena->isChecked()
                                  );
-    *sDoc += "\t</font>\n"
+ //   *sDoc += "\t</font>\n"
+     *sDoc +=
             "</td></tr>\n"
             "<tr><td>\n"
             "\tPodane ceny nie zawierają podatku VAT<br>\n"
@@ -906,7 +907,8 @@ void MainWindow::makeDocument(QString *sDoc)
 //warunki
             "<tr><td>\n"
             "\t<table cellspacing=3>\n"
-            "\t<tr>\n\t\t<td width=";
+            "\t<tr>\n"
+            "\t\t<td width=";
     *sDoc += QString::number(dw);
     *sDoc += ">"
              "Warunki dostawy:</td>\n"
@@ -941,10 +943,10 @@ void MainWindow::makeDocument(QString *sDoc)
     *sDoc += ui->plainTextEdit_oferta->toPlainText();
     *sDoc += "<br>\n"
              "\tŁączymy pozdrowienia.\n"
-             "\t<p align = right style = \"margin-right: 100\">\n"
+             "\t<p align=center style=\"margin-left: 500\">\n"
              "\t\tOfertę przygotował";
     if(!m_currentUser->male()) *sDoc += "a";
-    *sDoc += "<br>\n"
+    *sDoc += "<br /><br /><br />\n"
             "\t\t";
     *sDoc += m_currentUser->name();
     *sDoc += "\n"
