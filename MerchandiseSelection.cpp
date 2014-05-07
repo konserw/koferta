@@ -34,6 +34,8 @@ MerchandiseSelection::MerchandiseSelection(const QHash<int, double> &hash, QWidg
     ui->tableView->setItemDelegate(delegate);
 
     connect(static_cast<MerchandiseSelectionModel*>(m_model), &MerchandiseSelectionModel::itemCountChanged, this, &MerchandiseSelection::itemCountChanged);
+
+    this->setWindowFlags(Qt::Window);
 }
 
 MerchandiseSelection::~MerchandiseSelection()

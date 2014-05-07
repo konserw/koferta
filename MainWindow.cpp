@@ -480,7 +480,7 @@ void MainWindow::popWyborTowaru()
 {
     MerchandiseSelection* pop = new MerchandiseSelection(m_towarModel->hash(), this);
     connect(pop, &MerchandiseSelection::itemCountChanged, m_towarModel, &MerchandiseListModel::changeItemCount);
-//    pop->showMaximized();
+    pop->showMaximized();
     pop->exec();
     delete pop;
 }

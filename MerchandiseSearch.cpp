@@ -40,6 +40,11 @@ MerchandiseSearch::MerchandiseSearch(MerchandiseSearchModel* model, QWidget *par
     ui->tableView->setModel(m_model);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setEditTriggers(QAbstractItemView::AllEditTriggers);//:NoEditTriggers);
+    ui->tableView->horizontalHeader()->setDefaultSectionSize(60);
+    ui->tableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::ResizeToContents);
+    ui->tableView->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+    ui->tableView->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+    ui->tableView->horizontalHeader()->setSectionResizeMode(4, QHeaderView::ResizeToContents);
 
     connect(ui->radioButton_id, SIGNAL(clicked()), this, SLOT(ref2()));
     connect(ui->radioButton_name, SIGNAL(clicked()), this, SLOT(ref2()));
