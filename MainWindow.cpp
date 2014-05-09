@@ -540,7 +540,7 @@ void MainWindow::uiInit()
 
 void MainWindow::saveOffer()
 {
-    if(m_client == NULL)
+    if(m_client == nullptr)
     {
         QMessageBox::warning(this, "brak danych", "Aby zapisanie oferty w bazie danych było możliwe należy wybrać klienta.");
         return;
@@ -752,7 +752,7 @@ void MainWindow::print(QPrinter *printer)
 
 void MainWindow::makeDocument(QString *sDoc)
 {
-    if(m_client == NULL)
+    if(m_client == nullptr)
         m_client = new QSqlRecord;
 
     const int w = 745;                           //szerokosc szkieletu dokumentu
@@ -912,6 +912,12 @@ void MainWindow::makeDocument(QString *sDoc)
             "</table>\n"
             "</body>\n"
             "</html>\n";
+
+    if(m_client->isEmpty())
+    {
+        delete m_client;
+        m_client = nullptr;
+    }
 }
 
 void MainWindow::ofertaNew()
