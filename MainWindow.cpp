@@ -150,8 +150,7 @@ MainWindow::MainWindow():
     connect(ui->actionExit, &QAction::triggered, qApp, &QApplication::quit);
 
     //opcje wydruku
-    connect(ui->pln, SIGNAL(pressed()), this, SLOT(pln_on()));
-    connect(ui->eur, SIGNAL(pressed()), this, SLOT(pln_off()));
+    connect(ui->pln, SIGNAL(toggled(bool)), this, SLOT(changeCurrency(bool)));
     connect(ui->kursSpinBox, SIGNAL(valueChanged(double)), m_towarModel, SLOT(setKurs(double)));
 
     //buttony w tabach
@@ -209,6 +208,7 @@ void MainWindow::writeSettings()
     settings.setValue("maximized", isMaximized());
     settings.setValue("size", size());
     settings.setValue("pos", pos());
+    settings.setValue("exchangeRate", ui->kursSpinBox->value());
     settings.endGroup();
 }
 
@@ -217,6 +217,7 @@ void MainWindow::readSettings()
     QSettings settings;
 
     settings.beginGroup("MainWindow");
+    ui->kursSpinBox->setValue(settings.value("exchangeRate", 4.18453702).toDouble());
     if(settings.value("maximized", false).toBool())
         this->showMaximized();
     else
@@ -446,6 +447,16 @@ void MainWindow::checkData(bool ch)
     this->zapytanieRef();
 }
 
+void MainWindow::changeCurrency(bool pln)
+{
+    ui->kursSpinBox->setEnabled(pln);
+    ui->kurs_label->setEnabled(pln);
+    ui->kol_cenaPln->setEnabled(pln);
+    ui->kol_cenaPln->setChecked(pln);
+
+    m_towarModel->setKurs(pln ? ui->kursSpinBox->value() : -1);
+}
+
 void MainWindow::selectClient()
 {
     CustomerSelection* pop = new CustomerSelection(this);
@@ -480,20 +491,6 @@ void MainWindow::setClient(const QSqlRecord& rec)
                                                .arg(rec.value("full").toString())
                                                );
     }
-}
-
-void MainWindow::pln_on()
-{
-    ui->kursSpinBox->setEnabled(true);
-    ui->kurs_label->setEnabled(true);
-    m_towarModel->setKurs(ui->kursSpinBox->value());
-}
-
-void MainWindow::pln_off()
-{
-    ui->kursSpinBox->setEnabled(false);
-    ui->kurs_label->setEnabled(false);
-    m_towarModel->setKurs(-1);
 }
 
 void MainWindow::newOfferNumber()
@@ -543,8 +540,6 @@ void MainWindow::uiInit()
 
 void MainWindow::saveOffer()
 {
-    QString s;
-
     if(m_client == NULL)
     {
         QMessageBox::warning(this, "brak danych", "Aby zapisanie oferty w bazie danych było możliwe należy wybrać klienta.");
@@ -848,12 +843,12 @@ void MainWindow::makeDocument(QString *sDoc)
              "<tr><td>\n";
  //tabela
     *sDoc += m_towarModel->print(w,
-                                 ui->kol_kod->isChecked(),
-                                 ui->kol_towar->isChecked(),
                                  ui->kol_ilosc->isChecked(),
                                  ui->kol_cenaKat->isChecked(),
+                                 ui->kol_cenaPln->isChecked(),
                                  ui->kol_rabat->isChecked(),
-                                 ui->kol_cena->isChecked()
+                                 ui->kol_cena->isChecked(),
+                                 ui->kol_specyfikacja->isChecked()
                                  );
      *sDoc +=
             "</td></tr>\n"
@@ -884,21 +879,26 @@ void MainWindow::makeDocument(QString *sDoc)
              "\t\t<td>";
     *sDoc += ui->plainTextEdit_platnosc->toPlainText();
     *sDoc += "</td>\n"
-             "\t</tr>\n"
+             "\t</tr>\n";
+    QString other = ui->plainTextEdit_uwagi->toPlainText();
+    if(!other.isEmpty())
+    {
+        *sDoc += QString(
              "\t<tr>\n"
              "\t\t<td>Uwagi:</td>\n"
-             "\t\t<td>";
-    *sDoc += ui->plainTextEdit_uwagi->toPlainText().replace("\n", "<br />\n");
-    *sDoc += "</td>\n"
+             "\t\t<td>%1</td>\n"
              "\t</tr>\n"
-             "\t</table>\n"
-             "</td></tr>\n";
-//Pozdrowienia
-    *sDoc += "<tr><td>\n"
-             "\t";
+             ).arg(other.replace("\n", "<br />\n"));
+    }
+    *sDoc += "\t</table>\n"
+             "</td></tr>\n"
+             "<tr><td>\n"
+             "\t<p>"
+             "\n\t";
     *sDoc += ui->plainTextEdit_oferta->toPlainText();
     *sDoc += "<br>\n"
              "\tŁączymy pozdrowienia.\n"
+             "\t</p>"
              "\t<p align=center style=\"margin-left: 500\">\n"
              "\t\tOfertę przygotował";
     if(!m_currentUser->male()) *sDoc += "a";

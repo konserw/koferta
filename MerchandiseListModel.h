@@ -43,7 +43,7 @@ public:
     bool isIlosc(const QModelIndex & i) const;
 
     QHash<int, double> hash() const;
-    QString print(const int w, bool kod, bool towar, bool ilosc, bool cenaKat, bool rabat, bool cena) const;
+    QString print(const int w, bool ilosc, bool cenaKat, bool cenaPln, bool rabat, bool cena, bool specyfikacja) const;
 
     void save(const QString& offerId);
 

@@ -300,113 +300,108 @@ QHash<int, double> MerchandiseListModel::hash() const
     return hash;
 }
 
-QString MerchandiseListModel::print(const int w, bool kod, bool towar, bool ilosc, bool cenaKat, bool rabat, bool cena) const
+QString MerchandiseListModel::print(const int w, bool ilosc, bool cenaKat, bool cenaPln, bool rabat, bool cena, bool specyfikacja) const
 {
-    uint rows = m_list.count();
-
     QString waluta;
     if(pln()) waluta = "zł";
     else waluta= "€";
 
-    //szerokosc komorek tabeli
-    int kolumn = 3;
-    int z[8];
-    z[0] = 40; //lp
-   // z[1] = 80; //kod
-    //z2 - reszta szerokości
-    z[3] = 90; //cena
-    z[4] = 60; //rabat
-    z[5] = 90; //cena2
-    z[6] = 70; //ilosc+jedn
-    z[7] = 90; //wartość
+    const int columnWidthOrderNumber = 40;
+    const int columnWidthPrice = 90;
+    const int columnWidthNarrow = 70; //discount, quontity
 
-    z[1] = w - z[0] - z[7];
+    int columnWidthMerchandise = w - columnWidthOrderNumber - columnWidthPrice;
+    int cols = 3;
 
     if(cenaKat)
     {
-        z[1] -= z[3];
-        kolumn++;
+        columnWidthMerchandise -= columnWidthPrice;
+        cols++;
+    }
+    if(cenaPln)
+    {
+        columnWidthMerchandise -= columnWidthPrice;
+        cols++;
     }
     if(rabat)
     {
-        z[1] -= z[4];
-        kolumn++;
+        columnWidthMerchandise -= columnWidthNarrow;
+        cols++;
     }
     if(cena)
     {
-        z[1] -= z[5];
-        kolumn++;
+        columnWidthMerchandise -= columnWidthPrice;
+        cols++;
     }
     if(ilosc)
     {
-        z[1] -= z[6];
-        kolumn++;
+        columnWidthMerchandise -= columnWidthNarrow;
+        cols++;
     }
-    z[1] -= kolumn*4;
+    columnWidthMerchandise -= cols*4;
 
     QString doc;
     doc = QString("\t<table cellspacing=2>\n"
             "\t<thead><tr>\n"
-            "\t\t<td width=%1><b>%2</b></td>\n").arg(z[0]).arg("Lp.");
-    if(kod)
-        doc += QString("\t\t<td width=%1><b>%2</b></td>\n").arg(z[1]).arg("Towar");
-    if(ilosc)
-        doc += QString("\t\t<td width=%1 align = right><b>%2</b></td>\n").arg(z[6]).arg("Ilość");
+            "\t\t<td width=%1><b>%2</b></td>\n").arg(columnWidthOrderNumber).arg("Lp.");
+
+    doc += QString("\t\t<td width=%1><b>%2</b></td>\n").arg(columnWidthMerchandise).arg("Towar");
     if(cenaKat)
-        doc += QString("\t\t<td width=%1 align = right><b>%3 %2</b></td>\n").arg(z[3]).arg(waluta).arg("Cena kat.");
+        doc += QString("\t\t<td width=%1 align = right><b>%2</b></td>\n").arg(columnWidthPrice).arg("Cena kat. €");
+    if(cenaPln)
+        doc += QString("\t\t<td width=%1 align = right><b>%2</b></td>\n").arg(columnWidthPrice).arg("Cena kat. zł");
     if(rabat)
-        doc += QString("\t\t<td width=%1 align = right><b>%2</b></td>\n").arg(z[4]).arg("Rabat");
+        doc += QString("\t\t<td width=%1 align = right><b>%2</b></td>\n").arg(columnWidthNarrow).arg("Rabat");
     if(cena)
-        doc += QString("\t\t<td width=%1 align = right><b>%3 %2</b></td>\n").arg(z[5]).arg(waluta).arg("Cena");
-    doc += QString("\t\t<td width=%1 align = right><b>%3 %2</b></td>\n").arg(z[7]).arg(waluta).arg("Wartość");
+        doc += QString("\t\t<td width=%1 align = right><b>%3 %2</b></td>\n").arg(columnWidthPrice).arg(waluta).arg("Cena");
+    if(ilosc)
+        doc += QString("\t\t<td width=%1 align = right><b>%2</b></td>\n").arg(columnWidthNarrow).arg("Ilość");
+    doc += QString("\t\t<td width=%1 align = right><b>%3 %2</b></td>\n").arg(columnWidthPrice).arg(waluta).arg("Wartość");
     doc += "\t</tr></thead>\n";
 
+    uint rows = m_list.count();
     for(uint i=0; i<rows; ++i)
     {
         Merchandise* item = m_list[i];
-
-        double cenaKat;
         double cena;
         double wartosc;
-
         if(m_pln)
         {
-            cenaKat = item->cenaPln(m_kurs);
             cena = item->cena(m_kurs);
             wartosc = item->wartosc(m_kurs);
         }
         else
         {
-            cenaKat = item->cenaKat();
             cena = item->cena();
             wartosc = item->wartosc(m_kurs);
         }
 
         doc += "\t<tr>\n";
         doc += QString("\t\t<td>%1</td>\n").arg(i+1);
-        if(kod)
-            doc += QString("\t\t<td>%1</td>\n").arg(item->kod());
-        if(ilosc)
-            doc += QString("\t\t<td align = right>%1 %2</td>\n").arg(item->ilosc(), 0, 'f', 0).arg(item->unit());
+        doc += QString("\t\t<td>%1</td>\n").arg(item->kod());
         if(cenaKat)
-            doc += QString("\t\t<td align = right>%1</td>\n").arg(cenaKat, 0, 'f', 2);
+            doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cenaKat(), 0, 'f', 2);
+        if(cenaPln)
+            doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cenaPln(m_kurs), 0, 'f', 2);
         if(rabat)
             doc += QString("\t\t<td align = right>%1%</td>\n").arg(item->rabat());
         if(cena)
             doc += QString("\t\t<td align = right>%1</td>\n").arg(cena, 0, 'f', 2);
+        if(ilosc)
+            doc += QString("\t\t<td align = right>%1 %2</td>\n").arg(item->ilosc(), 0, 'f', 0).arg(item->unit());
         doc += QString("\t\t<td align = right>%1</td>\n").arg(wartosc, 0, 'f', 2);
         doc += "\t</tr>\n";
-        if(towar)
+        if(specyfikacja)
         {
             doc += "\t<tr style=\"font-size:12px; font-family:\"Times New Roman\",Georgia,Serif;\">\n";
             doc += "\t\t<td></td>\n";
-            doc += QString("\t\t<td colspan=%1>%2</td>\n").arg(kolumn-1).arg(item->nazwa());
+            doc += QString("\t\t<td colspan=%1>%2</td>\n").arg(cols-1).arg(item->nazwa());
             doc += "\t</tr>\n";
         }
     }
 
     doc += "\t<tr style=\"font-weight:bold;\">\n";
-    doc += QString("\t\t<td align = right colspan=%1>Razem %2:</td>\n").arg(kolumn-1).arg(waluta);
+    doc += QString("\t\t<td align = right colspan=%1>Razem %2:</td>\n").arg(cols-1).arg(waluta);
     doc += QString("\t\t<td align = right>%1</td>\n").arg(przeliczSume(), 0, 'f', 2);
     doc += "\t</tr>\n";
     doc += "\t</table>\n";

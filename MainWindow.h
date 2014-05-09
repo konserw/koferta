@@ -53,7 +53,6 @@ public slots:
     void connectedAs(const User& user);
     void loadOfferFromDatabase(const QString &offerId);
 
-
     //odświerzanie texteditów drugiej zakładce
     void dostawaRef(int);
     void platnoscRef(int);
@@ -65,12 +64,8 @@ public slots:
     void checkNr(bool);
     void checkData(bool);
 
-
     //opcje wydruku
-    ///włącza przeliczanie euro na pln
-    void pln_on();
-    ///wyłącza przeliczanie euro na pln
-    void pln_off();
+    void changeCurrency(bool pln);
     ///"drukowanie" dokumentu do podglądu lub pdf
     void print(QPrinter *printer);
     ///tworzy dokument jako kod htm do QTextDocument
