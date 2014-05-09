@@ -73,7 +73,7 @@ QVariant MerchandiseSearchModel::data(const QModelIndex &index, int role) const
 
 QVariant MerchandiseSearchModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if(!role == Qt::DisplayRole || orientation == Qt::Vertical)
+    if(!(role == Qt::DisplayRole || orientation == Qt::Vertical))
         return QVariant();
 
     switch(section)
