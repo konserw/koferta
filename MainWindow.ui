@@ -674,19 +674,10 @@
         </item>
        </layout>
        <zorder>grupBox_zapytanie</zorder>
-       <zorder>plainTextEdit_dostawa</zorder>
-       <zorder>plainTextEdit_termin</zorder>
-       <zorder>plainTextEdit_platnosc</zorder>
-       <zorder>plainTextEdit_oferta</zorder>
-       <zorder>label_uwagi</zorder>
-       <zorder>plainTextEdit_uwagi</zorder>
-       <zorder>verticalSpacer_2</zorder>
-       <zorder>verticalSpacer_6</zorder>
        <zorder>kolumny</zorder>
        <zorder>waluta</zorder>
        <zorder>verticalSpacer_7</zorder>
        <zorder>groupBox</zorder>
-       <zorder>plainTextEdit_klient</zorder>
       </widget>
      </widget>
     </item>
@@ -740,7 +731,7 @@
    </widget>
    <widget class="QMenu" name="menuConnect">
     <property name="title">
-     <string>Połaczenie</string>
+     <string>Połączenie</string>
     </property>
     <addaction name="actionConnect"/>
     <addaction name="actionDisconnect"/>

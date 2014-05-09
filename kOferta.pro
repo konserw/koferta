@@ -26,7 +26,7 @@ CONFIG += c++11
 
 TEMPLATE = app
 
-DEFINES += VER=2.42
+DEFINES += VER=2.43
 
 win32 {
     RC_FILE = res/koferta.rc
