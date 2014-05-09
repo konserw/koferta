@@ -1,10 +1,10 @@
-#include "EdycjaKombo.h"
-#include "ui_EdycjaKombo.h"
+#include "AddConditionDialog.h"
+#include "ui_AddConditionDialog.h"
 #include "Database.h"
 
-EdycjaKombo::EdycjaKombo(const QString &typ, QWidget *parent) :
+AddConditionDialog::AddConditionDialog(const QString &typ, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::EdycjaKombo)
+    ui(new Ui::AddConditionDialog)
 {
     ui->setupUi(this);
 
@@ -14,15 +14,14 @@ EdycjaKombo::EdycjaKombo(const QString &typ, QWidget *parent) :
     ui->label_typ->setText(tr("Dodaj nową opcję dla pola %1").arg(m_typ));
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
-//    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(close()));
 }
 
-EdycjaKombo::~EdycjaKombo()
+AddConditionDialog::~AddConditionDialog()
 {
     delete ui;
 }
 
-void EdycjaKombo::ok()
+void AddConditionDialog::ok()
 {
     QString sh = ui->lineEdit_sort->text();
     QString lo = ui->textEdit->toPlainText();

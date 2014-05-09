@@ -4,22 +4,22 @@
 #include <QDialog>
 
 namespace Ui {
-class EdycjaKombo;
+class AddConditionDialog;
 }
 
-class EdycjaKombo : public QDialog
+class AddConditionDialog : public QDialog
 {
     Q_OBJECT
     
 public:
-    explicit EdycjaKombo(const QString& typ, QWidget *parent = 0);
-    ~EdycjaKombo();
+    explicit AddConditionDialog(const QString& typ, QWidget *parent = 0);
+    ~AddConditionDialog();
 
 public slots:
     void ok();
     
 private:
-    Ui::EdycjaKombo *ui;
+    Ui::AddConditionDialog *ui;
 
     QString m_typ;
 };

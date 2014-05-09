@@ -62,7 +62,6 @@ HEADERS += \
     Macros.h \
     MainWindow.h \
     User.h \
-    EdycjaKombo.h  \
     functions.h \
     Logger.h \
     Merchandise.h \
@@ -80,12 +79,12 @@ HEADERS += \
     OfferSearch.h \
     CustomerSelection.h \
     SettingsDialog.h \
-    LoginDialog.h
+    LoginDialog.h \
+    AddConditionDialog.h
 
 FORMS += \
     LoadDialog.ui \
     MainWindow.ui \
-    EdycjaKombo.ui \
     MerchandiseSearch.ui \
     CustomerNew.ui \
     CustomerEdit.ui \
@@ -93,7 +92,8 @@ FORMS += \
     OfferSearch.ui \
     CustomerSelection.ui \
     SettingsDialog.ui \
-    LoginDialog.ui
+    LoginDialog.ui \
+    AddConditionDialog.ui
 
 SOURCES += \
     Database.cpp \
@@ -101,7 +101,6 @@ SOURCES += \
     Main.cpp \
     MainWindow.cpp \
     User.cpp \
-    EdycjaKombo.cpp \
     Logger.cpp \
     Merchandise.cpp \
     MerchandiseSearch.cpp \
@@ -118,7 +117,8 @@ SOURCES += \
     OfferSearch.cpp \
     CustomerSelection.cpp \
     SettingsDialog.cpp \
-    LoginDialog.cpp
+    LoginDialog.cpp \
+    AddConditionDialog.cpp
 
 RESOURCES += \
     res/zasoby.qrc

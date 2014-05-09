@@ -38,7 +38,7 @@
 #include "LoadDialog.h"
 #include "User.h"
 #include "Macros.h"
-#include "EdycjaKombo.h"
+#include "AddConditionDialog.h"
 #include "SettingsDialog.h"
 
 #include "CustomerNew.h"
@@ -623,7 +623,7 @@ void MainWindow::loadOfferFromDatabase(const QString& offerId)
 
 void MainWindow::dostawaNew()
 {
-    EdycjaKombo pop("dostawa");
+    AddConditionDialog pop("dostawa");
     pop.exec();
     dostawaModel->select();
 }
@@ -916,21 +916,21 @@ void MainWindow::makeDocument(QString *sDoc)
 
 void MainWindow::ofertaNew()
 {
-    EdycjaKombo pop("oferta");
+    AddConditionDialog pop("oferta");
     pop.exec();
     ofertaModel->select();
 }
 
 void MainWindow::terminNew()
 {
-    EdycjaKombo pop("termin");
+    AddConditionDialog pop("termin");
     pop.exec();
     terminModel->select();
 }
 
 void MainWindow::platnoscNew()
 {
-    EdycjaKombo pop("platnosc");
+    AddConditionDialog pop("platnosc");
     pop.exec();
     platnoscModel->select();
 }
