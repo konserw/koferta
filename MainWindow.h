@@ -47,23 +47,12 @@ public:
     ~MainWindow();
 
 public slots:
-    void popWyborKlienta();
-    void popWyborTowaru();
+    void selectClient();
+    void setClient(const QSqlRecord&);
 
-    ///wczytuje ofertę o połączone z dialogiem wczytywanie
-    void loadOffer(const QString &offerId);
+    void connectedAs(const User& user);
+    void loadOfferFromDatabase(const QString &offerId);
 
-    //dodawanie opcji do kombosów
-    void dostawaNew();
-    void platnoscNew();
-    void terminNew();
-    void ofertaNew();
-
-    //obsługa głównej tabeli
-    ///ustawia rabat dla wszystkich pozycji jednocześnie
-    void rabat();
-    ///usuwanie wiersza z tabeli
-    void del();
 
     //odświerzanie texteditów drugiej zakładce
     void dostawaRef(int);
@@ -71,30 +60,26 @@ public slots:
     void terminRef(int);
     void ofertaRef(int);
     void zapytanieRef();
-    ///zmiana nastąpiła w kalendarzu, wprowadzenie jej do dateedita
-    void calChanged(const QDate&);
+
+    void setInquiryDate(const QDate&);
     void checkNr(bool);
     void checkData(bool);
-    ///ustawia wybranego klienta - połączone z sygnałem z dialogu klient
-    void clientChanged(const QSqlRecord&);
+
 
     //opcje wydruku
     ///włącza przeliczanie euro na pln
     void pln_on();
     ///wyłącza przeliczanie euro na pln
     void pln_off();
-
-    //wydruk
-    ///podgląd wydruku
-    void printPrev();
-    ///export do pdf
-    void printPdf();
-    ///zapis jako htm
-    void printHtm();
     ///"drukowanie" dokumentu do podglądu lub pdf
     void print(QPrinter *printer);
     ///tworzy dokument jako kod htm do QTextDocument
     void makeDocument(QString *sDoc);
+
+/*buttony na 1 zakladce*/
+    void selectMerchandise();
+    void globalDiscount();
+    void removeRow();
 
 /*menu*/
     //kOferta
@@ -102,27 +87,29 @@ public slots:
     void databaseDisconnect();
     void changeSettings();
 
-    //menu oferta
-    void nowa();
-    void zapisz();
-    void popLoadDialog();
-    void nowyNumer();
+    //oferta
+    void newOffer();
+    void saveOffer();
+    void loadOffer();
+    void newOfferNumber();
 
+    //export
+    void printPrev();
+    void printPdf();
+    void printHtm();
 
     //baza
-    ///wyświetla dialog dodający klienta
     void dodajKlient();
-    ///wyświetla dialog edycji klientów
     void edytujKlient();
-    ///wyświetla dialog dodający towar
     void dodajTowar();
+    //dodawanie opcji do kombosów
+    void dostawaNew();
+    void platnoscNew();
+    void terminNew();
+    void ofertaNew();
 
     //help
-    ///wyświetla informacje o programie
     void about();
-    //o qt - wbudowane
-
-    void connectedAs(const User& user);
 
 protected:
     void writeSettings();
@@ -136,24 +123,24 @@ private:
     ///ustawia tytuł okna
     void setTitle(QString*);
     ///odblokowanie interfejsu i inicjacja tabeli
-    void init();
+    void uiInit();
     void setMenusEnabled(bool en);
     void uiReset();
 
     //wewnętrzne zmienne
-    QString* nr_oferty;
-    QString* data;
-    double kurs;
-    bool pln;
-    bool htm;
+    QString* m_offerNumber;
+    QString* m_date;
+    double m_kurs;
+    bool m_pln;
+    bool m_htm;
 
     QSqlTableModel* dostawaModel;
     QSqlTableModel* platnoscModel;
     QSqlTableModel* terminModel;
     QSqlTableModel* ofertaModel;
 
-    QCalendarWidget* calendarWidget;
-    QSqlRecord* klient;
+    QCalendarWidget* m_calendarWidget;
+    QSqlRecord* m_client;
 
     User* m_currentUser;
     MerchandiseListModel* m_towarModel;

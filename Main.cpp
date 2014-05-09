@@ -74,17 +74,5 @@ int main(int argc, char *argv[])
 
     qDebug() << "launching application";
 
-    try
-    {
-        return app.exec();
-    }
-    catch (std::exception& e)
-    {
-        qCritical() << "[Mainwindow] Standard exception: " << e.what();
-    }
-    catch(...)
-    {
-        qCritical() << "[Mainwindow] Unknown exception";
-    }
-    return 1;
+    return app.exec();
 }
