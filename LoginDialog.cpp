@@ -21,12 +21,12 @@
 #include <QString>
 #include <QSettings>
 
-#include "Logowanie.h"
-#include "ui_Logowanie.h"
+#include "LoginDialog.h"
+#include "ui_LoginDialog.h"
 #include "User.h"
 #include "Database.h"
 
-Logowanie::~Logowanie()
+LoginDialog::~LoginDialog()
 {
     qDebug() <<  "destruktor Logowanie";
 
@@ -34,9 +34,9 @@ Logowanie::~Logowanie()
     delete m_kOfertaLogo;
 }
 
-Logowanie::Logowanie() :
+LoginDialog::LoginDialog() :
     QDialog(nullptr),
-    ui(new Ui::Logowanie)
+    ui(new Ui::LoginDialog)
 {
     qDebug() << "Konstruktor Logowanie";
 
@@ -58,16 +58,16 @@ Logowanie::Logowanie() :
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
-    QObject::connect(m_db, &Database::connectionSuccess, this, &Logowanie::connectionSuccess);
-    QObject::connect(m_db, &Database::connectionSuccess, this, &Logowanie::accept);
-    QObject::connect(m_db, &Database::newUsers, this, &Logowanie::updateUserList);
+    QObject::connect(m_db, &Database::connectionSuccess, this, &LoginDialog::connectionSuccess);
+    QObject::connect(m_db, &Database::connectionSuccess, this, &LoginDialog::accept);
+    QObject::connect(m_db, &Database::newUsers, this, &LoginDialog::updateUserList);
     QObject::connect(m_db, &Database::changeStatus, ui->info, &QLabel::setText);
-    connect(this, &Logowanie::userListRequested, m_db, &Database::getUsersList);
+    connect(this, &LoginDialog::userListRequested, m_db, &Database::getUsersList);
 //    m_db->setupInitialConnection();
     emit(userListRequested());
 }
 
-void Logowanie::updateUserList(const QStringList& users)
+void LoginDialog::updateUserList(const QStringList& users)
 {
     ui->comboBox->clear();
     ui->comboBox->addItems(users);
@@ -76,7 +76,7 @@ void Logowanie::updateUserList(const QStringList& users)
         ui->comboBox->setCurrentText(m_lastUser);
 }
 
-void Logowanie::ok()
+void LoginDialog::ok()
 {
     QString pass = ui->lineEdit->text();
     if(pass.isEmpty())

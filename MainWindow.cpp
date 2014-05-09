@@ -34,7 +34,7 @@
 #include "ui_MainWindow.h"
 
 #include "Database.h"
-#include "Logowanie.h"
+#include "LoginDialog.h"
 #include "LoadDialog.h"
 #include "User.h"
 #include "Macros.h"
@@ -334,9 +334,9 @@ void MainWindow::connectedAs(const User &user)
 
 void MainWindow::databaseConnect()
 {
-    Logowanie loginWindow;
+    LoginDialog loginWindow;
 
-    connect(&loginWindow, &Logowanie::connectionSuccess, this, &MainWindow::connectedAs);
+    connect(&loginWindow, &LoginDialog::connectionSuccess, this, &MainWindow::connectedAs);
 
     try
     {

@@ -59,7 +59,6 @@ DEPENDPATH += . res
 HEADERS += \
     Database.h \
     LoadDialog.h \
-    Logowanie.h \
     Macros.h \
     MainWindow.h \
     User.h \
@@ -80,11 +79,11 @@ HEADERS += \
     CustomerSearch.h \
     OfferSearch.h \
     CustomerSelection.h \
-    SettingsDialog.h
+    SettingsDialog.h \
+    LoginDialog.h
 
 FORMS += \
     LoadDialog.ui \
-    Logowanie.ui \
     MainWindow.ui \
     EdycjaKombo.ui \
     MerchandiseSearch.ui \
@@ -93,12 +92,12 @@ FORMS += \
     MerchandiseNew.ui \
     OfferSearch.ui \
     CustomerSelection.ui \
-    SettingsDialog.ui
+    SettingsDialog.ui \
+    LoginDialog.ui
 
 SOURCES += \
     Database.cpp \
     LoadDialog.cpp \
-    Logowanie.cpp \
     Main.cpp \
     MainWindow.cpp \
     User.cpp \
@@ -118,7 +117,8 @@ SOURCES += \
     CustomerSearch.cpp \
     OfferSearch.cpp \
     CustomerSelection.cpp \
-    SettingsDialog.cpp
+    SettingsDialog.cpp \
+    LoginDialog.cpp
 
 RESOURCES += \
     res/zasoby.qrc

@@ -26,16 +26,16 @@ class User;
 class Database;
 
 namespace Ui {
-    class Logowanie;
+    class LoginDialog;
 }
 
-class Logowanie : public QDialog
+class LoginDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit Logowanie();                       //konstruktor inicjalizujący elementy interface, user** służy do przekazania zwrotnego danych wybranego użytkownika
-    ~Logowanie();
+    explicit LoginDialog();                       //konstruktor inicjalizujący elementy interface, user** służy do przekazania zwrotnego danych wybranego użytkownika
+    ~LoginDialog();
 
 public slots:
     void ok();                                          //slot obsługujący przycisk ok - sprawdza zgodność skrótu wpisanego hasła ze skrótem zapisanym w klasie user i tworzy połączenie z bazą MySQL (klasa QSqlDatabase)
@@ -46,7 +46,7 @@ signals:
     void userListRequested();
 
 private:
-    Ui::Logowanie *ui;
+    Ui::LoginDialog *ui;
 
     QPixmap* m_kOfertaLogo;
     Database* m_db;
