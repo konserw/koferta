@@ -71,7 +71,7 @@ QVariant MerchandiseSelectionModel::data(const QModelIndex &index, int role) con
 
 QVariant MerchandiseSelectionModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if(!(role == Qt::DisplayRole || orientation == Qt::Vertical))
+    if(role != Qt::DisplayRole || orientation == Qt::Vertical)
         return QVariant();
 
     switch(section)
