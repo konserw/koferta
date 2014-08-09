@@ -363,16 +363,16 @@ QString MerchandiseListModel::print(const int w, bool ilosc, bool cenaKat, bool 
     for(uint i=0; i<rows; ++i)
     {
         Merchandise* item = m_list[i];
-        double cena;
+        double dCena;
         double wartosc;
         if(m_pln)
         {
-            cena = item->cena(m_kurs);
+            dCena = item->cena(m_kurs);
             wartosc = item->wartosc(m_kurs);
         }
         else
         {
-            cena = item->cena();
+            dCena = item->cena();
             wartosc = item->wartosc(m_kurs);
         }
 
@@ -386,7 +386,7 @@ QString MerchandiseListModel::print(const int w, bool ilosc, bool cenaKat, bool 
         if(rabat)
             doc += QString("\t\t<td align = right>%1%</td>\n").arg(item->rabat());
         if(cena)
-            doc += QString("\t\t<td align = right>%1</td>\n").arg(cena, 0, 'f', 2);
+            doc += QString("\t\t<td align = right>%1</td>\n").arg(dCena, 0, 'f', 2);
         if(ilosc)
             doc += QString("\t\t<td align = right>%1 %2</td>\n").arg(item->ilosc(), 0, 'f', 0).arg(item->unit());
         doc += QString("\t\t<td align = right>%1</td>\n").arg(wartosc, 0, 'f', 2);
