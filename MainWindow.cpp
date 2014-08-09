@@ -714,7 +714,7 @@ void MainWindow::printHtm()
 
     QFile file(filePath);
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
-        DEBUG << "plik " << filePath << " niedostępny";
+        qDebug() << "plik " << filePath << " niedostępny";
         QMessageBox::warning(NULL, "error", "Nie udało się uzyskać dostępu do pliku");
         return;
     }

@@ -33,7 +33,7 @@ CustomerEdit::CustomerEdit(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::CustomerEdit)
 {
-    DEBUG << "konstruktor";
+    qDebug() << "konstruktor";
 
     ui->setupUi(this);
 
@@ -83,7 +83,7 @@ void CustomerEdit::app()
     s += "' WHERE id=";
     s += id;
 
-    EXEC(s);
+    EXEC_SILENT(s);
 }
 
 void CustomerEdit::del()
@@ -91,13 +91,13 @@ void CustomerEdit::del()
     if(QMessageBox::warning(this, "Usuń klienta", "Czy na pewno chcesz usunąć tego klienta z bazy danych?", QMessageBox::Ok, QMessageBox::Cancel)==QMessageBox::Cancel)
         return;
 
-    DEBUG <<  "usuwanie klienta id: " << id;
+    qDebug() <<  "usuwanie klienta id: " << id;
     QSqlQuery q;
     QString s;
     s = "DELETE FROM klient WHERE id=";
     s += id;
 
-    EXEC(s);
+    EXEC_SILENT(s);
 
     ui->skrocona->clear();
     ui->pelna->clear();
