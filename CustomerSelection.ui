@@ -42,7 +42,7 @@
      <item>
       <widget class="QPushButton" name="pushButton_exit">
        <property name="text">
-        <string>Anuluj</string>
+        <string>Wybierz</string>
        </property>
       </widget>
      </item>
