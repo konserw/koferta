@@ -32,3 +32,8 @@ W czasie projektowania, systemu przeprowadzane były konsultacje z jej pracownik
 
 Podczas testów i wdrażania systemu wykorzystano issue tracker platformy bitbucklet.com
 
+##To do
+* zastąpienie makra EXEC_SILENT i funkcji insert_towar etc. odpowiednimi funkcjami w klasie bazy danych
+* Rodzielenie oferty od MainWindow poprzez nową klasę dla oferty
+* Klasa Klient zamiast sqlrecord
+* Wszędzie gdzie się da przeniesienie SQLowych rzeczy do klasy bazy danych
