@@ -28,6 +28,13 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
+       <widget class="QCheckBox" name="checkBox_testDB">
+        <property name="text">
+         <string>Testowa baza danych</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="ssl_checkBox">
         <property name="text">
          <string>Szyfrowane połączenie</string>

@@ -87,6 +87,10 @@ Database::Database(QObject* parent) :
 
     m_sslEnabled = settings.value("SSL enabled").toBool();
     m_host = settings.value("selected host", "localhost").toString();
+    if(settings.value("testDB").toBool())
+        m_schema = "kOferta_devel";
+    else
+        m_schema = "kOferta";
 
     settings.endGroup();
 
@@ -122,10 +126,10 @@ void Database::getUsersList()
 
     if(!openDatabaseConnection())
     {
-        emit changeStatus(tr("Połączenie z bazą danych na %1 nie powiodło się.").arg(m_host));
+        emit changeStatus(tr("Połączenie z bazą danych %1 na %2 nie powiodło się.").arg(m_schema, m_host));
         return;
     }
-    emit changeStatus(tr("Połączono z bazą danych na %1").arg(m_host));
+    emit changeStatus(tr("Połączono z bazą danych %1 na %2").arg(m_schema, m_host));
 
     QStringList userList = usersList();
     emit newUsers(userList);
@@ -133,11 +137,11 @@ void Database::getUsersList()
 
 void Database::setupConnection(const QString& user, const QString pass)
 {
-    emit changeStatus(tr("Łączenie z bazą danych na %1").arg(m_host)); //??
+    emit changeStatus(tr("Łączenie z bazą danych %1 na %2").arg(m_schema, m_host)); //??
 
     m_database->setHostName(m_host);
     m_database->setPort(3306);
-    m_database->setDatabaseName("kOferta");
+    m_database->setDatabaseName(m_schema);
     m_database->setUserName(user);
     m_database->setPassword(pass);
 

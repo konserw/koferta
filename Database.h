@@ -38,6 +38,7 @@ protected:
     inline bool openDatabaseConnection();
 
     QString m_host;
+    QString m_schema;
     bool m_sslEnabled;
 
 };
