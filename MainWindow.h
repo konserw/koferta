@@ -20,6 +20,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "TermItem.h"
 
 class QSqlTableModel;
 class QModelIndex;
@@ -47,17 +48,9 @@ public:
     ~MainWindow();
 
 public slots:
-    void selectClient();
-    void setClient(const QSqlRecord&);
-
     void connectedAs(const User& user);
     void loadOfferFromDatabase(const QString &offerId);
 
-    //odświerzanie texteditów drugiej zakładce
-    void dostawaRef(int);
-    void platnoscRef(int);
-    void terminRef(int);
-    void ofertaRef(int);
     void zapytanieRef();
 
     void setInquiryDate(const QDate&);
@@ -75,6 +68,15 @@ public slots:
     void selectMerchandise();
     void globalDiscount();
     void removeRow();
+
+/*buttony na 2 zakladce*/
+    void selectClient();
+    void setClient(const QSqlRecord&);
+
+    void chooseOfferTerms();
+    void choosePaymentTerms();
+    void chooseShippingTerms();
+    void chooseShipmentTime();
 
 /*menu*/
     //kOferta
@@ -129,16 +131,21 @@ private:
     bool m_pln;
     bool m_htm;
 
-    QSqlTableModel* dostawaModel;
-    QSqlTableModel* platnoscModel;
-    QSqlTableModel* terminModel;
-    QSqlTableModel* ofertaModel;
-
     QCalendarWidget* m_calendarWidget;
     QSqlRecord* m_client;
 
     User* m_currentUser;
     MerchandiseListModel* m_towarModel;
+
+    void setOfferTerms(TermItem term);
+    void setPaymentTerms(TermItem term);
+    void setShippingTerms(TermItem term);
+    void setShipmentTime(TermItem term);
+
+    TermItem m_shippingTerm;
+    TermItem m_shipmentTime;
+    TermItem m_offerTerm;
+    TermItem m_paymentTerm;
 };
 
 #endif // MAINWINDOW_H

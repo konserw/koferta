@@ -189,6 +189,118 @@ User Database::userInfo(const QString &name)
     return User(r.value("uid").toInt(), name, r.value("phone").toString(), r.value("mail").toString(), r.value("adress").toString(), r.value("male").toBool(), r.value("nrOferty").toInt());
 }
 
+TermModel* Database::paymentTermsModel()
+{
+    TermModel* terms = new TermModel;
+
+    QSqlTableModel* model = new QSqlTableModel;
+    model->setTable("platnosc");
+    model->select();
+
+    for (int i = 0; i < model->rowCount(); ++i)
+    {
+        QSqlRecord rec = model->record(i);
+        terms->insert(new TermItem(rec.value(0).toInt(), rec.value(1).toString(), rec.value(2).toString()));
+    }
+
+    return terms;
+}
+
+TermModel* Database::shippingTermsModel()
+{
+    TermModel* terms = new TermModel;
+
+    QSqlTableModel* model = new QSqlTableModel;
+    model->setTable("dostawa");
+    model->select();
+
+    for (int i = 0; i < model->rowCount(); ++i)
+    {
+        QSqlRecord rec = model->record(i);
+        terms->insert(new TermItem(rec.value(0).toInt(), rec.value(1).toString(), rec.value(2).toString()));
+    }
+
+    return terms;
+}
+
+TermModel* Database::shipmentTimeModel()
+{
+    TermModel* terms = new TermModel;
+
+    QSqlTableModel* model = new QSqlTableModel;
+    model->setTable("termin");
+    model->select();
+
+    for (int i = 0; i < model->rowCount(); ++i)
+    {
+        QSqlRecord rec = model->record(i);
+        terms->insert(new TermItem(rec.value(0).toInt(), rec.value(1).toString(), rec.value(2).toString()));
+    }
+
+    return terms;
+}
+
+TermModel* Database::offerTermsModel()
+{
+    TermModel* terms = new TermModel;
+
+    QSqlTableModel* model = new QSqlTableModel;
+    model->setTable("oferta");
+    model->select();
+
+    for (int i = 0; i < model->rowCount(); ++i)
+    {
+        QSqlRecord rec = model->record(i);
+        terms->insert(new TermItem(rec.value(0).toInt(), rec.value(1).toString(), rec.value(2).toString()));
+    }
+
+    return terms;
+}
+
+TermItem Database::paymentTerm(int id)
+{
+    QSqlTableModel* model = new QSqlTableModel;
+    model->setTable("platnosc");
+    model->setFilter(QString("id = %1").arg(id));
+    model->select();
+
+    QSqlRecord rec = model->record(0);
+    return TermItem(rec.value(0).toInt(), rec.value(1).toString(), rec.value(2).toString());
+}
+
+TermItem Database::shippingTerm(int id)
+{
+    QSqlTableModel* model = new QSqlTableModel;
+    model->setTable("dostawa");
+    model->setFilter(QString("id = %1").arg(id));
+    model->select();
+
+    QSqlRecord rec = model->record(0);
+    return TermItem(rec.value(0).toInt(), rec.value(1).toString(), rec.value(2).toString());
+}
+
+TermItem Database::shipmentTime(int id)
+{
+    QSqlTableModel* model = new QSqlTableModel;
+    model->setTable("termin");
+    model->setFilter(QString("id = %1").arg(id));
+    model->select();
+
+    QSqlRecord rec = model->record(0);
+    return TermItem(rec.value(0).toInt(), rec.value(1).toString(), rec.value(2).toString());
+}
+
+TermItem Database::offerTerm(int id)
+{
+    QSqlTableModel* model = new QSqlTableModel;
+    model->setTable("oferta");
+    model->setFilter(QString("id = %1").arg(id));
+    model->select();
+
+    QSqlRecord rec = model->record(0);
+    return TermItem(rec.value(0).toInt(), rec.value(1).toString(), rec.value(2).toString());
+}
+
 void Database::setupSSL()
 {
 #ifdef WIN32

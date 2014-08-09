@@ -51,43 +51,7 @@
 #include "MerchandiseSelection.h"
 #include "MerchandiseListModel.h"
 
-MainWindow::~MainWindow()
-{
-    qDebug() << "destruktor mainwindow - start";
-
-    delete ui;
-    delete m_offerNumber;
-    delete m_date;
-    delete m_calendarWidget;
-    delete dostawaModel;
-    delete platnoscModel;
-    delete terminModel;
-    delete ofertaModel;
-    delete m_client;
-
-    qDebug() << "destruktor mainwindow - koniec";
-}
-
-void MainWindow::setMenusEnabled(bool en)
-{
-    ui->menuOferta->setEnabled(en);
-    ui->menuKlient->setEnabled(en);
-    ui->actionDisconnect->setEnabled(en);
-    ui->actionConnect->setEnabled(!en);
-}
-
-void MainWindow::uiReset()
-{
-    ui->tabWidget->setCurrentIndex(0);
-
-    this->setTitle(NULL);
-    ui->tab->setEnabled(false);
-    ui->tab_2->setEnabled(false);
-
-    ui->menuExport->setEnabled(false);
-    ui->actionSave->setEnabled(false);
-    ui->actionNR->setEnabled(false);
-}
+#include "TermsChooserDialog.h"
 
 MainWindow::MainWindow():
     QMainWindow(nullptr),
@@ -164,12 +128,12 @@ MainWindow::MainWindow():
     connect(ui->actionDodaj_warunki_ostawy, &QAction::triggered, this, &MainWindow::dostawaNew);
     connect(ui->actionDodaj_warunki_platnosci, &QAction::triggered, this, &MainWindow::platnoscNew);
 
-    //Pozostałe informacje - odświerzanie zawartości pól tekstowych
     connect(ui->commandLinkButton_klient, &QCommandLinkButton::clicked, this, &MainWindow::selectClient);
-    connect(ui->comboBox_dostawa, SIGNAL(currentIndexChanged(int)), this, SLOT(dostawaRef(int)));
-    connect(ui->comboBox_oferta, SIGNAL(currentIndexChanged(int)), this, SLOT(ofertaRef(int)));
-    connect(ui->comboBox_platnosc, SIGNAL(currentIndexChanged(int)), this, SLOT(platnoscRef(int)));
-    connect(ui->comboBox_termin, SIGNAL(currentIndexChanged(int)), this, SLOT(terminRef(int)));
+    connect(ui->commandLinkButton_offerTerms, &QCommandLinkButton::clicked, this, &MainWindow::chooseOfferTerms);
+    connect(ui->commandLinkButton_paymentTerms, &QCommandLinkButton::clicked, this, &MainWindow::choosePaymentTerms);
+    connect(ui->commandLinkButton_shipingTerms, &QCommandLinkButton::clicked, this, &MainWindow::chooseShippingTerms);
+    connect(ui->commandLinkButton_shipmentTime, &QCommandLinkButton::clicked, this, &MainWindow::chooseShipmentTime);
+
     connect(m_calendarWidget, SIGNAL(clicked(QDate)), this, SLOT(setInquiryDate(QDate)));
     connect(ui->pushButton_zapytanieData, SIGNAL(clicked()), m_calendarWidget, SLOT(show()));
     connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), this, SLOT(zapytanieRef()));
@@ -177,27 +141,70 @@ MainWindow::MainWindow():
     connect(ui->checkBox_zapytanieData, SIGNAL(toggled(bool)), this, SLOT(checkData(bool)));
     connect(ui->checkBox_zapytanieNr, SIGNAL(toggled(bool)), this, SLOT(checkNr(bool)));
 
-/**
- Pozostałe informacje
-**/
     ui->checkBox_zapytanieData->setChecked(true);
     ui->lineEdit_zapytanieData->setText(QDate::currentDate().toString("dd.MM.yyyy"));
     ui->checkBox_zapytanieNr->setChecked(false);
     ui->plainTextEdit_zapytanie->setReadOnly(true);
 
-    dostawaModel = nullptr;
-    ui->plainTextEdit_dostawa->setReadOnly(true);
-
-    terminModel = nullptr;
-    ui->plainTextEdit_termin->setReadOnly(true);
-
-    platnoscModel = nullptr;
-    ui->plainTextEdit_platnosc->setReadOnly(true);
-
-    ofertaModel = nullptr;
-    ui->plainTextEdit_oferta->setReadOnly(true);
-
     setMenusEnabled(false);
+}
+
+MainWindow::~MainWindow()
+{
+    qDebug() << "destruktor mainwindow - start";
+
+    delete ui;
+    delete m_offerNumber;
+    delete m_date;
+    delete m_calendarWidget;
+    delete m_client;
+
+    qDebug() << "destruktor mainwindow - koniec";
+}
+
+void MainWindow::setMenusEnabled(bool en)
+{
+    ui->menuOferta->setEnabled(en);
+    ui->menuKlient->setEnabled(en);
+    ui->actionDisconnect->setEnabled(en);
+    ui->actionConnect->setEnabled(!en);
+}
+
+void MainWindow::uiReset()
+{
+    ui->tabWidget->setCurrentIndex(0);
+
+    this->setTitle(NULL);
+    ui->tab->setEnabled(false);
+    ui->tab_2->setEnabled(false);
+
+    ui->menuExport->setEnabled(false);
+    ui->actionSave->setEnabled(false);
+    ui->actionNR->setEnabled(false);
+}
+
+void MainWindow::setOfferTerms(TermItem term)
+{
+    m_offerTerm = term;
+    ui->plainTextEdit_oferta->setPlainText(term.longDesc());
+}
+
+void MainWindow::setPaymentTerms(TermItem term)
+{
+    m_paymentTerm = term;
+    ui->plainTextEdit_platnosc->setPlainText(term.longDesc());
+}
+
+void MainWindow::setShippingTerms(TermItem term)
+{
+    m_shippingTerm = term;
+    ui->plainTextEdit_dostawa->setPlainText(term.longDesc());
+}
+
+void MainWindow::setShipmentTime(TermItem term)
+{
+    m_shipmentTime = term;
+    ui->plainTextEdit_termin->setPlainText(term.longDesc());
 }
 
 void MainWindow::writeSettings()
@@ -294,32 +301,6 @@ void MainWindow::connectedAs(const User &user)
     qDebug() << "Zalogowano jako uzytkownik " << m_currentUser->name();
 
     setMenusEnabled(true);
-
-    dostawaModel = new QSqlTableModel;
-    dostawaModel->setTable("dostawa");
-    dostawaModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    dostawaModel->select();
-    ui->comboBox_dostawa->setModel(dostawaModel);
-    ui->comboBox_dostawa->setModelColumn(1);
-
-    terminModel = new QSqlTableModel;
-    terminModel->setTable("termin");
-    terminModel->select();
-    ui->comboBox_termin->setModel(terminModel);
-    ui->comboBox_termin->setModelColumn(1);
-
-    platnoscModel = new QSqlTableModel;
-    platnoscModel->setTable("platnosc");
-    platnoscModel->select();
-    ui->comboBox_platnosc->setModel(platnoscModel);
-    ui->comboBox_platnosc->setModelColumn(1);
-
-    ofertaModel = new QSqlTableModel;
-    ofertaModel->setTable("oferta");
-    ofertaModel->select();
-    ui->comboBox_oferta->setModel(ofertaModel);
-    ui->comboBox_oferta->setModelColumn(1);
-
 }
 
 void MainWindow::databaseConnect()
@@ -341,15 +322,6 @@ void MainWindow::databaseDisconnect()
 
     delete m_client;
     m_client = nullptr;
-
-    delete dostawaModel;
-    dostawaModel = nullptr;
-    delete terminModel;
-    terminModel = nullptr;
-    delete platnoscModel;
-    terminModel = nullptr;
-    delete ofertaModel;
-    dostawaModel = nullptr;
 }
 
 void MainWindow::changeSettings()
@@ -383,26 +355,6 @@ void MainWindow::globalDiscount()
 void MainWindow::removeRow()
 {
     m_towarModel->removeRow(ui->tableView->currentIndex().row());
-}
-
-void MainWindow::dostawaRef(int row)
-{
-    ui->plainTextEdit_dostawa->setPlainText(dostawaModel->record(row).value("long").toString());
-}
-
-void MainWindow::platnoscRef(int row)
-{
-    ui->plainTextEdit_platnosc->setPlainText(platnoscModel->record(row).value("long").toString());
-}
-
-void MainWindow::terminRef(int row)
-{
-    ui->plainTextEdit_termin->setPlainText(terminModel->record(row).value("long").toString());
-}
-
-void MainWindow::ofertaRef(int row)
-{
-    ui->plainTextEdit_oferta->setPlainText(ofertaModel->record(row).value("long").toString());
 }
 
 void MainWindow::setInquiryDate(const QDate &d)
@@ -493,6 +445,38 @@ void MainWindow::setClient(const QSqlRecord& rec)
     }
 }
 
+void MainWindow::chooseOfferTerms()
+{
+    TermsChooserDialog* dlg = new TermsChooserDialog(this, Database::offerTermsModel(), tr("Wybór warunków oferty"));
+    if(QDialog::Accepted == dlg->exec())
+        setOfferTerms(dlg->choosenTerm());
+    delete dlg;
+}
+
+void MainWindow::choosePaymentTerms()
+{
+    TermsChooserDialog* dlg = new TermsChooserDialog(this, Database::paymentTermsModel(), tr("Wybór warunków płatności"));
+    if(QDialog::Accepted == dlg->exec())
+        setPaymentTerms(dlg->choosenTerm());
+    delete dlg;
+}
+
+void MainWindow::chooseShippingTerms()
+{
+    TermsChooserDialog* dlg = new TermsChooserDialog(this, Database::shippingTermsModel(), tr("Wybór warunków dostawy"));
+    if(QDialog::Accepted == dlg->exec())
+        setShippingTerms(dlg->choosenTerm());
+    delete dlg;
+}
+
+void MainWindow::chooseShipmentTime()
+{
+    TermsChooserDialog* dlg = new TermsChooserDialog(this, Database::shipmentTimeModel(), tr("Wybór terminu dostawy"));
+    if(QDialog::Accepted == dlg->exec())
+        setShipmentTime(dlg->choosenTerm());
+    delete dlg;
+}
+
 void MainWindow::newOfferNumber()
 {
     QDate d = QDate::currentDate();
@@ -562,7 +546,18 @@ void MainWindow::saveOffer()
     else
         zNumer = QString::null;
 
-    insert_zapisane(*m_offerNumber, m_client->value("id").toInt(), *m_date, m_currentUser->uid(), zData, zNumer, ui->comboBox_dostawa->currentIndex(), ui->comboBox_termin->currentIndex(), ui->comboBox_platnosc->currentIndex(), ui->comboBox_oferta->currentIndex(), ui->plainTextEdit_uwagi->toPlainText());
+    insert_zapisane(*m_offerNumber,
+                    m_client->value("id").toInt(),
+                    *m_date,
+                    m_currentUser->uid(),
+                    zData,
+                    zNumer,
+                    m_shippingTerm.id(),
+                    m_shipmentTime.id(),
+                    m_paymentTerm.id(),
+                    m_offerTerm.id(),
+                    ui->plainTextEdit_uwagi->toPlainText()
+                    );
 
     m_towarModel->save(*m_offerNumber);
 }
@@ -607,12 +602,12 @@ void MainWindow::loadOfferFromDatabase(const QString& offerId)
         ui->lineEdit_zapytanieNr->setText(rec.value("zapytanie_nr").toString());
     }
 
-    ui->comboBox_dostawa->setCurrentIndex(rec.value("dostawa").toInt());
-    ui->comboBox_termin->setCurrentIndex(rec.value("termin").toInt());
-    ui->comboBox_platnosc->setCurrentIndex(rec.value("platnosc").toInt());
-    ui->comboBox_oferta->setCurrentIndex(rec.value("platnosc").toInt());
-    ui->plainTextEdit_uwagi->setPlainText(rec.value("uwagi").toString());
+    setShippingTerms(Database::shippingTerm(rec.value("dostawa").toInt()));
+    setShipmentTime(Database::shipmentTime(rec.value("termin").toInt()));
+    setPaymentTerms(Database::paymentTerm(rec.value("platnosc").toInt()));
+    setOfferTerms(Database::offerTerm(rec.value("oferta").toInt()));
 
+    ui->plainTextEdit_uwagi->setPlainText(rec.value("uwagi").toString());
     m_towarModel->loadOffer(*m_offerNumber);
 }
 
@@ -620,7 +615,24 @@ void MainWindow::dostawaNew()
 {
     AddConditionDialog pop("dostawa");
     pop.exec();
-    dostawaModel->select();
+}
+
+void MainWindow::ofertaNew()
+{
+    AddConditionDialog pop("oferta");
+    pop.exec();
+}
+
+void MainWindow::terminNew()
+{
+    AddConditionDialog pop("termin");
+    pop.exec();
+}
+
+void MainWindow::platnoscNew()
+{
+    AddConditionDialog pop("platnosc");
+    pop.exec();
 }
 
 void MainWindow::dodajKlient()
@@ -918,25 +930,4 @@ void MainWindow::makeDocument(QString *sDoc)
         delete m_client;
         m_client = nullptr;
     }
-}
-
-void MainWindow::ofertaNew()
-{
-    AddConditionDialog pop("oferta");
-    pop.exec();
-    ofertaModel->select();
-}
-
-void MainWindow::terminNew()
-{
-    AddConditionDialog pop("termin");
-    pop.exec();
-    terminModel->select();
-}
-
-void MainWindow::platnoscNew()
-{
-    AddConditionDialog pop("platnosc");
-    pop.exec();
-    platnoscModel->select();
 }

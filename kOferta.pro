@@ -26,7 +26,7 @@ CONFIG += c++11
 
 TEMPLATE = app
 
-DEFINES += VER=2.43
+DEFINES += VER=2.44
 
 win32 {
     RC_FILE = res/koferta.rc
@@ -80,7 +80,10 @@ HEADERS += \
     CustomerSelection.h \
     SettingsDialog.h \
     LoginDialog.h \
-    AddConditionDialog.h
+    AddConditionDialog.h \
+    TermsChooserDialog.h \
+    TermItem.h \
+    TermModel.h
 
 FORMS += \
     LoadDialog.ui \
@@ -93,7 +96,8 @@ FORMS += \
     CustomerSelection.ui \
     SettingsDialog.ui \
     LoginDialog.ui \
-    AddConditionDialog.ui
+    AddConditionDialog.ui \
+    TermsChooserDialog.ui
 
 SOURCES += \
     Database.cpp \
@@ -118,7 +122,10 @@ SOURCES += \
     CustomerSelection.cpp \
     SettingsDialog.cpp \
     LoginDialog.cpp \
-    AddConditionDialog.cpp
+    AddConditionDialog.cpp \
+    TermsChooserDialog.cpp \
+    TermItem.cpp \
+    TermModel.cpp
 
 RESOURCES += \
     res/zasoby.qrc

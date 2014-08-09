@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QSqlDatabase>
+#include "TermModel.h"
 
 class QString;
 class User;
@@ -13,11 +14,25 @@ class Database : public QObject
 Q_OBJECT
 
 public:
-    explicit Database(QObject *parent = NULL);
-    ~Database();
-
+/* Database Interface */
+    //user-related
     static QStringList usersList();
     static User userInfo(const QString& name);
+    //terms
+    static TermModel *paymentTermsModel();
+    static TermModel *shippingTermsModel();
+    static TermModel *shipmentTimeModel();
+    static TermModel *offerTermsModel();
+
+    static TermItem paymentTerm(int id);
+    static TermItem shippingTerm(int id);
+    static TermItem shipmentTime(int id);
+    static TermItem offerTerm(int id);
+
+
+/* Database connection setup */
+    explicit Database(QObject *parent = NULL);
+    ~Database();
 
 public slots:
     void connect(const QString &uid, const QString& pass);

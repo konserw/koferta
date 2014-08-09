@@ -85,7 +85,7 @@
           <item>
            <widget class="QCommandLinkButton" name="commandLinkButton_klient">
             <property name="text">
-             <string>Wybór klienta</string>
+             <string>Wybór Klienta</string>
             </property>
            </widget>
           </item>
@@ -321,40 +321,17 @@
            <string>Pozostałe informacje</string>
           </property>
           <layout class="QFormLayout" name="formLayout">
-           <item row="0" column="0">
-            <layout class="QVBoxLayout" name="verticalLayout_3">
-             <item>
-              <widget class="QLabel" name="label_dostawa">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Warunki dostawy:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="comboBox_dostawa"/>
-             </item>
-             <item>
-              <spacer name="verticalSpacer_5">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
+           <property name="fieldGrowthPolicy">
+            <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+           </property>
+           <item row="0" column="0" colspan="2">
+            <widget class="QCommandLinkButton" name="commandLinkButton_shipingTerms">
+             <property name="text">
+              <string>Warunki Dostawy</string>
+             </property>
+            </widget>
            </item>
-           <item row="0" column="1">
+           <item row="1" column="1">
             <widget class="QPlainTextEdit" name="plainTextEdit_dostawa">
              <property name="maximumSize">
               <size>
@@ -362,42 +339,22 @@
                <height>16777215</height>
               </size>
              </property>
+             <property name="undoRedoEnabled">
+              <bool>false</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <layout class="QVBoxLayout" name="verticalLayout_6">
-             <item>
-              <widget class="QLabel" name="label_termin">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Termin dostawy:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="comboBox_termin"/>
-             </item>
-             <item>
-              <spacer name="verticalSpacer_4">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
+           <item row="2" column="0" colspan="2">
+            <widget class="QCommandLinkButton" name="commandLinkButton_shipmentTime">
+             <property name="text">
+              <string>Termin Dostawy</string>
+             </property>
+            </widget>
            </item>
-           <item row="1" column="1">
+           <item row="3" column="1">
             <widget class="QPlainTextEdit" name="plainTextEdit_termin">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -411,42 +368,22 @@
                <height>16777215</height>
               </size>
              </property>
+             <property name="undoRedoEnabled">
+              <bool>false</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <layout class="QVBoxLayout" name="verticalLayout_7">
-             <item>
-              <widget class="QLabel" name="label_platnosc">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Warunki płatności:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="comboBox_platnosc"/>
-             </item>
-             <item>
-              <spacer name="verticalSpacer_3">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
+           <item row="4" column="0" colspan="2">
+            <widget class="QCommandLinkButton" name="commandLinkButton_paymentTerms">
+             <property name="text">
+              <string>Warunki Płatności</string>
+             </property>
+            </widget>
            </item>
-           <item row="2" column="1">
+           <item row="5" column="1">
             <widget class="QPlainTextEdit" name="plainTextEdit_platnosc">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -460,39 +397,22 @@
                <height>16777215</height>
               </size>
              </property>
-             <property name="readOnly">
+             <property name="undoRedoEnabled">
               <bool>false</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
-            <layout class="QVBoxLayout" name="verticalLayout_8">
-             <item>
-              <widget class="QLabel" name="label_oferta">
-               <property name="text">
-                <string>Warunki oferty:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="comboBox_oferta"/>
-             </item>
-             <item>
-              <spacer name="verticalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
+           <item row="6" column="0" colspan="2">
+            <widget class="QCommandLinkButton" name="commandLinkButton_offerTerms">
+             <property name="text">
+              <string>Warunki Oferty</string>
+             </property>
+            </widget>
            </item>
-           <item row="3" column="1">
+           <item row="7" column="1">
             <widget class="QPlainTextEdit" name="plainTextEdit_oferta">
              <property name="maximumSize">
               <size>
@@ -500,33 +420,28 @@
                <height>16777215</height>
               </size>
              </property>
+             <property name="undoRedoEnabled">
+              <bool>false</bool>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
-           <item row="4" column="0">
-            <layout class="QVBoxLayout" name="verticalLayout_9">
-             <item>
-              <widget class="QLabel" name="label_uwagi">
-               <property name="text">
-                <string>Uwagi</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="verticalSpacer_6">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
+           <item row="8" column="1">
+            <widget class="QCommandLinkButton" name="commandLinkButton_other">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="autoFillBackground">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Uwagi</string>
+             </property>
+            </widget>
            </item>
-           <item row="4" column="1">
+           <item row="9" column="1">
             <widget class="QPlainTextEdit" name="plainTextEdit_uwagi">
              <property name="maximumSize">
               <size>
@@ -535,6 +450,19 @@
               </size>
              </property>
             </widget>
+           </item>
+           <item row="11" column="1">
+            <spacer name="verticalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </widget>
