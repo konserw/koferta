@@ -48,9 +48,6 @@ void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& da
     s = QString("DELETE FROM zapisane WHERE nr_oferty = '%1'").arg(nr_oferty);
     EXEC_SILENT(s);
 
-    s = QString("DELETE FROM zapisane_towary WHERE nr_oferty = '%1'").arg(nr_oferty);
-    EXEC_SILENT(s);
-
     s = "INSERT INTO zapisane "
         "(nr_oferty, id_klienta, data, uid, dostawa, termin, platnosc, oferta, uwagi, zapytanie_data, zapytanie_nr)";
     s += QString(" VALUES ('%1', %2, '%3', %4, %5, %6, %7, %8, '%9'").arg(
@@ -303,13 +300,11 @@ TermItem Database::offerTerm(int id)
 
 void Database::setupSSL()
 {
-#ifdef WIN32
     m_database->setConnectOptions("CLIENT_SSL=1");//;CLIENT_IGNORE_SPACE=1");
     QString filePath = QString("%1/certs/%2").arg(qApp->applicationDirPath());
     m_database->setSslCertificateCaFilename(filePath.arg("ca-cert.pem"));
     m_database->setSslCertificateFilename(filePath.arg("client-cert.pem"));
     m_database->setSslKeyFilename(filePath.arg("client-key.pem"));
-#endif
 }
 
 bool Database::openDatabaseConnection()

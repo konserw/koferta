@@ -79,11 +79,6 @@ void LoginDialog::updateUserList(const QStringList& users)
 void LoginDialog::ok()
 {
     QString pass = ui->lineEdit->text();
-    if(pass.isEmpty())
-    {
-        qDebug() <<  "haslo nie wpisane";
-        return;
-    }
 
     QSettings settings;
     settings.beginGroup("connection");
