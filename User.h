@@ -25,7 +25,7 @@
 class QString;
 class QSqlDatabase;
 /*!
- * \briefklasa przechowująca dane użytkownika
+ * \brief Klasa przechowująca dane użytkownika
  */
 class User
 {

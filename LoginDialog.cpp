@@ -63,7 +63,7 @@ LoginDialog::LoginDialog() :
     QObject::connect(m_db, &Database::newUsers, this, &LoginDialog::updateUserList);
     QObject::connect(m_db, &Database::changeStatus, ui->info, &QLabel::setText);
     connect(this, &LoginDialog::userListRequested, m_db, &Database::getUsersList);
-//    m_db->setupInitialConnection();
+
     emit(userListRequested());
 }
 

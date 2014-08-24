@@ -37,7 +37,7 @@
 #include "LoginDialog.h"
 #include "LoadDialog.h"
 #include "User.h"
-#include "Macros.h"
+
 #include "AddConditionDialog.h"
 #include "SettingsDialog.h"
 

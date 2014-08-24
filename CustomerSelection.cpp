@@ -20,8 +20,6 @@
 #include "ui_CustomerSelection.h"
 
 #include <QSqlQuery>
-#include "Macros.h"
-
 
 CustomerSelection::CustomerSelection(QWidget *parent) :
     QDialog(parent),

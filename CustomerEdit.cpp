@@ -18,11 +18,10 @@
 
 #include "CustomerEdit.h"
 #include "ui_CustomerEdit.h"
-
+#include "functions.h"
 #include <QSqlQuery>
 #include <QString>
 #include <QtSql>
-#include "Macros.h"
 
 CustomerEdit::~CustomerEdit()
 {

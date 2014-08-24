@@ -37,7 +37,6 @@ void MerchendiseSelectionDelegate::setModelData(QWidget *editor, QAbstractItemMo
     spinBox->interpretText();
     double count = spinBox->value();
     model->setData(index, count, Qt::EditRole);
- //   emit itemCountChanged(model->data(index, Qt::UserRole).toInt(), count);
 }
 
 void MerchendiseSelectionDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &/*index*/) const

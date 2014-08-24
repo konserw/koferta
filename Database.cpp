@@ -23,7 +23,7 @@
 #include <QSettings>
 #include "User.h"
 #include "Database.h"
-#include "Macros.h"
+#include "functions.h"
 
 void insert_klient(const QString& skrot, const QString& full, const QString& tytul, const QString& imie, const QString& nazwisko, const QString& adres)
 {

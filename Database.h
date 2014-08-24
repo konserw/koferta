@@ -77,5 +77,4 @@ void insert_klient(const QString &skrot, const QString &full, const QString &tyt
 void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& data, int uid, const QString& zapytanie_data, const QString& zapytanie_nr, int dostawa, int termin, int platnosc, int oferta, const QString& uwagi);
 void insert_combo(const QString& typ, const QString& sh, const QString& lo);
 
-//QStringList getUsersList();
 #endif // DATABASE_H

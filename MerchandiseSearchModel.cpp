@@ -98,5 +98,4 @@ void MerchandiseSearchModel::setFilter(const QString &filter)
 QVariant MerchandiseSearchModel::d(const QModelIndex &index, int col) const
 {
     return sourceModel()->data(index.sibling(index.row(), col));
-   // return sourceModel()->data(sourceModel()->index(index.row(), col, index.parent()));
 }

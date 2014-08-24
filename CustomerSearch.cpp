@@ -16,10 +16,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 #include "CustomerSearch.h"
-#include "Macros.h"
 
 #include <QSqlTableModel>
 #include <QSqlRecord>
+#include <QtWidgets>
+/*
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
@@ -29,6 +30,7 @@
 #include <QtWidgets/QRadioButton>
 #include <QtWidgets/QTableView>
 #include <QtWidgets/QVBoxLayout>
+*/
 
 CustomerSearch::CustomerSearch(QWidget *parent) :
   QWidget(parent)

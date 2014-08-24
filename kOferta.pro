@@ -26,7 +26,7 @@ CONFIG += c++11
 
 TEMPLATE = app
 
-DEFINES += VER=2.44
+DEFINES += VER=2.45
 
 win32 {
     RC_FILE = res/koferta.rc
@@ -40,12 +40,7 @@ win32 {
 
     DEFINES += RELEASE
     DEFINES += WIN32
- #   DEFINES += QT_NO_DEBUG_OUTPUT
 
-    #LIBS += -L"C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x86" -lUser32 -lAdvAPI32
-    #LIBS += -L"C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x64" -lUser32 -lAdvAPI32
-    #INCLUDEPATH += "C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/include"
-    #LIBS += -L"C:/Program Files/MySQL/MySQL Connector C 6.1 6.1.2/lib" -llibmysql
     LIBS += -L"C:/Program Files (x86)/MySQL/MySQL Connector C 6.1/lib" -llibmysql
 }
 
@@ -59,7 +54,6 @@ DEPENDPATH += . res
 HEADERS += \
     Database.h \
     LoadDialog.h \
-    Macros.h \
     MainWindow.h \
     User.h \
     functions.h \
@@ -138,5 +132,4 @@ TRANSLATIONS = \
 OTHER_FILES += \
     LICENSE.md \
     README.md \
-    hosts \
     res/koferta.rc

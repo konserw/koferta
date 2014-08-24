@@ -57,6 +57,10 @@ User::~User()
 
 void User::nrOfertyInkrement()
 {
+    /********************
+     * Też do bazy ?
+     */
+
     _nrOferty++;
 
     QString s = QString("UPDATE users SET nrOferty=%1 WHERE uid=%2").arg(_nrOferty).arg(_uid);
@@ -67,7 +71,6 @@ void User::nrOfertyInkrement()
         _nrOferty--;
         qCritical() << "Zapytanie mysql zkonczone niepowodzeniem!";
         qDebug() << "\tError text: " <<  q.lastError().text();
-   //     throw std::exception("Failed to execute query");
     }
 }
 

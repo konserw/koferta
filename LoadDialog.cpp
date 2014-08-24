@@ -18,7 +18,6 @@
 
 #include "LoadDialog.h"
 #include "ui_LoadDialog.h"
-#include "Macros.h"
 #include "OfferSearch.h"
 
 #include <QSqlTableModel>

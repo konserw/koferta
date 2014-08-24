@@ -49,10 +49,7 @@ public:
 
 public slots:
     void clear();
-
     void setKurs(double kurs);
-
-    ///dodawanie towarów do tabeli (wywoływane przez sygnał z dialogu dodajTowar)
     void changeItemCount(int id, double ile);
 
 protected:

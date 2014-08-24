@@ -34,11 +34,11 @@ class LoginDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit LoginDialog();                       //konstruktor inicjalizujący elementy interface, user** służy do przekazania zwrotnego danych wybranego użytkownika
+    explicit LoginDialog();
     ~LoginDialog();
 
 public slots:
-    void ok();                                          //slot obsługujący przycisk ok - sprawdza zgodność skrótu wpisanego hasła ze skrótem zapisanym w klasie user i tworzy połączenie z bazą MySQL (klasa QSqlDatabase)
+    void ok();
     void updateUserList(const QStringList&);
 
 signals:

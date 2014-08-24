@@ -16,9 +16,6 @@ public:
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
 
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &) const;
-
-signals:
- //   void itemCountChanged(int id, double count) const;
 };
 
 #endif // MERCHENDISESELECTIONDELEGATE_H
