@@ -25,7 +25,7 @@
        <enum>QTabWidget::West</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -665,7 +665,7 @@
     <addaction name="klientEdycja"/>
     <addaction name="actionNowy_Towar"/>
     <addaction name="separator"/>
-    <addaction name="actionDodaj_warunki_ostawy"/>
+    <addaction name="actionDodaj_warunki_dostawy"/>
     <addaction name="actionDodaj_termin_dostawy"/>
     <addaction name="actionDodaj_warunki_platnosci"/>
     <addaction name="actionDodaj_warunki_oferty"/>
@@ -804,9 +804,9 @@
     <string>Nowy Towar</string>
    </property>
   </action>
-  <action name="actionDodaj_warunki_ostawy">
+  <action name="actionDodaj_warunki_dostawy">
    <property name="text">
-    <string>Dodaj warunki ostawy</string>
+    <string>Dodaj warunki dostawy</string>
    </property>
   </action>
   <action name="actionDodaj_termin_dostawy">

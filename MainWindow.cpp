@@ -123,10 +123,10 @@ MainWindow::MainWindow():
     connect(ui->delw, SIGNAL(clicked()), this, SLOT(removeRow()));
 
     //dodawanie opcji do kombosów
-    connect(ui->actionDodaj_termin_dostawy, &QAction::triggered, this, &MainWindow::terminNew);
-    connect(ui->actionDodaj_warunki_oferty, &QAction::triggered, this, &MainWindow::ofertaNew);
-    connect(ui->actionDodaj_warunki_ostawy, &QAction::triggered, this, &MainWindow::dostawaNew);
-    connect(ui->actionDodaj_warunki_platnosci, &QAction::triggered, this, &MainWindow::platnoscNew);
+    connect(ui->actionDodaj_termin_dostawy, &QAction::triggered, this, &MainWindow::addShipmentTime);
+    connect(ui->actionDodaj_warunki_oferty, &QAction::triggered, this, &MainWindow::addOfferTerms);
+    connect(ui->actionDodaj_warunki_dostawy, &QAction::triggered, this, &MainWindow::addShippingTerms);
+    connect(ui->actionDodaj_warunki_platnosci, &QAction::triggered, this, &MainWindow::addPaymentTerms);
 
     connect(ui->commandLinkButton_klient, &QCommandLinkButton::clicked, this, &MainWindow::selectClient);
     connect(ui->commandLinkButton_offerTerms, &QCommandLinkButton::clicked, this, &MainWindow::chooseOfferTerms);
@@ -611,27 +611,27 @@ void MainWindow::loadOfferFromDatabase(const QString& offerId)
     m_towarModel->loadOffer(*m_offerNumber);
 }
 
-void MainWindow::dostawaNew()
+void MainWindow::addShippingTerms()
 {
-    AddConditionDialog pop("dostawa");
+    AddConditionDialog pop(Database::termShipping);
     pop.exec();
 }
 
-void MainWindow::ofertaNew()
+void MainWindow::addOfferTerms()
 {
-    AddConditionDialog pop("oferta");
+    AddConditionDialog pop(Database::termOffer);
     pop.exec();
 }
 
-void MainWindow::terminNew()
+void MainWindow::addShipmentTime()
 {
-    AddConditionDialog pop("termin");
+    AddConditionDialog pop(Database::termShipmentTime);
     pop.exec();
 }
 
-void MainWindow::platnoscNew()
+void MainWindow::addPaymentTerms()
 {
-    AddConditionDialog pop("platnosc");
+    AddConditionDialog pop(Database::termPayment);
     pop.exec();
 }
 

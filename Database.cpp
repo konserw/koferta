@@ -65,17 +65,6 @@ void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& da
     EXEC_SILENT(s);
 }
 
-void insert_combo(const QString& typ, const QString& sh, const QString& lo)
-{
-    qDebug() << "Wstawianie opcji " << sh << " do kombosa " << typ;
-
-    QString s;
-    QSqlQuery q;
-
-    s = QString("INSERT INTO %1 VALUES (DEFAULT, '%2', '%3')").arg(typ, sh, lo);
-    EXEC_SILENT(s);
-}
-
 Database::Database(QObject* parent) :
     QObject(parent)
 {  
@@ -152,6 +141,39 @@ void Database::setupConnection(const QString& user, const QString pass)
     }
 }
 
+TermModel *Database::getTermModel(Database::TermType termType)
+{
+    QSqlTableModel model;
+    model.setTable("terms");
+    model.setFilter(QString("termType = %1").arg(termType));
+    model.select();
+    // make sure the complete result set is fetched
+    while(model.canFetchMore())
+         model.fetchMore();
+
+    //convert to term model
+    TermModel* terms = new TermModel;
+    for (int i = 0; i < model.rowCount(); ++i)
+    {
+        QSqlRecord rec = model.record(i);
+        terms->insert(new TermItem(rec.value("id").toInt(), rec.value("shortDesc").toString(), rec.value("longDesc").toString()));
+    }
+
+    return terms;
+}
+
+TermItem Database::getTerm(Database::TermType termType, int id)
+{
+    QSqlTableModel model;
+    model.setTable("terms");
+    model.setFilter(QString("termType = %1 AND id = %2").arg(termType).arg(id));
+    model.select();
+
+    //convert to term
+    QSqlRecord rec = model.record(0);
+    return TermItem(rec.value("id").toInt(), rec.value("shortDesc").toString(), rec.value("longDesc").toString());
+}
+
 QStringList Database::usersList()
 {
     QStringList userList;
@@ -186,116 +208,91 @@ User Database::userInfo(const QString &name)
     return User(r.value("uid").toInt(), name, r.value("phone").toString(), r.value("mail").toString(), r.value("adress").toString(), r.value("male").toBool(), r.value("nrOferty").toInt());
 }
 
-TermModel* Database::paymentTermsModel()
+void Database::createTerms(Database::TermType type, const QString &shortDesc, const QString &longDesc)
 {
-    TermModel* terms = new TermModel;
+    QSqlQuery q;
+    QString queryText;
+    QSqlDatabase db = QSqlDatabase::database();
 
-    QSqlTableModel* model = new QSqlTableModel;
-    model->setTable("platnosc");
-    model->select();
+    db.transaction();
 
-    for (int i = 0; i < model->rowCount(); ++i)
+    queryText = QString("SELECT MAX(id) FROM terms WHERE termType = %1").arg(type);
+    if(!q.exec(queryText))
     {
-        QSqlRecord rec = model->record(i);
-        terms->insert(new TermItem(rec.value(0).toInt(), rec.value(1).toString(), rec.value(2).toString()));
+        db.rollback();
+        QString error = q.lastError().text();
+        QMessageBox::warning(nullptr,
+                             tr("Database Write Error"),
+                             tr("The database reported an error: %1")
+                             .arg(error)
+                             );
+        qDebug() << "Following query failed with reason: " << error;
+        qDebug() << queryText;
+        return;
+    }
+    q.next();
+    int id = q.value(0).toInt() + 1;
+
+    queryText = QString("INSERT INTO terms(termType, id, shortDesc, longDesc) VALUES (%1, %2, '%3', '%4')")
+            .arg(type)
+            .arg(id)
+            .arg(shortDesc)
+            .arg(longDesc);
+    if(!q.exec(queryText))
+    {
+        db.rollback();
+        QString error = q.lastError().text();
+        QMessageBox::warning(nullptr,
+                             tr("Database Write Error"),
+                             tr("The database reported an error: %1")
+                             .arg(error)
+                             );
+        qDebug() << "Following query failed with reason: " << error;
+        qDebug() << queryText;
+        return;
     }
 
-    return terms;
+    db.commit();
+}
+
+TermModel* Database::paymentTermsModel()
+{
+    return getTermModel(termPayment);
 }
 
 TermModel* Database::shippingTermsModel()
 {
-    TermModel* terms = new TermModel;
-
-    QSqlTableModel* model = new QSqlTableModel;
-    model->setTable("dostawa");
-    model->select();
-
-    for (int i = 0; i < model->rowCount(); ++i)
-    {
-        QSqlRecord rec = model->record(i);
-        terms->insert(new TermItem(rec.value(0).toInt(), rec.value(1).toString(), rec.value(2).toString()));
-    }
-
-    return terms;
+    return getTermModel(termShipping);
 }
 
 TermModel* Database::shipmentTimeModel()
 {
-    TermModel* terms = new TermModel;
-
-    QSqlTableModel* model = new QSqlTableModel;
-    model->setTable("termin");
-    model->select();
-
-    for (int i = 0; i < model->rowCount(); ++i)
-    {
-        QSqlRecord rec = model->record(i);
-        terms->insert(new TermItem(rec.value(0).toInt(), rec.value(1).toString(), rec.value(2).toString()));
-    }
-
-    return terms;
+    return getTermModel(termShipmentTime);
 }
 
 TermModel* Database::offerTermsModel()
 {
-    TermModel* terms = new TermModel;
-
-    QSqlTableModel* model = new QSqlTableModel;
-    model->setTable("oferta");
-    model->select();
-
-    for (int i = 0; i < model->rowCount(); ++i)
-    {
-        QSqlRecord rec = model->record(i);
-        terms->insert(new TermItem(rec.value(0).toInt(), rec.value(1).toString(), rec.value(2).toString()));
-    }
-
-    return terms;
+    return getTermModel(termOffer);
 }
 
 TermItem Database::paymentTerm(int id)
 {
-    QSqlTableModel* model = new QSqlTableModel;
-    model->setTable("platnosc");
-    model->setFilter(QString("id = %1").arg(id));
-    model->select();
-
-    QSqlRecord rec = model->record(0);
-    return TermItem(rec.value(0).toInt(), rec.value(1).toString(), rec.value(2).toString());
+    return getTerm(termPayment, id);
 }
 
 TermItem Database::shippingTerm(int id)
 {
-    QSqlTableModel* model = new QSqlTableModel;
-    model->setTable("dostawa");
-    model->setFilter(QString("id = %1").arg(id));
-    model->select();
-
-    QSqlRecord rec = model->record(0);
-    return TermItem(rec.value(0).toInt(), rec.value(1).toString(), rec.value(2).toString());
+    return getTerm(termShipping, id);
 }
 
 TermItem Database::shipmentTime(int id)
 {
-    QSqlTableModel* model = new QSqlTableModel;
-    model->setTable("termin");
-    model->setFilter(QString("id = %1").arg(id));
-    model->select();
-
-    QSqlRecord rec = model->record(0);
-    return TermItem(rec.value(0).toInt(), rec.value(1).toString(), rec.value(2).toString());
+    return getTerm(termShipmentTime, id);
 }
 
 TermItem Database::offerTerm(int id)
 {
-    QSqlTableModel* model = new QSqlTableModel;
-    model->setTable("oferta");
-    model->setFilter(QString("id = %1").arg(id));
-    model->select();
-
-    QSqlRecord rec = model->record(0);
-    return TermItem(rec.value(0).toInt(), rec.value(1).toString(), rec.value(2).toString());
+    return getTerm(termOffer, id);
 }
 
 void Database::setupSSL()

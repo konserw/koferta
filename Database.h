@@ -14,11 +14,22 @@ class Database : public QObject
 Q_OBJECT
 
 public:
+    enum TermType
+    {
+        termShipping = 0,//dostawa
+        termOffer = 1,   //oferta
+        termPayment = 2, //platnosc
+        termShipmentTime = 3 //termin
+    };
+
 /* Database Interface */
     //user-related
     static QStringList usersList();
     static User userInfo(const QString& name);
+
     //terms
+    static void createTerms(TermType type, const QString& shortDesc, const QString& longDesc);
+
     static TermModel *paymentTermsModel();
     static TermModel *shippingTermsModel();
     static TermModel *shipmentTimeModel();
@@ -28,6 +39,7 @@ public:
     static TermItem shippingTerm(int id);
     static TermItem shipmentTime(int id);
     static TermItem offerTerm(int id);
+
 
 
 /* Database connection setup */
@@ -51,6 +63,9 @@ protected:
 
     inline void setupSSL();
     inline bool openDatabaseConnection();
+
+    static TermModel* getTermModel(TermType termType);
+    static TermItem getTerm(TermType termType, int id = -1);
 
     QString m_host;
     QString m_schema;

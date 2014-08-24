@@ -100,10 +100,10 @@ public slots:
     void edytujKlient();
     void dodajTowar();
     //dodawanie opcji do kombosów
-    void dostawaNew();
-    void platnoscNew();
-    void terminNew();
-    void ofertaNew();
+    void addShippingTerms();
+    void addPaymentTerms();
+    void addShipmentTime();
+    void addOfferTerms();
 
     //help
     void about();

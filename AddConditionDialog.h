@@ -2,6 +2,7 @@
 #define EDYCJAKOMBO_H
 
 #include <QDialog>
+#include "Database.h"
 
 namespace Ui {
 class AddConditionDialog;
@@ -12,7 +13,7 @@ class AddConditionDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit AddConditionDialog(const QString& typ, QWidget *parent = 0);
+    explicit AddConditionDialog(Database::TermType type, QWidget *parent = 0);
     ~AddConditionDialog();
 
 public slots:
@@ -21,7 +22,8 @@ public slots:
 private:
     Ui::AddConditionDialog *ui;
 
-    QString m_typ;
+    Database::TermType m_type;
+
 };
 
 #endif // EDYCJAKOMBO_H
