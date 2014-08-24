@@ -64,6 +64,6 @@ void MerchandiseSearch::ref2()
 
 void MerchandiseSearch::ref(const QString & in)
 {
-    static const QString filter("%1 like '%2%'");
-    m_model->setFilter(filter.arg(ui->radioButton_id->isChecked() ? "code" : "desc").arg(in));
+    static const QString filter("`%1` like '%2%'");
+    m_model->setFilter(filter.arg(ui->radioButton_id->isChecked() ? "code" : "description").arg(in));
 }

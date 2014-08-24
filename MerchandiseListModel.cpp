@@ -256,7 +256,7 @@ void MerchandiseListModel::changeItemCount(int id, double ile)
         QSqlQuery r;
         r.exec(QString("select * from merchandise where id = %1").arg(id));
         r.next();
-        Merchandise* x = new Merchandise(id, r.value("code").toString(), r.value("desc").toString(), r.value("price").toDouble(), r.value("unit").toString() == "mb.");
+        Merchandise* x = new Merchandise(id, r.value("code").toString(), r.value("description").toString(), r.value("price").toDouble(), r.value("unit").toString() == "mb.");
         x->setIlosc(ile);
         beginInsertRows(QModelIndex(), m_list.size(), m_list.size());
         m_list.append(x);
@@ -503,7 +503,7 @@ void MerchandiseListModel::loadOffer(const QString& number)
     {
         record = towary.record(row);
 
-        t = new Merchandise(record.value("merchandise_id").toInt(), record.value("code").toString(), record.value("desc").toString(), record.value("price").toDouble(), record.value("unit").toString() == "mb.");
+        t = new Merchandise(record.value("merchandise_id").toInt(), record.value("code").toString(), record.value("description").toString(), record.value("price").toDouble(), record.value("unit").toString() == "mb.");
         t->setRabat(record.value("rabat").toDouble());
         t->setIlosc(record.value("ilosc").toInt());
 

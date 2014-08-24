@@ -41,7 +41,7 @@ void MerchandiseNew::acc()
     ui->pushButton_ok->setEnabled(false);
 
     QSqlQuery q;
-    q.exec(QString("INSERT INTO `kOferta`.`merchandise` (`id`, `code`, `desc`, `price`, `unit`) VALUES (NULL, '%1', '%2', '%3', '%4')")
+    q.exec(QString("INSERT INTO `merchandise` (`id`, `code`, `description`, `price`, `unit`) VALUES (NULL, '%1', '%2', '%3', '%4')")
            .arg(ui->kod->text())
            .arg(ui->spec->text())
            .arg(ui->cena->value())
