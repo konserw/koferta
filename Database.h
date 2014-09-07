@@ -42,6 +42,7 @@ public:
     static TermItem offerTerm(int id);
 
     static void saveOfferMerchandise(const QString& offerId, const QList<Merchandise*>& merchandise);
+    static QList<Merchandise*> loadOfferMerchandise(const QString& number);
 
 
 /* Database connection setup */

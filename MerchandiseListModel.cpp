@@ -471,31 +471,13 @@ void MerchandiseListModel::addItem(Merchandise *towar)
 void MerchandiseListModel::loadOffer(const QString& number)
 {
     clear();
-    qDebug() << "number" << number;
-    /**************** TO DO ********************
-     * wszystkie takie w klasie bazy danych
-     * *********************************************/
-    QSqlTableModel towary;
-    towary.setTable("savedOffersMerchandiseView");
-    towary.setFilter(QString("nr_oferty = '%1'").arg(number));
-    towary.select();
 
-    while(towary.canFetchMore())
-        towary.fetchMore();
+    QList<Merchandise *> list = Database::loadOfferMerchandise(number);
 
-    Merchandise* t;
-    QSqlRecord record;
-    int rows = towary.rowCount();
-
-    for(int row=0; row < rows; ++row)
+    if(list.count() > 0)
     {
-        record = towary.record(row);
-
-        t = new Merchandise(record.value("merchandise_id").toInt(), record.value("code").toString(), record.value("description").toString(), record.value("price").toDouble(), record.value("unit").toString() == "mb.");
-        t->setRabat(record.value("rabat").toDouble());
-        t->setIlosc(record.value("ilosc").toInt());
-
-        addItem(t);
+        beginInsertRows(QModelIndex(), 0, list.count());
+        m_list.append(list);
+        endInsertRows();
     }
 }
-

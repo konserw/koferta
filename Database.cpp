@@ -348,6 +348,31 @@ void Database::saveOfferMerchandise(const QString &offerId, const QList<Merchand
     }
 }
 
+QList<Merchandise *> Database::loadOfferMerchandise(const QString &number)
+{
+    QList<Merchandise *> list;
+    Merchandise* merchandise;
+
+    QSqlQuery query;
+    query.exec(QString(
+                        "SELECT * "
+                        "FROM savedOffersMerchandiseView "
+                        "WHERE nr_oferty = '%1' "
+                        "ORDER BY sequenceNumber ASC"
+                        ).arg(number));
+//    qDebug() << query.lastQuery();
+//    qDebug() << query.lastError();
+    while(query.next())
+    {
+        merchandise = new Merchandise(query.value("merchandise_id").toInt(), query.value("code").toString(), query.value("description").toString(), query.value("price").toDouble(), query.value("unit").toString() == "mb.");
+        merchandise->setRabat(query.value("rabat").toDouble());
+        merchandise->setIlosc(query.value("ilosc").toInt());
+        list.append(merchandise);
+    }
+
+    return list;
+}
+
 void Database::setupSSL()
 {
     m_database->setConnectOptions("CLIENT_SSL=1");//;CLIENT_IGNORE_SPACE=1");
