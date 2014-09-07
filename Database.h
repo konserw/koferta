@@ -8,6 +8,7 @@
 class QString;
 class User;
 class QSqlTableModel;
+class Merchandise;
 
 class Database : public QObject
 {
@@ -40,6 +41,7 @@ public:
     static TermItem shipmentTime(int id);
     static TermItem offerTerm(int id);
 
+    static void saveOfferMerchandise(const QString& offerId, const QList<Merchandise*>& merchandise);
 
 
 /* Database connection setup */

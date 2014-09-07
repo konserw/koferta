@@ -21,6 +21,7 @@
 #include <QVariant>
 #include <QMessageBox>
 #include <QSettings>
+#include "Merchandise.h"
 #include "User.h"
 #include "Database.h"
 #include "functions.h"
@@ -293,6 +294,58 @@ TermItem Database::shipmentTime(int id)
 TermItem Database::offerTerm(int id)
 {
     return getTerm(termOffer, id);
+}
+
+void Database::saveOfferMerchandise(const QString &offerId, const QList<Merchandise *> &merchandise)
+{
+    QString error;
+    QSqlDatabase db;
+    db.transaction();
+
+    QSqlQuery query;
+    if(!query.exec(QString("DELETE FROM savedOffersMerchandise WHERE nr_oferty = '%1'").arg(offerId)))
+    {
+        error = query.lastError().text();
+        db.rollback();
+        qWarning() << "Delete query execution failed!";
+        qDebug() << "Query string:" << query.lastQuery();
+        qDebug() << "Error string:" << error;
+        QMessageBox::critical(nullptr, tr("Błąd"), tr("Wystąpił nastepujący bład podczas zapisu oferty do bazy danych:\n%1").arg(error));
+        return;
+    }
+
+    query.clear();
+    query.prepare("INSERT INTO `savedOffersMerchandise` (`nr_oferty`, `sequenceNumber`, `merchandise_id`, `ilosc`, `rabat`) VALUES (:nr, :seq, :mer, :ile, :rabat)");
+
+    Merchandise* merch;
+    QVariantList nr, seq, mer, ile, rabat;
+    for(int i=0; i<merchandise.length(); ++i)
+    {
+        merch = merchandise[i];
+        nr << offerId;
+        seq << i;
+        mer << merch->id();
+        ile << merch->ilosc();
+        rabat << merch->rabat();
+    }
+
+    query.addBindValue(nr);
+    query.addBindValue(seq);
+    query.addBindValue(mer);
+    query.addBindValue(ile);
+    query.addBindValue(rabat);
+
+    if(query.execBatch())
+    {
+        db.commit();
+    }
+    else
+    {
+        error = query.lastError().text();
+        db.rollback();
+        qWarning() << "Database delete error:" << error;
+        QMessageBox::critical(nullptr, tr("Błąd"), tr("Wystąpił nastepujący bład podczas zapisu oferty do bazy danych:\n%1").arg(error));
+    }
 }
 
 void Database::setupSSL()

@@ -1,5 +1,6 @@
 #include "MerchandiseListModel.h"
 #include "Merchandise.h"
+#include "Database.h"
 #include <QDebug>
 #include <QSqlTableModel>
 #include <QtSql>
@@ -448,57 +449,7 @@ QString MerchandiseListModel::print(const int w, bool ilosc, bool cenaKat, bool 
 
 void MerchandiseListModel::save(const QString &offerId)
 {
-    QString error;
-    QSqlDatabase db;
-    db.transaction();
-
-    QSqlTableModel model;
-    model.setTable("savedOffersMerchandise");
-    model.setEditStrategy(QSqlTableModel::OnManualSubmit);
-    model.select();
-
-    qDebug() << "savedMerchandise table row count:" << model.rowCount();
-
-    QSqlQuery deleteQuery;
-    if(!deleteQuery.exec(QString("DELETE FROM savedOffersMerchandise WHERE nr_oferty = '%1'").arg(offerId)))
-    {
-        error = deleteQuery.lastError().text();
-        qWarning() << "Delete query execution failed!";
-        qDebug() << "Query string:" << deleteQuery.lastQuery();
-        qDebug() << "Error string:" << error;
-        db.rollback();
-        QMessageBox::critical(nullptr, tr("Błąd"), tr("Wystąpił nastepujący bład podczas zapisu oferty do bazy danych:\n%1").arg(error));
-        return;
-    }
-
-    model.select();
-
-    qDebug() << "savedMerchandise table row count:" << model.rowCount();
-
-    Merchandise* merch;
-    foreach(merch, m_list)
-    {
-        QSqlRecord rec = model.record();
-        rec.setValue("nr_oferty", offerId);
-        rec.setValue("rabat", merch->rabat());
-        rec.setValue("ilosc", merch->ilosc());
-        rec.setValue("merchandise_id", merch->id());
-        model.insertRecord(-1, rec);
-        qDebug() << "inserting row:" << rec;
-    }
-
-    if(model.submitAll())
-    {
-        db.commit();
-        qDebug() << "savedMerchandise table row count:" << model.rowCount();
-    }
-    else
-    {
-        error = model.lastError().text();
-        qWarning() << "Database delete error:" << error;
-        db.rollback();
-        QMessageBox::critical(nullptr, tr("Błąd"), tr("Wystąpił nastepujący bład podczas zapisu oferty do bazy danych:\n%1").arg(error));
-    }
+    Database::saveOfferMerchandise(offerId, m_list);
 }
 
 double MerchandiseListModel::przeliczSume() const
