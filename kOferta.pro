@@ -77,7 +77,9 @@ HEADERS += \
     AddConditionDialog.h \
     TermsChooserDialog.h \
     TermItem.h \
-    TermModel.h
+    TermModel.h \
+    MerchandiseListView.h
+
 
 FORMS += \
     LoadDialog.ui \
@@ -119,7 +121,8 @@ SOURCES += \
     AddConditionDialog.cpp \
     TermsChooserDialog.cpp \
     TermItem.cpp \
-    TermModel.cpp
+    TermModel.cpp \
+    MerchandiseListView.cpp
 
 RESOURCES += \
     res/zasoby.qrc

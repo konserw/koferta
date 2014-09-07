@@ -47,9 +47,10 @@
 
 #include "Merchandise.h"
 #include "MerchandiseNew.h"
-#include "MerchandiseListDelegate.h"
+
 #include "MerchandiseSelection.h"
 #include "MerchandiseListModel.h"
+#include "MerchandiseListView.h"
 
 #include "TermsChooserDialog.h"
 
@@ -81,7 +82,7 @@ MainWindow::MainWindow():
 
     m_towarModel = new MerchandiseListModel;
     ui->tableView->setModel(m_towarModel);
-    ui->tableView->setItemDelegate(new MerchandiseListDelegate(this));
+
 /**
  connections
 **/

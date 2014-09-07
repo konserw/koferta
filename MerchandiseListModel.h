@@ -26,18 +26,19 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
+    Qt::DropActions supportedDropActions() const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
 
-    bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex());
-
-    void setGlobalRabat(double r);
+    virtual bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex());
+    virtual bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild);
 
     void addItem(Merchandise* towar);
     void loadOffer(const QString &number);
 
     bool pln() const;
     double kurs() const;
+    void setGlobalRabat(double r);
 
     bool isRabat(const QModelIndex & i) const;
     bool isIlosc(const QModelIndex & i) const;

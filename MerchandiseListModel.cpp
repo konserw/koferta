@@ -27,20 +27,24 @@ int MerchandiseListModel::columnCount(const QModelIndex & /*parent*/) const
 
 bool MerchandiseListModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if(role == Qt::EditRole && isRabat(index))
+    if(role != Qt::EditRole || !index.isValid())
+        return false;
+
+    Merchandise* t = static_cast<Merchandise*>(index.internalPointer());
+
+    if(isRabat(index))
     {
-        Merchandise* t = static_cast<Merchandise*>(index.internalPointer());
         t->setRabat(value.toDouble());
         emit dataChanged(index, index);
         return true;
     }
-    if(role == Qt::EditRole && isIlosc(index))
+    else if(isIlosc(index))
     {
-        Merchandise* t = static_cast<Merchandise*>(index.internalPointer());
         t->setIlosc(value.toDouble());
         emit dataChanged(index, index);
         return true;
     }
+
     return false;
 }
 
@@ -61,11 +65,11 @@ QVariant MerchandiseListModel::data(const QModelIndex &index, int role) const
     {
         if(isRabat(index))
         {
-            return t->rabat(); //m_list[index.row()]->rabat();
+            return t->rabat();
         }
         if(isIlosc(index))
         {
-            return t->ilosc(); //m_list[index.row()]->ilosc();
+            return t->ilosc();
         }
         return QVariant();
     }
@@ -161,15 +165,25 @@ QVariant MerchandiseListModel::headerData(int section, Qt::Orientation orientati
     return QVariant();
 }
 
+Qt::DropActions MerchandiseListModel::supportedDropActions() const
+{
+     return Qt::MoveAction;
+}
+
 Qt::ItemFlags MerchandiseListModel::flags(const QModelIndex &index) const
 {
     if(!index.isValid())
         return 0;
 
-    if(isRabat(index) || isIlosc(index))
-        return Qt::ItemIsEditable|Qt::ItemIsSelectable|Qt::ItemIsEnabled;
+    if(index.row() == m_list.count())
+        return Qt::ItemIsEnabled | Qt::ItemIsDropEnabled;
 
-    return Qt::ItemIsSelectable|Qt::ItemIsEnabled;
+    Qt::ItemFlags def = Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+
+    if(isRabat(index) || isIlosc(index))
+        return Qt::ItemIsEditable | def;
+
+    return def;
 }
 
 QModelIndex MerchandiseListModel::index(int row, int column, const QModelIndex & /*parent*/) const
@@ -278,6 +292,29 @@ bool MerchandiseListModel::removeRows(int row, int count, const QModelIndex & /*
     }
     endRemoveRows();
 
+    return true;
+}
+
+bool MerchandiseListModel::moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild)
+{
+    int sourceFirst = sourceRow;
+    int sourceLast = sourceRow + count - 1;
+
+    if(destinationChild >= sourceFirst && destinationChild <= sourceLast)
+        return false;
+
+    if(destinationChild == sourceLast+1)
+        return false;
+
+    beginMoveRows(sourceParent, sourceFirst, sourceLast, destinationParent, destinationChild);
+
+    int offset = destinationChild - sourceRow;
+    if(destinationChild == m_list.length()) offset--;
+    for(int i = 0; i < count; ++i)
+        m_list.move(sourceRow + i, sourceRow + offset + i);
+
+
+    endMoveRows();
     return true;
 }
 

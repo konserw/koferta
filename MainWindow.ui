@@ -71,7 +71,14 @@
          </layout>
         </item>
         <item>
-         <widget class="QTableView" name="tableView"/>
+         <widget class="MerchandiseListView" name="tableView" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -831,6 +838,14 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>MerchandiseListView</class>
+   <extends>QWidget</extends>
+   <header>MerchandiseListView.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="res/zasoby.qrc"/>
  </resources>

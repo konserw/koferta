@@ -124,4 +124,3 @@ bool Merchandise::operator==(const Merchandise &other) const
     return other.m_id == m_id;
 }
 
-
