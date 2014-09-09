@@ -476,7 +476,7 @@ void MerchandiseListModel::loadOffer(const QString& number)
 
     if(list.count() > 0)
     {
-        beginInsertRows(QModelIndex(), 0, list.count());
+        beginInsertRows(QModelIndex(), 0, list.count() - 1);
         m_list.append(list);
         endInsertRows();
     }
