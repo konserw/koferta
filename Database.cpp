@@ -25,6 +25,7 @@
 #include "User.h"
 #include "Database.h"
 #include "functions.h"
+#include "LoadDialogMerchandiseListModelMySQL.h"
 
 void insert_klient(const QString& skrot, const QString& full, const QString& tytul, const QString& imie, const QString& nazwisko, const QString& adres)
 {
@@ -371,6 +372,11 @@ QList<Merchandise *> Database::loadOfferMerchandise(const QString &number)
     }
 
     return list;
+}
+
+LoadDialogMerchandiseListModel *Database::loadDialogMerchandiseListModel(QObject *parent)
+{
+    return new LoadDialogMerchandiseListModelMySQL(parent);
 }
 
 void Database::setupSSL()

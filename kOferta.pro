@@ -79,7 +79,8 @@ HEADERS += \
     TermItem.h \
     TermModel.h \
     MerchandiseListView.h \
-    LoadDialogMerchandiseListModel.h
+    LoadDialogMerchandiseListModel.h \
+    LoadDialogMerchandiseListModelMySQL.h
 
 
 FORMS += \
@@ -124,7 +125,8 @@ SOURCES += \
     TermItem.cpp \
     TermModel.cpp \
     MerchandiseListView.cpp \
-    LoadDialogMerchandiseListModel.cpp
+    LoadDialogMerchandiseListModel.cpp \
+    LoadDialogMerchandiseListModelMySQL.cpp
 
 RESOURCES += \
     res/zasoby.qrc

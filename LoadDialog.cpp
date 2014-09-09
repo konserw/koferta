@@ -20,6 +20,7 @@
 #include "ui_LoadDialog.h"
 #include "OfferSearch.h"
 #include "LoadDialogMerchandiseListModel.h"
+#include "Database.h"
 
 LoadDialog::LoadDialog(QWidget *parent) :
     QDialog(parent),
@@ -28,7 +29,7 @@ LoadDialog::LoadDialog(QWidget *parent) :
     ui->setupUi(this);
     ui->label_towary->setText(tr("Towary:"));
 
-    model = new LoadDialogMerchandiseListModel(this);
+    model = Database::loadDialogMerchandiseListModel(this);
 
     ui->tableView->setModel(model);
     ui->tableView->hideColumn(4);

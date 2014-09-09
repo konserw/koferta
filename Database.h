@@ -9,6 +9,7 @@ class QString;
 class User;
 class QSqlTableModel;
 class Merchandise;
+class LoadDialogMerchandiseListModel;
 
 class Database : public QObject
 {
@@ -44,6 +45,7 @@ public:
     static void saveOfferMerchandise(const QString& offerId, const QList<Merchandise*>& merchandise);
     static QList<Merchandise*> loadOfferMerchandise(const QString& number);
 
+    static LoadDialogMerchandiseListModel* loadDialogMerchandiseListModel(QObject* parent);
 
 /* Database connection setup */
     explicit Database(QObject *parent = NULL);

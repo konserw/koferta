@@ -3,7 +3,6 @@
 LoadDialogMerchandiseListModel::LoadDialogMerchandiseListModel(QObject *parent) :
     QSqlTableModel(parent)
 {
-    setTable("savedOffersMerchandiseShortView");
     setEditStrategy(QSqlTableModel::OnManualSubmit);
 
     setHeaderData(0, Qt::Horizontal, tr("Kod"));
@@ -12,8 +11,3 @@ LoadDialogMerchandiseListModel::LoadDialogMerchandiseListModel(QObject *parent) 
     setHeaderData(3, Qt::Horizontal, tr("Rabat"));
 }
 
-void LoadDialogMerchandiseListModel::setOfferId(const QString &offerId)
-{
-    setFilter(QString("nr_oferty = '%1'").arg(offerId));
-    select();
-}

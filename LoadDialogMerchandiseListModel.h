@@ -6,11 +6,12 @@
 class LoadDialogMerchandiseListModel : public QSqlTableModel
 {
     Q_OBJECT
+
 public:
     explicit LoadDialogMerchandiseListModel(QObject *parent = 0);
 
 public slots:
-    void setOfferId(const QString& offerId);
+    virtual void setOfferId(const QString& offerId) = 0;
 };
 
 #endif // LOADDIALOGMERCHANDISELISTMODEL_H
