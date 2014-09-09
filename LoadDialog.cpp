@@ -19,8 +19,7 @@
 #include "LoadDialog.h"
 #include "ui_LoadDialog.h"
 #include "OfferSearch.h"
-
-#include <QSqlTableModel>
+#include "LoadDialogMerchandiseListModel.h"
 
 LoadDialog::LoadDialog(QWidget *parent) :
     QDialog(parent),
@@ -29,26 +28,16 @@ LoadDialog::LoadDialog(QWidget *parent) :
     ui->setupUi(this);
     ui->label_towary->setText(tr("Towary:"));
 
-    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
-    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    connect(ui->widget, &OfferSearch::selectionChanged, this, &LoadDialog::ref);
-
-    model = new QSqlTableModel(this);
-    model->setTable("savedOffersMerchandiseView");
-    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
-
-    model->setHeaderData(4, Qt::Horizontal, tr("Kod"));
-    model->setHeaderData(1, Qt::Horizontal, tr("Ilość"));
-    model->setHeaderData(2, Qt::Horizontal, tr("Rabat"));
+    model = new LoadDialogMerchandiseListModel(this);
 
     ui->tableView->setModel(model);
-    ui->tableView->horizontalHeader()->swapSections(0, 4);
-    ui->tableView->hideColumn(0);
-    ui->tableView->hideColumn(3);
-    for(int i=5; i<8; ++i)
-        ui->tableView->hideColumn(i);
+    ui->tableView->hideColumn(4);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
+    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(ui->widget, &OfferSearch::selectionChanged, model, &LoadDialogMerchandiseListModel::setOfferId);
 }
 
 LoadDialog::~LoadDialog()
@@ -68,10 +57,4 @@ void LoadDialog::ok()
 
     emit offerSelected(offerId);
     this->accept();
-}
-
-void LoadDialog::ref(const QString& offerId)
-{
-    model->setFilter(QString("nr_oferty = '%1'").arg(offerId));
-    model->select();
 }

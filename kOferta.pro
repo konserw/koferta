@@ -78,7 +78,8 @@ HEADERS += \
     TermsChooserDialog.h \
     TermItem.h \
     TermModel.h \
-    MerchandiseListView.h
+    MerchandiseListView.h \
+    LoadDialogMerchandiseListModel.h
 
 
 FORMS += \
@@ -122,7 +123,8 @@ SOURCES += \
     TermsChooserDialog.cpp \
     TermItem.cpp \
     TermModel.cpp \
-    MerchandiseListView.cpp
+    MerchandiseListView.cpp \
+    LoadDialogMerchandiseListModel.cpp
 
 RESOURCES += \
     res/zasoby.qrc

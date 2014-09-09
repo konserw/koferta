@@ -21,7 +21,7 @@
 
 class QString;
 class QSqlRecord;
-class QSqlTableModel;
+class LoadDialogMerchandiseListModel;
 
 #include <QDialog>
 
@@ -41,7 +41,6 @@ public:
 
 public slots:
     void ok();
-    void ref(const QString &offerId);
 
 signals:
     void offerSelected(const QString &);
@@ -49,7 +48,7 @@ signals:
 private:
     Ui::LoadDialog *ui;
 
-    QSqlTableModel* model;
+    LoadDialogMerchandiseListModel* model;
 };
 
 #endif // WCZYTYWANIE_H
