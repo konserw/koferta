@@ -33,8 +33,11 @@ public:
     virtual bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex());
     virtual bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild);
 
+    virtual void sort(int column, Qt::SortOrder order);
+
     void addItem(Merchandise* towar);
     void loadOffer(const QString &number);
+    void save(const QString& offerId);
 
     bool pln() const;
     double kurs() const;
@@ -45,8 +48,6 @@ public:
 
     QHash<int, double> hash() const;
     QString print(const int w, bool ilosc, bool cenaKat, bool cenaPln, bool rabat, bool cena, bool specyfikacja) const;
-
-    void save(const QString& offerId);
 
 public slots:
     void clear();

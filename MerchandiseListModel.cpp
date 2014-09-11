@@ -5,6 +5,7 @@
 #include <QSqlTableModel>
 #include <QtSql>
 #include <QMessageBox>
+#include <algorithm>
 
 MerchandiseListModel::MerchandiseListModel(QObject *parent) :
     QAbstractTableModel(parent), m_pln(false), m_kurs(1)
@@ -90,7 +91,7 @@ QVariant MerchandiseListModel::data(const QModelIndex &index, int role) const
             case 0: return t->kod();
             case 1: return t->nazwa();
             case 2: return QString::number(t->cenaKat(), 'f', 2);
-            case 3: return QString::number(t->cenaPln(m_kurs), 'f', 2);
+            case 3: return QString::number(t->cenaKat(m_kurs), 'f', 2);
             case 4: return QString::number(t->rabat(), 'f', 2);
             case 5: return QString::number(t->cena(m_kurs), 'f', 2);
             case 6: return QString::number(t->ilosc(), 'f', 2);
@@ -319,6 +320,73 @@ bool MerchandiseListModel::moveRows(const QModelIndex &sourceParent, int sourceR
     return true;
 }
 
+void MerchandiseListModel::sort(int column, Qt::SortOrder order)
+{
+    auto begin = m_list.begin();
+    auto end = m_list.end();
+    double kurs = m_kurs;
+
+    beginResetModel();
+
+    if(column == 0)//kod
+        if(order == Qt::AscendingOrder)
+            std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->kod() < b->kod(); });
+        else
+            std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->kod() > b->kod(); });
+    else if(column == 1)//nazwa
+        if(order == Qt::AscendingOrder)
+            std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->nazwa() < b->nazwa(); });
+        else
+            std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->nazwa() > b->nazwa(); });
+    else if(column == 2)//Cena Kat. €
+        if(order == Qt::AscendingOrder)
+            std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->cenaKat() < b->cenaKat(); });
+        else
+            std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->cenaKat() > b->cenaKat(); });
+    else if(column == 3 && m_pln)//Cena Kat. zl
+        if(order == Qt::AscendingOrder)
+            std::sort(begin, end, [&kurs](Merchandise* a, Merchandise* b) { return a->cenaKat(kurs) < b->cenaKat(kurs); });
+        else
+            std::sort(begin, end, [&kurs](Merchandise* a, Merchandise* b) { return a->cenaKat(kurs) > b->cenaKat(kurs); });
+    else if(column == 3 || (column == 4 && m_pln))//Rabat
+        if(order == Qt::AscendingOrder)
+            std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->rabat() < b->rabat(); });
+        else
+            std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->rabat() > b->rabat(); });
+    else if(column == 4)//Cena euro
+        if(order == Qt::AscendingOrder)
+            std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->cena() < b->cena(); });
+        else
+            std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->cena() > b->cena(); });
+    else if(column == 5 && m_pln)//Cena zl
+        if(order == Qt::AscendingOrder)
+            std::sort(begin, end, [&kurs](Merchandise* a, Merchandise* b) { return a->cena(kurs) < b->cena(kurs); });
+        else
+            std::sort(begin, end, [&kurs](Merchandise* a, Merchandise* b) { return a->cena(kurs) > b->cena(kurs); });
+    else if(column == 5 || (column == 6 && m_pln))//Ilosc
+        if(order == Qt::AscendingOrder)
+            std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->ilosc() < b->ilosc(); });
+        else
+            std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->ilosc() > b->ilosc(); });
+    else if(column == 6 || (column == 7 && m_pln))//jednostka
+        if(order == Qt::AscendingOrder)
+            std::sort(begin, end, [](Merchandise* a, Merchandise* /*b*/) { return a->metr(); });
+        else
+            std::sort(begin, end, [](Merchandise* /*a*/, Merchandise* b) { return b->metr(); });
+    else if(column == 7)//wartosc
+        if(order == Qt::AscendingOrder)
+            std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->wartosc() < b->wartosc(); });
+        else
+            std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->wartosc() > b->wartosc(); });
+    else if(column == 8)//wartosc zl
+        if(order == Qt::AscendingOrder)
+            std::sort(begin, end, [&kurs](Merchandise* a, Merchandise* b) { return a->wartosc(kurs) < b->wartosc(kurs); });
+        else
+            std::sort(begin, end, [&kurs](Merchandise* a, Merchandise* b) { return a->wartosc(kurs) > b->wartosc(kurs); });
+
+    endResetModel();
+}
+
 void MerchandiseListModel::setGlobalRabat(double r)
 {
     foreach(Merchandise* t, m_list)
@@ -420,7 +488,7 @@ QString MerchandiseListModel::print(const int w, bool ilosc, bool cenaKat, bool 
         if(cenaKat)
             doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cenaKat(), 0, 'f', 2);
         if(cenaPln)
-            doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cenaPln(m_kurs), 0, 'f', 2);
+            doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cenaKat(m_kurs), 0, 'f', 2);
         if(rabat)
             doc += QString("\t\t<td align = right>%1%</td>\n").arg(item->rabat());
         if(cena)

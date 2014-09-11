@@ -17,7 +17,7 @@ Merchandise::Merchandise(int id, const QString &kod, const QString &nazwa, doubl
 {
 }
 
-double Merchandise::cenaPln(double kurs) const
+double Merchandise::cenaKat(double kurs) const
 {
     return m_cenaKat * kurs;
 }
@@ -102,7 +102,7 @@ double Merchandise::wartosc() const
 
 double Merchandise::cena(double kurs) const
 {
-    return cenaPln(kurs) * (100 - m_rabat) /100;
+    return cenaKat(kurs) * (100 - m_rabat) /100;
 }
 
 double Merchandise::wartosc(double kurs) const

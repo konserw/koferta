@@ -12,9 +12,10 @@ public:
     explicit Merchandise();
     explicit Merchandise(int id);
     Merchandise(int id, const QString& kod, const QString& nazwa, double cena, bool metr = false, int ilosc = 0);
-
-    double cenaPln(double kurs) const;
     
+    int id() const;
+    void setId(int id);
+
     QString kod() const;
     void setKod(const QString &kod);
 
@@ -23,6 +24,7 @@ public:
 
     double cenaKat() const;
     void setCenaKat(double cenaKat);
+    double cenaKat(double kurs) const;
 
     double rabat() const;
     void setRabat(double rabat);
@@ -35,13 +37,10 @@ public:
     QString unit() const;
 
     double cena() const;
-    double wartosc() const;
-
     double cena(double kurs) const;
-    double wartosc(double kurs) const;
 
-    int id() const;
-    void setId(int id);
+    double wartosc() const;  
+    double wartosc(double kurs) const;
 
     bool operator==(const Merchandise& other) const;
 

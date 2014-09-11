@@ -12,13 +12,16 @@ MerchandiseListView::MerchandiseListView(QWidget *parent) :
     setDropIndicatorShown(true);
     setSelectionBehavior(QAbstractItemView::SelectRows);
     setAcceptDrops(true);
+
+    setSortingEnabled(true);
+    this->horizontalHeader()->setSortIndicatorShown(false);
 }
 
 void MerchandiseListView::dragEnterEvent(QDragEnterEvent *event)
  {
     if(event->source() == this)
-         event->acceptProposedAction();
- }
+        event->acceptProposedAction();
+}
 
 void MerchandiseListView::dropEvent(QDropEvent *event)
 {
