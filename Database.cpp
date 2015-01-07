@@ -381,11 +381,13 @@ LoadDialogMerchandiseListModel *Database::loadDialogMerchandiseListModel(QObject
 
 void Database::setupSSL()
 {
+#ifdef WIN32
     m_database->setConnectOptions("CLIENT_SSL=1");//;CLIENT_IGNORE_SPACE=1");
     QString filePath = QString("%1/certs/%2").arg(qApp->applicationDirPath());
     m_database->setSslCertificateCaFilename(filePath.arg("ca-cert.pem"));
     m_database->setSslCertificateFilename(filePath.arg("client-cert.pem"));
     m_database->setSslKeyFilename(filePath.arg("client-key.pem"));
+#endif
 }
 
 bool Database::openDatabaseConnection()
