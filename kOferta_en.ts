@@ -2,10 +2,53 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_US">
 <context>
+    <name>AddConditionDialog</name>
+    <message>
+        <location filename="AddConditionDialog.ui" line="37"/>
+        <source>Tekst widoczny w menu:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="AddConditionDialog.ui" line="47"/>
+        <source>Drukowany tekst:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="AddConditionDialog.cpp" line="16"/>
+        <source>&quot;Warunki Oferty&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="AddConditionDialog.cpp" line="19"/>
+        <source>&quot;Warunki Termin Dostawy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="AddConditionDialog.cpp" line="22"/>
+        <source>&quot;Termin Dostawy&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="AddConditionDialog.cpp" line="25"/>
+        <source>&quot;Wraunki Dostawy&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="AddConditionDialog.cpp" line="29"/>
+        <source>Nowa opcja w menu %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="AddConditionDialog.cpp" line="30"/>
+        <source>Dodaj nową opcję dla pola %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CustomerEdit</name>
     <message>
         <location filename="CustomerEdit.ui" line="14"/>
-        <source>Dialog</source>
+        <source>Edytor danych klienta</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -95,32 +138,32 @@
 <context>
     <name>CustomerSearch</name>
     <message>
-        <location filename="CustomerSearch.cpp" line="44"/>
+        <location filename="CustomerSearch.cpp" line="46"/>
         <source>Id</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="CustomerSearch.cpp" line="44"/>
+        <location filename="CustomerSearch.cpp" line="46"/>
         <source>Nazwa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="CustomerSearch.cpp" line="44"/>
+        <location filename="CustomerSearch.cpp" line="46"/>
         <source>Nazwisko</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="CustomerSearch.cpp" line="118"/>
+        <location filename="CustomerSearch.cpp" line="120"/>
         <source>Customer Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="CustomerSearch.cpp" line="119"/>
+        <location filename="CustomerSearch.cpp" line="121"/>
         <source>Filtruj po nazwie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="CustomerSearch.cpp" line="120"/>
+        <location filename="CustomerSearch.cpp" line="122"/>
         <source>Filtruj po nazwisku</source>
         <translation type="unfinished"></translation>
     </message>
@@ -134,59 +177,59 @@
     </message>
     <message>
         <location filename="CustomerSelection.ui" line="45"/>
+        <source>Wybierz</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Anuluj</source>
-        <translation>End</translation>
+        <translation type="vanished">End</translation>
     </message>
 </context>
 <context>
     <name>Database</name>
     <message>
-        <location filename="Database.cpp" line="147"/>
-        <source>Połączenie z bazą danych na %1 nie powiodło się.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="Database.cpp" line="150"/>
-        <source>Połączono z bazą danych na %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="Database.cpp" line="171"/>
+        <location filename="Database.cpp" line="104"/>
         <source>%1: Błąd logowania jako %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Database.cpp" line="225"/>
+        <location filename="Database.cpp" line="117"/>
+        <source>Połączenie z bazą danych %1 na %2 nie powiodło się.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="Database.cpp" line="120"/>
+        <source>Połączono z bazą danych %1 na %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="Database.cpp" line="128"/>
+        <source>Łączenie z bazą danych %1 na %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="Database.cpp" line="227"/>
+        <location filename="Database.cpp" line="248"/>
+        <source>Database Write Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="Database.cpp" line="228"/>
+        <location filename="Database.cpp" line="249"/>
+        <source>The database reported an error: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="Database.cpp" line="314"/>
+        <location filename="Database.cpp" line="348"/>
         <source>Błąd</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Database.cpp" line="225"/>
-        <source>Bład sterownika bazy danych!
-Nastąpi zamknięcie programu.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>EdycjaKombo</name>
-    <message>
-        <location filename="EdycjaKombo.cpp" line="13"/>
-        <source>Nowa opcja w menu %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="EdycjaKombo.cpp" line="14"/>
-        <source>Dodaj nową opcję dla pola %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="EdycjaKombo.ui" line="37"/>
-        <source>Tekst widoczny w menu:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="EdycjaKombo.ui" line="47"/>
-        <source>Drukowany tekst:</source>
+        <location filename="Database.cpp" line="314"/>
+        <location filename="Database.cpp" line="348"/>
+        <source>Wystąpił nastepujący bład podczas zapisu oferty do bazy danych:
+%1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -203,61 +246,54 @@ Nastąpi zamknięcie programu.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="LoadDialog.cpp" line="31"/>
+        <location filename="LoadDialog.cpp" line="30"/>
         <source>Towary:</source>
         <translation type="unfinished"></translation>
     </message>
+</context>
+<context>
+    <name>LoadDialogMerchandiseListModel</name>
     <message>
-        <location filename="LoadDialog.cpp" line="41"/>
+        <location filename="LoadDialogMerchandiseListModel.cpp" line="8"/>
         <source>Kod</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="LoadDialog.cpp" line="42"/>
+        <location filename="LoadDialogMerchandiseListModel.cpp" line="9"/>
+        <source>Opis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="LoadDialogMerchandiseListModel.cpp" line="10"/>
         <source>Ilość</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="LoadDialog.cpp" line="43"/>
+        <location filename="LoadDialogMerchandiseListModel.cpp" line="11"/>
         <source>Rabat</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>Logowanie</name>
+    <name>LoginDialog</name>
     <message>
-        <location filename="Logowanie.ui" line="20"/>
+        <location filename="LoginDialog.ui" line="20"/>
         <source>Logowanie do kOferta</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Logowanie.ui" line="42"/>
+        <location filename="LoginDialog.ui" line="51"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Logowanie.ui" line="58"/>
+        <location filename="LoginDialog.ui" line="88"/>
         <source> Użytkownik:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="Logowanie.ui" line="68"/>
+        <location filename="LoginDialog.ui" line="128"/>
         <source>Hasło:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="Logowanie.ui" line="82"/>
-        <source>Baza MySQL:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="Logowanie.ui" line="89"/>
-        <source>Dodaj adres</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="Logowanie.cpp" line="93"/>
-        <source>Łączenie z bazą danych na %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -265,6 +301,7 @@ Nastąpi zamknięcie programu.</source>
     <name>MainWindow</name>
     <message>
         <location filename="MainWindow.ui" line="14"/>
+        <location filename="MainWindow.ui" line="682"/>
         <source>kOferta</source>
         <translation type="unfinished"></translation>
     </message>
@@ -289,365 +326,382 @@ Nastąpi zamknięcie programu.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="80"/>
+        <location filename="MainWindow.ui" line="87"/>
+        <location filename="MainWindow.ui" line="328"/>
         <source>Pozostałe informacje</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="92"/>
+        <location filename="MainWindow.ui" line="95"/>
+        <source>Wybór Klienta</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="129"/>
+        <source>Waluta:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="213"/>
         <source>Zapytanie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="105"/>
-        <location filename="MainWindow.ui" line="149"/>
-        <source>CheckBox</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="209"/>
-        <source>Wybór klienta</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="239"/>
-        <location filename="MainWindow.cpp" line="191"/>
-        <source>Warunki dostawy:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="276"/>
-        <location filename="MainWindow.cpp" line="195"/>
-        <source>Termin dostawy:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="313"/>
-        <location filename="MainWindow.cpp" line="199"/>
-        <source>Warunki płatności:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="359"/>
-        <source>Warunki oferty:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="394"/>
-        <source>uwagi</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="425"/>
-        <source>Opcje wydruku</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="437"/>
-        <source>kolumny:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="446"/>
+        <location filename="MainWindow.ui" line="495"/>
         <source>LP</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="456"/>
-        <source>Kod</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="469"/>
+        <location filename="MainWindow.ui" line="508"/>
         <source>Towar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="479"/>
+        <location filename="MainWindow.ui" line="574"/>
         <source>Ilość</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="489"/>
+        <location filename="MainWindow.ui" line="531"/>
         <source>Cena katalogowa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="499"/>
+        <location filename="MainWindow.ui" line="554"/>
         <source>Rabat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="509"/>
+        <location filename="MainWindow.ui" line="564"/>
         <source>Cena</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="522"/>
+        <location filename="MainWindow.ui" line="587"/>
         <source>Wartość</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="541"/>
-        <source>waluta:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="547"/>
+        <location filename="MainWindow.ui" line="135"/>
         <source>Euro</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="557"/>
+        <location filename="MainWindow.ui" line="145"/>
         <source>Złotówki</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="580"/>
+        <location filename="MainWindow.ui" line="168"/>
         <source>Kurs:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="633"/>
+        <location filename="MainWindow.ui" line="337"/>
+        <source>Warunki Dostawy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="360"/>
+        <source>Termin Dostawy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="389"/>
+        <source>Warunki Płatności</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="418"/>
+        <source>Warunki Oferty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="447"/>
+        <source>Uwagi</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="486"/>
+        <source>Układ wydruku:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="521"/>
+        <source>Specyfikacja</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="544"/>
+        <source>Cena kat. PLN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="645"/>
         <source>Oferta</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="642"/>
+        <location filename="MainWindow.ui" line="654"/>
         <source>Export</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="650"/>
+        <location filename="MainWindow.ui" line="662"/>
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="657"/>
+        <location filename="MainWindow.ui" line="669"/>
         <source>Baza Danych</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="670"/>
-        <source>Connection</source>
+        <location filename="MainWindow.ui" line="719"/>
+        <source>PDF</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="685"/>
+        <location filename="MainWindow.ui" line="724"/>
+        <source>HTML</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="801"/>
+        <source>Połącz</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="806"/>
+        <source>Rozłącz</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="816"/>
+        <source>Dodaj warunki dostawy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="826"/>
+        <source>Dodaj warunki platnosci</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="831"/>
+        <source>Dodaj warunki oferty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="836"/>
+        <source>Ustawienia</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.ui" line="699"/>
         <source>Nowa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="690"/>
+        <location filename="MainWindow.ui" line="704"/>
         <source>Otwórz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="695"/>
+        <location filename="MainWindow.ui" line="709"/>
         <source>Zapisz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="700"/>
+        <location filename="MainWindow.ui" line="714"/>
         <source>Wyjście</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="705"/>
-        <source>do PDF</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="710"/>
-        <source>do HTML</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="715"/>
+        <location filename="MainWindow.ui" line="729"/>
         <source>Druk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="720"/>
+        <location filename="MainWindow.ui" line="734"/>
+        <location filename="MainWindow.cpp" line="296"/>
         <source>O kOferta</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="725"/>
+        <location filename="MainWindow.ui" line="739"/>
         <source>O Qt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="730"/>
+        <location filename="MainWindow.ui" line="744"/>
         <source>Nadaj nowy numer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="735"/>
+        <location filename="MainWindow.ui" line="749"/>
         <source>Nowy Klient</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="740"/>
-        <location filename="MainWindow.ui" line="766"/>
+        <location filename="MainWindow.ui" line="754"/>
+        <location filename="MainWindow.ui" line="780"/>
         <source>Import</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="748"/>
-        <location filename="MainWindow.ui" line="774"/>
+        <location filename="MainWindow.ui" line="762"/>
+        <location filename="MainWindow.ui" line="788"/>
         <source>Eksport</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="756"/>
+        <location filename="MainWindow.ui" line="770"/>
         <source>Edycja Klienta</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="761"/>
+        <location filename="MainWindow.ui" line="775"/>
         <source>Nowy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="782"/>
+        <location filename="MainWindow.ui" line="796"/>
         <source>Edycja</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="787"/>
-        <source>Connect</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="792"/>
-        <source>Disconnect</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="797"/>
+        <location filename="MainWindow.ui" line="811"/>
         <source>Nowy Towar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="802"/>
-        <source>Dodaj warunki ostawy</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="807"/>
+        <location filename="MainWindow.ui" line="821"/>
         <source>Dodaj termin dostawy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.ui" line="812"/>
-        <source>dodaj warunki platnosci</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.ui" line="817"/>
-        <source>dodaj warunki oferty</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MainWindow.cpp" line="183"/>
+        <location filename="MainWindow.ui" line="226"/>
         <source>Data zapytania:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="185"/>
+        <location filename="MainWindow.ui" line="270"/>
         <source>Numer zapytania:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="203"/>
-        <source>Warunki Oferty:</source>
+        <location filename="MainWindow.cpp" line="264"/>
+        <source>	System wspomagający ofertowanie kOferta v. %1 beta 8
+
+Projekt kOferta ma ułatwić sprzedającemu tworzenie ofert handlowych poprzez łatwy dostęp do bazy danych z klientami i produktami.
+Po wybraniu pozostałych danych do oferty, jak sposób i termin dostawy umożliwia wydruk ofery według standadowego szablonu.
+Dodatkowo w bazie danych przechowywane są utworzone do tej pory oferty, co pozwala na szybką reedycję i wydruk nowej wersji odpowiedzi na zapytanie.
+Aplikacja kliencka ma także możliwość częściowej edycji bazy danych.
+
+	Licencja:
+kOferta - system usprawniajacy proces ofertowania
+Copyright (C) 2011  Kamil &apos;konserw&apos; Strzempowicz, konserw@gmail.com
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see http://www.gnu.org/licenses/.
+
+W programie wykorzystano klasę implementującą szyfrowanie SHA1 autorstwa Michael D. Leonhard na warunkach licencyjnych opisanych w pliku SHA1_LICENSE
+
+
+Build date: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MainWindow.cpp" line="205"/>
-        <source>Uwagi:</source>
+        <location filename="MainWindow.cpp" line="451"/>
+        <source>Wybór warunków oferty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="459"/>
+        <source>Wybór warunków płatności</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="467"/>
+        <source>Wybór warunków dostawy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="MainWindow.cpp" line="475"/>
+        <source>Wybór terminu dostawy</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MerchandiseListModel</name>
     <message>
-        <location filename="MerchandiseListModel.cpp" line="78"/>
-        <location filename="MerchandiseListModel.cpp" line="101"/>
+        <location filename="MerchandiseListModel.cpp" line="84"/>
+        <location filename="MerchandiseListModel.cpp" line="107"/>
         <source>Suma:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MerchandiseListModel.cpp" line="138"/>
-        <location filename="MerchandiseListModel.cpp" line="150"/>
+        <location filename="MerchandiseListModel.cpp" line="144"/>
+        <location filename="MerchandiseListModel.cpp" line="156"/>
         <source>Kod</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MerchandiseListModel.cpp" line="139"/>
-        <location filename="MerchandiseListModel.cpp" line="151"/>
+        <location filename="MerchandiseListModel.cpp" line="145"/>
+        <location filename="MerchandiseListModel.cpp" line="157"/>
         <source>Nazwa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MerchandiseListModel.cpp" line="140"/>
-        <location filename="MerchandiseListModel.cpp" line="152"/>
+        <location filename="MerchandiseListModel.cpp" line="146"/>
+        <location filename="MerchandiseListModel.cpp" line="158"/>
         <source>Cena Kat. €</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MerchandiseListModel.cpp" line="141"/>
+        <location filename="MerchandiseListModel.cpp" line="147"/>
         <source>Cena Kat. zł</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MerchandiseListModel.cpp" line="142"/>
-        <location filename="MerchandiseListModel.cpp" line="153"/>
+        <location filename="MerchandiseListModel.cpp" line="148"/>
+        <location filename="MerchandiseListModel.cpp" line="159"/>
         <source>Rabat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MerchandiseListModel.cpp" line="143"/>
+        <location filename="MerchandiseListModel.cpp" line="149"/>
         <source>Cena zł</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MerchandiseListModel.cpp" line="144"/>
-        <location filename="MerchandiseListModel.cpp" line="155"/>
+        <location filename="MerchandiseListModel.cpp" line="150"/>
+        <location filename="MerchandiseListModel.cpp" line="161"/>
         <source>Ilość</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MerchandiseListModel.cpp" line="145"/>
-        <location filename="MerchandiseListModel.cpp" line="156"/>
+        <location filename="MerchandiseListModel.cpp" line="151"/>
+        <location filename="MerchandiseListModel.cpp" line="162"/>
         <source>j/m</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MerchandiseListModel.cpp" line="146"/>
+        <location filename="MerchandiseListModel.cpp" line="152"/>
         <source>Wartość zł</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MerchandiseListModel.cpp" line="154"/>
+        <location filename="MerchandiseListModel.cpp" line="160"/>
         <source>Cena €</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="MerchandiseListModel.cpp" line="157"/>
+        <location filename="MerchandiseListModel.cpp" line="163"/>
         <source>Wartość €</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MerchandiseListModel.cpp" line="431"/>
-        <source>Błąd</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="MerchandiseListModel.cpp" line="431"/>
-        <source>Wystąpił nastepujący bład podczas zapisu oferty do bazy danych:
-%1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -859,22 +913,22 @@ Nastąpi zamknięcie programu.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="OfferSearch.cpp" line="41"/>
+        <location filename="OfferSearch.cpp" line="40"/>
         <source>Nr oferty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="OfferSearch.cpp" line="41"/>
+        <location filename="OfferSearch.cpp" line="40"/>
         <source>Klient</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="OfferSearch.cpp" line="41"/>
+        <location filename="OfferSearch.cpp" line="40"/>
         <source>Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="OfferSearch.cpp" line="41"/>
+        <location filename="OfferSearch.cpp" line="40"/>
         <source>Oferent</source>
         <translation type="unfinished"></translation>
     </message>
@@ -889,6 +943,76 @@ Nastąpi zamknięcie programu.</source>
     <message>
         <location filename="Merchandise.cpp" line="90"/>
         <source>szt.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="Main.cpp" line="53"/>
+        <source>Błąd</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="Main.cpp" line="53"/>
+        <source>Bład sterownika bazy danych!
+Nastąpi zamknięcie programu.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SettingsDialog</name>
+    <message>
+        <location filename="SettingsDialog.ui" line="14"/>
+        <source>Dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="SettingsDialog.ui" line="20"/>
+        <source>Automatycznie pokazuj okno polaczenia</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="SettingsDialog.ui" line="27"/>
+        <source>Serwer bazy danych</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="SettingsDialog.ui" line="33"/>
+        <source>Testowa baza danych</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="SettingsDialog.ui" line="40"/>
+        <source>Szyfrowane połączenie</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="SettingsDialog.ui" line="55"/>
+        <source>Dodaj do listy</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TermModel</name>
+    <message>
+        <location filename="TermModel.cpp" line="55"/>
+        <source>Id</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="TermModel.cpp" line="57"/>
+        <source>Krótki opis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="TermModel.cpp" line="59"/>
+        <source>Tekst opcji</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>TermsChooserDialog</name>
+    <message>
+        <location filename="TermsChooserDialog.ui" line="14"/>
+        <source>Dialog</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
