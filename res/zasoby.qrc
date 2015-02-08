@@ -3,7 +3,7 @@
         <file alias="ico">kico.png</file>
         <file alias="klog">klog.png</file>
         <file alias="calendar">schedule.png</file>
-        <file alias="logo">logo.png</file>
-        <file alias="logo2">logo2.png</file>
+        <file alias="aliaxis">aliaxis.png</file>
+        <file alias="fip">fip.png</file>
     </qresource>
 </RCC>

@@ -786,8 +786,11 @@ void MainWindow::makeDocument(QString *sDoc)
                 "\t<table>\n"
                 "\t<tr>\n"
    //logo
-                "\t\t<td colspan=3>\n"
-                "\t\t\t<img src=%1 halign=left valign=top ><br>\n" //width=%2
+                "\t\t<td colspan=2 align=left valign=bottom>\n"
+                "\t\t\t<img src=%1 height=56 ><br>\n" //width=%2
+                "\t\t</td>\n"
+                "\t\t<td align=right valign=bottom>\n"
+                "\t\t\t<img src=%2 height=45 ><br>\n"
                 "\t\t</td>\n"
                 "\t</tr>\n"
     //adresy itp
@@ -801,8 +804,8 @@ void MainWindow::makeDocument(QString *sDoc)
                 "\t\t\t%8 %9 %10 \n"
                 "\t\t</td>\n"
                 )
-            .arg(m_htm ? "logo2.png" : ":/logo2")
-      //      .arg(w)
+            .arg(m_htm ? "aliaxis.png" : ":/aliaxis")
+            .arg(m_htm ? "fip.png" : ":/fip")
             .arg(dd)
             .arg(*m_offerNumber)
             .arg(*m_date)
