@@ -78,7 +78,7 @@ Database::Database(QObject* parent) :
     if(settings.value("testDB").toBool())
         m_schema = "kOferta_devel";
     else
-        m_schema = "kOferta";
+        m_schema = "kOferta_v2";
 
     settings.endGroup();
 
