@@ -32,6 +32,7 @@ class QCalendarWidget;
 class QDate;
 class QPrinter;
 class MerchandiseListModel;
+class QProcess;
 
 namespace Ui {
     class MainWindow;
@@ -146,6 +147,8 @@ private:
     TermItem m_shipmentTime;
     TermItem m_offerTerm;
     TermItem m_paymentTerm;
+
+    QProcess *tunnelProcess;
 };
 
 #endif // MAINWINDOW_H

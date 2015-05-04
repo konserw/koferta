@@ -29,6 +29,7 @@
 #include <QtPrintSupport>
 #include <QPrintDialog>
 #include <QTimer>
+#include <QProcess>
 
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
@@ -59,6 +60,14 @@ MainWindow::MainWindow():
     ui(new Ui::MainWindow)
 {
     qDebug() << "konstruktor mainwindow";
+
+    qDebug() << "setup putty tunel";
+    tunnelProcess = new QProcess(this);
+    QStringList arguments;
+    arguments << "-ssh" << "46.105.27.6" << "-l" << "sshUser" << "-P" << "2292" << "-2" << "-4" << "-i" << "./koferta.ppk" << "-C" << "-T" << "-N" << "-L" << "3306:46.105.27.6:3306";
+    tunnelProcess->start("./plink.exe", arguments);
+    if(!tunnelProcess->isOpen())
+        qDebug() << "nie udalo sie otworzyc putty";
 /**
   ui
 **/
@@ -153,6 +162,8 @@ MainWindow::MainWindow():
 MainWindow::~MainWindow()
 {
     qDebug() << "destruktor mainwindow - start";
+
+    tunnelProcess->close();
 
     delete ui;
     delete m_offerNumber;
