@@ -27,7 +27,7 @@ CONFIG += c++11
 TEMPLATE = app
 
 DEFINES += VER=2.5
-DEFINES += NO_SSL
+#DEFINES += NO_SSL
 
 win32 {
     RC_FILE = res/koferta.rc
@@ -42,8 +42,8 @@ win32 {
     DEFINES += RELEASE
     DEFINES += WIN32
 
-#    LIBS += -L"C:/Program Files (x86)/MySQL/MySQL Connector C 6.1/lib" -llibmysql
-    LIBS += -L"C:\Program Files\MySQL\MySQL Connector C 6.1 6.1.2\lib" -llibmysql
+    LIBS += -L"C:/Program Files (x86)/MySQL/MySQL Connector C 6.1/lib" -llibmysql
+#    LIBS += -L"C:\Program Files\MySQL\MySQL Connector C 6.1 6.1.2\lib" -llibmysql
 }
 
 unix {
