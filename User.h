@@ -1,7 +1,4 @@
 /**
-
-**/
-/**
     kOferta - system usprawniajacy proces ofertowania
     Copyright (C) 2011  Kamil 'konserw' Strzempowicz, konserw@gmail.com
 

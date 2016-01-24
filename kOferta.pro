@@ -58,7 +58,6 @@ HEADERS += \
     LoadDialog.h \
     MainWindow.h \
     User.h \
-    functions.h \
     Logger.h \
     Merchandise.h \
     MerchandiseSearch.h \

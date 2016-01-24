@@ -18,7 +18,7 @@
 
 #include "CustomerEdit.h"
 #include "ui_CustomerEdit.h"
-#include "functions.h"
+#include "Database.h"
 #include <QSqlQuery>
 #include <QString>
 #include <QtSql>

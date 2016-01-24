@@ -34,7 +34,7 @@ class LoginDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit LoginDialog();
+    explicit LoginDialog(QWidget *parent = 0);
     ~LoginDialog();
 
 public slots:

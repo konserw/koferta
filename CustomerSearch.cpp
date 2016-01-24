@@ -15,22 +15,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
-#include "CustomerSearch.h"
 
+#include "CustomerSearch.h"
 #include <QSqlTableModel>
 #include <QSqlRecord>
 #include <QtWidgets>
-/*
-#include <QtCore/QVariant>
-#include <QtWidgets/QAction>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QButtonGroup>
-#include <QtWidgets/QHeaderView>
-#include <QtWidgets/QLineEdit>
-#include <QtWidgets/QRadioButton>
-#include <QtWidgets/QTableView>
-#include <QtWidgets/QVBoxLayout>
-*/
 
 CustomerSearch::CustomerSearch(QWidget *parent) :
   QWidget(parent)

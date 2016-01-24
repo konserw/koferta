@@ -16,10 +16,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#include "MerchandiseNew.h"
-#include "ui_MerchandiseNew.h"
 #include <QtSql>
 #include <QtDebug>
+#include "MerchandiseNew.h"
+#include "ui_MerchandiseNew.h"
 
 MerchandiseNew::MerchandiseNew(QWidget *parent) :
     QDialog(parent),

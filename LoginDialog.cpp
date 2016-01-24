@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
+
 #include <QtWidgets>
 #include <QPixmap>
 #include <QStringList>
@@ -34,8 +35,8 @@ LoginDialog::~LoginDialog()
     delete m_kOfertaLogo;
 }
 
-LoginDialog::LoginDialog() :
-    QDialog(nullptr),
+LoginDialog::LoginDialog(QWidget *parent) :
+    QDialog(parent),
     ui(new Ui::LoginDialog)
 {
     qDebug() << "Konstruktor Logowanie";

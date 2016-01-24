@@ -15,11 +15,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
+
+#include <QSqlTableModel>
 #include "ui_MerchandiseSearch.h"
 #include "MerchandiseSelection.h"
 #include "MerchandiseSelectionModel.h"
 #include "MerchendiseSelectionDelegate.h"
-#include <QSqlTableModel>
 
 MerchandiseSelection::MerchandiseSelection(const QHash<int, double> &hash, QWidget *parent) :
     MerchandiseSearch(new MerchandiseSelectionModel(hash, parent), parent)

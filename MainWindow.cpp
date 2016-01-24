@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
+
 #include <QDate>
 #include <QSqlQuery>
 #include <QInputDialog>
@@ -317,11 +318,10 @@ void MainWindow::connectedAs(const User &user)
 
 void MainWindow::databaseConnect()
 {
-    LoginDialog loginWindow;
-
-    connect(&loginWindow, &LoginDialog::connectionSuccess, this, &MainWindow::connectedAs);
-
-    loginWindow.exec();
+    LoginDialog *pop = new LoginDialog(this);
+    connect(pop, &LoginDialog::connectionSuccess, this, &MainWindow::connectedAs);
+    pop->exec();
+    delete pop;
 }
 
 void MainWindow::databaseDisconnect()

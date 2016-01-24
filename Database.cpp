@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
+
 #include <QString>
 #include <QtSql>
 #include <QtDebug>
@@ -24,7 +25,6 @@
 #include "Merchandise.h"
 #include "User.h"
 #include "Database.h"
-#include "functions.h"
 #include "LoadDialogMerchandiseListModelMySQL.h"
 
 void insert_klient(const QString& skrot, const QString& full, const QString& tytul, const QString& imie, const QString& nazwisko, const QString& adres)

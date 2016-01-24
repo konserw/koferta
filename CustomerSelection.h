@@ -1,7 +1,4 @@
 /**
-  Dialog cWyborKlienta umożliwiający wybór klienta z bazy dla którego adresowana jest oferta
-  **/
-/**
     kOferta - system usprawniajacy proces ofertowania
     Copyright (C) 2011  Kamil 'konserw' Strzempowicz, konserw@gmail.com
 

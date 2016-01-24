@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
+
 #include <QtDebug>
 #include <QApplication>
 #include <QTextCodec>
@@ -23,9 +24,25 @@
 #include <QtSql>
 #include <QMessageBox>
 #include <QObject>
-#include "functions.h"
 #include "Logger.h"
 #include "MainWindow.h"
+
+/*!
+ * \brief filePath wyznacza bezwzględną ścieżka do pliku o nazwie jak plik wykonywalny z rozszerzeniem podanym jako parametr
+ * \param suffix Rozszerzenie pliku (podawać z kropką)
+ * \return QString zawierający ścieżkę bezwzględą z natywnymi separatorami
+ */
+inline QString filePath(const char* suffix)
+{
+    QString path = QCoreApplication::applicationFilePath();
+#ifdef WIN32
+    path = path.replace(".exe", suffix);
+#else
+    path = path + suffix;
+#endif
+    return QDir::toNativeSeparators(path);
+}
+
 
 int main(int argc, char *argv[])
 {
