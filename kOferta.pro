@@ -41,14 +41,6 @@ win32 {
 
     DEFINES += RELEASE
     DEFINES += WIN32
-
-    LIBS += -L"C:/Program Files (x86)/MySQL/MySQL Connector C 6.1/lib" -llibmysql
-#    LIBS += -L"C:\Program Files\MySQL\MySQL Connector C 6.1 6.1.2\lib" -llibmysql
-}
-
-unix {
-    QMAKE_CXXFLAGS += -Werror
-    LIBS += -L/lib64/mysql -lmysqlclient
 }
 
 DEPENDPATH += . res 
