@@ -1,6 +1,12 @@
 #include "Merchandise.h"
 #include <QSqlRecord>
 #include <QVariant>
+#include <cmath>
+
+double Merchandise::roundTo2(double val)
+{
+    return llround(val * 100) / 100.0f;
+}
 
 Merchandise::Merchandise() :
     m_rabat(0), m_ilosc(0)
@@ -19,7 +25,7 @@ Merchandise::Merchandise(int id, const QString &kod, const QString &nazwa, doubl
 
 double Merchandise::cenaKat(double kurs) const
 {
-    return m_cenaKat * kurs;
+    return roundTo2(m_cenaKat * kurs);
 }
 
 QString Merchandise::kod() const
@@ -49,7 +55,7 @@ double Merchandise::cenaKat() const
 
 void Merchandise::setCenaKat(double cenaKat)
 {
-    m_cenaKat = cenaKat;
+    m_cenaKat = roundTo2(cenaKat);
 }
 
 double Merchandise::rabat() const
@@ -92,22 +98,22 @@ QString Merchandise::unit() const
 
 double Merchandise::cena() const
 {
-    return m_cenaKat * (100 - m_rabat) /100;
+    return roundTo2(m_cenaKat * (100 - m_rabat) /100);
 }
 
 double Merchandise::wartosc() const
 {
-    return m_ilosc * cena();
+    return roundTo2(m_ilosc * cena());
 }
 
 double Merchandise::cena(double kurs) const
 {
-    return cenaKat(kurs) * (100 - m_rabat) /100;
+    return roundTo2(cenaKat(kurs) * (100 - m_rabat) /100);
 }
 
 double Merchandise::wartosc(double kurs) const
 {
-    return m_ilosc * cena(kurs);
+    return roundTo2(m_ilosc * cena(kurs));
 }
 int Merchandise::id() const
 {

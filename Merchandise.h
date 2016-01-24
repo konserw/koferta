@@ -44,6 +44,8 @@ public:
 
     bool operator==(const Merchandise& other) const;
 
+    static double roundTo2(double val);
+
 protected:
     int     m_id;
     QString m_kod;
