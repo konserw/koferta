@@ -27,7 +27,7 @@ CONFIG += c++11
 TEMPLATE = app
 
 DEFINES += VER=2.5
-#DEFINES += NO_SSL
+DEFINES += NO_SSL
 
 win32 {
     RC_FILE = res/koferta.rc

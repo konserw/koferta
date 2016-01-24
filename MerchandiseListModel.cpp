@@ -469,8 +469,8 @@ QString MerchandiseListModel::print(const int w, bool ilosc, bool cenaKat, bool 
     columnWidthMerchandise -= cols*4;
 
     QString doc;
-    doc = QString("\t<table cellspacing=2>\n"
-            "\t<thead><tr>\n"
+    doc = QString("\t<table cellspacing=0>\n"
+            "\t<thead><tr class=\"header\">\n"
             "\t\t<td width=%1><b>%2</b></td>\n").arg(columnWidthOrderNumber).arg("Lp.");
 
     doc += QString("\t\t<td width=%1><b>%2</b></td>\n").arg(columnWidthMerchandise).arg("Towar");
@@ -503,8 +503,9 @@ QString MerchandiseListModel::print(const int w, bool ilosc, bool cenaKat, bool 
             dCena = item->cena();
             wartosc = item->wartosc(m_kurs);
         }
+        QString style = i%2 == 0 ? "row0" : "row1";
 
-        doc += "\t<tr>\n";
+        doc += QString("\t<tr class=\"%1\">\n").arg(style);
         doc += QString("\t\t<td>%1</td>\n").arg(i+1);
         doc += QString("\t\t<td>%1</td>\n").arg(item->kod());
         if(cenaKat)
@@ -521,7 +522,7 @@ QString MerchandiseListModel::print(const int w, bool ilosc, bool cenaKat, bool 
         doc += "\t</tr>\n";
         if(specyfikacja)
         {
-            doc += "\t<tr style=\"font-size:12px; font-family:\"Times New Roman\",Georgia,Serif;\">\n";
+            doc += QString("\t<tr class=\"%1 spec\">\n").arg(style);
             doc += "\t\t<td></td>\n";
             doc += QString("\t\t<td colspan=%1>%2</td>\n").arg(cols-1).arg(item->nazwa());
             doc += "\t</tr>\n";

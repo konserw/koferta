@@ -786,11 +786,17 @@ void MainWindow::makeDocument(QString *sDoc)
     *sDoc = QString(
                 "<html>\n"
                 "<head>\n"
-                "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head>\n"
                 "<title>Oferta</title>\n"
+                "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head>\n"
+                "<style>\n"
+                "\tbody { font-family:Arial, Helvetica, sans-serif; font-size:14px; } \n"
+                "\t.spec { font-size:12px; font-family:\"Times New Roman\",Georgia,Serif; } \n"
+                "\t.row0 { background: #efefef; } \n"
+                "\t.row1 { background: #dadada; } \n"
+                "</style>\n"
                 "</head>\n"
-                "<body style=\"font-family:Arial, Helvetica, sans-serif; font-size:14px;\">\n"
-                "<table >\n" //cellspacing=1
+                "<body>\n"
+                "<table >\n"
     /*NAGŁÓWEK*/
                 "<thead>\n"
                 "<tr><td>\n"
