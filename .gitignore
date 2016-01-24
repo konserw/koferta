@@ -13,3 +13,4 @@ common
 baza
 *.sqlite
 *.qm
+build/
