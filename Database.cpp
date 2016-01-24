@@ -78,7 +78,7 @@ Database::Database(QObject* parent) :
     if(settings.value("testDB").toBool())
         m_schema = "kOferta_devel";
     else
-        m_schema = "kOferta";
+        m_schema = "kOferta_v2";
 
     settings.endGroup();
 
@@ -381,7 +381,7 @@ LoadDialogMerchandiseListModel *Database::loadDialogMerchandiseListModel(QObject
 
 void Database::setupSSL()
 {
-#ifdef WIN32
+#ifndef NO_SSL
     m_database->setConnectOptions("CLIENT_SSL=1");//;CLIENT_IGNORE_SPACE=1");
     QString filePath = QString("%1/certs/%2").arg(qApp->applicationDirPath());
     m_database->setSslCertificateCaFilename(filePath.arg("ca-cert.pem"));

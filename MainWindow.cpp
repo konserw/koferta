@@ -29,6 +29,7 @@
 #include <QtPrintSupport>
 #include <QPrintDialog>
 #include <QTimer>
+#include <QProcess>
 
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
@@ -59,6 +60,14 @@ MainWindow::MainWindow():
     ui(new Ui::MainWindow)
 {
     qDebug() << "konstruktor mainwindow";
+
+    qDebug() << "setup putty tunel";
+    tunnelProcess = new QProcess(this);
+    QStringList arguments;
+    arguments << "-ssh" << "46.105.27.6" << "-l" << "sshUser" << "-P" << "2292" << "-2" << "-4" << "-i" << "./koferta.ppk" << "-C" << "-T" << "-N" << "-L" << "3306:46.105.27.6:3306";
+    tunnelProcess->start("./plink.exe", arguments);
+    if(!tunnelProcess->isOpen())
+        qDebug() << "nie udalo sie otworzyc putty";
 /**
   ui
 **/
@@ -153,6 +162,8 @@ MainWindow::MainWindow():
 MainWindow::~MainWindow()
 {
     qDebug() << "destruktor mainwindow - start";
+
+    tunnelProcess->close();
 
     delete ui;
     delete m_offerNumber;
@@ -786,8 +797,11 @@ void MainWindow::makeDocument(QString *sDoc)
                 "\t<table>\n"
                 "\t<tr>\n"
    //logo
-                "\t\t<td colspan=3>\n"
-                "\t\t\t<img src=%1 halign=left valign=top ><br>\n" //width=%2
+                "\t\t<td colspan=2 align=left valign=bottom>\n"
+                "\t\t\t<img src=%1 height=56 ><br>\n" //width=%2
+                "\t\t</td>\n"
+                "\t\t<td align=right valign=bottom>\n"
+                "\t\t\t<img src=%2 height=45 ><br>\n"
                 "\t\t</td>\n"
                 "\t</tr>\n"
     //adresy itp
@@ -801,8 +815,8 @@ void MainWindow::makeDocument(QString *sDoc)
                 "\t\t\t%8 %9 %10 \n"
                 "\t\t</td>\n"
                 )
-            .arg(m_htm ? "logo2.png" : ":/logo2")
-      //      .arg(w)
+            .arg(m_htm ? "aliaxis.png" : ":/aliaxis")
+            .arg(m_htm ? "fip.png" : ":/fip")
             .arg(dd)
             .arg(*m_offerNumber)
             .arg(*m_date)
