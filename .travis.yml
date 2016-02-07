@@ -25,3 +25,6 @@ addons:
 
 script: ./travis.sh 
 
+branches:
+  except:
+    - appveyor

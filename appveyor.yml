@@ -1,0 +1,62 @@
+version: "{branch}-ci-{build}"
+os:
+- Visual Studio 2013
+
+platform:
+- Win32
+
+configuration:
+- Release
+
+on_finish:
+#- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+environment:
+  QTDIR: C:\Qt\5.5\msvc2013 
+
+install:
+#- git submodule init
+#- git submodule update
+- cmd: '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86'
+- set PATH=%PATH%;%QTDIR%\bin
+- qmake -v
+
+build_script:
+- qmake
+- nmake
+
+after_build:
+- mkdir koferta_x86
+- cd koferta_x86
+- cp ../Release/koferta.exe ./
+- cp ../3rdParty/* ./
+- cp ../LICENSE.md ./
+- cp ../README.md ./
+- cp C:\Qt/5.5/msvc2013/bin/Qt5Core.dll ./
+- cp C:\Qt/5.5/msvc2013/bin/Qt5Gui.dll ./
+- cp C:\Qt/5.5/msvc2013/bin/Qt5PrintSupport.dll ./
+- cp C:\Qt/5.5/msvc2013/bin/Qt5Sql.dll ./
+- cp C:\Qt/5.5/msvc2013/bin/Qt5Widgets.dll ./
+- mkdir platforms
+- cp C:\Qt/5.5/msvc2013/plugins/platforms/qwindows.dll ./platforms/
+- mkdir printsupport
+- cp C:\Qt/5.5/msvc2013/plugins/printsupport/windowsprintersupport.dll ./printsupport/
+- mkdir sqldrivers
+- cp C:\Qt/5.5/msvc2013/plugins/sqldrivers/qsqlmysql.dll ./sqldrivers/
+- cd ..
+- 7z a kOferta_x86.7z koferta_x86
+
+test_script:
+
+artifacts:
+  - path: kOferta_x86.7z
+    name: kOferta_x86.7z
+
+notifications:
+- provider: Email
+  to:
+    - konserw@gmail.com
+  subject: kOferta AppVeyor Build
+  on_build_success: false
+  on_build_failure: true
+  on_build_status_changed: true

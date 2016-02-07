@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/konserw/koferta.svg?branch=master)](https://travis-ci.org/konserw/koferta)
-
+[![Build status](https://ci.appveyor.com/api/projects/status/at9gkx5uqx1c28hw?svg=true)](https://ci.appveyor.com/project/konserw/koferta)
 #kOferta
 
 ##Wstęp
