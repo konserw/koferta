@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/konserw/koferta.svg?branch=master)](https://travis-ci.org/konserw/koferta)
+
 #kOferta
 
 ##Wstęp

@@ -1,0 +1,27 @@
+language: cpp
+sudo: required
+dist: trusty
+compiler:
+  - clang
+  - gcc
+install:
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-5.3" CC="gcc-5.3"; fi
+  - echo ${PATH}
+  - echo ${CXX}
+  - if [ "$CXX" = "g++-5.3" ]; then g++ -v; else clang -v; fi
+  - qmake -v
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - clang
+      - g++-5
+      - gcc-5
+      - libmysqlclient18
+      - qtbase5-dev
+      - qt5-qmake
+      - libqt5sql5-mysql 
+
+script: ./travis.sh 
+
