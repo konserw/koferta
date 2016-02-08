@@ -147,8 +147,6 @@ private:
     TermItem m_shipmentTime;
     TermItem m_offerTerm;
     TermItem m_paymentTerm;
-
-    QProcess *tunnelProcess;
 };
 
 #endif // MAINWINDOW_H

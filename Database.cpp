@@ -22,6 +22,8 @@
 #include <QVariant>
 #include <QMessageBox>
 #include <QSettings>
+#include <QProcess>
+
 #include "Merchandise.h"
 #include "User.h"
 #include "Database.h"
@@ -70,6 +72,14 @@ void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& da
 Database::Database(QObject* parent) :
     QObject(parent)
 {  
+    qDebug() << "setup putty tunel";
+    tunnelProcess = new QProcess(this);
+    QStringList arguments;
+    arguments << "-ssh" << "46.105.27.6" << "-l" << "sshUser" << "-P" << "2292" << "-2" << "-4" << "-i" << "./koferta.ppk" << "-C" << "-T" << "-N" << "-L" << "3306:46.105.27.6:3306";
+    tunnelProcess->start("./plink.exe", arguments);
+    if(tunnelProcess->state() == QProcess::NotRunning)
+        qDebug() << "nie udalo sie otworzyc putty";
+
     QSettings settings;
     settings.beginGroup("connection");
 
@@ -87,10 +97,9 @@ Database::Database(QObject* parent) :
 
 Database::~Database()
 {
+    tunnelProcess->close();
     delete m_database;
 }
-
-
 
 void Database::connect(const QString& name, const QString &pass)
 {

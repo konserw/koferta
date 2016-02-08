@@ -29,6 +29,7 @@ class User;
 class QSqlTableModel;
 class Merchandise;
 class LoadDialogMerchandiseListModel;
+class QProcess;
 
 class Database : public QObject
 {
@@ -94,6 +95,8 @@ protected:
     QString m_host;
     QString m_schema;
     bool m_sslEnabled;
+
+    QProcess *tunnelProcess;
 
 };
 
