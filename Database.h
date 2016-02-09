@@ -22,6 +22,7 @@
 #include <QObject>
 #include <QSqlDatabase>
 #include <QMessageBox>
+#include <QProcess>
 #include "TermModel.h"
 
 class QString;
@@ -75,31 +76,30 @@ public:
     ~Database();
 
 public slots:
-    void connect(const QString &uid, const QString& pass);
-    void getUsersList();
+    void setupDatabaseConnection(const QString &keyFile, const QString& pass);
+    void openDatabaseConnection();
+    void failedTunnel(QProcess::ProcessError error);
 
 signals:
-    void newUsers(const QStringList&);
+    void connectionFail();
     void connectionSuccess(const User&);
     void changeStatus(const QString&);
 
 protected:
-    ///Database object
-    QSqlDatabase* m_database;
 
-    void setupConnection(const QString &user, const QString pass = QString::null);
-
-    inline bool openDatabaseConnection();
+    void setupTunnel();
 
     static TermModel* getTermModel(TermType termType);
     static TermItem getTerm(TermType termType, int id = -1);
 
+    QString m_databaseUserName;
+    QString m_keyFile;
     QString m_host;
     QString m_schema;
     bool m_sslEnabled;
 
     QProcess *tunnelProcess;
-
+    QSqlDatabase* m_database;
 };
 
 void insert_klient(const QString &skrot, const QString &full, const QString &tytul, const QString &imie, const QString &nazwisko, const QString &adres);

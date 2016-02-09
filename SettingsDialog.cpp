@@ -40,11 +40,9 @@ SettingsDialog::~SettingsDialog()
 void SettingsDialog::writeSettings()
 {
     QSettings settings;
-    settings.setValue("settings set", true);
     settings.beginGroup("connection");
     settings.setValue("autoconnect", ui->autologin_checkBox->isChecked());
     settings.setValue("testDB", ui->checkBox_testDB->isChecked());
-    settings.setValue("SSL enabled", ui->ssl_checkBox->isChecked());
     settings.setValue("hosts", hostList());
     settings.setValue("selected host", ui->ip_comboBox->currentText());
     settings.endGroup();
@@ -56,9 +54,8 @@ void SettingsDialog::readSettings()
     settings.beginGroup("connection");
     ui->autologin_checkBox->setChecked(settings.value("autoconnect", true).toBool());
     ui->checkBox_testDB->setChecked(settings.value("testDB", false).toBool());
-    ui->ssl_checkBox->setChecked(settings.value("SSL enabled", true).toBool());
-    ui->ip_comboBox->addItems(settings.value("hosts", "koferta.no-ip.biz").toStringList());
-    ui->ip_comboBox->setCurrentText(settings.value("selected host", "koferta.no-ip.biz").toString());
+    ui->ip_comboBox->addItems(settings.value("hosts", "46.105.27.6").toStringList());
+    ui->ip_comboBox->setCurrentText(settings.value("selected host", "46.105.27.6").toString());
     settings.endGroup();
 }
 

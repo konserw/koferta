@@ -39,11 +39,10 @@ public:
 
 public slots:
     void ok();
-    void updateUserList(const QStringList&);
+    void failed();
 
 signals:
     void connectionSuccess(const User&);
-    void userListRequested();
 
 private:
     Ui::LoginDialog *ui;

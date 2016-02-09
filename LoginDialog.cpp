@@ -21,6 +21,8 @@
 #include <QStringList>
 #include <QString>
 #include <QSettings>
+#include <QDir>
+#include <QApplication>
 
 #include "LoginDialog.h"
 #include "ui_LoginDialog.h"
@@ -48,37 +50,29 @@ LoginDialog::LoginDialog(QWidget *parent) :
 
     m_db = new Database(this);
 
+    QStringList nameFilter("*.ppk");
+    QDir directory(qApp->applicationDirPath());
+    QStringList userList = directory.entryList(nameFilter);
+    ui->comboBox->addItems(userList);
+
     QSettings settings;
     settings.beginGroup("connection");
-
     if(settings.contains("last user"))
-        m_lastUser = settings.value("last user").toString();
-
+        ui->comboBox->setCurrentText(settings.value("last user").toString());
     settings.endGroup();
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
+    QObject::connect(m_db, &Database::connectionFail, this, &LoginDialog::failed);
     QObject::connect(m_db, &Database::connectionSuccess, this, &LoginDialog::connectionSuccess);
     QObject::connect(m_db, &Database::connectionSuccess, this, &LoginDialog::accept);
-    QObject::connect(m_db, &Database::newUsers, this, &LoginDialog::updateUserList);
     QObject::connect(m_db, &Database::changeStatus, ui->info, &QLabel::setText);
-    connect(this, &LoginDialog::userListRequested, m_db, &Database::getUsersList);
-
-    emit(userListRequested());
-}
-
-void LoginDialog::updateUserList(const QStringList& users)
-{
-    ui->comboBox->clear();
-    ui->comboBox->addItems(users);
-
-    if(!m_lastUser.isEmpty())
-        ui->comboBox->setCurrentText(m_lastUser);
 }
 
 void LoginDialog::ok()
 {
+    ui->buttonBox->setEnabled(false);
     QString pass = ui->lineEdit->text();
 
     QSettings settings;
@@ -86,5 +80,10 @@ void LoginDialog::ok()
     settings.setValue("last user", ui->comboBox->currentText());
     settings.endGroup();
 
-    m_db->connect(ui->comboBox->currentText(), pass);
+    m_db->setupDatabaseConnection(ui->comboBox->currentText(), pass);
+}
+
+void LoginDialog::failed()
+{
+    ui->buttonBox->setEnabled(true);
 }

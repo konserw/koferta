@@ -242,9 +242,6 @@ void MainWindow::readSettings()
     if(settings.value("autoconnect", false).toBool())
         QTimer::singleShot(10, this, SLOT(databaseConnect()));
     settings.endGroup();
-
-    if(!settings.value("settings set", false).toBool())
-        QTimer::singleShot(10, this, SLOT(changeSettings()));
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

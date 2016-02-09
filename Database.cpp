@@ -22,7 +22,7 @@
 #include <QVariant>
 #include <QMessageBox>
 #include <QSettings>
-#include <QProcess>
+
 
 #include "Merchandise.h"
 #include "User.h"
@@ -72,13 +72,7 @@ void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& da
 Database::Database(QObject* parent) :
     QObject(parent)
 {  
-    qDebug() << "setup putty tunel";
-    tunnelProcess = new QProcess(this);
-    QStringList arguments;
-    arguments << "-ssh" << "46.105.27.6" << "-l" << "sshUser" << "-P" << "2292" << "-2" << "-4" << "-i" << "./koferta.ppk" << "-C" << "-T" << "-N" << "-L" << "3306:46.105.27.6:3306";
-    tunnelProcess->start("./plink.exe", arguments);
-    if(tunnelProcess->state() == QProcess::NotRunning)
-        qDebug() << "nie udalo sie otworzyc putty";
+    tunnelProcess = nullptr;
 
     QSettings settings;
     settings.beginGroup("connection");
@@ -97,50 +91,81 @@ Database::Database(QObject* parent) :
 
 Database::~Database()
 {
-    tunnelProcess->close();
+    if(tunnelProcess != nullptr)
+        tunnelProcess->close();
     delete m_database;
 }
 
-void Database::connect(const QString& name, const QString &pass)
+void Database::setupDatabaseConnection(const QString& keyFile, const QString &pass)
 {
-    QString databaseUserName = User::dbName(name);
+    m_keyFile = keyFile;
+    m_databaseUserName = keyFile;
+    m_databaseUserName.chop(4);
+    qDebug() << "Loging in as" << m_databaseUserName;
 
-    setupConnection(databaseUserName, pass);
-
-    qDebug() << "Loging in as" << databaseUserName;
-    if(!openDatabaseConnection())
-    {
-        emit changeStatus(tr("%1: Błąd logowania jako %2").arg(m_host, name));
-        return;
-    }
-
-    emit connectionSuccess(userInfo(name));
-}
-
-void Database::getUsersList()
-{
-    setupConnection("kOf_GetUsers");
-
-    if(!openDatabaseConnection())
-    {
-        emit changeStatus(tr("Połączenie z bazą danych %1 na %2 nie powiodło się.").arg(m_schema, m_host));
-        return;
-    }
-    emit changeStatus(tr("Połączono z bazą danych %1 na %2").arg(m_schema, m_host));
-
-    QStringList userList = usersList();
-    emit newUsers(userList);
-}
-
-void Database::setupConnection(const QString& user, const QString pass)
-{
-    emit changeStatus(tr("Łączenie z bazą danych %1 na %2").arg(m_schema, m_host)); //??
-
-    m_database->setHostName(m_host);
+    m_database->setHostName("127.0.0.1");
     m_database->setPort(3306);
     m_database->setDatabaseName(m_schema);
-    m_database->setUserName(user);
+    m_database->setUserName(m_databaseUserName);
     m_database->setPassword(pass);
+
+    if(tunnelProcess == nullptr) setupTunnel();
+    else openDatabaseConnection();
+}
+
+void Database::openDatabaseConnection()
+{
+    qDebug() << "ssh tunnel opened to host " << m_host << " as " << m_databaseUserName;
+
+    if(!m_database->open())
+    {
+        qCritical() << "Error! Unable to connect to database!";
+        qDebug() << "connName:" << m_database->connectionName();
+        qDebug() << "driver:" << m_database->driverName();
+        qDebug() << "options:" << m_database->connectOptions();
+        qDebug() << "host:" << m_database->hostName();
+        qDebug() << "error number:" << m_database->lastError().number();
+        qDebug() << "database error:" << m_database->lastError().databaseText();
+        qDebug() << "driver error:" << m_database->lastError().driverText();
+
+        emit changeStatus(tr("Połączenie z bazą danych %1 na %2 nie powiodło się.").arg(m_schema, m_host));
+        emit connectionFail();
+        return;
+    }
+
+    emit changeStatus(tr("Połączono z bazą danych %1 na %2").arg(m_schema, m_host));
+    emit connectionSuccess(userInfo(m_databaseUserName));
+}
+
+void Database::failedTunnel(QProcess::ProcessError error) //nie dziala
+{
+    qDebug() << "ssh tunnel error:" << error;
+    emit changeStatus(tr("Utworzenie tunelu do hosta %1 nie powiodło się.").arg(m_host));
+    emit connectionFail();
+}
+
+void Database::setupTunnel()
+{
+    qDebug() << "setup ssh tunel";
+    emit changeStatus(tr("Tworzenie tunelu do hosta %1...").arg(m_host));
+
+    tunnelProcess = new QProcess(this);
+    QString program;
+    QStringList arguments;
+
+#ifdef WIN32
+    program = "./plink.exe";
+    arguments << "-ssh" << m_host << "-l" << m_databaseUserName << "-P" << "2292" << "-2" << "-4" << "-i" << m_keyFile << "-C" << "-T" << "-N" << "-L" << QString("3306:%1:3306").arg(m_host);
+#else
+    program = "ssh";
+    arguments << m_host << "-p" << "2292" << "-l" << "konserw" << "-N" << "-L" << QString("3306:%1:3306").arg(m_host);
+#endif
+
+    tunnelProcess->start(program, arguments);
+
+    connect(tunnelProcess, &QProcess::started, this, &Database::openDatabaseConnection);
+    //connect(tunnelProcess, &QProcess::error, this, &Database::failedTunnel); //not working
+    connect(tunnelProcess, SIGNAL(error(QProcess::ProcessError)), this, SLOT(failedTunnel(QProcess::ProcessError)));
 }
 
 TermModel *Database::getTermModel(Database::TermType termType)
@@ -186,12 +211,9 @@ QStringList Database::usersList()
 
     // make sure the complete result set is fetched
     while (usersTable.canFetchMore())
-         usersTable.fetchMore();
+         usersTable.fetchMore();    
 
-    int rows = usersTable.rowCount();
-    qDebug() << "Users list count" << rows;
-
-    for (int r = 0; r < rows; ++r)
+    for (int r = 0; r < usersTable.rowCount(); ++r)
         userList << usersTable.data(usersTable.index(r,1)).toString();
 
     return userList;
@@ -388,22 +410,4 @@ QString Database::mainAddress()
 
     QSqlRecord rec = model.record(0);
     return rec.value("address").toString();
-}
-
-bool Database::openDatabaseConnection()
-{
-    if(!m_database->open())
-    {
-        qCritical() << "Error! Unable to connect to database!";
-        qDebug() << "connName:" << m_database->connectionName();
-        qDebug() << "driver:" << m_database->driverName();
-        qDebug() << "options:" << m_database->connectOptions();
-        qDebug() << "host:" << m_database->hostName();
-        qDebug() << "error number:" << m_database->lastError().number();
-        qDebug() << "database error:" << m_database->lastError().databaseText();
-        qDebug() << "driver error:" << m_database->lastError().driverText();
-        return false;
-    }
-
-    return true;
 }
