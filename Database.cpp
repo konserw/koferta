@@ -86,9 +86,9 @@ Database::Database(QObject* parent) :
     m_sslEnabled = settings.value("SSL enabled").toBool();
     m_host = settings.value("selected host", "localhost").toString();
     if(settings.value("testDB").toBool())
-        m_schema = "kOferta_devel";
+        m_schema = "kOferta_test";
     else
-        m_schema = "kOferta_v2";
+        m_schema = "kOferta_v3";
 
     settings.endGroup();
 
@@ -190,7 +190,7 @@ QStringList Database::usersList()
     QStringList userList;
     QSqlTableModel usersTable;
 
-    usersTable.setTable("users");
+    usersTable.setTable("user");
     usersTable.select();
 
     // make sure the complete result set is fetched
@@ -211,12 +211,12 @@ User Database::userInfo(const QString &name)
     qDebug() << "Downloading user info for" << name;
 
     QSqlTableModel usersTable;
-    usersTable.setTable("users");
+    usersTable.setTable("usersView");
     usersTable.setFilter(QString("name = '%1'").arg(name));
     usersTable.select();
     QSqlRecord r = usersTable.record(0);
 
-    return User(r.value("uid").toInt(), name, r.value("phone").toString(), r.value("mail").toString(), r.value("adress").toString(), r.value("male").toBool(), r.value("nrOferty").toInt());
+    return User(r.value("uid").toInt(), name, r.value("phone").toString(), r.value("mail").toString(), r.value("address").toString(), r.value("male").toBool(), r.value("currentOfferNumber").toInt());
 }
 
 void Database::createTerms(Database::TermType type, const QString &shortDesc, const QString &longDesc)
@@ -386,6 +386,17 @@ QList<Merchandise *> Database::loadOfferMerchandise(const QString &number)
 LoadDialogMerchandiseListModel *Database::loadDialogMerchandiseListModel(QObject *parent)
 {
     return new LoadDialogMerchandiseListModelMySQL(parent);
+}
+
+QString Database::mainAddress()
+{
+    QSqlTableModel model;
+    model.setTable("address");
+    model.setFilter(QString("id = 2"));
+    model.select();
+
+    QSqlRecord rec = model.record(0);
+    return rec.value("address").toString();
 }
 
 void Database::setupSSL()

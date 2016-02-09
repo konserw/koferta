@@ -824,27 +824,31 @@ void MainWindow::makeDocument(QString *sDoc)
 
     *sDoc += QString(
                 "\t\t<td width=%1>\n"
-                 "\t\t\t<b>Marley Polska Sp. z o.o.</b><br />\n"
-                 "\t\t\tul. Dąbrówki 6<br />\n"
-                 "\t\t\t03-909 Warszawa<br />\n"
+                "%2"
                  "\t\t\t<br />\n"
-                 "\t\t\t<b> %2 </b><br />\n"
-                 "\t\t\t%3<br />\n")
-            .arg(dd)
+                 "\t\t\t<b> %3 </b><br />\n"
+                 "\t\t\t%4<br />\n")
+            .arg(dd+50)
+            .arg(Database::mainAddress())
             .arg(m_currentUser->name())
             .arg(m_currentUser->mail());
     if(m_currentUser->hasPhone())
         *sDoc += QString("\t\t\tTel.: %3 \n")
                 .arg(m_currentUser->phone());
+    *sDoc += "\t\t</td>\n";
 
-    *sDoc += QString(
-                "\t\t</td>\n"
+    QString addr = m_currentUser->address();
+    if(!addr.isNull() and !addr.isEmpty())
+    {
+        *sDoc += QString(
+
                 "\t\t<td width=%1>\n"
                 "%2\n"
                 "\t\t</td>\n"
            )
-            .arg(dd)
-            .arg(m_currentUser->adress());
+            .arg(dd-50)
+            .arg(m_currentUser->address());
+    }
 
     *sDoc +=
              "\t</tr>\n"

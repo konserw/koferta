@@ -28,7 +28,7 @@ User::User(const User &u)
     _name = new QString(u.name());
     _mail = new QString(u.mail());
     m_phone = new QString(u.phone());
-    _adress = new QString(u.adress());
+    _adress = new QString(u.address());
     _male = u._male;
     _nrOferty = u._nrOferty;
     _uid = u._uid;
@@ -63,7 +63,7 @@ void User::nrOfertyInkrement()
 
     _nrOferty++;
 
-    QString s = QString("UPDATE users SET nrOferty=%1 WHERE uid=%2").arg(_nrOferty).arg(_uid);
+    QString s = QString("UPDATE user SET nrOferty=%1 WHERE uid=%2").arg(_nrOferty).arg(_uid);
     QSqlQuery q;
 
     if(q.exec(s) == false)
@@ -74,7 +74,7 @@ void User::nrOfertyInkrement()
     }
 }
 
-QString User::adress() const
+QString User::address() const
 {
    return *_adress;
 }

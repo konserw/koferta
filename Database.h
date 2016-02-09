@@ -62,10 +62,13 @@ public:
     static TermItem shipmentTime(int id);
     static TermItem offerTerm(int id);
 
+    //merchandise
     static void saveOfferMerchandise(const QString& offerId, const QList<Merchandise*>& merchandise);
     static QList<Merchandise*> loadOfferMerchandise(const QString& number);
-
     static LoadDialogMerchandiseListModel* loadDialogMerchandiseListModel(QObject* parent);
+
+    //other
+    static QString mainAddress();
 
 /* Database connection setup */
     explicit Database(QObject *parent = NULL);
