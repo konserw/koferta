@@ -22,7 +22,8 @@
 #include <QTextStream>
 #include <iostream>
 #include <QFile>
-#include <QFile>
+#include <QDir>
+#include <QApplication>
 
 Logger* Logger::m_instance = NULL;
 
@@ -72,12 +73,26 @@ void Logger::logOutput(QtMsgType type, const QMessageLogContext &context, const 
     }
 }
 
+bool Logger::isOpen() const
+{
+    return ( m_pathSet && (m_log != NULL) && (m_out != NULL) );
+}
+
 
 Logger::Logger()
 {
-    m_out  = NULL;
+    m_out = NULL;
     m_log = NULL;
     m_pathSet = false;
+
+    QString path = QCoreApplication::applicationFilePath();
+    QString suffix(".log");
+#ifdef WIN32
+    path = path.replace(".exe", suffix);
+#else
+    path = path + suffix;
+#endif
+    this->setFilePath(QDir::toNativeSeparators(path));
 }
 
 Logger::~Logger()
@@ -120,3 +135,4 @@ bool Logger::setFilePath(const QString &path)
     m_pathSet = true;
     return true;
 }
+

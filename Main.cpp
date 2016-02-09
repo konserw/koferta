@@ -20,36 +20,18 @@
 #include <QApplication>
 #include <QTextCodec>
 #include <QTranslator>
-#include <exception>
 #include <QtSql>
 #include <QMessageBox>
 #include <QObject>
 #include "Logger.h"
 #include "MainWindow.h"
 
-/*!
- * \brief filePath wyznacza bezwzględną ścieżka do pliku o nazwie jak plik wykonywalny z rozszerzeniem podanym jako parametr
- * \param suffix Rozszerzenie pliku (podawać z kropką)
- * \return QString zawierający ścieżkę bezwzględą z natywnymi separatorami
- */
-inline QString filePath(const char* suffix)
-{
-    QString path = QCoreApplication::applicationFilePath();
-#ifdef WIN32
-    path = path.replace(".exe", suffix);
-#else
-    path = path + suffix;
-#endif
-    return QDir::toNativeSeparators(path);
-}
-
-
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
-    if(Logger::instance()->setFilePath(filePath(".log")))
+    if(Logger::instance()->isOpen())
         qInstallMessageHandler(Logger::logHandler);
     else
         qWarning() << "Unable to create log file! Logging to std::cerr.";

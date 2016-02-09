@@ -32,6 +32,7 @@ public:
     static Logger* instance();
     static void logHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
     void logOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg);
+    bool isOpen() const;
 
 signals:
     void logMsg(QString);
