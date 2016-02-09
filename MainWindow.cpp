@@ -264,7 +264,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::about()
 {
     static const QString aboutText = tr(
-         "\tSystem wspomagający ofertowanie kOferta v. %1 beta 8\n"
+         "\tSystem wspomagający ofertowanie kOferta v. %1\n"
          "\n"
          "Projekt kOferta ma ułatwić sprzedającemu tworzenie ofert handlowych poprzez "
          "łatwy dostęp do bazy danych z klientami i produktami.\n"
@@ -667,7 +667,7 @@ void MainWindow::printPrev()
 
     QPrintPreviewDialog* preview = new QPrintPreviewDialog(printer, this);
     preview->setWindowFlags(Qt::Window);
-    connect(preview, SIGNAL(paintRequested(QPrinter *)), SLOT(print(QPrinter *))); //????
+    connect(preview, SIGNAL(paintRequested(QPrinter *)), SLOT(print(QPrinter *)));
     preview->exec();
 
     delete preview;
@@ -746,7 +746,7 @@ void MainWindow::printHtm()
 
 void MainWindow::print(QPrinter *printer)
 {
-    const qreal margin = 5;                        //szerokość marginesu
+    const qreal margin = 5;
     printer->setPaperSize(QPrinter::A4);
     printer->setResolution(96);
     printer->setPageMargins(margin, margin, margin, margin, QPrinter::Millimeter);
@@ -836,19 +836,13 @@ void MainWindow::makeDocument(QString *sDoc)
         *sDoc += QString("\t\t\tTel.: %3 \n")
                 .arg(m_currentUser->phone());
     *sDoc += "\t\t</td>\n";
-/*
-    QString addr = m_currentUser->address();
-    if(!(addr.isNull() or addr.isEmpty()))
-    {*/
-        *sDoc += QString(
 
-                "\t\t<td width=%1>\n"
-                "%2\n"
-                "\t\t</td>\n"
-           )
-            .arg(dd-50)
-            .arg(m_currentUser->address());
-    //}
+    *sDoc += QString(
+            "\t\t<td width=%1>\n"
+            "%2\n"
+            "\t\t</td>\n")
+        .arg(dd-50)
+        .arg(m_currentUser->address());
 
     *sDoc +=
              "\t</tr>\n"
