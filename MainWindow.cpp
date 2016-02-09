@@ -836,10 +836,10 @@ void MainWindow::makeDocument(QString *sDoc)
         *sDoc += QString("\t\t\tTel.: %3 \n")
                 .arg(m_currentUser->phone());
     *sDoc += "\t\t</td>\n";
-
+/*
     QString addr = m_currentUser->address();
     if(!(addr.isNull() or addr.isEmpty()))
-    {
+    {*/
         *sDoc += QString(
 
                 "\t\t<td width=%1>\n"
@@ -848,7 +848,7 @@ void MainWindow::makeDocument(QString *sDoc)
            )
             .arg(dd-50)
             .arg(m_currentUser->address());
-    }
+    //}
 
     *sDoc +=
              "\t</tr>\n"
