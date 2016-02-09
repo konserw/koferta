@@ -141,15 +141,6 @@ void Database::setupConnection(const QString& user, const QString pass)
     m_database->setDatabaseName(m_schema);
     m_database->setUserName(user);
     m_database->setPassword(pass);
-
-    if(m_sslEnabled)
-    {
-        setupSSL();
-    }
-    else
-    {
-        qWarning() << "SSL has been disabled";
-    }
 }
 
 TermModel *Database::getTermModel(Database::TermType termType)
@@ -397,17 +388,6 @@ QString Database::mainAddress()
 
     QSqlRecord rec = model.record(0);
     return rec.value("address").toString();
-}
-
-void Database::setupSSL()
-{
-#ifndef NO_SSL
-    m_database->setConnectOptions("CLIENT_SSL=1");//;CLIENT_IGNORE_SPACE=1");
-    QString filePath = QString("%1/certs/%2").arg(qApp->applicationDirPath());
-    m_database->setSslCertificateCaFilename(filePath.arg("ca-cert.pem"));
-    m_database->setSslCertificateFilename(filePath.arg("client-cert.pem"));
-    m_database->setSslKeyFilename(filePath.arg("client-key.pem"));
-#endif
 }
 
 bool Database::openDatabaseConnection()

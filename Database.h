@@ -89,7 +89,6 @@ protected:
 
     void setupConnection(const QString &user, const QString pass = QString::null);
 
-    inline void setupSSL();
     inline bool openDatabaseConnection();
 
     static TermModel* getTermModel(TermType termType);
