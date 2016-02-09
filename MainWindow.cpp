@@ -838,7 +838,7 @@ void MainWindow::makeDocument(QString *sDoc)
     *sDoc += "\t\t</td>\n";
 
     QString addr = m_currentUser->address();
-    if(!addr.isNull() and !addr.isEmpty())
+    if(!(addr.isNull() or addr.isEmpty()))
     {
         *sDoc += QString(
 
