@@ -23,11 +23,12 @@
 #include <QMessageBox>
 #include <QSettings>
 
-
 #include "Merchandise.h"
 #include "User.h"
 #include "Database.h"
 #include "LoadDialogMerchandiseListModelMySQL.h"
+
+Database* Database::m_instance = nullptr;
 
 void insert_klient(const QString& skrot, const QString& full, const QString& tytul, const QString& imie, const QString& nazwisko, const QString& adres)
 {
@@ -113,9 +114,22 @@ void Database::setupDatabaseConnection(const QString& keyFile, const QString &pa
     else openDatabaseConnection();
 }
 
+void Database::readOutput()
+{
+    qDebug() << "[ssh] " << tunnelProcess->readAllStandardOutput();
+}
+
+void Database::readError()
+{
+    qDebug() << "[ssh] " << tunnelProcess->readAllStandardError();
+}
+
 void Database::openDatabaseConnection()
 {
-    qDebug() << "ssh tunnel opened to host " << m_host << " as " << m_databaseUserName;
+    if(tunnelProcess->state() == QProcess::Running)
+        qDebug() << "ssh tunnel opened to host " << m_host << " as " << m_databaseUserName;
+    else
+        failedTunnel(QProcess::UnknownError);
 
     if(!m_database->open())
     {
@@ -161,11 +175,13 @@ void Database::setupTunnel()
     arguments << m_host << "-p" << "2292" << "-l" << "konserw" << "-N" << "-L" << QString("3306:%1:3306").arg(m_host);
 #endif
 
-    tunnelProcess->start(program, arguments);
-
+    connect(tunnelProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(readOutput()));
+    connect(tunnelProcess, SIGNAL(readyReadStandardError()), this, SLOT(readError()));
     connect(tunnelProcess, &QProcess::started, this, &Database::openDatabaseConnection);
     //connect(tunnelProcess, &QProcess::error, this, &Database::failedTunnel); //not working
     connect(tunnelProcess, SIGNAL(error(QProcess::ProcessError)), this, SLOT(failedTunnel(QProcess::ProcessError)));
+
+    tunnelProcess->start(program, arguments);
 }
 
 TermModel *Database::getTermModel(Database::TermType termType)
@@ -199,6 +215,14 @@ TermItem Database::getTerm(Database::TermType termType, int id)
     //convert to term
     QSqlRecord rec = model.record(0);
     return TermItem(rec.value("id").toInt(), rec.value("shortDesc").toString(), rec.value("longDesc").toString());
+}
+
+Database *Database::instance()
+{
+    if(m_instance == nullptr)
+        m_instance = new Database;
+
+    return m_instance;
 }
 
 QStringList Database::usersList()

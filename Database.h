@@ -45,6 +45,8 @@ public:
         termShipmentTime = 3 //termin
     };
 
+    static Database* instance();
+
 /* Database Interface */
     //user-related
     static QStringList usersList();
@@ -71,12 +73,10 @@ public:
     //other
     static QString mainAddress();
 
-/* Database connection setup */
-    explicit Database(QObject *parent = NULL);
-    ~Database();
-
 public slots:
     void setupDatabaseConnection(const QString &keyFile, const QString& pass);
+    void readOutput();
+    void readError();
     void openDatabaseConnection();
     void failedTunnel(QProcess::ProcessError error);
 
@@ -86,6 +86,9 @@ signals:
     void changeStatus(const QString&);
 
 protected:
+    explicit Database(QObject *parent = nullptr);
+    ~Database();
+    static Database* m_instance;
 
     void setupTunnel();
 

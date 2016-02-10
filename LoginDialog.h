@@ -48,8 +48,6 @@ private:
     Ui::LoginDialog *ui;
 
     QPixmap* m_kOfertaLogo;
-    Database* m_db;
-
     QString m_lastUser;
 };
 #endif // LOG_H

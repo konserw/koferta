@@ -48,8 +48,6 @@ LoginDialog::LoginDialog(QWidget *parent) :
     m_kOfertaLogo = new QPixmap(":/klog");
     ui->img->setPixmap(*m_kOfertaLogo);
 
-    m_db = new Database(this);
-
     QStringList nameFilter("*.ppk");
     QDir directory(qApp->applicationDirPath());
     QStringList userList = directory.entryList(nameFilter);
@@ -64,10 +62,10 @@ LoginDialog::LoginDialog(QWidget *parent) :
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
-    QObject::connect(m_db, &Database::connectionFail, this, &LoginDialog::failed);
-    QObject::connect(m_db, &Database::connectionSuccess, this, &LoginDialog::connectionSuccess);
-    QObject::connect(m_db, &Database::connectionSuccess, this, &LoginDialog::accept);
-    QObject::connect(m_db, &Database::changeStatus, ui->info, &QLabel::setText);
+    QObject::connect(Database::instance(), &Database::connectionFail, this, &LoginDialog::failed);
+    QObject::connect(Database::instance(), &Database::connectionSuccess, this, &LoginDialog::connectionSuccess);
+    QObject::connect(Database::instance(), &Database::connectionSuccess, this, &LoginDialog::accept);
+    QObject::connect(Database::instance(), &Database::changeStatus, ui->info, &QLabel::setText);
 }
 
 void LoginDialog::ok()
@@ -80,7 +78,7 @@ void LoginDialog::ok()
     settings.setValue("last user", ui->comboBox->currentText());
     settings.endGroup();
 
-    m_db->setupDatabaseConnection(ui->comboBox->currentText(), pass);
+    Database::instance()->setupDatabaseConnection(ui->comboBox->currentText(), pass);
 }
 
 void LoginDialog::failed()
