@@ -63,3 +63,20 @@ notifications:
   on_build_success: false
   on_build_failure: true
   on_build_status_changed: true
+
+deploy:
+  description: '# Version {APPVEYOR_REPO_TAG_NAME} arch x86 
+
+## Requirements:
+* Visual C++ Redistributable 2013 x86'
+
+  provider: GitHub
+  auth_token:
+    secure: ogmv8nz5XumGTJew9jWXUvPQ8U4J9t4z7WcAIG+xYHrbqnenBO5x0NUZvCMitga6 
+  artifact: kOferta_x86.7z 
+  draft: false
+  prerelease: false
+  on:
+    branch: master                 # release from master branch only
+    appveyor_repo_tag: true        # deploy on tag push only
+
