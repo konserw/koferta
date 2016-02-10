@@ -5,7 +5,7 @@
 set -evx
 env | sort
 #qmake -v
-lrelease kOferta.pro
+#lrelease kOferta.pro
 qmake
 make
 
