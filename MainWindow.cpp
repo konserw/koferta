@@ -35,6 +35,7 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
+#include "Logger.h"
 #include "Database.h"
 #include "LoginDialog.h"
 #include "LoadDialog.h"
@@ -60,6 +61,11 @@ MainWindow::MainWindow():
     QMainWindow(nullptr),
     ui(new Ui::MainWindow)
 {
+    if(Logger::instance()->isOpen())
+        qInstallMessageHandler(Logger::logHandler);
+    else
+        qWarning() << "Unable to create log file! Logging to std::cerr.";
+
     qDebug() << "konstruktor mainwindow";
 
     qDebug() << "loading translation files";

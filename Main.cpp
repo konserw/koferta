@@ -16,11 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#include <QtDebug>
 #include <QApplication>
 #include <QTextCodec>
 
-#include "Logger.h"
 #include "MainWindow.h"
 
 int main(int argc, char *argv[])
@@ -31,14 +29,7 @@ int main(int argc, char *argv[])
     //QCoreApplication::setOrganizationDomain("koferta.no-ip.biz");
     QCoreApplication::setApplicationName("kOferta");
 
-    if(Logger::instance()->isOpen())
-        qInstallMessageHandler(Logger::logHandler);
-    else
-        qWarning() << "Unable to create log file! Logging to std::cerr.";
-
     MainWindow w;
-
-    qDebug() << "launching application";
 
     return app.exec();
 }
