@@ -37,6 +37,7 @@ after_build:
 - cp C:\Qt/5.5/msvc2013/bin/Qt5PrintSupport.dll ./
 - cp C:\Qt/5.5/msvc2013/bin/Qt5Sql.dll ./
 - cp C:\Qt/5.5/msvc2013/bin/Qt5Widgets.dll ./
+- cp C:\Qt/5.5/msvc2013/bin/Qt5Network.dll ./
 - mkdir platforms
 - cp C:\Qt/5.5/msvc2013/plugins/platforms/qwindows.dll ./platforms/
 - mkdir printsupport
