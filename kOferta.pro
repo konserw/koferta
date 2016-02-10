@@ -20,7 +20,7 @@
 
 TARGET = kOferta
 
-QT += sql printsupport widgets
+QT += sql printsupport widgets network
 
 CONFIG += c++11
 

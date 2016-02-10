@@ -74,6 +74,8 @@ public:
     static QString mainAddress();
 
 public slots:
+    void dropConection();
+    void waitForTunnel();
     void setupDatabaseConnection(const QString &keyFile, const QString& pass);
     void readOutput();
     void readError();
@@ -92,6 +94,8 @@ protected:
     static Database* m_instance;
 
     void setupTunnel();
+    void createMysqlDatabase();
+    void readSettings();
 
     static TermModel* getTermModel(TermType termType);
     static TermItem getTerm(TermType termType, int id = -1);
@@ -99,6 +103,7 @@ protected:
     QString m_databaseUserName;
     QString m_keyFile;
     QString m_host;
+    QString m_previousHost;
     QString m_schema;
     bool m_sslEnabled;
 

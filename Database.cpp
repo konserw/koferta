@@ -22,6 +22,7 @@
 #include <QVariant>
 #include <QMessageBox>
 #include <QSettings>
+#include <QTcpSocket>
 
 #include "Merchandise.h"
 #include "User.h"
@@ -73,48 +74,36 @@ void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& da
 Database::Database(QObject* parent) :
     QObject(parent)
 {  
+    m_database = nullptr;
     tunnelProcess = nullptr;
-
-    QSettings settings;
-    settings.beginGroup("connection");
-
-    m_host = settings.value("selected host", "localhost").toString();
-    if(settings.value("testDB").toBool())
-        m_schema = "kOferta_test";
-    else
-        m_schema = "kOferta_v3";
-
-    settings.endGroup();
-
-    if(QSqlDatabase::drivers().contains("QMYSQL"))
-         m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"));
-    else
-    {
-        QMessageBox::critical(nullptr, QObject::tr("Błąd"), QObject::tr("Bład sterownika bazy danych!"));
-        qCritical() << "invalid driver";
-
-        qDebug() << "library paths: ";
-        QStringList list = qApp->libraryPaths();
-        for(int i=0; i<list.size(); i++)
-            qDebug() << "\t" << list[i];
-
-        qDebug() << "aviable drivers: ";
-        list = QSqlDatabase::drivers();
-        for(int i=0; i<list.size(); i++)
-            qDebug() << "\t" << list[i];
-        emit driverFail();
-    }
 }
 
 Database::~Database()
 {
+    dropConection();
     if(tunnelProcess != nullptr)
-        tunnelProcess->close();
-    delete m_database;
+    {
+        tunnelProcess->kill();
+        tunnelProcess->waitForFinished();
+        delete tunnelProcess;
+    }
+}
+
+void Database::dropConection()
+{
+    if(m_database != nullptr)
+    {
+        m_database->close();
+        delete m_database;
+        m_database = nullptr;
+    }
 }
 
 void Database::setupDatabaseConnection(const QString& keyFile, const QString &pass)
 {
+    readSettings();
+    createMysqlDatabase();
+
     m_keyFile = keyFile;
     m_databaseUserName = keyFile;
     m_databaseUserName.chop(4);
@@ -126,8 +115,7 @@ void Database::setupDatabaseConnection(const QString& keyFile, const QString &pa
     m_database->setUserName(m_databaseUserName);
     m_database->setPassword(pass);
 
-    if(tunnelProcess == nullptr) setupTunnel();
-    else openDatabaseConnection();
+    setupTunnel();
 }
 
 void Database::readOutput()
@@ -142,11 +130,6 @@ void Database::readError()
 
 void Database::openDatabaseConnection()
 {
-    if(tunnelProcess->state() == QProcess::Running)
-        qDebug() << "ssh tunnel opened to host " << m_host << " as " << m_databaseUserName;
-    else
-        failedTunnel(QProcess::UnknownError);
-
     if(!m_database->open())
     {
         qCritical() << "Error! Unable to connect to database!";
@@ -177,6 +160,24 @@ void Database::failedTunnel(QProcess::ProcessError error) //nie dziala
 void Database::setupTunnel()
 {
     qDebug() << "setup ssh tunel";
+
+    if(tunnelProcess != nullptr)
+    {
+        if(m_previousHost == m_host)
+        {
+            waitForTunnel();
+            return;
+        }
+        else
+        {
+            tunnelProcess->kill();
+            emit changeStatus(tr("Niszczenie tunelu do hosta %1...").arg(m_previousHost));
+            tunnelProcess->waitForFinished(50000);
+            delete tunnelProcess;
+        }
+    }
+
+    m_previousHost = m_host;
     emit changeStatus(tr("Tworzenie tunelu do hosta %1...").arg(m_host));
 
     tunnelProcess = new QProcess(this);
@@ -193,11 +194,69 @@ void Database::setupTunnel()
 
     connect(tunnelProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(readOutput()));
     connect(tunnelProcess, SIGNAL(readyReadStandardError()), this, SLOT(readError()));
-    connect(tunnelProcess, &QProcess::started, this, &Database::openDatabaseConnection);
+    connect(tunnelProcess, &QProcess::started, this, &Database::waitForTunnel);
     //connect(tunnelProcess, &QProcess::error, this, &Database::failedTunnel); //not working
     connect(tunnelProcess, SIGNAL(error(QProcess::ProcessError)), this, SLOT(failedTunnel(QProcess::ProcessError)));
 
     tunnelProcess->start(program, arguments);
+}
+
+void Database::createMysqlDatabase()
+{
+    if(m_database != nullptr)
+        return;
+
+    if(QSqlDatabase::drivers().contains("QMYSQL"))
+         m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"));
+    else
+    {
+        QMessageBox::critical(nullptr, QObject::tr("Błąd"), QObject::tr("Bład sterownika bazy danych!"));
+        qCritical() << "invalid driver";
+
+        qDebug() << "library paths: ";
+        QStringList list = qApp->libraryPaths();
+        for(int i=0; i<list.size(); i++)
+            qDebug() << "\t" << list[i];
+
+        qDebug() << "aviable drivers: ";
+        list = QSqlDatabase::drivers();
+        for(int i=0; i<list.size(); i++)
+            qDebug() << "\t" << list[i];
+        emit driverFail();
+    }
+}
+
+void Database::readSettings()
+{
+    QSettings settings;
+    settings.beginGroup("connection");
+
+    m_host = settings.value("selected host", "localhost").toString();
+    if(settings.value("testDB").toBool())
+        m_schema = "kOferta_test";
+    else
+        m_schema = "kOferta_v3";
+
+    settings.endGroup();
+}
+
+void Database::waitForTunnel()
+{
+    QTcpSocket* sock = new QTcpSocket;
+    sock->connectToHost("127.0.0.1", 3306);
+    if(sock->waitForConnected(100000))
+    {
+        emit changeStatus(tr("Tworzenie tunelu do hosta %1 zakończone powodzeniem").arg(m_host));
+        qDebug() << "ssh tunnel opened to host " << m_host << " as " << m_databaseUserName;
+        sock->disconnectFromHost();
+        delete sock;
+        openDatabaseConnection();
+    }
+    else
+    {
+        qDebug() << "ssh: socket timeout";
+        failedTunnel(QProcess::Timedout);
+    }
 }
 
 TermModel *Database::getTermModel(Database::TermType termType)
@@ -451,3 +510,6 @@ QString Database::mainAddress()
     QSqlRecord rec = model.record(0);
     return rec.value("address").toString();
 }
+
+
+

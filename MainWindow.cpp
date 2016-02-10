@@ -321,6 +321,8 @@ void MainWindow::databaseDisconnect()
 
     delete m_client;
     m_client = nullptr;
+
+    Database::instance()->dropConection();
 }
 
 void MainWindow::changeSettings()
