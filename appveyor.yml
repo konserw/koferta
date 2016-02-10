@@ -22,6 +22,7 @@ install:
 - qmake -v
 
 build_script:
+- lrelease kOferta.pro
 - qmake
 - nmake
 
@@ -29,6 +30,7 @@ after_build:
 - mkdir koferta_x86
 - cd koferta_x86
 - cp ../Release/koferta.exe ./
+- cp ../*.qm ./
 - cp ../3rdParty/* ./
 - cp ../LICENSE.md ./
 - cp ../README.md ./
