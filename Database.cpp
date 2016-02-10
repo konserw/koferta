@@ -78,7 +78,6 @@ Database::Database(QObject* parent) :
     QSettings settings;
     settings.beginGroup("connection");
 
-    m_sslEnabled = settings.value("SSL enabled").toBool();
     m_host = settings.value("selected host", "localhost").toString();
     if(settings.value("testDB").toBool())
         m_schema = "kOferta_test";
@@ -87,7 +86,24 @@ Database::Database(QObject* parent) :
 
     settings.endGroup();
 
-    m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"));
+    if(QSqlDatabase::drivers().contains("QMYSQL"))
+         m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"));
+    else
+    {
+        QMessageBox::critical(nullptr, QObject::tr("Błąd"), QObject::tr("Bład sterownika bazy danych!"));
+        qCritical() << "invalid driver";
+
+        qDebug() << "library paths: ";
+        QStringList list = qApp->libraryPaths();
+        for(int i=0; i<list.size(); i++)
+            qDebug() << "\t" << list[i];
+
+        qDebug() << "aviable drivers: ";
+        list = QSqlDatabase::drivers();
+        for(int i=0; i<list.size(); i++)
+            qDebug() << "\t" << list[i];
+        emit driverFail();
+    }
 }
 
 Database::~Database()

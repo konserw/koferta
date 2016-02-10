@@ -81,6 +81,7 @@ public slots:
     void failedTunnel(QProcess::ProcessError error);
 
 signals:
+    void driverFail();
     void connectionFail();
     void connectionSuccess(const User&);
     void changeStatus(const QString&);

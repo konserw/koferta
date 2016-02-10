@@ -59,13 +59,13 @@ LoginDialog::LoginDialog(QWidget *parent) :
         ui->comboBox->setCurrentText(settings.value("last user").toString());
     settings.endGroup();
 
-    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
-    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-
-    QObject::connect(Database::instance(), &Database::connectionFail, this, &LoginDialog::failed);
-    QObject::connect(Database::instance(), &Database::connectionSuccess, this, &LoginDialog::connectionSuccess);
-    QObject::connect(Database::instance(), &Database::connectionSuccess, this, &LoginDialog::accept);
-    QObject::connect(Database::instance(), &Database::changeStatus, ui->info, &QLabel::setText);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &LoginDialog::ok);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &LoginDialog::reject);
+    connect(Database::instance(), &Database::driverFail, this, &LoginDialog::reject);
+    connect(Database::instance(), &Database::connectionFail, this, &LoginDialog::failed);
+    connect(Database::instance(), &Database::connectionSuccess, this, &LoginDialog::connectionSuccess);
+    connect(Database::instance(), &Database::connectionSuccess, this, &LoginDialog::accept);
+    connect(Database::instance(), &Database::changeStatus, ui->info, &QLabel::setText);
 }
 
 void LoginDialog::ok()

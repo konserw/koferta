@@ -20,9 +20,7 @@
 #include <QApplication>
 #include <QTextCodec>
 #include <QTranslator>
-#include <QtSql>
-#include <QMessageBox>
-#include <QObject>
+
 #include "Logger.h"
 #include "MainWindow.h"
 
@@ -46,24 +44,6 @@ int main(int argc, char *argv[])
         qWarning() << "could not load translations from file" << translationFile;
 
     qDebug() << "checking sql driver";
-
-    if(!QSqlDatabase::drivers().contains("QMYSQL"))
-    {
-        QMessageBox::critical(nullptr, QObject::tr("Błąd"), QObject::tr("Bład sterownika bazy danych!\nNastąpi zamknięcie programu."));
-        qCritical() << "invalid driver";
-
-        qDebug() << "library paths: ";
-        QStringList list = qApp->libraryPaths();
-        for(int i=0; i<list.size(); i++)
-            qDebug() << "\t" << list[i];
-
-        qDebug() << "aviable drivers: ";
-        list = QSqlDatabase::drivers();
-        for(int i=0; i<list.size(); i++)
-            qDebug() << "\t" << list[i];
-
-        return 2;
-    }
 
     QCoreApplication::setOrganizationName("Konserw  Software");
     QCoreApplication::setOrganizationDomain("koferta.no-ip.biz");
