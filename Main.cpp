@@ -19,7 +19,6 @@
 #include <QtDebug>
 #include <QApplication>
 #include <QTextCodec>
-#include <QTranslator>
 
 #include "Logger.h"
 #include "MainWindow.h"
@@ -28,26 +27,14 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+    QCoreApplication::setOrganizationName("Konserw  Software");
+    //QCoreApplication::setOrganizationDomain("koferta.no-ip.biz");
+    QCoreApplication::setApplicationName("kOferta");
 
     if(Logger::instance()->isOpen())
         qInstallMessageHandler(Logger::logHandler);
     else
         qWarning() << "Unable to create log file! Logging to std::cerr.";
-
-    qDebug() << "loading translation files";
-
-    QString translationFile = QString("kOferta_%1").arg(QLocale::system().name());
-    QTranslator myappTranslator;
-    if(myappTranslator.load(translationFile))
-        app.installTranslator(&myappTranslator);
-    else
-        qWarning() << "could not load translations from file" << translationFile;
-
-    qDebug() << "checking sql driver";
-
-    QCoreApplication::setOrganizationName("Konserw  Software");
-    QCoreApplication::setOrganizationDomain("koferta.no-ip.biz");
-    QCoreApplication::setApplicationName("kOferta");
 
     MainWindow w;
 

@@ -30,6 +30,7 @@
 #include <QtPrintSupport>
 #include <QPrintDialog>
 #include <QTimer>
+#include <QTranslator>
 
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
@@ -41,6 +42,7 @@
 
 #include "AddConditionDialog.h"
 #include "SettingsDialog.h"
+#include "TermsChooserDialog.h"
 
 #include "CustomerNew.h"
 #include "CustomerEdit.h"
@@ -48,12 +50,11 @@
 
 #include "Merchandise.h"
 #include "MerchandiseNew.h"
-
 #include "MerchandiseSelection.h"
 #include "MerchandiseListModel.h"
 #include "MerchandiseListView.h"
 
-#include "TermsChooserDialog.h"
+
 
 MainWindow::MainWindow():
     QMainWindow(nullptr),
@@ -61,19 +62,20 @@ MainWindow::MainWindow():
 {
     qDebug() << "konstruktor mainwindow";
 
-/**
-  ui
-**/
+    qDebug() << "loading translation files";
+    QString translationFile = QString("kOferta_%1").arg(QLocale::system().name());
+    QTranslator myappTranslator;
+    if(myappTranslator.load(translationFile))
+        qApp->installTranslator(&myappTranslator);
+    else
+        qWarning() << "could not load translations from file" << translationFile;
+
     qDebug() << "setup ui";
     ui->setupUi(this);
     readSettings();
     uiReset();
 
-/**
-  zmienne
- **/
     qDebug() << "inicjalizacja zmiennych";
-
     m_pln = false;
 
     m_offerNumber = new QString;
@@ -85,11 +87,7 @@ MainWindow::MainWindow():
     m_towarModel = new MerchandiseListModel;
     ui->tableView->setModel(m_towarModel);
 
-/**
- connections
-**/
     qDebug() << "połaczenia sygnałów i slotów";
-
     /*menu:*/
     //oferta
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(newOffer()));
@@ -353,7 +351,7 @@ void MainWindow::setTitle(QString* nr)
 void MainWindow::globalDiscount()
 {
     bool ok;
-    double d = QInputDialog::getDouble(this, "Rabat", "Podaj domyślny rabat [%]:", 0, 0, 100, 2, &ok);
+    double d = QInputDialog::getDouble(this, tr("Rabat"), tr("Podaj domyślny rabat [%]:"), 0, 0, 100, 2, &ok);
     if(ok)
         m_towarModel->setGlobalRabat(d);
 }
@@ -532,7 +530,7 @@ void MainWindow::saveOffer()
 {
     if(m_client == nullptr)
     {
-        QMessageBox::warning(this, "brak danych", "Aby zapisanie oferty w bazie danych było możliwe należy wybrać klienta.");
+        QMessageBox::warning(this, tr("Brak danych"), tr("Aby zapisanie oferty w bazie danych było możliwe należy wybrać klienta."));
         return;
     }
 
@@ -688,7 +686,7 @@ void MainWindow::printPdf()
     dir = settings.value("pdf directory", qApp->applicationDirPath()).toString();
     settings.endGroup();
 
-    filePath = QFileDialog::getSaveFileName(this, "Zapis pdfa", dir, "Dokument PDF (*.pdf)");
+    filePath = QFileDialog::getSaveFileName(this, tr("Zapis pdfa"), dir, tr("Dokument PDF (*.pdf)"));
     if(filePath.isEmpty())return;
 
     if(QFileInfo(filePath).absolutePath() != dir)
@@ -719,7 +717,7 @@ void MainWindow::printHtm()
     dir = settings.value("html directory", qApp->applicationDirPath()).toString();
     settings.endGroup();
 
-    filePath = QFileDialog::getSaveFileName(this, "Zapis do HTML", "", "Dokument HTML (*.html)");
+    filePath = QFileDialog::getSaveFileName(this, tr("Zapis do HTML"), "", tr("Dokument HTML (*.html)"));
     if(filePath.isEmpty())return;
 
     if(QFileInfo(filePath).absolutePath() != dir)
@@ -733,7 +731,7 @@ void MainWindow::printHtm()
     QFile file(filePath);
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text)){
         qDebug() << "plik " << filePath << " niedostępny";
-        QMessageBox::warning(NULL, "error", "Nie udało się uzyskać dostępu do pliku");
+        QMessageBox::warning(NULL, tr("error"), tr("Nie udało się uzyskać dostępu do pliku"));
         return;
     }
 
