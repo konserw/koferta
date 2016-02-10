@@ -49,7 +49,6 @@ public:
     ~MainWindow();
 
 public slots:
-    void connectedAs(const User& user);
     void loadOfferFromDatabase(const QString &offerId);
 
     void zapytanieRef();

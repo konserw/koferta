@@ -38,8 +38,7 @@ win32 {
 
     CONFIG += qt windows #release
 
-    DEFINES += RELEASE
-    DEFINES += WIN32
+    DEFINES += RELEASE WIN32 QT_NO_DEBUG_OUTPUT
 }
 
 DEPENDPATH += . res 

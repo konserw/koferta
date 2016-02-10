@@ -32,6 +32,13 @@ User::User(const User &u)
     _male = u._male;
     _nrOferty = u._nrOferty;
     _uid = u._uid;
+    _valid = true;
+    qDebug() << "copy user?";
+}
+
+User::User()
+{
+    _valid = false;
 }
 
 User::User(int uid, QString name, QString phone, QString mail, QString adress, bool male, int nrOferty)
@@ -45,6 +52,7 @@ User::User(int uid, QString name, QString phone, QString mail, QString adress, b
     _adress = new QString(adress);
     _male = male;
     _nrOferty = nrOferty;
+    _valid = true;
 }
 
 User::~User()
@@ -72,6 +80,11 @@ void User::nrOfertyInkrement()
         qCritical() << "Zapytanie mysql zkonczone niepowodzeniem!";
         qDebug() << "\tError text: " <<  q.lastError().text();
     }
+}
+
+bool User::isValid() const
+{
+    return _valid;
 }
 
 QString User::address() const
@@ -112,22 +125,4 @@ int User::uid() const
 int User::nrOferty() const
 {
     return _nrOferty;
-}
-
-QString User::dbName(const QString& name)
-{
-    QString s;
-    s = name.split(' ').last();
-    s.truncate(12);
-    s.replace("ł", "l");
-    s.replace("ą", "a");
-    s.replace("ę", "e");
-    s.replace("ó", "o");
-    s.replace("ś", "s");
-    s.replace("ż", "z");
-    s.replace("ź", "z");
-    s.replace("ć", "c");
-    s.replace("ń", "n");
-    s = "kOf_" + s;
-    return s;
 }

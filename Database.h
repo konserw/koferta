@@ -49,8 +49,8 @@ public:
 
 /* Database Interface */
     //user-related
-    static QStringList usersList();
-    static User userInfo(const QString& name);
+    QStringList usersList();
+    User *userInfo();
 
     //terms
     static void createTerms(TermType type, const QString& shortDesc, const QString& longDesc);
@@ -85,7 +85,7 @@ public slots:
 signals:
     void driverFail();
     void connectionFail();
-    void connectionSuccess(const User&);
+    void connectionSuccess();
     void changeStatus(const QString&);
 
 protected:
@@ -105,7 +105,6 @@ protected:
     QString m_host;
     QString m_previousHost;
     QString m_schema;
-    bool m_sslEnabled;
 
     QProcess *tunnelProcess;
     QSqlDatabase* m_database;

@@ -41,9 +41,6 @@ public slots:
     void ok();
     void failed();
 
-signals:
-    void connectionSuccess(const User&);
-
 private:
     Ui::LoginDialog *ui;
 

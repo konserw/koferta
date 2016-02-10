@@ -63,7 +63,6 @@ LoginDialog::LoginDialog(QWidget *parent) :
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &LoginDialog::reject);
     connect(Database::instance(), &Database::driverFail, this, &LoginDialog::reject);
     connect(Database::instance(), &Database::connectionFail, this, &LoginDialog::failed);
-    connect(Database::instance(), &Database::connectionSuccess, this, &LoginDialog::connectionSuccess);
     connect(Database::instance(), &Database::connectionSuccess, this, &LoginDialog::accept);
     connect(Database::instance(), &Database::changeStatus, ui->info, &QLabel::setText);
 }

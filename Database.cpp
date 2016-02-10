@@ -147,7 +147,7 @@ void Database::openDatabaseConnection()
     }
 
     emit changeStatus(tr("Połączono z bazą danych %1 na %2").arg(m_schema, m_host));
-    emit connectionSuccess(userInfo(m_databaseUserName));
+    emit connectionSuccess();
 }
 
 void Database::failedTunnel(QProcess::ProcessError error) //nie dziala
@@ -300,6 +300,23 @@ Database *Database::instance()
     return m_instance;
 }
 
+User* Database::userInfo()
+{
+    qDebug() << "Downloading user info for" << m_databaseUserName;
+
+    QSqlTableModel usersTable;
+    usersTable.setTable("usersView");
+    usersTable.setFilter(QString("dbName = '%1'").arg(m_databaseUserName));
+    usersTable.select();
+    qDebug() << "users table row count after filter:" << usersTable.rowCount();
+    if(usersTable.rowCount() < 1)
+        return nullptr;
+
+    QSqlRecord r = usersTable.record(0);
+    qDebug() << "user record" << r;
+    return new User(r.value("uid").toInt(), r.value("name").toString(), r.value("phone").toString(), r.value("mail").toString(), r.value("address").toString(), r.value("male").toBool(), r.value("currentOfferNumber").toInt());
+}
+
 QStringList Database::usersList()
 {
     QStringList userList;
@@ -310,25 +327,12 @@ QStringList Database::usersList()
 
     // make sure the complete result set is fetched
     while (usersTable.canFetchMore())
-         usersTable.fetchMore();    
+         usersTable.fetchMore();
 
     for (int r = 0; r < usersTable.rowCount(); ++r)
         userList << usersTable.data(usersTable.index(r,1)).toString();
 
     return userList;
-}
-
-User Database::userInfo(const QString &name)
-{
-    qDebug() << "Downloading user info for" << name;
-
-    QSqlTableModel usersTable;
-    usersTable.setTable("usersView");
-    usersTable.setFilter(QString("name = '%1'").arg(name));
-    usersTable.select();
-    QSqlRecord r = usersTable.record(0);
-
-    return User(r.value("uid").toInt(), name, r.value("phone").toString(), r.value("mail").toString(), r.value("address").toString(), r.value("male").toBool(), r.value("currentOfferNumber").toInt());
 }
 
 void Database::createTerms(Database::TermType type, const QString &shortDesc, const QString &longDesc)
@@ -482,8 +486,6 @@ QList<Merchandise *> Database::loadOfferMerchandise(const QString &number)
                         "WHERE nr_oferty = '%1' "
                         "ORDER BY sequenceNumber ASC"
                         ).arg(number));
-//    qDebug() << query.lastQuery();
-//    qDebug() << query.lastError();
     while(query.next())
     {
         merchandise = new Merchandise(query.value("merchandise_id").toInt(), query.value("code").toString(), query.value("description").toString(), query.value("price").toDouble(), query.value("unit").toString() == "mb.");

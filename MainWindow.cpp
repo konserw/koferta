@@ -295,19 +295,24 @@ void MainWindow::about()
     QMessageBox::about(this, tr("O kOferta"), aboutText.arg(VER).arg(__DATE__));
 }
 
-void MainWindow::connectedAs(const User &user)
-{
-    m_currentUser = new User(user);
-    qDebug() << "Zalogowano jako uzytkownik " << m_currentUser->name();
-
-    setMenusEnabled(true);
-}
-
 void MainWindow::databaseConnect()
 {
     LoginDialog *pop = new LoginDialog(this);
-    connect(pop, &LoginDialog::connectionSuccess, this, &MainWindow::connectedAs);
-    pop->exec();
+    if(pop->exec() == QDialog::Accepted)
+    {
+        m_currentUser = Database::instance()->userInfo();
+        if(m_currentUser == nullptr)
+        {
+            Database::instance()->dropConection();
+            qCritical() << "invalid user";
+            QMessageBox::critical(this, tr("Nieprawidłowy użytkownik"), tr("Proszę zamknąć aplikację i skontaktować się z administratorem"));
+        }
+        else
+        {
+            qDebug() << "Logged in as" << m_currentUser->name();
+            setMenusEnabled(true);
+        }
+    }
     delete pop;
 }
 

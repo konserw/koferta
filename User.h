@@ -27,6 +27,7 @@ class QSqlDatabase;
 class User
 {
 public:
+    explicit User();
     ///konstruktor parametryczny inicjujący wszystkie pola
     User(int uid, QString name, QString phone, QString mail, QString address, bool male, int nrOferty);
     ///konstruktor kopiujący
@@ -48,12 +49,11 @@ public:
     bool male()const;
     ///zwraca nr. identyfikacyjny użytkownika, na potrzeby zapisu
     int uid()const;
-    ///zwraca nazwę użytkownika MySQL - generowane na podstawie nazwiska
-    static QString dbName(const QString &name);
     ///zwraca aktualny (pierwszy nieużyty) numer oferty
     int nrOferty()const;
     ///inkrementuje nr oferty
     void nrOfertyInkrement();
+    bool isValid() const;
 
 private:
     QString* _name;
@@ -63,6 +63,7 @@ private:
     bool _male;
     int _uid;
     int _nrOferty;
+    bool _valid;
 };
 
 
