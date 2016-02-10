@@ -26,7 +26,7 @@ CONFIG += c++11
 
 TEMPLATE = app
 
-DEFINES += VER=2.5
+DEFINES += VER=2.6
 
 win32 {
     RC_FILE = res/koferta.rc
@@ -36,7 +36,7 @@ win32 {
     QMAKE_LFLAGS_RELEASE += /NODEFAULTLIB:LIBCMT
     QMAKE_LFLAGS_DEBUG += /NODEFAULTLIB:LIBCMT
 
-    CONFIG += qt windows #release
+    CONFIG += qt windows release
 
     DEFINES += RELEASE WIN32 QT_NO_DEBUG_OUTPUT
 }
