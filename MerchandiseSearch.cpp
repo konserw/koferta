@@ -31,10 +31,7 @@ MerchandiseSearch::MerchandiseSearch(MerchandiseSearchModel* model, QWidget *par
 {
     ui->setupUi(this);
 
-    ui->label->setText(tr("Filtr:"));
-    ui->radioButton_id->setText(tr("Id produktu"));
     ui->radioButton_id->setChecked(true);
-    ui->radioButton_name->setText(tr("Nazwa produktu"));
 
     m_model->setFilter("");
     ui->tableView->setModel(m_model);

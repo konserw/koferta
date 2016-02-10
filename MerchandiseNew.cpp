@@ -28,8 +28,6 @@ MerchandiseNew::MerchandiseNew(QWidget *parent) :
     ui->setupUi(this);
     ui->cena->setMaximum(99999);
     ui->r_szt->setChecked(true);
-    ui->pushButton_cancel->setText(tr("Anuluj"));
-    ui->pushButton_ok->setText(tr("OK"));
     ui->pushButton_ok->setDefault(true);
 
     connect(ui->pushButton_ok, SIGNAL(clicked()), this, SLOT(acc()));

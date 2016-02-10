@@ -34,7 +34,7 @@ AddConditionDialog::AddConditionDialog(Database::TermType type, QWidget *parent)
         typeTransaltion = tr("\"Warunki Oferty\"");
         break;
     case Database::termPayment:
-        typeTransaltion = tr("\"Warunki Termin Dostawy");
+        typeTransaltion = tr("\"Warunki Płatności\"");
         break;
     case Database::termShipmentTime:
         typeTransaltion = tr("\"Termin Dostawy\"");

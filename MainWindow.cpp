@@ -72,7 +72,10 @@ MainWindow::MainWindow():
     QString translationFile = QString("kOferta_%1").arg(QLocale::system().name());
     QTranslator myappTranslator;
     if(myappTranslator.load(translationFile))
+    {
         qApp->installTranslator(&myappTranslator);
+        qDebug() << "loaded translations from file" << translationFile;
+    }
     else
         qWarning() << "could not load translations from file" << translationFile;
 

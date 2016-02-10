@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>OfferSearch</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -34,7 +34,7 @@
      </property>
      <widget class="QWidget" name="tab_id">
       <attribute name="title">
-       <string>Tab 1</string>
+       <string>Nr oferty</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
@@ -44,7 +44,7 @@
      </widget>
      <widget class="QWidget" name="tab_klient">
       <attribute name="title">
-       <string>Page</string>
+       <string>Klient</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
@@ -54,7 +54,7 @@
      </widget>
      <widget class="QWidget" name="tab_date">
       <attribute name="title">
-       <string>Tab 2</string>
+       <string>Data</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
@@ -64,7 +64,7 @@
      </widget>
      <widget class="QWidget" name="tab_user">
       <attribute name="title">
-       <string>Page</string>
+       <string>Oferent</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>

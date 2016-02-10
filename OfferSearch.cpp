@@ -29,17 +29,9 @@ OfferSearch::OfferSearch(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->label_wybierz->setText(tr("Wybierz ofertę do wczytania:"));
-    ui->label_filtruj->setText(tr("Filtr:"));
     ui->dateEdit->setDisplayFormat("MMMM yy");
     ui->dateEdit->setDate(QDate::currentDate());
-
     ui->comboBox->insertItems(0, Database::instance()->usersList());
-
-    QStringList sl;
-    sl << tr("Nr oferty") << tr("Klient") << tr("Data") << tr("Oferent");
-    for(int i=0; i<sl.size(); ++i)
-        ui->tabWidget->setTabText(i, sl[i]);
 
     model = new QSqlTableModel(this);
     model->setTable("savedOffersView");
