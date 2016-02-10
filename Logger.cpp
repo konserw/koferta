@@ -25,7 +25,7 @@
 #include <QDir>
 #include <QApplication>
 
-Logger* Logger::m_instance = NULL;
+Logger* Logger::m_instance = nullptr;
 
 void Logger::logOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -63,7 +63,7 @@ void Logger::logOutput(QtMsgType type, const QMessageLogContext &context, const 
 
     //emit logMsg(msg);
 
-#ifdef CONSOLE_OUT
+#ifndef RELEASE
     std::cout << msg.toStdString() << std::endl;
 #endif
 
@@ -103,7 +103,7 @@ Logger::~Logger()
 
 Logger *Logger::instance()
 {
-    if(m_instance == NULL)
+    if(m_instance == nullptr)
         m_instance = new Logger;
 
     return m_instance;
