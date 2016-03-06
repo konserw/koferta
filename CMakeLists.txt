@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
 project(kOferta)
 
+if(NOT CMAKE_BUILD_TYPE )
+  set(CMAKE_BUILD_TYPE Release CACHE STRING 
+       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+       FORCE )
+endif()
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -72,7 +78,6 @@ add_definitions(-DVER=2.61)
 if(MSVC)
     add_definitions(-DWIN32)
     add_definitions(-DRELEASE)
-    set(CMAKE_BUILD_TYPE RELEASE)
 endif()
 
 add_executable(koferta ${KOFERTA_SOURCES} res/zasoby.qrc ${qm_files})
