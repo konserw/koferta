@@ -9,7 +9,6 @@ install:
   - echo ${PATH}
   - echo ${CXX}
   - if [ "$CXX" = "g++-5.3" ]; then g++ -v; else clang -v; fi
-  - qmake -v
 addons:
   apt:
     sources:
@@ -20,7 +19,8 @@ addons:
       - gcc-5
       - libmysqlclient18
       - qtbase5-dev
-      - qt5-qmake
+      - qttools5-dev
+#      - qt5-qmake
       - libqt5sql5-mysql 
 
 script: ./travis.sh 
