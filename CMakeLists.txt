@@ -4,6 +4,8 @@ project(kOferta)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
+#set(CMAKE_AUTOUIC ON)
+SET(CMAKE_AUTORCC ON)
 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
@@ -12,7 +14,7 @@ find_package(Qt5PrintSupport REQUIRED)
 find_package(Qt5Network REQUIRED)
 set(QT_LIBRARIES Qt5::Core Qt5::Widgets Qt5::Sql Qt5::Network Qt5::PrintSupport)
 
-include_directories(includes/)
+include_directories(include/)
 set(KOFERTA_SOURCES
     src/Database.cpp 
     src/LoadDialog.cpp 
@@ -44,6 +46,24 @@ set(KOFERTA_SOURCES
     src/LoadDialogMerchandiseListModel.cpp 
     src/LoadDialogMerchandiseListModelMySQL.cpp
 )
-add_executable(koferta ${KOFERTA_SOURCES})
+QT5_WRAP_UI(UI_HDRS
+    forms/LoadDialog.ui
+    forms/MainWindow.ui
+    forms/MerchandiseSearch.ui
+    forms/CustomerNew.ui
+    forms/CustomerEdit.ui
+    forms/MerchandiseNew.ui
+    forms/OfferSearch.ui
+    forms/CustomerSelection.ui
+    forms/SettingsDialog.ui
+    forms/LoginDialog.ui
+    forms/AddConditionDialog.ui
+    forms/TermsChooserDialog.ui
+)
 
+
+add_definitions(-DVER=2.61)
+add_executable(koferta ${KOFERTA_SOURCES} ${UI_HDRS})
+set_property(TARGET koferta PROPERTY CXX_STANDARD 11)
+qt5_use_modules(koferta Widgets Sql Network PrintSupport)
 target_link_libraries(koferta ${QT_LIBRARIES})
