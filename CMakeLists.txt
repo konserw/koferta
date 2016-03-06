@@ -12,6 +12,7 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Sql REQUIRED)
 find_package(Qt5PrintSupport REQUIRED)
 find_package(Qt5Network REQUIRED)
+find_package(Qt5LinguistTools)
 set(QT_LIBRARIES Qt5::Core Qt5::Widgets Qt5::Sql Qt5::Network Qt5::PrintSupport)
 
 include_directories(include/)
@@ -60,10 +61,14 @@ set(KOFERTA_SOURCES
 #    forms/AddConditionDialog.ui
 #    forms/TermsChooserDialog.ui
 #)
-
-
+set(TS_FILES
+    translations/kOferta_pl.ts
+    translations/kOferta_en.ts
+    translations/kOferta_de.ts
+)
+qt5_add_translation(qm_files ${TS_FILES})
 add_definitions(-DVER=2.61)
-add_executable(koferta ${KOFERTA_SOURCES} ${UI_HDRS})
+add_executable(koferta ${KOFERTA_SOURCES} res/zasoby.qrc)
 set_property(TARGET koferta PROPERTY CXX_STANDARD 11)
 qt5_use_modules(koferta Widgets Sql Network PrintSupport)
 target_link_libraries(koferta ${QT_LIBRARIES})
