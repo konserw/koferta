@@ -30,8 +30,8 @@ build_script:
 after_build:
 - mkdir koferta_x86
 - cd koferta_x86
-- cp ../Release/koferta.exe ./
-- cp ../*.qm ./
+- cp ../build/Release/koferta.exe ./
+- cp ../build/*.qm ./
 - cp ../3rdParty/* ./
 - cp ../LICENSE.md ./
 - cp ../README.md ./

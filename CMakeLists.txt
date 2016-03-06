@@ -67,8 +67,15 @@ set(TS_FILES
     translations/kOferta_de.ts
 )
 qt5_add_translation(qm_files ${TS_FILES})
+
 add_definitions(-DVER=2.61)
-add_executable(koferta ${KOFERTA_SOURCES} res/zasoby.qrc)
+if(MSVC)
+    add_definitions(-DWIN32)
+    add_definitions(-DRELEASE)
+    set(CMAKE_BUILD_TYPE RELEASE)
+endif()
+
+add_executable(koferta ${KOFERTA_SOURCES} res/zasoby.qrc ${qm_files})
 set_property(TARGET koferta PROPERTY CXX_STANDARD 11)
 qt5_use_modules(koferta Widgets Sql Network PrintSupport)
 target_link_libraries(koferta ${QT_LIBRARIES})
