@@ -4,7 +4,7 @@ project(kOferta)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
-#set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOUIC ON)
 SET(CMAKE_AUTORCC ON)
 
 find_package(Qt5Core REQUIRED)
@@ -16,50 +16,50 @@ set(QT_LIBRARIES Qt5::Core Qt5::Widgets Qt5::Sql Qt5::Network Qt5::PrintSupport)
 
 include_directories(include/)
 set(KOFERTA_SOURCES
-    src/Database.cpp 
-    src/LoadDialog.cpp 
-    src/Main.cpp 
-    src/MainWindow.cpp 
-    src/User.cpp 
-    src/Logger.cpp 
-    src/Merchandise.cpp 
-    src/MerchandiseSearch.cpp 
-    src/MerchandiseSearchModel.cpp 
-    src/MerchandiseSelection.cpp 
-    src/MerchandiseSelectionModel.cpp 
-    src/MerchendiseSelectionDelegate.cpp 
-    src/MerchandiseListDelegate.cpp 
-    src/MerchandiseListModel.cpp 
-    src/CustomerNew.cpp 
-    src/CustomerEdit.cpp 
-    src/MerchandiseNew.cpp 
-    src/CustomerSearch.cpp 
-    src/OfferSearch.cpp 
-    src/CustomerSelection.cpp 
-    src/SettingsDialog.cpp 
-    src/LoginDialog.cpp 
-    src/AddConditionDialog.cpp 
-    src/TermsChooserDialog.cpp 
-    src/TermItem.cpp 
-    src/TermModel.cpp 
-    src/MerchandiseListView.cpp 
-    src/LoadDialogMerchandiseListModel.cpp 
-    src/LoadDialogMerchandiseListModelMySQL.cpp
+    Database.cpp 
+    LoadDialog.cpp 
+    Main.cpp 
+    MainWindow.cpp 
+    User.cpp 
+    Logger.cpp 
+    Merchandise.cpp 
+    MerchandiseSearch.cpp 
+    MerchandiseSearchModel.cpp 
+    MerchandiseSelection.cpp 
+    MerchandiseSelectionModel.cpp 
+    MerchendiseSelectionDelegate.cpp 
+    MerchandiseListDelegate.cpp 
+    MerchandiseListModel.cpp 
+    CustomerNew.cpp 
+    CustomerEdit.cpp 
+    MerchandiseNew.cpp 
+    CustomerSearch.cpp 
+    OfferSearch.cpp 
+    CustomerSelection.cpp 
+    SettingsDialog.cpp 
+    LoginDialog.cpp 
+    AddConditionDialog.cpp 
+    TermsChooserDialog.cpp 
+    TermItem.cpp 
+    TermModel.cpp 
+    MerchandiseListView.cpp 
+    LoadDialogMerchandiseListModel.cpp 
+    LoadDialogMerchandiseListModelMySQL.cpp
 )
-QT5_WRAP_UI(UI_HDRS
-    forms/LoadDialog.ui
-    forms/MainWindow.ui
-    forms/MerchandiseSearch.ui
-    forms/CustomerNew.ui
-    forms/CustomerEdit.ui
-    forms/MerchandiseNew.ui
-    forms/OfferSearch.ui
-    forms/CustomerSelection.ui
-    forms/SettingsDialog.ui
-    forms/LoginDialog.ui
-    forms/AddConditionDialog.ui
-    forms/TermsChooserDialog.ui
-)
+#QT5_WRAP_UI(UI_HDRS
+#    forms/LoadDialog.ui
+#    forms/MainWindow.ui
+#    forms/MerchandiseSearch.ui
+#    forms/CustomerNew.ui
+#    forms/CustomerEdit.ui
+#    forms/MerchandiseNew.ui
+#    forms/OfferSearch.ui
+#    forms/CustomerSelection.ui
+#    forms/SettingsDialog.ui
+#    forms/LoginDialog.ui
+#    forms/AddConditionDialog.ui
+#    forms/TermsChooserDialog.ui
+#)
 
 
 add_definitions(-DVER=2.61)
