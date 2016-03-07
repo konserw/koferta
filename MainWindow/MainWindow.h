@@ -37,10 +37,17 @@ class QProcess;
 namespace Ui {
     class MainWindow;
 }
+
+#if defined EXPORT_MAINWINDOW
+ #define DLLSPEC Q_DECL_EXPORT
+#else
+ #define DLLSPEC Q_DECL_IMPORT
+#endif
+
 /*!
  * \brief Główne okno programu
  */
-class MainWindow : public QMainWindow
+class DLLSPEC MainWindow : public QMainWindow
 {
     Q_OBJECT
 

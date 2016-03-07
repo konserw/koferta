@@ -51,6 +51,7 @@ set(TS_FILES
 qt5_add_translation(qm_files ${TS_FILES})
 
 add_definitions(-DVER=2.61)
+add_definitions(-DEXPORT_MAINWINDOW)
 IF(WIN32)
     add_definitions(-DWIN32)
     add_definitions(-DRELEASE)
