@@ -19,7 +19,7 @@
 #include <QApplication>
 #include <QTextCodec>
 
-#include "MainWindow.h"
+#include "MainWindow/MainWindow.h"
 
 int main(int argc, char *argv[])
 {
