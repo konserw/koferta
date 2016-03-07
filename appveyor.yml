@@ -9,7 +9,7 @@ configuration:
 - Release
 
 on_finish:
-#- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+    #- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 environment:
   QTDIR: C:\Qt\5.5\msvc2013 
@@ -22,15 +22,16 @@ install:
 - qmake -v
 
 build_script:
-- lrelease kOferta.pro
-- qmake
-- nmake
+#- lrelease kOferta.pro
+- cmake -E make_directory build
+- cmake -E chdir build cmake ..
+- cmake --build build --config Release
 
 after_build:
 - mkdir koferta_x86
 - cd koferta_x86
-- cp ../Release/koferta.exe ./
-- cp ../*.qm ./
+- cp ../build/Release/koferta.exe ./
+- cp ../build/*.qm ./
 - cp ../3rdParty/* ./
 - cp ../LICENSE.md ./
 - cp ../README.md ./
@@ -63,3 +64,20 @@ notifications:
   on_build_success: false
   on_build_failure: true
   on_build_status_changed: true
+
+deploy:
+  description: '# Version {APPVEYOR_REPO_TAG_NAME} arch x86 
+
+## Requirements:
+* Visual C++ Redistributable 2013 x86'
+
+  provider: GitHub
+  auth_token:
+    secure: ogmv8nz5XumGTJew9jWXUvPQ8U4J9t4z7WcAIG+xYHrbqnenBO5x0NUZvCMitga6 
+  artifact: kOferta_x86.7z 
+  draft: false
+  prerelease: false
+  on:
+    branch: master                 # release from master branch only
+    appveyor_repo_tag: true        # deploy on tag push only
+
