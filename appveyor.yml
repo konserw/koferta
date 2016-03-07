@@ -1,4 +1,6 @@
 version: "{branch}-ci-{build}"
+shallow_clone: true
+
 os:
 - Visual Studio 2013
 
@@ -9,7 +11,7 @@ configuration:
 - Release
 
 on_finish:
-   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+#   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 environment:
   QTDIR: C:\Qt\5.5\msvc2013 
@@ -22,7 +24,6 @@ install:
 - qmake -v
 
 build_script:
-#- lrelease kOferta.pro
 - cmake -E make_directory build
 - cmake -E chdir build cmake ..
 - cmake --build build --config Release
@@ -67,7 +68,7 @@ notifications:
   on_build_status_changed: true
 
 deploy:
-  description: '# Version {APPVEYOR_REPO_TAG_NAME} arch x86 
+  description: '# Version {branch}-ci-{build} arch x86 
 
 ## Requirements:
 * Visual C++ Redistributable 2013 x86'
