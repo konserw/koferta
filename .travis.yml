@@ -19,6 +19,7 @@ addons:
       - gcc-5
       - libmysqlclient18
       - qtbase5-dev
+      - qttools5-dev
       - qttools5-dev-tools
 #      - qt5-qmake
       - libqt5sql5-mysql 
