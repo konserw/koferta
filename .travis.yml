@@ -12,6 +12,7 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
+      - ninja-build
       - clang
       - libmysqlclient18
       - qtbase5-dev
