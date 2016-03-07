@@ -186,7 +186,7 @@ void Database::setupTunnel()
 
 #ifdef WIN32
     program = "./plink.exe";
-    arguments << "-ssh" << m_host << "-l" << m_databaseUserName << "-P" << "2292" << "-2" << "-4" << "-i" << m_keyFile << "-C" << "-T" << "-N" << "-L" << QString("3306:%1:3306").arg(m_host);
+    arguments << "-v" << "-ssh" << m_host << "-l" << m_databaseUserName << "-P" << "2292" << "-2" << "-4" << "-i" << m_keyFile << "-C" << "-T" << "-N" << "-L" << QString("3306:%1:3306").arg(m_host);
 #else
     program = "ssh";
     arguments << m_host << "-p" << "2292" << "-l" << "konserw" << "-N" << "-L" << QString("3306:%1:3306").arg(m_host);
@@ -244,7 +244,7 @@ void Database::waitForTunnel()
 {
     QTcpSocket* sock = new QTcpSocket;
     sock->connectToHost("127.0.0.1", 3306);
-    if(sock->waitForConnected(100000))
+    if(sock->waitForConnected(1000000))
     {
         emit changeStatus(tr("Tworzenie tunelu do hosta %1 zakończone powodzeniem").arg(m_host));
         qDebug() << "ssh tunnel opened to host " << m_host << " as " << m_databaseUserName;
@@ -254,6 +254,7 @@ void Database::waitForTunnel()
     }
     else
     {
+	delete sock;
         qDebug() << "ssh: socket timeout";
         failedTunnel(QProcess::Timedout);
     }
