@@ -8,7 +8,11 @@ if(NOT CMAKE_BUILD_TYPE )
        FORCE )
 endif()
 
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Test REQUIRED)
 find_package(Qt5Widgets REQUIRED)
+set(QT_LIBRARIES Qt5::Core Qt5::Widgets Qt5::Test)
+
 add_subdirectory(MainWindow)
 
 IF(WIN32)
@@ -20,3 +24,40 @@ add_dependencies(koferta mainwindow)
 #set_property(TARGET koferta PROPERTY CXX_STANDARD 11)
 #qt5_use_modules(koferta Widgets Sql Network PrintSupport)
 target_link_libraries(koferta Qt5::Widgets mainwindow)
+
+#
+# Cucumber
+#
+
+set(CUKE_BOOST_LIBS thread system regex date_time program_options)
+find_package(Boost COMPONENTS ${CUKE_BOOST_LIBS})
+
+if(Boost_FOUND)
+    include(ExternalProject)
+    set(CUCUMBER_ROOT "${CMAKE_CURRENT_BINARY_DIR}/cucumber")
+    set(CUCUMBER_LIBRARY "${CUCUMBER_ROOT}/src/cucumber-cpp-build/src/libcucumber-cpp.a")
+    ExternalProject_Add(
+        cucumber-cpp 
+        GIT_REPOSITORY https://github.com/konserw/cucumber-cpp.git
+        GIT_TAG koferta
+        PREFIX ${CUCUMBER_ROOT}
+        INSTALL_COMMAND ""
+        LOG_DOWNLOAD ON
+        LOG_CONFIGURE ON
+        LOG_BUILD ON
+        BUILD_BYPRODUCTS "${CUCUMBER_LIBRARY}"
+    #    BUILD_BYPRODUCTS "${CUCUMBER_MAIN_LIBRARY}"
+    )
+
+    add_library(libcucumber-cpp IMPORTED STATIC GLOBAL)
+    add_dependencies(libcucumber-cpp cucumber-cpp)
+    ExternalProject_Get_Property(cucumber-cpp source_dir binary_dir)
+
+    set(CUCUMBER_INCLUDE_DIR ${source_dir}/include)
+    include_directories(${CUCUMBER_INCLUDE_DIR})
+    include_directories(MainWindow)
+
+    set(CUKE_LIBRARIES ${CUCUMBER_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
+    add_executable(kofertaSteps features/step_definitions/kofertaSteps)
+    target_link_libraries(kofertaSteps mainwindow ${QT_LIBRARIES} ${CUKE_LIBRARIES})
+endif()

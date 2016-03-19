@@ -1,11 +1,21 @@
 language: cpp
+os:
+  - osx
+  - linux
 sudo: required
 dist: trusty
 compiler:
   - clang
   - gcc
+
+matrix:
+  exclude:
+    - os: osx
+      compiler: gcc
+
 install:
   - if [ "$CXX" = "g++" ]; then g++ -v; else clang -v; fi
+  - gem install cucumber -v 2.0.0
 
 addons:
   apt:
@@ -19,6 +29,11 @@ addons:
       - qttools5-dev
       - qttools5-dev-tools
       - libqt5sql5-mysql 
+      - libboost-thread-dev 
+      - libboost-system-dev
+      - libboost-regex-dev
+      - libboost-date-time-dev 
+      - libboost-program-options-dev
 
 script: ./travis.sh 
 

@@ -172,6 +172,9 @@ MainWindow::~MainWindow()
     qDebug() << "destruktor mainwindow - koniec";
 }
 
+bool MainWindow::isOfferTableEnabled()
+{ return ui->tab->isEnabled(); }
+
 void MainWindow::setMenusEnabled(bool en)
 {
     ui->menuOferta->setEnabled(en);

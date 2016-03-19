@@ -9,3 +9,6 @@ env | sort
 cmake -E make_directory build
 cmake -E chdir build cmake -GNinja ..
 cmake --build build
+
+build/kofertaSteps >/dev/null &
+cucumber features 
