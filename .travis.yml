@@ -35,8 +35,12 @@ addons:
       - libboost-date-time-dev 
       - libboost-program-options-dev
 
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+
 script: ./travis.sh 
-after_script: cat /home/travis/build/konserw/koferta/build/cucumber/src/cucumber-cpp-stamp/cucumber-cpp-build-*.log
+#after_script: cat /home/travis/build/konserw/koferta/build/cucumber/src/cucumber-cpp-stamp/cucumber-cpp-build-*.log
 
 branches:
   except:
