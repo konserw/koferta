@@ -15,7 +15,7 @@ matrix:
 
 install:
   - if [ "$CXX" = "g++" ]; then g++ -v; else clang -v; fi
-  - gem install cucumber -v 2.0.0
+  - gem install bundler #cucumber -v 2.0.0
 
 addons:
   apt:
@@ -36,6 +36,7 @@ addons:
       - libboost-program-options-dev
 
 script: ./travis.sh 
+after_script: cat /home/travis/build/konserw/koferta/build/cucumber/src/cucumber-cpp-stamp/cucumber-cpp-build-*.log
 
 branches:
   except:
