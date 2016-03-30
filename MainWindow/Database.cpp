@@ -127,14 +127,21 @@ void Database::setupDatabaseConnection(const QString& keyFile, const QString &pa
     setupTunnel();
 }
 
+void handleOutput(const QString& output)
+{
+    QStringList out = output.split("\r\n");
+    foreach(const QString& o, out)
+        qDebug() << "[ssh] " << o;
+}
+
 void Database::readOutput()
 {
-    qDebug() << "[ssh] " << tunnelProcess->readAllStandardOutput();
+    handleOutput(tunnelProcess->readAllStandardOutput());
 }
 
 void Database::readError()
 {
-    qDebug() << "[ssh] " << tunnelProcess->readAllStandardError();
+    handleOutput(tunnelProcess->readAllStandardError());
 }
 
 void Database::openDatabaseConnection()
@@ -204,7 +211,6 @@ void Database::setupTunnel()
     connect(tunnelProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(readOutput()));
     connect(tunnelProcess, SIGNAL(readyReadStandardError()), this, SLOT(readError()));
     connect(tunnelProcess, &QProcess::started, this, &Database::waitForTunnel);
-    //connect(tunnelProcess, &QProcess::error, this, &Database::failedTunnel); //not working
     connect(tunnelProcess, SIGNAL(error(QProcess::ProcessError)), this, SLOT(failedTunnel(QProcess::ProcessError)));
 
     tunnelProcess->start(program, arguments);
