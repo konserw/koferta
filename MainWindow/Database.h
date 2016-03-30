@@ -103,6 +103,7 @@ protected:
     QString m_databaseUserName;
     QString m_keyFile;
     QString m_host;
+    static const int m_port = 2292;
     QString m_previousHost;
     QString m_schema;
 

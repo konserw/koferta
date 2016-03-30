@@ -23,6 +23,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QTcpSocket>
+#include <QCryptographicHash>
 
 #include "Merchandise.h"
 #include "User.h"
@@ -107,13 +108,21 @@ void Database::setupDatabaseConnection(const QString& keyFile, const QString &pa
     m_keyFile = keyFile;
     m_databaseUserName = keyFile;
     m_databaseUserName.chop(4);
-    qDebug() << "Loging in as" << m_databaseUserName;
 
     m_database->setHostName("127.0.0.1");
     m_database->setPort(3306);
     m_database->setDatabaseName(m_schema);
     m_database->setUserName(m_databaseUserName);
     m_database->setPassword(pass);
+
+    qDebug().nospace() << "Set up connection details:\n"
+             << "\t* Host:\t\t" << m_database->hostName() << "\n"
+             << "\t* Port:\t\t" << m_database->port() << "\n"
+             << "\t* Tunneled to:\t" << m_host << "\n"
+             << "\t* Via port:\t" << m_port << "\n"
+             << "\t* Login:\t" << m_databaseUserName << "\n"
+             << "\t* Password:\t" << QCryptographicHash::hash(m_database->password().toUtf8(), QCryptographicHash::Sha1).toBase64() << "\n"
+             << "\t* Schema:\t" << m_database->databaseName() << "\n";
 
     setupTunnel();
 }
@@ -186,10 +195,10 @@ void Database::setupTunnel()
 
 #ifdef WIN32
     program = "./plink.exe";
-    arguments << "-ssh" << m_host << "-l" << m_databaseUserName << "-P" << "2292" << "-2" << "-4" << "-i" << m_keyFile << "-C" << "-T" << "-N" << "-L" << QString("3306:%1:3306").arg(m_host);
+    arguments << "-ssh" << m_host << "-l" << m_databaseUserName << "-P" << QString::number(m_port) << "-2" << "-4" << "-i" << m_keyFile << "-C" << "-T" << "-N" << "-L" << QString("3306:%1:3306").arg(m_host);
 #else
     program = "ssh";
-    arguments << m_host << "-p" << "2292" << "-l" << "konserw" << "-N" << "-L" << QString("3306:%1:3306").arg(m_host);
+    arguments << m_host << "-p" << QString::number(m_port) << "-l" << "konserw" << "-N" << "-L" << QString("3306:%1:3306").arg(m_host);
 #endif
 
     connect(tunnelProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(readOutput()));
