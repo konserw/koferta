@@ -55,6 +55,9 @@ public:
     explicit MainWindow();
     ~MainWindow();
 
+    //Cucumber
+    bool isOfferTableEnabled();
+
 public slots:
     void loadOfferFromDatabase(const QString &offerId);
 

@@ -70,14 +70,13 @@ LoginDialog::LoginDialog(QWidget *parent) :
 void LoginDialog::ok()
 {
     ui->buttonBox->setEnabled(false);
-    QString pass = ui->lineEdit->text();
 
     QSettings settings;
     settings.beginGroup("connection");
     settings.setValue("last user", ui->comboBox->currentText());
     settings.endGroup();
 
-    Database::instance()->setupDatabaseConnection(ui->comboBox->currentText(), pass);
+    Database::instance()->setupDatabaseConnection(ui->comboBox->currentText(), ui->lineEdit->text());
 }
 
 void LoginDialog::failed()
