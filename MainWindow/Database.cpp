@@ -131,7 +131,8 @@ void handleOutput(const QString& output)
 {
     QStringList out = output.split("\r\n");
     foreach(const QString& o, out)
-        qDebug() << "[ssh] " << o;
+        if(!o.isEmpty())
+            qDebug() << "[ssh] " << o;
 }
 
 void Database::readOutput()
