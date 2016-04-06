@@ -110,7 +110,7 @@ void Database::setupDatabaseConnection(const QString& keyFile, const QString &pa
     m_databaseUserName.chop(4);
 
     m_database->setHostName("127.0.0.1");
-    m_database->setPort(3306);
+    m_database->setPort(m_localPort);
     m_database->setDatabaseName(m_schema);
     m_database->setUserName(m_databaseUserName);
     m_database->setPassword(pass);
@@ -203,11 +203,13 @@ void Database::setupTunnel()
 
 #ifdef WIN32
     program = "./plink.exe";
-    arguments << "-v" << "-ssh" << m_host << "-l" << m_databaseUserName << "-P" << QString::number(m_port) << "-2" << "-4" << "-i" << m_keyFile << "-C" << "-T" << "-N" << "-L" << QString("3306:%1:3306").arg(m_host);
+    arguments << "-v" << "-ssh" << m_host << "-l" << m_databaseUserName << "-P" << QString::number(m_port) << "-2" << "-4" << "-i" << m_keyFile << "-C" << "-T" << "-N" << "-L" << QString("%1:%2:%3").arg(m_localPort).arg(m_host).arg(m_hostPort);
 #else
     program = "ssh";
-    arguments << m_host << "-p" << QString::number(m_port) << "-l" << "konserw" << "-N" << "-L" << QString("3306:%1:3306").arg(m_host);
+    arguments << m_host << "-p" << QString::number(m_port) << "-l" << "konserw" << "-i" << "~/.ssh/koferta_rsa" << "-N" << "-L" << QString("%1:%2:%3").arg(m_localPort).arg(m_host).arg(m_hostPort);
 #endif
+
+    qDebug() << QString("%1 %2").arg(program).arg(arguments.join(" "));
 
     connect(tunnelProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(readOutput()));
     connect(tunnelProcess, SIGNAL(readyReadStandardError()), this, SLOT(readError()));
@@ -259,7 +261,7 @@ void Database::readSettings()
 void Database::waitForTunnel()
 {
     QTcpSocket* sock = new QTcpSocket;
-    sock->connectToHost("127.0.0.1", 3306);
+    sock->connectToHost("127.0.0.1", m_localPort);
     if(sock->waitForConnected(1000000))
     {
         emit changeStatus(tr("Tworzenie tunelu do hosta %1 zakończone powodzeniem").arg(m_host));

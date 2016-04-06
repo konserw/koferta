@@ -104,6 +104,8 @@ protected:
     QString m_keyFile;
     QString m_host;
     static const int m_port = 2292;
+    static const int m_localPort = 13306;
+    static const int m_hostPort = 3306;
     QString m_previousHost;
     QString m_schema;
 
