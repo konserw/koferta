@@ -31,6 +31,8 @@ class QSqlTableModel;
 class Merchandise;
 class LoadDialogMerchandiseListModel;
 class QProcess;
+class QTcpSocket;
+class QProgressDialog;
 
 class Database : public QObject
 {
@@ -76,9 +78,11 @@ public:
 public slots:
     void dropConection();
     void waitForTunnel();
+    void tunelOpened();
     void setupDatabaseConnection(const QString &keyFile, const QString& pass);
     void readOutput();
     void readError();
+    void tunnelCancel();
     void openDatabaseConnection();
     void failedTunnel(QProcess::ProcessError error);
 
@@ -109,6 +113,8 @@ protected:
     QString m_previousHost;
     QString m_schema;
 
+    QProgressDialog* m_progressDialog;
+    QTcpSocket* m_socket;
     QProcess *tunnelProcess;
     QSqlDatabase* m_database;
 };

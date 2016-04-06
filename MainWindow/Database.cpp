@@ -24,6 +24,7 @@
 #include <QSettings>
 #include <QTcpSocket>
 #include <QCryptographicHash>
+#include <QProgressDialog>
 
 #include "Merchandise.h"
 #include "User.h"
@@ -81,6 +82,7 @@ Database::Database(QObject* parent) :
 
 Database::~Database()
 {
+    delete m_progressDialog;
     dropConection();
     if(tunnelProcess != nullptr)
     {
@@ -145,6 +147,13 @@ void Database::readError()
     handleOutput(tunnelProcess->readAllStandardError());
 }
 
+void Database::tunnelCancel()
+{
+    delete m_socket;
+    qDebug() << "ssh: canceled by user";
+    failedTunnel(QProcess::UnknownError);
+}
+
 void Database::openDatabaseConnection()
 {
     if(!m_database->open())
@@ -169,6 +178,9 @@ void Database::openDatabaseConnection()
 
 void Database::failedTunnel(QProcess::ProcessError error) //nie dziala
 {
+    m_progressDialog->cancel();
+    delete m_progressDialog;
+    m_progressDialog = nullptr;
     qDebug() << "ssh tunnel error:" << error;
     emit changeStatus(tr("Utworzenie tunelu do hosta %1 nie powiodło się.").arg(m_host));
     emit connectionFail();
@@ -260,22 +272,30 @@ void Database::readSettings()
 
 void Database::waitForTunnel()
 {
-    QTcpSocket* sock = new QTcpSocket;
-    sock->connectToHost("127.0.0.1", m_localPort);
-    if(sock->waitForConnected(1000000))
-    {
-        emit changeStatus(tr("Tworzenie tunelu do hosta %1 zakończone powodzeniem").arg(m_host));
-        qDebug() << "ssh tunnel opened to host " << m_host << " as " << m_databaseUserName;
-        sock->disconnectFromHost();
-        delete sock;
-        openDatabaseConnection();
-    }
-    else
-    {
-	delete sock;
-        qDebug() << "ssh: socket timeout";
-        failedTunnel(QProcess::Timedout);
-    }
+    m_socket = new QTcpSocket;
+
+    m_progressDialog = new QProgressDialog(tr("Trwa łączenie z bazą danych, prosze czekać."), tr("Anuluj"), 0, 0);
+    m_progressDialog->setWindowModality(Qt::ApplicationModal);
+
+    connect(m_socket, &QTcpSocket::readyRead, this, &Database::tunelOpened);
+    connect(m_progressDialog, &QProgressDialog::canceled, this, &Database::tunnelCancel);
+
+//    m_progressDialog->show();
+    m_progressDialog->open();
+
+    m_socket->connectToHost("127.0.0.1", m_localPort);
+}
+
+void Database::tunelOpened()
+{
+    emit changeStatus(tr("Tworzenie tunelu do hosta %1 zakończone powodzeniem").arg(m_host));
+    qDebug() << "ssh tunnel opened to host " << m_host << " as " << m_databaseUserName;
+    m_socket->disconnectFromHost();
+    delete m_socket;
+    m_progressDialog->accept();
+    delete m_progressDialog;
+    m_progressDialog = nullptr;
+    openDatabaseConnection();
 }
 
 TermModel *Database::getTermModel(Database::TermType termType)
