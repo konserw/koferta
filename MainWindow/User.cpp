@@ -71,7 +71,7 @@ void User::nrOfertyInkrement()
 
     _nrOferty++;
 
-    QString s = QString("UPDATE user SET nrOferty=%1 WHERE uid=%2").arg(_nrOferty).arg(_uid);
+    QString s = QString("UPDATE user SET currentOfferNumber=%1 WHERE uid=%2").arg(_nrOferty).arg(_uid);
     QSqlQuery q;
 
     if(q.exec(s) == false)
