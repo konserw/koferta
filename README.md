@@ -2,6 +2,8 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/at9gkx5uqx1c28hw?svg=true)](https://ci.appveyor.com/project/konserw/koferta)
 #kOferta
 
+[![Join the chat at https://gitter.im/konserw/koferta](https://badges.gitter.im/konserw/koferta.svg)](https://gitter.im/konserw/koferta?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ##Wstęp
 
 kOferta jest to kompletny system wspomagający tworzenie ofert handlowych
