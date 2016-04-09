@@ -794,7 +794,7 @@ void MainWindow::makeDocument(QString *sDoc)
                 "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head>\n"
                 "<style>\n"
                 "\tbody { font-family:Arial, Helvetica, sans-serif; font-size:14px; } \n"
-                "\t.spec { font-size:12px; font-family:\"Times New Roman\",Georgia,Serif; } \n"
+                "\t.spec { font-size:12px; } \n"
                 "\t.row0 { background: #efefef; } \n"
                 "\t.row1 { background: #dadada; } \n"
                 "</style>\n"
@@ -808,10 +808,10 @@ void MainWindow::makeDocument(QString *sDoc)
                 "\t<tr>\n"
    //logo
                 "\t\t<td colspan=2 align=left valign=bottom>\n"
-                "\t\t\t<img src=%1 height=56 ><br>\n" //width=%2
+                "\t\t\t<img src=%1 height=50 ><br>\n"
                 "\t\t</td>\n"
-                "\t\t<td align=right valign=bottom>\n"
-                "\t\t\t<img src=%2 height=45 ><br>\n"
+                "\t\t<td align=center valign=bottom >\n"
+                "\t\t\t<img src=%2 height=50 ><br>\n"
                 "\t\t</td>\n"
                 "\t</tr>\n"
     //adresy itp
