@@ -1,3 +1,4 @@
+@echo on
 cmake -E make_directory build
 cmake -E chdir build cmake ..
 IF DEFINED %APPVEYOR_REPO_TAG_NAME% (

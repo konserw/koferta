@@ -24,10 +24,10 @@ install:
 - qmake -v
 
 build_script:
-- build_script.bat
+- cmd: build_script.bat
 
 after_build:
-- package_script.bat
+- cmd: package_script.bat
 
 test_script:
 
