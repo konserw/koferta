@@ -37,6 +37,8 @@ after_build:
 - cp ../3rdParty/* ./
 - cp ../LICENSE.md ./
 - cp ../README.md ./
+- cp C:\Windows/System32/msvcp120.dll ./
+- cp C:\Windows/System32/msvcr120.dll ./
 - cp C:\Qt/5.5/msvc2013/bin/Qt5Core.dll ./
 - cp C:\Qt/5.5/msvc2013/bin/Qt5Gui.dll ./
 - cp C:\Qt/5.5/msvc2013/bin/Qt5PrintSupport.dll ./
