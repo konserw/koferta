@@ -50,7 +50,7 @@ set(TS_FILES
 )
 qt5_add_translation(qm_files ${TS_FILES})
 
-add_definitions(-DVER=3.0)
+add_definitions(-DVERSION="${KOFERTA_VERSION}")
 add_definitions(-DEXPORT_MAINWINDOW)
 IF(WIN32)
     add_definitions(-DWIN32)

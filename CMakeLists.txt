@@ -8,6 +8,12 @@ if(NOT CMAKE_BUILD_TYPE )
        FORCE )
 endif()
 
+if(NOT KOFERTA_VERSION )
+  set(KOFERTA_VERSION "3.x-mannual" CACHE STRING
+       "Please provide build version string"
+       FORCE )
+endif()
+
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Test REQUIRED)
 find_package(Qt5Widgets REQUIRED)

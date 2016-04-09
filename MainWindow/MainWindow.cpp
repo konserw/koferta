@@ -299,7 +299,7 @@ void MainWindow::about()
          "autorstwa Michael D. Leonhard na warunkach licencyjnych opisanych w pliku SHA1_LICENSE\n"
          "\n\nBuild date: %2");
 
-    QMessageBox::about(this, tr("O kOferta"), aboutText.arg(VER).arg(__DATE__));
+    QMessageBox::about(this, tr("O kOferta"), aboutText.arg(VERSION).arg(__DATE__));
 }
 
 void MainWindow::databaseConnect()
@@ -345,8 +345,7 @@ void MainWindow::changeSettings()
 
 void MainWindow::setTitle(QString* nr)
 {
-    QString s = "kOferta v. ";
-    s += QString::number(VER);
+    QString s = QString("kOferta v. %1").arg(VERSION);
 
     if(nr != NULL)
     {
