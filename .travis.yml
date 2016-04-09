@@ -1,6 +1,6 @@
 language: cpp
 os:
-  - osx
+#  - osx
   - linux
 sudo: required
 dist: trusty
@@ -8,27 +8,27 @@ compiler:
   - clang
   - gcc
 
-matrix:
-  exclude:
-    - os: osx
-      compiler: gcc
+#matrix:
+#  exclude:
+#    - os: osx
+#      compiler: gcc
 
 install:
   - if [ "$CXX" = "g++" ]; then g++ -v; else clang -v; fi
   - gem install bundler #cucumber -v 2.0.0
 
 addons:
-  apt:
-    sources:
-      - ubuntu-toolchain-r-test
+#  apt:
+#    sources:
+#      - ubuntu-toolchain-r-test
     packages:
       - ninja-build
       - clang
       - libmysqlclient18
-      - qtbase5-dev
-      - qttools5-dev
-      - qttools5-dev-tools
-      - libqt5sql5-mysql 
+#      - qtbase5-dev
+#      - qttools5-dev
+#      - qttools5-dev-tools
+#      - libqt5sql5-mysql 
       - libboost-thread-dev 
       - libboost-system-dev
       - libboost-regex-dev
@@ -36,6 +36,10 @@ addons:
       - libboost-program-options-dev
 
 before_script:
+  - sudo add-apt-repository ppa:beineri/opt-qt56-trusty 
+  - sudo apt-get -qq update
+  - sudo apt-get install qt56base qt56tools 
+  - source /opt/qt56/bin/qt56-env.sh 
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 
