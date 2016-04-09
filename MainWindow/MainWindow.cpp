@@ -61,10 +61,7 @@ MainWindow::MainWindow():
     QMainWindow(nullptr),
     ui(new Ui::MainWindow)
 {
-    if(Logger::instance()->isOpen())
-        qInstallMessageHandler(Logger::logHandler);
-    else
-        qWarning() << "Unable to create log file! Logging to std::cerr.";
+    qInstallMessageHandler(Logger::logHandler);
 
     qDebug() << "konstruktor mainwindow";
 
@@ -77,7 +74,7 @@ MainWindow::MainWindow():
         qDebug() << "loaded translations from file" << translationFile;
     }
     else
-        qWarning() << "could not load translations from file" << translationFile;
+        qWarning() << "\t\tCould not load translations from file" << translationFile;
 
     qDebug() << "setup ui";
     ui->setupUi(this);
@@ -549,7 +546,11 @@ void MainWindow::saveOffer()
     int anr = m_offerNumber->split("/").first().toInt();
 
     if(anr == m_currentUser->nrOferty())
-        m_currentUser->nrOfertyInkrement();
+        if(m_currentUser->nrOfertyInkrement() == false)
+        {
+            QMessageBox::critical(this, tr("Błąd zapisywania"), tr("Wystąpił bład w trakcie zapisywania oferty.\nProszę spróbowac później, bądź skontaktować się z Administratorem."));
+            return;
+        }
 
     QString zData;
     if(ui->checkBox_zapytanieData->isChecked())

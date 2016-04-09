@@ -117,14 +117,14 @@ void Database::setupDatabaseConnection(const QString& keyFile, const QString &pa
     m_database->setUserName(m_databaseUserName);
     m_database->setPassword(pass);
 
-    qDebug().nospace() << "Set up connection details:\n"
+    qDebug().nospace().noquote() << "Set up connection details:\n"
              << "\t* Host:\t\t" << m_database->hostName() << "\n"
              << "\t* Port:\t\t" << m_database->port() << "\n"
              << "\t* Tunneled to:\t" << m_host << "\n"
              << "\t* Via port:\t" << m_port << "\n"
              << "\t* Login:\t" << m_databaseUserName << "\n"
              << "\t* Password:\t" << QCryptographicHash::hash(m_database->password().toUtf8(), QCryptographicHash::Sha1).toBase64() << "\n"
-             << "\t* Schema:\t" << m_database->databaseName() << "\n";
+             << "\t* Schema:\t" << m_database->databaseName();
 
     setupTunnel();
 }
@@ -158,14 +158,14 @@ void Database::openDatabaseConnection()
 {
     if(!m_database->open())
     {
-        qCritical() << "Error! Unable to connect to database!";
-        qDebug() << "connName:" << m_database->connectionName();
-        qDebug() << "driver:" << m_database->driverName();
-        qDebug() << "options:" << m_database->connectOptions();
-        qDebug() << "host:" << m_database->hostName();
-        qDebug() << "error number:" << m_database->lastError().number();
-        qDebug() << "database error:" << m_database->lastError().databaseText();
-        qDebug() << "driver error:" << m_database->lastError().driverText();
+        qCritical().nospace().noquote() << "Unable to connect to database! Details:\n"
+        << "\t* connName:" << m_database->connectionName() << "\n"
+        << "\t* driver:" << m_database->driverName() << "\n"
+        << "\t* options:" << m_database->connectOptions() << "\n"
+        << "\t* host:" << m_database->hostName() << "\n"
+        << "\t* error number:" << m_database->lastError().number() << "\n"
+        << "\t* database error:" << m_database->lastError().databaseText() << "\n"
+        << "\t* driver error:" << m_database->lastError().driverText();
 
         emit changeStatus(tr("Połączenie z bazą danych %1 na %2 nie powiodło się.").arg(m_schema, m_host));
         emit connectionFail();
@@ -218,10 +218,10 @@ void Database::setupTunnel()
     arguments << "-v" << "-ssh" << m_host << "-l" << m_databaseUserName << "-P" << QString::number(m_port) << "-2" << "-4" << "-i" << m_keyFile << "-C" << "-T" << "-N" << "-L" << QString("%1:%2:%3").arg(m_localPort).arg(m_host).arg(m_hostPort);
 #else
     program = "ssh";
-    arguments << m_host << "-p" << QString::number(m_port) << "-l" << "konserw" << "-i" << "~/.ssh/koferta_rsa" << "-N" << "-L" << QString("%1:%2:%3").arg(m_localPort).arg(m_host).arg(m_hostPort);
+    arguments << "-v" << m_host << "-p" << QString::number(m_port) << "-l" << "konserw" << "-i" << "~/.ssh/koferta_rsa" << "-N" /*<< "-f" << "-n"*/ << "-L" << QString("%1:%2:%3").arg(m_localPort).arg(m_host).arg(m_hostPort);
 #endif
 
-    qDebug() << QString("%1 %2").arg(program).arg(arguments.join(" "));
+    qDebug().noquote() << program << arguments.join(" ");
 
     connect(tunnelProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(readOutput()));
     connect(tunnelProcess, SIGNAL(readyReadStandardError()), this, SLOT(readError()));
@@ -229,6 +229,7 @@ void Database::setupTunnel()
     connect(tunnelProcess, SIGNAL(error(QProcess::ProcessError)), this, SLOT(failedTunnel(QProcess::ProcessError)));
 
     tunnelProcess->start(program, arguments);
+    qDebug() << "tunnel started";
 }
 
 void Database::createMysqlDatabase()
@@ -272,18 +273,25 @@ void Database::readSettings()
 
 void Database::waitForTunnel()
 {
+    qDebug() << "Waiting for tunnel";
     m_socket = new QTcpSocket;
 
     m_progressDialog = new QProgressDialog(tr("Trwa łączenie z bazą danych, prosze czekać."), tr("Anuluj"), 0, 0);
     m_progressDialog->setWindowModality(Qt::ApplicationModal);
 
     connect(m_socket, &QTcpSocket::readyRead, this, &Database::tunelOpened);
+    connect(m_socket, &QTcpSocket::connected, this, &Database::socketConnected);
     connect(m_progressDialog, &QProgressDialog::canceled, this, &Database::tunnelCancel);
 
-//    m_progressDialog->show();
     m_progressDialog->open();
 
     m_socket->connectToHost("127.0.0.1", m_localPort);
+    qDebug() << "Connecting socket";
+}
+
+void Database::socketConnected()
+{
+    qDebug() << "socket connected";
 }
 
 void Database::tunelOpened()
@@ -347,15 +355,30 @@ User* Database::userInfo()
     usersTable.setTable("usersView");
     usersTable.setFilter(QString("dbName = '%1'").arg(m_databaseUserName));
     usersTable.select();
-    qDebug() << "users table row count after filter:" << usersTable.rowCount();
+ //   qDebug() << "users table row count after filter:" << usersTable.rowCount();
     if(usersTable.rowCount() < 1)
         return nullptr;
 
     QSqlRecord r = usersTable.record(0);
-    qDebug() << "user record" << r;
+    //qDebug() << "user record" << r;
     return new User(r.value("uid").toInt(), r.value("name").toString(), r.value("phone").toString(), r.value("mail").toString(), r.value("address").toString(), r.value("male").toBool(), r.value("currentOfferNumber").toInt());
 }
 
+bool Database::setCurrentOfferNumber(int offerNumber)
+{
+    QString s = QString("UPDATE user SET currentOfferNumber=%1 WHERE dbName='%2'").arg(offerNumber).arg(m_databaseUserName);
+    QSqlQuery q;
+
+    if(q.exec(s) == false)
+    {
+        qCritical().nospace().noquote() << "Zapytanie mysql zkonczone niepowodzeniem!\n"
+         << "\tError text: " <<  q.lastError().text();
+        return false;
+    }
+    return true;
+}
+
+//used to fill combobox in offersearch
 QStringList Database::usersList()
 {
     QStringList userList;
@@ -551,6 +574,3 @@ QString Database::mainAddress()
     QSqlRecord rec = model.record(0);
     return rec.value("address").toString();
 }
-
-
-
