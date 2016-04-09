@@ -1,7 +1,7 @@
 @echo on
 cmake -E make_directory build
 cmake -E chdir build cmake ..
-IF %APPVEYOR_REPO_TAG% (
+IF %APPVEYOR_REPO_TAG% EQU true (
 echo %APPVEYOR_REPO_TAG_NAME%
 cmake --build build --config Release -DKOFRTA_VERSION=%APPVEYOR_REPO_TAG_NAME%
 ) ELSE (
