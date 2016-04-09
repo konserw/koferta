@@ -53,6 +53,7 @@ public:
     //user-related
     QStringList usersList();
     User *userInfo();
+    bool setCurrentOfferNumber(int offerNumber);
 
     //terms
     static void createTerms(TermType type, const QString& shortDesc, const QString& longDesc);
@@ -86,6 +87,7 @@ public slots:
     void openDatabaseConnection();
     void failedTunnel(QProcess::ProcessError error);
 
+    void socketConnected();
 signals:
     void driverFail();
     void connectionFail();

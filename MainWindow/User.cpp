@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#include <QSqlQuery>
+#include "Database.h"
 #include <QSqlError>
 #include <QString>
 #include <QStringList>
@@ -63,23 +63,14 @@ User::~User()
     delete _adress;
 }
 
-void User::nrOfertyInkrement()
+bool User::nrOfertyInkrement()
 {
-    /********************
-     * Też do bazy ?
-     */
-
-    _nrOferty++;
-
-    QString s = QString("UPDATE user SET currentOfferNumber=%1 WHERE uid=%2").arg(_nrOferty).arg(_uid);
-    QSqlQuery q;
-
-    if(q.exec(s) == false)
+    if(Database::instance()->setCurrentOfferNumber(_nrOferty+1))
     {
-        _nrOferty--;
-        qCritical() << "Zapytanie mysql zkonczone niepowodzeniem!";
-        qDebug() << "\tError text: " <<  q.lastError().text();
+        _nrOferty++;
+       return true;
     }
+    return false;
 }
 
 bool User::isValid() const
