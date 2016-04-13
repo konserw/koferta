@@ -45,10 +45,11 @@ notifications:
   on_build_status_changed: true
 
 deploy:
-  description: '# Version {branch}-ci-{build} arch x86 
+  description: 
+"# Version %APPVEYOR_REPO_TAG_NAME% arch x86 
 
 ## Requirements:
-* Visual C++ Redistributable 2013 x86'
+* none"
 
   provider: GitHub
   auth_token:
