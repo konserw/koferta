@@ -45,12 +45,10 @@ notifications:
   on_build_status_changed: true
 
 deploy:
-  description: 
-"# Version %APPVEYOR_REPO_TAG_NAME% arch x86 
+  description: "# Version %APPVEYOR_REPO_TAG_NAME% arch x86 
 
 ## Requirements:
 * none"
-
   provider: GitHub
   auth_token:
     secure: ogmv8nz5XumGTJew9jWXUvPQ8U4J9t4z7WcAIG+xYHrbqnenBO5x0NUZvCMitga6 
