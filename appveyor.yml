@@ -48,6 +48,7 @@ deploy:
   description: "# Version %APPVEYOR_REPO_TAG_NAME% arch x86 
 
 ## Requirements:
+
 * none"
   provider: GitHub
   auth_token:
