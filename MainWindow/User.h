@@ -52,7 +52,7 @@ public:
     ///zwraca aktualny (pierwszy nieużyty) numer oferty
     int nrOferty()const;
     ///inkrementuje nr oferty
-    void nrOfertyInkrement();
+    bool nrOfertyInkrement();
     bool isValid() const;
 
 private:

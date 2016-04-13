@@ -32,13 +32,9 @@ public:
     static Logger* instance();
     static void logHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
     void logOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg);
-    bool isOpen() const;
 
 signals:
     void logMsg(QString);
-    
-public slots:
-    bool setFilePath(const QString& path);
 
 protected:
     Logger();
@@ -47,7 +43,6 @@ protected:
     static Logger* m_instance;
     QTextStream *m_out;
     QFile* m_log;
-    bool m_pathSet;
 };
 
 #endif // LOGGER_H

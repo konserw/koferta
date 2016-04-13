@@ -61,10 +61,7 @@ MainWindow::MainWindow():
     QMainWindow(nullptr),
     ui(new Ui::MainWindow)
 {
-    if(Logger::instance()->isOpen())
-        qInstallMessageHandler(Logger::logHandler);
-    else
-        qWarning() << "Unable to create log file! Logging to std::cerr.";
+    qInstallMessageHandler(Logger::logHandler);
 
     qDebug() << "konstruktor mainwindow";
 
@@ -77,7 +74,7 @@ MainWindow::MainWindow():
         qDebug() << "loaded translations from file" << translationFile;
     }
     else
-        qWarning() << "could not load translations from file" << translationFile;
+        qWarning() << "\t\tCould not load translations from file" << translationFile;
 
     qDebug() << "setup ui";
     ui->setupUi(this);
@@ -302,7 +299,7 @@ void MainWindow::about()
          "autorstwa Michael D. Leonhard na warunkach licencyjnych opisanych w pliku SHA1_LICENSE\n"
          "\n\nBuild date: %2");
 
-    QMessageBox::about(this, tr("O kOferta"), aboutText.arg(VER).arg(__DATE__));
+    QMessageBox::about(this, tr("O kOferta"), aboutText.arg(VERSION).arg(__DATE__));
 }
 
 void MainWindow::databaseConnect()
@@ -348,8 +345,7 @@ void MainWindow::changeSettings()
 
 void MainWindow::setTitle(QString* nr)
 {
-    QString s = "kOferta v. ";
-    s += QString::number(VER);
+    QString s = QString("kOferta v. %1").arg(VERSION);
 
     if(nr != NULL)
     {
@@ -549,7 +545,11 @@ void MainWindow::saveOffer()
     int anr = m_offerNumber->split("/").first().toInt();
 
     if(anr == m_currentUser->nrOferty())
-        m_currentUser->nrOfertyInkrement();
+        if(m_currentUser->nrOfertyInkrement() == false)
+        {
+            QMessageBox::critical(this, tr("Błąd zapisywania"), tr("Wystąpił bład w trakcie zapisywania oferty.\nProszę spróbowac później, bądź skontaktować się z Administratorem."));
+            return;
+        }
 
     QString zData;
     if(ui->checkBox_zapytanieData->isChecked())
@@ -794,7 +794,7 @@ void MainWindow::makeDocument(QString *sDoc)
                 "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head>\n"
                 "<style>\n"
                 "\tbody { font-family:Arial, Helvetica, sans-serif; font-size:14px; } \n"
-                "\t.spec { font-size:12px; font-family:\"Times New Roman\",Georgia,Serif; } \n"
+                "\t.spec { font-size:12px; } \n"
                 "\t.row0 { background: #efefef; } \n"
                 "\t.row1 { background: #dadada; } \n"
                 "</style>\n"
@@ -808,10 +808,10 @@ void MainWindow::makeDocument(QString *sDoc)
                 "\t<tr>\n"
    //logo
                 "\t\t<td colspan=2 align=left valign=bottom>\n"
-                "\t\t\t<img src=%1 height=56 ><br>\n" //width=%2
+                "\t\t\t<img src=%1 height=50 ><br>\n"
                 "\t\t</td>\n"
-                "\t\t<td align=right valign=bottom>\n"
-                "\t\t\t<img src=%2 height=45 ><br>\n"
+                "\t\t<td align=center valign=bottom >\n"
+                "\t\t\t<img src=%2 height=50 ><br>\n"
                 "\t\t</td>\n"
                 "\t</tr>\n"
     //adresy itp
