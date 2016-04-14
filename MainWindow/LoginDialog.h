@@ -22,7 +22,6 @@
 #include <QDialog>
 
 class QStringList;
-class User;
 class Database;
 
 namespace Ui {
