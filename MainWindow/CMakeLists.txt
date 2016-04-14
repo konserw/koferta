@@ -42,6 +42,7 @@ set(KOFERTA_SOURCES
     MerchandiseListView.cpp 
     LoadDialogMerchandiseListModel.cpp 
     LoadDialogMerchandiseListModelMySQL.cpp
+    Offer.cpp
 )
 set(TS_FILES
     translations/kOferta_pl.ts

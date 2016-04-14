@@ -33,6 +33,7 @@ class QDate;
 class QPrinter;
 class MerchandiseListModel;
 class QProcess;
+class Offer;
 
 namespace Ui {
     class MainWindow;
@@ -144,13 +145,15 @@ private:
     QCalendarWidget* m_calendarWidget;
     QSqlRecord* m_client;
 
+    Offer* currentOffer;
+
     User* m_currentUser;
     MerchandiseListModel* m_towarModel;
 
-    void setOfferTerms(TermItem term);
-    void setPaymentTerms(TermItem term);
-    void setShippingTerms(TermItem term);
-    void setShipmentTime(TermItem term);
+    void setOfferTerms(const TermItem& term);
+    void setPaymentTerms(const TermItem& term);
+    void setShippingTerms(const TermItem& term);
+    void setShipmentTime(const TermItem& term);
 
     TermItem m_shippingTerm;
     TermItem m_shipmentTime;

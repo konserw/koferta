@@ -193,25 +193,25 @@ void MainWindow::uiReset()
     ui->actionNR->setEnabled(false);
 }
 
-void MainWindow::setOfferTerms(TermItem term)
+void MainWindow::setOfferTerms(const TermItem &term)
 {
     m_offerTerm = term;
     ui->plainTextEdit_oferta->setPlainText(term.longDesc());
 }
 
-void MainWindow::setPaymentTerms(TermItem term)
+void MainWindow::setPaymentTerms(const TermItem &term)
 {
     m_paymentTerm = term;
     ui->plainTextEdit_platnosc->setPlainText(term.longDesc());
 }
 
-void MainWindow::setShippingTerms(TermItem term)
+void MainWindow::setShippingTerms(const TermItem &term)
 {
     m_shippingTerm = term;
     ui->plainTextEdit_dostawa->setPlainText(term.longDesc());
 }
 
-void MainWindow::setShipmentTime(TermItem term)
+void MainWindow::setShipmentTime(const TermItem &term)
 {
     m_shipmentTime = term;
     ui->plainTextEdit_termin->setPlainText(term.longDesc());
