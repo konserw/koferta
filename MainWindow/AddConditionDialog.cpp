@@ -19,8 +19,9 @@
 #include "AddConditionDialog.h"
 #include "ui_AddConditionDialog.h"
 #include "Database.h"
+#include "TermItem.h"
 
-AddConditionDialog::AddConditionDialog(Database::TermType type, QWidget *parent) :
+AddConditionDialog::AddConditionDialog(TermItem::TermType type, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AddConditionDialog)
 {
@@ -30,16 +31,16 @@ AddConditionDialog::AddConditionDialog(Database::TermType type, QWidget *parent)
     QString typeTransaltion;
     switch(type)
     {
-    case Database::termOffer:
+    case TermItem::termOffer:
         typeTransaltion = tr("\"Warunki Oferty\"");
         break;
-    case Database::termPayment:
+    case TermItem::termPayment:
         typeTransaltion = tr("\"Warunki Płatności\"");
         break;
-    case Database::termShipmentTime:
+    case TermItem::termShipmentTime:
         typeTransaltion = tr("\"Termin Dostawy\"");
         break;
-    case Database::termShipping:
+    case TermItem::termShipping:
         typeTransaltion = tr("\"Wraunki Dostawy\"");
         break;
     }
@@ -57,11 +58,5 @@ AddConditionDialog::~AddConditionDialog()
 
 void AddConditionDialog::ok()
 {
-    QString sh = ui->lineEdit_sort->text();
-    QString lo = ui->textEdit->toPlainText();
-
-    if(sh.isEmpty())
-        return;
-
-    Database::createTerms(m_type, sh, lo);
+    Database::createTerm(TermItem(m_type, ui->lineEdit_sort->text(), ui->textEdit->toPlainText()));
 }

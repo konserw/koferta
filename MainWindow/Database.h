@@ -33,20 +33,13 @@ class LoadDialogMerchandiseListModel;
 class QProcess;
 class QTcpSocket;
 class QProgressDialog;
+class Client;
 
 class Database : public QObject
 {
 Q_OBJECT
 
 public:
-    enum TermType
-    {
-        termShipping = 0,//dostawa
-        termOffer = 1,   //oferta
-        termPayment = 2, //platnosc
-        termShipmentTime = 3 //termin
-    };
-
     static Database* instance();
 
 /* Database Interface */
@@ -56,7 +49,7 @@ public:
     bool setCurrentOfferNumber(int offerNumber);
 
     //terms
-    static void createTerms(TermType type, const QString& shortDesc, const QString& longDesc);
+    static void createTerm(const TermItem& term);
 
     static TermModel *paymentTermsModel();
     static TermModel *shippingTermsModel();
@@ -86,6 +79,7 @@ public slots:
     void tunnelCancel();
     void openDatabaseConnection();
     void failedTunnel(QProcess::ProcessError error);
+    bool save(const Client& client);
 
     void socketConnected();
 signals:
@@ -103,8 +97,8 @@ protected:
     void createMysqlDatabase();
     void readSettings();
 
-    static TermModel* getTermModel(TermType termType);
-    static TermItem getTerm(TermType termType, int id = -1);
+    static TermModel* getTermModel(TermItem::TermType termType);
+    static TermItem getTerm(TermItem::TermType termType, int id = -1);
 
     QString m_databaseUserName;
     QString m_keyFile;
@@ -119,6 +113,7 @@ protected:
     QTcpSocket* m_socket;
     QProcess *tunnelProcess;
     QSqlDatabase* m_database;
+    bool executeQuery(const QString &queryText);
 };
 
 void insert_klient(const QString &skrot, const QString &full, const QString &tytul, const QString &imie, const QString &nazwisko, const QString &adres);

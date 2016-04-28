@@ -26,6 +26,7 @@
 #include <QCryptographicHash>
 #include <QProgressDialog>
 
+#include "Client.h"
 #include "Merchandise.h"
 #include "User.h"
 #include "Database.h"
@@ -186,6 +187,13 @@ void Database::failedTunnel(QProcess::ProcessError error) //nie dziala
     emit connectionFail();
 }
 
+bool Database::save(const Client &client)
+{
+    qDebug() <<  QString("Saving client >%1< to database").arg(client.concatedName());
+    QString queryText= QString("INSERT INTO klient (short, full, tytul, imie, nazwisko, adres) VALUES ('%1', '%2', '%3', '%4', '%5', '%6')").arg(client.shortName, client.fullName, client.title, client.name, client.surname, client.address);
+    return executeQuery(queryText);
+}
+
 void Database::setupTunnel()
 {
     qDebug() << "setup ssh tunel";
@@ -306,7 +314,7 @@ void Database::tunelOpened()
     openDatabaseConnection();
 }
 
-TermModel *Database::getTermModel(Database::TermType termType)
+TermModel *Database::getTermModel(TermItem::TermType termType)
 {
     QSqlTableModel model;
     model.setTable("terms");
@@ -321,13 +329,13 @@ TermModel *Database::getTermModel(Database::TermType termType)
     for (int i = 0; i < model.rowCount(); ++i)
     {
         QSqlRecord rec = model.record(i);
-        terms->insert(new TermItem(rec.value("id").toInt(), rec.value("shortDesc").toString(), rec.value("longDesc").toString()));
+        terms->insert(new TermItem(termType, rec.value("shortDesc").toString(), rec.value("longDesc").toString(), rec.value("id").toInt()));
     }
 
     return terms;
 }
 
-TermItem Database::getTerm(Database::TermType termType, int id)
+TermItem Database::getTerm(TermItem::TermType termType, int id)
 {
     QSqlTableModel model;
     model.setTable("terms");
@@ -336,7 +344,7 @@ TermItem Database::getTerm(Database::TermType termType, int id)
 
     //convert to term
     QSqlRecord rec = model.record(0);
-    return TermItem(rec.value("id").toInt(), rec.value("shortDesc").toString(), rec.value("longDesc").toString());
+    return TermItem(termType, rec.value("shortDesc").toString(), rec.value("longDesc").toString(), rec.value("id").toInt());
 }
 
 Database *Database::instance()
@@ -366,15 +374,25 @@ User* Database::userInfo()
 
 bool Database::setCurrentOfferNumber(int offerNumber)
 {
-    QString s = QString("UPDATE user SET currentOfferNumber=%1 WHERE dbName='%2'").arg(offerNumber).arg(m_databaseUserName);
-    QSqlQuery q;
+    qDebug().noquote() << "Updating last offer number to:" << offerNumber;
+    QString queryText = QString("UPDATE user SET currentOfferNumber=%1 WHERE dbName='%2'").arg(offerNumber).arg(m_databaseUserName);
+    return executeQuery(queryText);
+}
 
-    if(q.exec(s) == false)
+bool Database::executeQuery(const QString& queryText)
+{
+    QSqlQuery query;
+    QSqlDatabase::database().transaction();
+    if(query.exec(queryText) == false)
     {
-        qCritical().nospace().noquote() << "Zapytanie mysql zkonczone niepowodzeniem!\n"
-         << "\tError text: " <<  q.lastError().text();
+        QSqlDatabase::database().rollback();
+        qCritical().nospace().noquote()
+                << "SQL query has failed!\n"
+                << "\t* Query: " << queryText << "\n"
+                << "\t* Error text: " <<  query.lastError().text();
         return false;
     }
+    QSqlDatabase::database().commit();
     return true;
 }
 
@@ -397,19 +415,18 @@ QStringList Database::usersList()
     return userList;
 }
 
-void Database::createTerms(Database::TermType type, const QString &shortDesc, const QString &longDesc)
+void Database::createTerm(const TermItem& term)
 {
-    QSqlQuery q;
+    QSqlQuery query;
     QString queryText;
-    QSqlDatabase db = QSqlDatabase::database();
 
-    db.transaction();
+    QSqlDatabase::database().transaction();
 
-    queryText = QString("SELECT MAX(id) FROM terms WHERE termType = %1").arg(type);
-    if(!q.exec(queryText))
+    queryText = QString("SELECT MAX(id) FROM terms WHERE termType = %1").arg(term.getType());
+    if(!query.exec(queryText))
     {
-        db.rollback();
-        QString error = q.lastError().text();
+        QSqlDatabase::database().rollback();
+        QString error = query.lastError().text();
         QMessageBox::warning(nullptr,
                              tr("Database Write Error"),
                              tr("The database reported an error: %1")
@@ -419,18 +436,18 @@ void Database::createTerms(Database::TermType type, const QString &shortDesc, co
         qDebug() << queryText;
         return;
     }
-    q.next();
-    int id = q.value(0).toInt() + 1;
+    query.next();
+    int id = query.value(0).toInt() + 1;
 
     queryText = QString("INSERT INTO terms(termType, id, shortDesc, longDesc) VALUES (%1, %2, '%3', '%4')")
-            .arg(type)
+            .arg(term.getType())
             .arg(id)
-            .arg(shortDesc)
-            .arg(longDesc);
-    if(!q.exec(queryText))
+            .arg(term.shortDesc())
+            .arg(term.longDesc());
+    if(!query.exec(queryText))
     {
-        db.rollback();
-        QString error = q.lastError().text();
+        QSqlDatabase::database().rollback();
+        QString error = query.lastError().text();
         QMessageBox::warning(nullptr,
                              tr("Database Write Error"),
                              tr("The database reported an error: %1")
@@ -441,47 +458,47 @@ void Database::createTerms(Database::TermType type, const QString &shortDesc, co
         return;
     }
 
-    db.commit();
+    QSqlDatabase::database().commit();
 }
 
 TermModel* Database::paymentTermsModel()
 {
-    return getTermModel(termPayment);
+    return getTermModel(TermItem::termPayment);
 }
 
 TermModel* Database::shippingTermsModel()
 {
-    return getTermModel(termShipping);
+    return getTermModel(TermItem::termShipping);
 }
 
 TermModel* Database::shipmentTimeModel()
 {
-    return getTermModel(termShipmentTime);
+    return getTermModel(TermItem::termShipmentTime);
 }
 
 TermModel* Database::offerTermsModel()
 {
-    return getTermModel(termOffer);
+    return getTermModel(TermItem::termOffer);
 }
 
 TermItem Database::paymentTerm(int id)
 {
-    return getTerm(termPayment, id);
+    return getTerm(TermItem::termPayment, id);
 }
 
 TermItem Database::shippingTerm(int id)
 {
-    return getTerm(termShipping, id);
+    return getTerm(TermItem::termShipping, id);
 }
 
 TermItem Database::shipmentTime(int id)
 {
-    return getTerm(termShipmentTime, id);
+    return getTerm(TermItem::termShipmentTime, id);
 }
 
 TermItem Database::offerTerm(int id)
 {
-    return getTerm(termOffer, id);
+    return getTerm(TermItem::termOffer, id);
 }
 
 void Database::saveOfferMerchandise(const QString &offerId, const QList<Merchandise *> &merchandise)

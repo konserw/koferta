@@ -21,17 +21,29 @@
 #ifndef TERMITEM_H
 #define TERMITEM_H
 
+
 class TermItem
 {
 public:
+    enum TermType
+    {
+        termShipping = 0,//dostawa
+        termOffer = 1,   //oferta
+        termPayment = 2, //platnosc
+        termShipmentTime = 3 //termin
+    };
+
+    //needed for declarations in header file
     TermItem();
-    TermItem(int id, QString shortDesc, QString longDesc);
+    TermItem(TermType Type, QString shortDesc, QString longDesc, int id = -1);
 
     int id() const;
     QString longDesc() const;
     QString shortDesc() const;
+    TermItem::TermType getType() const;
 
 private:
+    TermType type;
     int m_id;
     QString m_shortDesc;
     QString m_longDesc;

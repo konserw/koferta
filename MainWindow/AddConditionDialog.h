@@ -31,7 +31,7 @@ class AddConditionDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit AddConditionDialog(Database::TermType type, QWidget *parent = 0);
+    explicit AddConditionDialog(TermItem::TermType type, QWidget *parent = 0);
     ~AddConditionDialog();
 
 public slots:
@@ -40,7 +40,7 @@ public slots:
 private:
     Ui::AddConditionDialog *ui;
 
-    Database::TermType m_type;
+    TermItem::TermType m_type;
 
 };
 

@@ -1,7 +1,29 @@
+/**
+    kOferta - system usprawniajacy proces ofertowania
+    Copyright (C) 2011  Kamil 'konserw' Strzempowicz, konserw@gmail.com
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+**/
+
 #include "Offer.h"
+#include "Client.h"
+#include "Database.h"
+
+#include <QPrinter>
 #include <QTextDocument>
 
-Offer::Offer(QObject *parent) : QObject(parent)
+Offer::Offer(QObject *parent) : QObject(parent), client(nullptr)
 {
 
 }
@@ -18,7 +40,7 @@ void Offer::setPaymentTerm(const TermItem &term)
 
 void Offer::setShippingTerm(const TermItem &term)
 {
-    shippingTerm = term
+    shippingTerm = term;
 }
 
 void Offer::setShipmentTime(const TermItem &term)
@@ -38,18 +60,19 @@ void Offer::print(QPrinter *printer)
     printer->setResolution(96);
     printer->setPageMargins(margin, margin, margin, margin, QPrinter::Millimeter);
 
-    QTextDocument doc = document();
-    doc.setPageSize(QSizeF(printer->pageRect().size()));
-    doc.print(printer);
+    QTextDocument* doc = document();
+    doc->setPageSize(QSizeF(printer->pageRect().size()));
+    doc->print(printer);
+    delete doc;
 }
 
-QTextDocument Offer::document() const
+QTextDocument *Offer::document() const
 {
     const int w = 745;                           //szerokosc szkieletu dokumentu
     const int dd = 248;
     const int dw = 140;                          //szerokosc pierwszej kolumny w szkielecie poniżej tabeli
 
-    QString html(
+    QString html = QString(
                 "<html>\n"
                 "<head>\n"
                 "<title>Oferta</title>\n"
@@ -82,30 +105,27 @@ QTextDocument Offer::document() const
                 "\t\t\tOferta nr: <b> %2 </b><br />\n"
                 "\t\t\tZ dnia: %3 <br />\n"
                 "\t\t\tDla:<br />\n"
-                "\t\t\t<b> %6 </b><br />\n"
-                "\t\t\t%7 <br>\n"
-                "\t\t\t%8 %9 %10 \n"
+                "\t\t\t<b> %4 </b><br />\n"
+                "\t\t\t%5 <br>\n"
+                "\t\t\t%6 \n"
                 "\t\t</td>\n"
+                "\t\t<td width=%7>\n"
+                "%8"
+                 "\t\t\t<br />\n"
+                 "\t\t\t<b> %9 </b><br />\n"
+                 "\t\t\t%10<br />\n"
+                
                 )
 /* 1*/.arg(dd)
-/* 2*/.arg(*m_offerNumber)
-/* 3*/.arg(*m_date)
-/* 4*/.arg(m_client->value("full").toString())
-/* 5*/.arg(m_client->value("adres").toString())
-/* 6*/.arg(m_client->value("tytul").toString())
-/* 7*/.arg(m_client->value("imie").toString())
-/* 8*/.arg(m_client->value("nazwisko").toString());
-
-    *sDoc += QString(
-                "\t\t<td width=%1>\n"
-                "%2"
-                 "\t\t\t<br />\n"
-                 "\t\t\t<b> %3 </b><br />\n"
-                 "\t\t\t%4<br />\n")
-            .arg(dd+50)
-            .arg(Database::mainAddress())
-            .arg(m_currentUser->name())
-            .arg(m_currentUser->mail());
+/* 2*/.arg(numberWithYear)
+/* 3*/.arg(date)
+/* 4*/.arg(client->getFullName())
+/* 5*/.arg(client->getAddress())
+/* 6*/.arg(client->concatedName())
+/* 7*/.arg(dd+50)
+/* 8*/.arg(Database::mainAddress())
+/* 9*/.arg(m_currentUser->name())
+/*10*/.arg(m_currentUser->mail());
     if(m_currentUser->hasPhone())
         *sDoc += QString("\t\t\tTel.: %3 \n")
                 .arg(m_currentUser->phone());
@@ -209,19 +229,14 @@ QTextDocument Offer::document() const
             "</html>\n";
 
 
-    QTextDocument doc;
-    doc.setHtml(html);
+    QTextDocument* doc = new QTextDocument();
+    doc->setHtml(html);
     return doc;
 }
 
 TermItem Offer::getPaymentTerm() const
 {
     return paymentTerm;
-}
-
-void Offer::setOfferTerm(const TermItem &value)
-{
-    offerTerm = value;
 }
 
 TermItem Offer::getShipmentTime() const

@@ -20,9 +20,11 @@
 
 TermItem::TermItem()
 {
+
 }
 
-TermItem::TermItem(int id, QString shortDesc, QString longDesc) :
+TermItem::TermItem(TermType Type, QString shortDesc, QString longDesc, int id) :
+    type(Type),
     m_id(id),
     m_shortDesc(shortDesc),
     m_longDesc(longDesc)
@@ -37,6 +39,11 @@ QString TermItem::longDesc() const
 QString TermItem::shortDesc() const
 {
     return m_shortDesc;
+}
+
+TermItem::TermType TermItem::getType() const
+{
+    return type;
 }
 int TermItem::id() const
 {

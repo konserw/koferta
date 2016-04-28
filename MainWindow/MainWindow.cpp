@@ -629,25 +629,25 @@ void MainWindow::loadOfferFromDatabase(const QString& offerId)
 
 void MainWindow::addShippingTerms()
 {
-    AddConditionDialog pop(Database::termShipping);
+    AddConditionDialog pop(TermItem::termShipping);
     pop.exec();
 }
 
 void MainWindow::addOfferTerms()
 {
-    AddConditionDialog pop(Database::termOffer);
+    AddConditionDialog pop(TermItem::termOffer);
     pop.exec();
 }
 
 void MainWindow::addShipmentTime()
 {
-    AddConditionDialog pop(Database::termShipmentTime);
+    AddConditionDialog pop(TermItem::termShipmentTime);
     pop.exec();
 }
 
 void MainWindow::addPaymentTerms()
 {
-    AddConditionDialog pop(Database::termPayment);
+    AddConditionDialog pop(TermItem::termPayment);
     pop.exec();
 }
 
