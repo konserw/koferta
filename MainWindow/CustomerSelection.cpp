@@ -28,7 +28,7 @@ CustomerSelection::CustomerSelection(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->pushButton_exit, SIGNAL(clicked()), this, SLOT(close()));
-    connect(ui->widget, SIGNAL(selectionChanged(QSqlRecord)), this, SIGNAL(selectionChanged(QSqlRecord)));
+    connect(ui->widget, SIGNAL(selectionChanged(Customer)), this, SIGNAL(selectionChanged(Customer)));
 }
 
 CustomerSelection::~CustomerSelection()

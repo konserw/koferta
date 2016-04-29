@@ -16,21 +16,23 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef CLIENT_H
-#define CLIENT_H
+#ifndef CUSTOMER_H
+#define CUSTOMER_H
 
 #include<QString>
 
-class Client
+class Customer
 {
 public:
-    Client(
+    explicit Customer();
+    Customer(
         const QString& ShortName,
         const QString& FullName,
         const QString& Title,
         const QString& Name,
         const QString& Surname,
-        const QString& Address
+        const QString& Address,
+        int id = -1
            );
 
     QString concatedName() const;
@@ -39,6 +41,7 @@ public:
     QString getFullName() const;
 
 private:
+    int id;
     QString shortName;
     QString fullName;
     QString title;
@@ -49,4 +52,4 @@ private:
     friend class Database;
 };
 
-#endif // CLIENT_H
+#endif // CUSTOMER_H

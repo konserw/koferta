@@ -21,15 +21,13 @@
 
 #include <QWidget>
 
-QT_BEGIN_NAMESPACE
 class QSqlTableModel;
-class QSqlRecord;
 class QModelIndex;
 class QVBoxLayout;
 class QRadioButton;
 class QLineEdit;
 class QTableView;
-QT_END_NAMESPACE
+class Customer;
 
 class CustomerSearch : public QWidget
 {
@@ -45,7 +43,7 @@ public slots:
     void select(const QModelIndex&);
 
 signals:
-    void selectionChanged(const QSqlRecord&);
+    void selectionChanged(const Customer&);
 
 private:
     QSqlTableModel* model;

@@ -34,6 +34,7 @@ class QPrinter;
 class MerchandiseListModel;
 class QProcess;
 class Offer;
+class Customer;
 
 namespace Ui {
     class MainWindow;
@@ -82,7 +83,7 @@ public slots:
 
 /*buttony na 2 zakladce*/
     void selectClient();
-    void setClient(const QSqlRecord&);
+    void setCustomer(const Customer &customer);
 
     void chooseOfferTerms();
     void choosePaymentTerms();

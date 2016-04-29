@@ -23,97 +23,77 @@
 #include <QtDebug>
 #include "User.h"
 
-User::User(const User &u)
-{
-    _name = new QString(u.name());
-    _mail = new QString(u.mail());
-    m_phone = new QString(u.phone());
-    _adress = new QString(u.address());
-    _male = u._male;
-    _nrOferty = u._nrOferty;
-    _uid = u._uid;
-    _valid = true;
-    qDebug() << "copy user?";
-}
+User* User::instance = nullptr;
 
-User::User()
+User::User(int Uid, const QString &Name, const QString &Phone, const QString &Mail, const QString &Address, bool Male, int CurrentOfferNumber, const QString& DbName)
+    : uid(Uid), name(Name), phone(Phone), mail(Mail), address(Address), male(Male), currentOfferNumber(CurrentOfferNumber), dbName(DbName)
 {
-    _valid = false;
-}
-
-User::User(int uid, QString name, QString phone, QString mail, QString adress, bool male, int nrOferty)
-{
-    qDebug() << "new user:" << uid << name << phone << mail << adress << male << nrOferty;
-
-    _uid = uid;
-    _name = new QString(name);
-    _mail = new QString(mail);
-    m_phone = new QString(phone);
-    _adress = new QString(adress);
-    _male = male;
-    _nrOferty = nrOferty;
-    _valid = true;
+    qDebug() << "Creating new user:" << uid << Name << Phone << Mail << Address << Male << CurrentOfferNumber;
 }
 
 User::~User()
 {
-    delete _name;
-    delete m_phone;
-    delete _mail;
-    delete _adress;
 }
 
-bool User::nrOfertyInkrement()
+User *User::current()
 {
-    if(Database::instance()->setCurrentOfferNumber(_nrOferty+1))
+    if(!instance)
+        instance = Database::instance()->userInfo();
+    return instance;
+}
+
+void User::dropUser()
+{
+    delete instance;
+    instance = nullptr;
+}
+
+bool User::incrementOfferNumber()
+{
+    if(Database::instance()->setCurrentOfferNumber(currentOfferNumber+1))
     {
-        _nrOferty++;
-       return true;
+        currentOfferNumber++;
+        return true;
     }
     return false;
 }
 
-bool User::isValid() const
+QString User::getName() const
 {
-    return _valid;
+    return name;
 }
 
-QString User::address() const
+QString User::getPhone() const
 {
-   return *_adress;
+    return phone;
 }
 
-QString User::mail() const
+QString User::getDbName() const
 {
-    return *_mail;
+    return dbName;
 }
 
-bool User::male() const
+QString User::getMail() const
 {
-    return _male;
+    return mail;
 }
 
-QString User::name() const
+QString User::getAddress() const
 {
-    return *_name;
+    return address;
 }
 
-bool User::hasPhone() const
+bool User::getMale() const
 {
-    return !(m_phone->isEmpty());
+    return male;
 }
 
-QString User::phone() const
+int User::getUid() const
 {
-    return *m_phone;
+    return uid;
 }
 
-int User::uid() const
+int User::getCurrentOfferNumber() const
 {
-    return _uid;
-}
-
-int User::nrOferty() const
-{
-    return _nrOferty;
+    return currentOfferNumber;
 }

@@ -43,7 +43,7 @@ set(KOFERTA_SOURCES
     LoadDialogMerchandiseListModel.cpp 
     LoadDialogMerchandiseListModelMySQL.cpp
     Offer.cpp
-    Client.cpp
+    Customer.cpp
 )
 set(TS_FILES
     translations/kOferta_pl.ts

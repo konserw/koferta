@@ -19,7 +19,7 @@
 #include "CustomerNew.h"
 #include "ui_CustomerNew.h"
 #include "Database.h"
-
+#include "Customer.h"
 
 CustomerNew::CustomerNew(QWidget *parent) :
     QDialog(parent),
@@ -38,7 +38,8 @@ CustomerNew::~CustomerNew()
 void CustomerNew::acc(){
     QString adres = ui->adres->toPlainText();
     adres.replace("\n", "<br>\n");
-    insert_klient(ui->skrocona->text(), ui->pelna->text(), ui->tytul->text(), ui->imie->text(), ui->nazwisko->text(), adres);
+    Customer client(ui->skrocona->text(), ui->pelna->text(), ui->tytul->text(), ui->imie->text(), ui->nazwisko->text(), adres);
+    Database::instance()->save(client);
     this->accept();
 }
 

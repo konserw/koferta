@@ -40,11 +40,13 @@
 #include "LoginDialog.h"
 #include "LoadDialog.h"
 #include "User.h"
+#include "Offer.h"
 
 #include "AddConditionDialog.h"
 #include "SettingsDialog.h"
 #include "TermsChooserDialog.h"
 
+#include "Customer.h"
 #include "CustomerNew.h"
 #include "CustomerEdit.h"
 #include "CustomerSelection.h"
@@ -195,25 +197,25 @@ void MainWindow::uiReset()
 
 void MainWindow::setOfferTerms(const TermItem &term)
 {
-    m_offerTerm = term;
+    currentOffer->setOfferTerm(term);
     ui->plainTextEdit_oferta->setPlainText(term.longDesc());
 }
 
 void MainWindow::setPaymentTerms(const TermItem &term)
 {
-    m_paymentTerm = term;
+    currentOffer->setPaymentTerm(term);
     ui->plainTextEdit_platnosc->setPlainText(term.longDesc());
 }
 
 void MainWindow::setShippingTerms(const TermItem &term)
 {
-    m_shippingTerm = term;
+    currentOffer->setShippingTerm(term);
     ui->plainTextEdit_dostawa->setPlainText(term.longDesc());
 }
 
 void MainWindow::setShipmentTime(const TermItem &term)
 {
-    m_shipmentTime = term;
+    currentOffer->setShipmentTime(term);
     ui->plainTextEdit_termin->setPlainText(term.longDesc());
 }
 
@@ -253,16 +255,18 @@ void MainWindow::readSettings()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    writeSettings();
-    event->accept();
-    /*
-    if (userReallyWantsToQuit()) {
-        writeSettings();
-        event->accept();
-    } else {
+    QMessageBox::StandardButton reply = QMessageBox::question(this, tr("Zapis przed zamknięciem"), tr("Zapisać ofertę przed zamknięciem?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel );
+    if(reply == QMessageBox::Cancel)
+    {
         event->ignore();
     }
-    */
+    else
+    {
+        if(reply == QMessageBox::Yes)
+            saveOffer();
+        writeSettings();
+        event->accept();
+    }
 }
 
 void MainWindow::about()
@@ -307,33 +311,24 @@ void MainWindow::databaseConnect()
     LoginDialog *pop = new LoginDialog(this);
     if(pop->exec() == QDialog::Accepted)
     {
-        m_currentUser = Database::instance()->userInfo();
-        if(m_currentUser == nullptr)
+        delete pop;
+        if(User::current() == nullptr)
         {
             Database::instance()->dropConection();
-            qCritical() << "invalid user";
-            QMessageBox::critical(this, tr("Nieprawidłowy użytkownik"), tr("Proszę zamknąć aplikację i skontaktować się z administratorem"));
+            QMessageBox::critical(this, tr("Nieprawidłowy użytkownik!"), tr("Użytkownik nie został odnaleziony w bazie danych.\nNastąpi zamknięcie aplikacji.\nProszę skontaktować się z administratorem i przesłąć log aplikacji."));
+            qApp->quit();
         }
-        else
-        {
-            qDebug() << "Logged in as" << m_currentUser->name();
-            setMenusEnabled(true);
-        }
+        qDebug() << "Logged in as" << User::current()->getDbName();
+        setMenusEnabled(true);
     }
-    delete pop;
+    else delete pop;
 }
 
 void MainWindow::databaseDisconnect()
 {
     uiReset();
     setMenusEnabled(false);
-
-    delete m_currentUser;
-    m_currentUser = nullptr;
-
-    delete m_client;
-    m_client = nullptr;
-
+    User::dropUser();
     Database::instance()->dropConection();
 }
 
@@ -345,15 +340,10 @@ void MainWindow::changeSettings()
 
 void MainWindow::setTitle(QString* nr)
 {
-    QString s = QString("kOferta v. %1").arg(VERSION);
-
+    QString s;
     if(nr != NULL)
-    {
-        s += " | oferta nr: ";
-        s += *nr;
-    }
-
-    this->setWindowTitle(s);
+        s = QString("| oferta nr: %1").arg(*nr);
+    this->setWindowTitle(QString("kOferta v. %1 %2").arg(VERSION).arg(s));
 }
 
 void MainWindow::globalDiscount()
@@ -361,21 +351,23 @@ void MainWindow::globalDiscount()
     bool ok;
     double d = QInputDialog::getDouble(this, tr("Rabat"), tr("Podaj domyślny rabat [%]:"), 0, 0, 100, 2, &ok);
     if(ok)
-        m_towarModel->setGlobalRabat(d);
+        currentOffer->setGlobalDiscount(d);
 }
 
 void MainWindow::removeRow()
 {
-    m_towarModel->removeRow(ui->tableView->currentIndex().row());
+    currentOffer->removeMerchandiseRow(ui->tableView->currentIndex().row());
 }
 
 void MainWindow::setInquiryDate(const QDate &d)
 {
-    ui->lineEdit_zapytanieData->setText(d.toString("dd.MM.yyyy"));
+    QString date = d.toString("dd.MM.yyyy");
+    ui->lineEdit_zapytanieData->setText(date);
     m_calendarWidget->close();
     ui->checkBox_zapytanieData->setChecked(true);
+    currentOffer->setInquiryDate(date);
 }
-
+//TODO
 void MainWindow::zapytanieRef()
 {
     QString s;
@@ -394,7 +386,7 @@ void MainWindow::zapytanieRef()
     s += " przedstawiamy ofertę na dostawę następujących produktów:";
     ui->plainTextEdit_zapytanie->setPlainText(s);
 }
-
+//TODO
 void MainWindow::checkNr(bool ch)
 {
     ui->lineEdit_zapytanieNr->setEnabled(ch);
@@ -402,7 +394,7 @@ void MainWindow::checkNr(bool ch)
         ui->lineEdit_zapytanieNr->clear();
     this->zapytanieRef();
 }
-
+//TODO
 void MainWindow::checkData(bool ch)
 {
     ui->lineEdit_zapytanieData->setEnabled(ch);
@@ -418,13 +410,13 @@ void MainWindow::changeCurrency(bool pln)
     ui->kol_cenaPln->setEnabled(pln);
     ui->kol_cenaPln->setChecked(pln);
 
-    m_towarModel->setKurs(pln ? ui->kursSpinBox->value() : -1);
+    currentOffer->setExchangeRate(pln ? ui->kursSpinBox->value() : -1);
 }
 
 void MainWindow::selectClient()
 {
     CustomerSelection* pop = new CustomerSelection(this);
-    connect(pop, SIGNAL(selectionChanged(QSqlRecord)), this, SLOT(setClient(QSqlRecord)));
+    connect(pop, SIGNAL(selectionChanged(Customer)), this, SLOT(setCustomer(Customer)));
     pop->exec();
     delete pop;
 }
@@ -438,23 +430,10 @@ void MainWindow::selectMerchandise()
     delete pop;
 }
 
-void MainWindow::setClient(const QSqlRecord& rec)
+void MainWindow::setCustomer(const Customer& customer)
 {
-    delete m_client;
-    if(rec.isEmpty())
-    {
-        m_client = NULL;
-        ui->plainTextEdit_klient->clear();
-    }
-    else
-    {
-        m_client = new QSqlRecord(rec);
-        ui->plainTextEdit_klient->setPlainText(QString("%1 %2\n%3")
-                                               .arg(rec.value("tytul").toString())
-                                               .arg(rec.value("nazwisko").toString())
-                                               .arg(rec.value("full").toString())
-                                               );
-    }
+    currentOffer->setCustomer(customer);
+    ui->plainTextEdit_klient->setPlainText(QString("%1\n%2").arg(customer.concatedName()).arg(customer.getFullName()));
 }
 
 void MainWindow::chooseOfferTerms()
@@ -488,7 +467,7 @@ void MainWindow::chooseShipmentTime()
         setShipmentTime(dlg->choosenTerm());
     delete dlg;
 }
-
+//////////////////////////////////////////////////////////////////////////////
 void MainWindow::newOfferNumber()
 {
     QDate d = QDate::currentDate();
@@ -505,7 +484,7 @@ void MainWindow::newOfferNumber()
 void MainWindow::newOffer()
 {
     //czyszczenie starych danych
-    setClient(QSqlRecord());
+    setCustomer(QSqlRecord());
 
     this->newOfferNumber();
 
@@ -545,7 +524,7 @@ void MainWindow::saveOffer()
     int anr = m_offerNumber->split("/").first().toInt();
 
     if(anr == m_currentUser->nrOferty())
-        if(m_currentUser->nrOfertyInkrement() == false)
+        if(m_currentUser->incrementOfferNumber() == false)
         {
             QMessageBox::critical(this, tr("Błąd zapisywania"), tr("Wystąpił bład w trakcie zapisywania oferty.\nProszę spróbowac później, bądź skontaktować się z Administratorem."));
             return;
@@ -601,7 +580,7 @@ void MainWindow::loadOfferFromDatabase(const QString& offerId)
     QSqlRecord rec = model.record(0);
     *m_date = rec.value("date").toString();
 
-    setClient(rec);
+    setCustomer(rec);
 
     if(rec.value("zapytanie_data").isNull())
         ui->checkBox_zapytanieData->setChecked(false);

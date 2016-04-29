@@ -17,15 +17,27 @@
 **/
 
 #include "Offer.h"
-#include "Client.h"
+#include "Customer.h"
 #include "Database.h"
+#include "MerchandiseListModel.h"
+#include "User.h"
 
 #include <QPrinter>
 #include <QTextDocument>
 
-Offer::Offer(QObject *parent) : QObject(parent), client(nullptr)
+Offer::Offer(QObject *parent) : QObject(parent)
 {
+    inquiryNumber = -1;
+}
 
+void Offer::setGlobalDiscount(double discount)
+{
+    merchandiseList->setGlobalRabat(discount);
+}
+
+void Offer::removeMerchandiseRow(int row)
+{
+    merchandiseList->removeRow(row);
 }
 
 void Offer::setOfferTerm(const TermItem &term)
@@ -46,6 +58,82 @@ void Offer::setShippingTerm(const TermItem &term)
 void Offer::setShipmentTime(const TermItem &term)
 {
     shipmentTime = term;
+}
+
+void Offer::setInquiryDate(const QString &value)
+{
+    inquiryDate = value;
+}
+
+QString Offer::inquiryNumberSql() const
+{
+    if(inquiryNumber <= 0)
+        return QString("NULL");
+    else
+        return QString("'%1'").arg(inquiryNumber);
+}
+
+Customer Offer::getCustomer() const
+{
+    return customer;
+}
+
+void Offer::setCustomer(const Customer &value)
+{
+    customer = value;
+}
+
+QString Offer::getRemarks() const
+{
+    return remarks;
+}
+
+void Offer::setRemarks(const QString &value)
+{
+    remarks = value;
+}
+
+QString Offer::inquiryDateSql() const
+{
+    if(inquiryDate.isNull() || inquiryDate.isEmpty())
+        return QString("NULL");
+    else
+        return inquiryDate;
+}
+
+void Offer::setInquiryNumber(int value)
+{
+    inquiryNumber = value;
+}
+
+QString Offer::getDate() const
+{
+    return date;
+}
+
+void Offer::setDate(const QString &value)
+{
+    date = value;
+}
+
+bool Offer::getPln() const
+{
+    return pln;
+}
+
+void Offer::setPln(bool value)
+{
+    pln = value;
+}
+/*
+double Offer::getExchangeRate() const
+{
+    return exchangeRate;
+}
+*/
+void Offer::setExchangeRate(double value)
+{
+    merchandiseList->setKurs(value);
 }
 
 TermItem Offer::getOfferTerm() const
@@ -71,6 +159,10 @@ QTextDocument *Offer::document() const
     const int w = 745;                           //szerokosc szkieletu dokumentu
     const int dd = 248;
     const int dw = 140;                          //szerokosc pierwszej kolumny w szkielecie poniżej tabeli
+
+    QString phone = User::current()->getPhone();
+    if(!phone.isEmpty())
+        phone = QString("\t\t\tTel.: %3 \n").arg(phone);
 
     QString html = QString(
                 "<html>\n"
@@ -111,51 +203,46 @@ QTextDocument *Offer::document() const
                 "\t\t</td>\n"
                 "\t\t<td width=%7>\n"
                 "%8"
-                 "\t\t\t<br />\n"
-                 "\t\t\t<b> %9 </b><br />\n"
-                 "\t\t\t%10<br />\n"
-                
+                "\t\t\t<br />\n"
+                "\t\t\t<b> %9 </b><br />\n"
+                "\t\t\t%10<br />\n"
+                "%11"
+                "\t\t</td>\n"
+                "\t\t<td width=%12>\n"
+                "%13\n"
+                "\t\t</td>\n"
+                "\t</tr>\n"
+                "\t<tr>\n"
+                "\t\t<td colspan=3>\n"
+                "\t\t\t<hr width=100%>\n"
+                "\t\t</td>\n"
+                "\t</tr>\n"
+                "\t</table>\n"
+                "</td></tr>\n"
+                "</thead>\n"
+      /*Właściwa oferta*/
+                "<tbody>\n"
+                "<tr><td>\n"
+                "\t%14\n"
+                "</td></tr>\n"
+                "<tr><td>\n"
+                "%15"
                 )
 /* 1*/.arg(dd)
 /* 2*/.arg(numberWithYear)
 /* 3*/.arg(date)
-/* 4*/.arg(client->getFullName())
-/* 5*/.arg(client->getAddress())
-/* 6*/.arg(client->concatedName())
+/* 4*/.arg(customer.getFullName())
+/* 5*/.arg(customer.getAddress())
+/* 6*/.arg(customer.concatedName())
 /* 7*/.arg(dd+50)
 /* 8*/.arg(Database::mainAddress())
-/* 9*/.arg(m_currentUser->name())
-/*10*/.arg(m_currentUser->mail());
-    if(m_currentUser->hasPhone())
-        *sDoc += QString("\t\t\tTel.: %3 \n")
-                .arg(m_currentUser->phone());
-    *sDoc += "\t\t</td>\n";
-
-    *sDoc += QString(
-            "\t\t<td width=%1>\n"
-            "%2\n"
-            "\t\t</td>\n")
-        .arg(dd-50)
-        .arg(m_currentUser->address());
-
-    *sDoc +=
-             "\t</tr>\n"
-             "\t<tr>\n"
-             "\t\t<td colspan=3>\n"
-             "\t\t\t<hr width=100%>\n"
-             "\t\t</td>\n"
-             "\t</tr>\n"
-             "\t</table>\n"
-             "</td></tr>\n"
-             "</thead>\n"
-   /*Właściwa oferta*/
-             "<tbody>\n"
-             "<tr><td>\n"
-             "\t";
-    *sDoc += ui->plainTextEdit_zapytanie->toPlainText();
-    *sDoc += "\n"
-             "</td></tr>\n"
-             "<tr><td>\n";
+/* 9*/.arg(User::current()->getName())
+/*10*/.arg(User::current()->getMail())
+/*11*/.arg(phone)
+/*12*/.arg(dd-50)
+/*13*/.arg(User::current()->getAddress())
+/*14*/.arg(/*TODO Zapytanie*/"ZAPYTANIE")
+/*15*/
  //tabela
     *sDoc += m_towarModel->print(w,
                                  ui->kol_ilosc->isChecked(),

@@ -20,7 +20,7 @@
 #define KLIENT_H
 
 #include <QDialog>
-class QSqlRecord;
+class Customer;
 
 namespace Ui {
     class CustomerSelection;
@@ -31,11 +31,11 @@ class CustomerSelection : public QDialog
     Q_OBJECT
 
 public:
-    explicit CustomerSelection(QWidget *parent = 0);         //inicjacja ui
+    explicit CustomerSelection(QWidget *parent = 0);
     ~CustomerSelection();
 
 signals:
-    void selectionChanged(const QSqlRecord&);           //sygnał przekazujący wybranego lienta do MainWindow
+    void selectionChanged(const Customer&);
 
 private:
     Ui::CustomerSelection *ui;

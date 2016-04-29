@@ -17,6 +17,8 @@
 **/
 
 #include "CustomerSearch.h"
+#include "Customer.h"
+
 #include <QSqlTableModel>
 #include <QSqlRecord>
 #include <QtWidgets>
@@ -62,7 +64,21 @@ void CustomerSearch::ref2()
 
 void CustomerSearch::select(const QModelIndex &idx)
 {
-    emit selectionChanged(model->record(idx.row()));
+    QSqlRecord rec = model->record(idx.row());
+    //TODO: sprawdzic nazwy kolumn, moze zmienic w bazie; Do klasy Database to?
+    //Customer* customer = new
+    if(rec.isEmpty())
+        emit selectionChanged(Customer());
+    else
+        emit selectionChanged(Customer(
+                rec.value("short").toString(),
+                rec.value("full").toString(),
+                rec.value("tytul").toString(),
+                rec.value("imie").toString(),
+                rec.value("nazwisko").toString(),
+                rec.value("adres").toString(),
+                rec.value("id").toInt()
+                ));
 }
 
 void CustomerSearch::ref(const QString& in)

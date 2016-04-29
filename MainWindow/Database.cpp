@@ -26,53 +26,15 @@
 #include <QCryptographicHash>
 #include <QProgressDialog>
 
-#include "Client.h"
+#include "User.h"
+#include "Customer.h"
 #include "Merchandise.h"
 #include "User.h"
 #include "Database.h"
 #include "LoadDialogMerchandiseListModelMySQL.h"
+#include "Offer.h"
 
 Database* Database::m_instance = nullptr;
-
-void insert_klient(const QString& skrot, const QString& full, const QString& tytul, const QString& imie, const QString& nazwisko, const QString& adres)
-{
-    qDebug() <<  "Wstawianie klienta, nazwisko: " << nazwisko;
-
-    QString s;
-    QSqlQuery q;
-
-    s = QString("INSERT INTO klient (short, full, tytul, imie, nazwisko, adres) VALUES ('%1', '%2', '%3', '%4', '%5', '%6')").arg(skrot, full, tytul, imie, nazwisko, adres);
-    EXEC_SILENT(s);
-}
-
-void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& data, int uid, const QString& zapytanie_data, const QString& zapytanie_nr, int dostawa, int termin, int platnosc, int oferta, const QString& uwagi)
-{
-    qDebug() <<  "Zapisywanie ofery nr: " << nr_oferty;
-
-    QString s;
-    QSqlQuery q;
-    QString rep = uwagi;
-    rep.replace("\'", "\\\'");
-
-    s = QString("DELETE FROM zapisane WHERE nr_oferty = '%1'").arg(nr_oferty);
-    EXEC_SILENT(s);
-
-    s = "INSERT INTO zapisane "
-        "(nr_oferty, id_klienta, data, uid, dostawa, termin, platnosc, oferta, uwagi, zapytanie_data, zapytanie_nr)";
-    s += QString(" VALUES ('%1', %2, '%3', %4, %5, %6, %7, %8, '%9'").arg(
-                nr_oferty, QString::number(id_klienta), data, QString::number(uid), QString::number(dostawa), QString::number(termin), QString::number(platnosc), QString::number(oferta), rep);
-    if(zapytanie_data.isNull())
-        s += ", NULL";
-    else
-        s += QString(", '%1'").arg(zapytanie_data);
-    if(zapytanie_nr.isNull())
-        s += ", NULL";
-    else
-        s += QString(", '%1'").arg(zapytanie_nr);
-    s += ")";
-
-    EXEC_SILENT(s);
-}
 
 Database::Database(QObject* parent) :
     QObject(parent)
@@ -187,7 +149,54 @@ void Database::failedTunnel(QProcess::ProcessError error) //nie dziala
     emit connectionFail();
 }
 
-bool Database::save(const Client &client)
+bool Database::save(const Offer &offer) const
+{
+    qDebug().noquote() << "Saving offer number" << offer.numberWithYear;
+    QString queryText = QString("DELETE FROM zapisane WHERE nr_oferty = '%1'").arg(offer.numberWithYear);
+    QSqlQuery query;
+    QSqlDatabase::database().transaction();
+
+    if(query.exec(queryText) == false)
+    {
+        QSqlDatabase::database().rollback();
+        qCritical().nospace().noquote()
+                << "SQL query has failed!\n"
+                << "\t* Query: " << queryText << "\n"
+                << "\t* Error text: " <<  query.lastError().text();
+        return false;
+    }
+
+    QString escapedRemarks = offer.remarks;
+    escapedRemarks.replace("\'", "\\\'");
+    queryText = QString("INSERT INTO zapisane "
+                        "(nr_oferty, id_klienta, data, uid, dostawa, termin, platnosc, oferta, uwagi, zapytanie_data, zapytanie_nr) "
+                        "VALUES ('%1', %2, '%3', %4, %5, %6, %7, %8, '%9', %10, %11)")
+            .arg(offer.numberWithYear)
+            .arg(offer.customer.id)
+            .arg(offer.date)
+            .arg(User::current()->getUid())
+            .arg(offer.shippingTerm.id())
+            .arg(offer.shipmentTime.id())
+            .arg(offer.paymentTerm.id())
+            .arg(offer.offerTerm.id())
+            .arg(escapedRemarks)
+            .arg(offer.inquiryDateSql())
+            .arg(offer.inquiryNumberSql());
+    if(query.exec(queryText) == false)
+    {
+        QSqlDatabase::database().rollback();
+        qCritical().nospace().noquote()
+                << "SQL query has failed!\n"
+                << "\t* Query: " << queryText << "\n"
+                << "\t* Error text: " <<  query.lastError().text();
+        return false;
+    }
+
+    QSqlDatabase::database().commit();
+    return true;
+}
+
+bool Database::save(const Customer &client) const
 {
     qDebug() <<  QString("Saving client >%1< to database").arg(client.concatedName());
     QString queryText= QString("INSERT INTO klient (short, full, tytul, imie, nazwisko, adres) VALUES ('%1', '%2', '%3', '%4', '%5', '%6')").arg(client.shortName, client.fullName, client.title, client.name, client.surname, client.address);
@@ -365,21 +374,24 @@ User* Database::userInfo()
     usersTable.select();
  //   qDebug() << "users table row count after filter:" << usersTable.rowCount();
     if(usersTable.rowCount() < 1)
+    {
+        qCritical().noquote() << "Invalid user selected:" << m_databaseUserName;
         return nullptr;
+    }
 
     QSqlRecord r = usersTable.record(0);
     //qDebug() << "user record" << r;
-    return new User(r.value("uid").toInt(), r.value("name").toString(), r.value("phone").toString(), r.value("mail").toString(), r.value("address").toString(), r.value("male").toBool(), r.value("currentOfferNumber").toInt());
+    return new User(r.value("uid").toInt(), r.value("name").toString(), r.value("phone").toString(), r.value("mail").toString(), r.value("address").toString(), r.value("male").toBool(), r.value("currentOfferNumber").toInt(), m_databaseUserName);
 }
 
 bool Database::setCurrentOfferNumber(int offerNumber)
 {
     qDebug().noquote() << "Updating last offer number to:" << offerNumber;
-    QString queryText = QString("UPDATE user SET currentOfferNumber=%1 WHERE dbName='%2'").arg(offerNumber).arg(m_databaseUserName);
+    QString queryText = QString("UPDATE user SET currentOfferNumber=%1 WHERE uid=%2").arg(offerNumber).arg(User::current()->getUid());
     return executeQuery(queryText);
 }
 
-bool Database::executeQuery(const QString& queryText)
+bool Database::executeQuery(const QString& queryText) const
 {
     QSqlQuery query;
     QSqlDatabase::database().transaction();

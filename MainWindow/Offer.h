@@ -20,19 +20,27 @@
 #define OFFER_H
 
 #include "TermItem.h"
+#include "Customer.h"
+
 #include <QObject>
 #include <QString>
 
 class MerchandiseListModel;
 class QTextDocument;
 class QPrinter;
-class Client;
+class Customer;
+class Database;
 
 class Offer : public QObject
 {
     Q_OBJECT
+    friend class Database;
+
 public:
     explicit Offer(QObject *parent = 0);
+
+    void setGlobalDiscount(double discount);
+    void removeMerchandiseRow(int row);
 
     TermItem getShippingTerm() const;
     TermItem getShipmentTime() const;
@@ -42,6 +50,25 @@ public:
     ///"drukowanie" dokumentu do podglądu lub pdf
     void print(QPrinter *printer);
     QTextDocument* document() const;
+
+  //  double getExchangeRate() const;
+    void setExchangeRate(double value);
+
+    bool getPln() const;
+    void setPln(bool value);
+
+    QString getDate() const;
+    void setDate(const QString &value);
+
+    QString getRemarks() const;
+    void setRemarks(const QString &value);
+
+    void setInquiryDate(const QString &value);
+    void setInquiryNumber(int value);
+
+
+    Customer getCustomer() const;
+    void setCustomer(const Customer &value);
 
 signals:
 
@@ -55,16 +82,20 @@ protected:
     int number;
     QString numberWithYear;
     QString date;
-    double exchangeRate;
     bool pln;
+    QString inquiryDate;
+    QString inquiryDateSql() const;
+    int inquiryNumber;
+    QString inquiryNumberSql() const;
 
     MerchandiseListModel* merchandiseList;
-    Client* client;
+    Customer customer;
 
     TermItem shippingTerm;
     TermItem shipmentTime;
     TermItem offerTerm;
     TermItem paymentTerm;
+    QString remarks;
 };
 
 #endif // OFFER_H

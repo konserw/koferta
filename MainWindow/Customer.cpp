@@ -16,30 +16,35 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#include "Client.h"
+#include "Customer.h"
 
-Client::Client(const QString &ShortName, const QString &FullName, const QString &Title, const QString &Name, const QString &Surname, const QString &Address)
-    : shortName(ShortName), fullName(FullName), title(Title), name(Name), surname(Surname), address(Address)
+Customer::Customer()
+{
+    id = -1;
+}
+
+Customer::Customer(const QString &ShortName, const QString &FullName, const QString &Title, const QString &Name, const QString &Surname, const QString &Address, int id)
+    : id(id), shortName(ShortName), fullName(FullName), title(Title), name(Name), surname(Surname), address(Address)
 {
 
 }
 
-QString Client::concatedName() const
+QString Customer::concatedName() const
 {
     return QString("%1 %2 %3").arg(title).arg(name).arg(surname);
 }
 
-QString Client::getAddress() const
+QString Customer::getAddress() const
 {
     return address;
 }
 
-QString Client::getShortName() const
+QString Customer::getShortName() const
 {
     return shortName;
 }
 
-QString Client::getFullName() const
+QString Customer::getFullName() const
 {
     return fullName;
 }

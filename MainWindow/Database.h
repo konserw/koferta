@@ -33,7 +33,8 @@ class LoadDialogMerchandiseListModel;
 class QProcess;
 class QTcpSocket;
 class QProgressDialog;
-class Client;
+class Customer;
+class Offer;
 
 class Database : public QObject
 {
@@ -79,7 +80,8 @@ public slots:
     void tunnelCancel();
     void openDatabaseConnection();
     void failedTunnel(QProcess::ProcessError error);
-    bool save(const Client& client);
+    bool save(const Customer& client) const;
+    bool save(const Offer& offer) const;
 
     void socketConnected();
 signals:
@@ -113,12 +115,9 @@ protected:
     QTcpSocket* m_socket;
     QProcess *tunnelProcess;
     QSqlDatabase* m_database;
-    bool executeQuery(const QString &queryText);
+    bool executeQuery(const QString &queryText) const;
 };
 
-void insert_klient(const QString &skrot, const QString &full, const QString &tytul, const QString &imie, const QString &nazwisko, const QString &adres);
-void insert_zapisane(const QString& nr_oferty, int id_klienta, const QString& data, int uid, const QString& zapytanie_data, const QString& zapytanie_nr, int dostawa, int termin, int platnosc, int oferta, const QString& uwagi);
-void insert_combo(const QString& typ, const QString& sh, const QString& lo);
 
 #define EXEC_SILENT(s) \
 do{ \

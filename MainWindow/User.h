@@ -16,54 +16,48 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
+#include <QString>
+
 #ifndef USER_H
 #define USER_H
 
-class QString;
-class QSqlDatabase;
 /*!
  * \brief Klasa przechowująca dane użytkownika
  */
 class User
 {
+    friend class Database;
+
 public:
-    explicit User();
-    ///konstruktor parametryczny inicjujący wszystkie pola
-    User(int uid, QString name, QString phone, QString mail, QString address, bool male, int nrOferty);
-    ///konstruktor kopiujący
-    User(const User& u);
-
+    User() = delete;
+    User(const User&) = delete;
+    void operator=(const User&) = delete;
     ~User();
+    static User* current();
+    static void dropUser();
 
-    ///zwraca imię i nazwisko użytkownika - widoczne przy logowaniu i w tworzoych dokumentach
-    QString name()const;
-    ///returns true if user has phone number
-    bool hasPhone() const;
-    ///zwraca nr telefonu
-    QString phone()const;
-    ///zwraca adres email użytkownika
-    QString mail()const;
-    ///zwraca adres bióra użytkownika w formacie htm
-    QString address()const;
-    ///zwraca: true - mężczyzna, false - kobieta
-    bool male()const;
-    ///zwraca nr. identyfikacyjny użytkownika, na potrzeby zapisu
-    int uid()const;
-    ///zwraca aktualny (pierwszy nieużyty) numer oferty
-    int nrOferty()const;
-    ///inkrementuje nr oferty
-    bool nrOfertyInkrement();
-    bool isValid() const;
+    bool incrementOfferNumber();
+    QString getName() const;
+    QString getMail() const;
+    QString getAddress() const;
+    bool getMale() const;
+    int getUid() const;
+    int getCurrentOfferNumber() const;
+    QString getPhone() const;
+    QString getDbName() const;
 
-private:
-    QString* _name;
-    QString* m_phone;
-    QString* _mail;
-    QString* _adress;
-    bool _male;
-    int _uid;
-    int _nrOferty;
-    bool _valid;
+protected:
+    QString dbName;
+    QString name;
+    QString phone;
+    QString mail;
+    QString address;
+    bool male;
+    int uid;
+    int currentOfferNumber;
+
+    User(int Uid, const QString& Name, const QString& Phone, const QString& Mail, const QString& Address, bool Male, int CurrentOfferNumber, const QString& DbName);
+    static User* instance;
 };
 
 
