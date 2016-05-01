@@ -25,7 +25,10 @@
 #include <QPrinter>
 #include <QTextDocument>
 
-Offer::Offer(QObject *parent) : QObject(parent)
+
+Offer::Offer(QObject *parent) :
+    QObject(parent),
+    printOptions(Offer::printDiscount | Offer::printNumber | Offer::printPrice | Offer::printRawPrice | Offer::printSpecs)
 {
     inquiryNumber = -1;
 }
@@ -104,6 +107,17 @@ QString Offer::inquiryDateSql() const
 void Offer::setInquiryNumber(int value)
 {
     inquiryNumber = value;
+}
+
+QString Offer::InquiryText() const
+{
+    QString s = "W odpowiedzi na zapytanie";
+    if(inquiryNumber > 0)
+        s += QString(" numer %1").arg(inquiryNumber);
+    if(!inquiryDate.isEmpty())
+        s += QString(" z dnia %1").arg(inquiryDate);
+    s += " przedstawiamy ofertę na dostawę następujących produktów:";
+    return s;
 }
 
 QString Offer::getDate() const
@@ -241,8 +255,8 @@ QTextDocument *Offer::document() const
 /*11*/.arg(phone)
 /*12*/.arg(dd-50)
 /*13*/.arg(User::current()->getAddress())
-/*14*/.arg(/*TODO Zapytanie*/"ZAPYTANIE")
-/*15*/
+/*14*/.arg(InquiryText())
+/*15*/.arg(merchandiseList->print(w, printOptions))
  //tabela
     *sDoc += m_towarModel->print(w,
                                  ui->kol_ilosc->isChecked(),

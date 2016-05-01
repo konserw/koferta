@@ -19,6 +19,7 @@
 #ifndef TOWARMODEL_H
 #define TOWARMODEL_H
 
+#include "Offer.h"
 #include <QAbstractTableModel>
 #include <QHash>
 #include <QList>
@@ -65,7 +66,7 @@ public:
     bool isIlosc(const QModelIndex & i) const;
 
     QHash<int, double> hash() const;
-    QString print(const int w, bool ilosc, bool cenaKat, bool cenaPln, bool rabat, bool cena, bool specyfikacja) const;
+    QString print(const int w, Offer::PrintOptions printOptions) const;
 
 public slots:
     void clear();

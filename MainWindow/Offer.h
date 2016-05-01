@@ -31,12 +31,25 @@ class QPrinter;
 class Customer;
 class Database;
 
+
 class Offer : public QObject
 {
     Q_OBJECT
     friend class Database;
 
 public:
+    enum PrintOption : uint8_t
+    {
+        noPrint			= 0,
+        printSpecs		= 1 << 0,
+        printRawPrice	= 1 << 1,
+        printRawPricePLN = 1 << 2,
+        printDiscount  	= 1 << 3,
+        printPrice    	= 1 << 4,
+        printNumber 	= 1 << 5
+    };
+    Q_DECLARE_FLAGS(PrintOptions, PrintOption)
+
     explicit Offer(QObject *parent = 0);
 
     void setGlobalDiscount(double discount);
@@ -65,7 +78,7 @@ public:
 
     void setInquiryDate(const QString &value);
     void setInquiryNumber(int value);
-
+    QString InquiryText() const;
 
     Customer getCustomer() const;
     void setCustomer(const Customer &value);
@@ -87,6 +100,7 @@ protected:
     QString inquiryDateSql() const;
     int inquiryNumber;
     QString inquiryNumberSql() const;
+    PrintOptions printOptions;
 
     MerchandiseListModel* merchandiseList;
     Customer customer;
@@ -97,5 +111,8 @@ protected:
     TermItem paymentTerm;
     QString remarks;
 };
+
+//Code for flags
+Q_DECLARE_OPERATORS_FOR_FLAGS(Offer::PrintOptions)
 
 #endif // OFFER_H

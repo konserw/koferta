@@ -367,24 +367,10 @@ void MainWindow::setInquiryDate(const QDate &d)
     ui->checkBox_zapytanieData->setChecked(true);
     currentOffer->setInquiryDate(date);
 }
-//TODO
+
 void MainWindow::zapytanieRef()
 {
-    QString s;
-    s = "W odpowiedzi na zapytanie";
-    if(ui->checkBox_zapytanieNr->isChecked())
-    {
-        s += " numer ";
-        s += ui->lineEdit_zapytanieNr->text();
-    }
-    if(ui->checkBox_zapytanieData->isChecked())
-    {
-        s += " z dnia ";
-        s += ui->lineEdit_zapytanieData->text();
-    }
-
-    s += " przedstawiamy ofertę na dostawę następujących produktów:";
-    ui->plainTextEdit_zapytanie->setPlainText(s);
+    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->InquiryText());
 }
 //TODO
 void MainWindow::checkNr(bool ch)

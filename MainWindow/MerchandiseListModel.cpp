@@ -19,6 +19,7 @@
 #include "MerchandiseListModel.h"
 #include "Merchandise.h"
 #include "Database.h"
+
 #include <QDebug>
 #include <QSqlTableModel>
 #include <QtSql>
@@ -446,7 +447,7 @@ QHash<int, double> MerchandiseListModel::hash() const
     return hash;
 }
 
-QString MerchandiseListModel::print(const int w, bool ilosc, bool cenaKat, bool cenaPln, bool rabat, bool cena, bool specyfikacja) const
+QString MerchandiseListModel::print(const int w, Offer::PrintOptions printOptions) const
 {
     QString waluta;
     if(pln()) waluta = "zł";
@@ -459,27 +460,27 @@ QString MerchandiseListModel::print(const int w, bool ilosc, bool cenaKat, bool 
     int columnWidthMerchandise = w - columnWidthOrderNumber - columnWidthPrice;
     int cols = 3;
 
-    if(cenaKat)
+    if(printOptions.testFlag(Offer::printRawPrice))//cenaKat)
     {
         columnWidthMerchandise -= columnWidthPrice;
         cols++;
     }
-    if(cenaPln)
+    if(printOptions.testFlag(Offer::printRawPricePLN))//cenaPln)
     {
         columnWidthMerchandise -= columnWidthPrice;
         cols++;
     }
-    if(rabat)
+    if(printOptions.testFlag(Offer::printDiscount))//rabat)
     {
         columnWidthMerchandise -= columnWidthNarrow;
         cols++;
     }
-    if(cena)
+    if(printOptions.testFlag(Offer::printPrice))//cena)
     {
         columnWidthMerchandise -= columnWidthPrice;
         cols++;
     }
-    if(ilosc)
+    if(printOptions.testFlag(Offer::printNumber))//ilosc)
     {
         columnWidthMerchandise -= columnWidthNarrow;
         cols++;
@@ -492,15 +493,15 @@ QString MerchandiseListModel::print(const int w, bool ilosc, bool cenaKat, bool 
             "\t\t<td width=%1><b>%2</b></td>\n").arg(columnWidthOrderNumber).arg("Lp.");
 
     doc += QString("\t\t<td width=%1><b>%2</b></td>\n").arg(columnWidthMerchandise).arg("Towar");
-    if(cenaKat)
+    if(printOptions.testFlag(Offer::printRawPrice))
         doc += QString("\t\t<td width=%1 align = right><b>%2</b></td>\n").arg(columnWidthPrice).arg("Cena kat. €");
-    if(cenaPln)
+    if(printOptions.testFlag(Offer::printRawPricePLN))
         doc += QString("\t\t<td width=%1 align = right><b>%2</b></td>\n").arg(columnWidthPrice).arg("Cena kat. zł");
-    if(rabat)
+    if(printOptions.testFlag(Offer::printDiscount))
         doc += QString("\t\t<td width=%1 align = right><b>%2</b></td>\n").arg(columnWidthNarrow).arg("Rabat");
-    if(cena)
+    if(printOptions.testFlag(Offer::printPrice))
         doc += QString("\t\t<td width=%1 align = right><b>%3 %2</b></td>\n").arg(columnWidthPrice).arg(waluta).arg("Cena");
-    if(ilosc)
+    if(printOptions.testFlag(Offer::printNumber))
         doc += QString("\t\t<td width=%1 align = right><b>%2</b></td>\n").arg(columnWidthNarrow).arg("Ilość");
     doc += QString("\t\t<td width=%1 align = right><b>%3 %2</b></td>\n").arg(columnWidthPrice).arg(waluta).arg("Wartość");
     doc += "\t</tr></thead>\n";
@@ -526,19 +527,19 @@ QString MerchandiseListModel::print(const int w, bool ilosc, bool cenaKat, bool 
         doc += QString("\t<tr class=\"%1\">\n").arg(style);
         doc += QString("\t\t<td>%1</td>\n").arg(i+1);
         doc += QString("\t\t<td>%1</td>\n").arg(item->kod());
-        if(cenaKat)
+        if(printOptions.testFlag(Offer::printRawPrice))
             doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cenaKat(), 0, 'f', 2);
-        if(cenaPln)
+        if(printOptions.testFlag(Offer::printRawPricePLN))
             doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cenaKat(m_kurs), 0, 'f', 2);
-        if(rabat)
+        if(printOptions.testFlag(Offer::printDiscount))
             doc += QString("\t\t<td align = right>%1%</td>\n").arg(item->rabat());
-        if(cena)
+        if(printOptions.testFlag(Offer::printPrice))
             doc += QString("\t\t<td align = right>%1</td>\n").arg(dCena, 0, 'f', 2);
-        if(ilosc)
+        if(printOptions.testFlag(Offer::printNumber))
             doc += QString("\t\t<td align = right>%1 %2</td>\n").arg(item->ilosc(), 0, 'f', 0).arg(item->unit());
         doc += QString("\t\t<td align = right>%1</td>\n").arg(wartosc, 0, 'f', 2);
         doc += "\t</tr>\n";
-        if(specyfikacja)
+        if(printOptions.testFlag(Offer::printSpecs))
         {
             doc += QString("\t<tr class=\"%1 spec\">\n").arg(style);
             doc += "\t\t<td></td>\n";
