@@ -24,6 +24,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QDate>
 
 class MerchandiseListModel;
 class QTextDocument;
@@ -54,6 +55,9 @@ public:
 
     void setGlobalDiscount(double discount);
     void removeMerchandiseRow(int row);
+    void assignNewNumber();
+    int merchandiseListColumnCount() const;
+    bool save() const;
 
     TermItem getShippingTerm() const;
     TermItem getShipmentTime() const;
@@ -70,18 +74,22 @@ public:
     bool getPln() const;
     void setPln(bool value);
 
-    QString getDate() const;
-    void setDate(const QString &value);
-
     QString getRemarks() const;
     void setRemarks(const QString &value);
 
-    void setInquiryDate(const QString &value);
-    void setInquiryNumber(int value);
-    QString InquiryText() const;
-
     Customer getCustomer() const;
     void setCustomer(const Customer &value);
+
+    QString inquiryNumberSql() const;
+    QString getInquiryNumber() const;
+    void setInquiryNumber(const QString &value);
+    QString inquiryDateSql() const;
+    void setInquiryDate(const QString &value);
+    QString InquiryText() const;
+
+    QString getNumberWithYear() const;
+    int getNumber() const;
+    QDate getDate() const;
 
 signals:
 
@@ -94,12 +102,10 @@ public slots:
 protected:
     int number;
     QString numberWithYear;
-    QString date;
+    QDate date;
     bool pln;
     QString inquiryDate;
-    QString inquiryDateSql() const;
-    int inquiryNumber;
-    QString inquiryNumberSql() const;
+    QString inquiryNumber;
     PrintOptions printOptions;
 
     MerchandiseListModel* merchandiseList;

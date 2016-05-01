@@ -28,9 +28,10 @@
 
 Offer::Offer(QObject *parent) :
     QObject(parent),
-    printOptions(Offer::printDiscount | Offer::printNumber | Offer::printPrice | Offer::printRawPrice | Offer::printSpecs)
+    printOptions(Offer::printDiscount | Offer::printNumber | Offer::printPrice | Offer::printRawPrice | Offer::printSpecs),
+    remarks("Termin realizacji jest określany na podstawie stanu z dnia sporządzenia oferty i może ulec zmianie.")
 {
-    inquiryNumber = -1;
+    date = QDate::currentDate();
 }
 
 void Offer::setGlobalDiscount(double discount)
@@ -41,6 +42,23 @@ void Offer::setGlobalDiscount(double discount)
 void Offer::removeMerchandiseRow(int row)
 {
     merchandiseList->removeRow(row);
+}
+
+void Offer::assignNewNumber()
+{
+    date = QDate::currentDate();
+    number = User::current()->getCurrentOfferNumber();
+    numberWithYear = User::current()->getCurrentOfferNumberWithYear();
+}
+
+int Offer::merchandiseListColumnCount() const
+{
+    return merchandiseList->columnCount();
+}
+
+bool Offer::save() const
+{
+    Database::instance()->save(*this);
 }
 
 void Offer::setOfferTerm(const TermItem &term)
@@ -63,6 +81,21 @@ void Offer::setShipmentTime(const TermItem &term)
     shipmentTime = term;
 }
 
+QDate Offer::getDate() const
+{
+    return date;
+}
+
+int Offer::getNumber() const
+{
+    return number;
+}
+
+QString Offer::getNumberWithYear() const
+{
+    return numberWithYear;
+}
+
 void Offer::setInquiryDate(const QString &value)
 {
     inquiryDate = value;
@@ -70,7 +103,7 @@ void Offer::setInquiryDate(const QString &value)
 
 QString Offer::inquiryNumberSql() const
 {
-    if(inquiryNumber <= 0)
+    if(inquiryNumber.isEmpty() || inquiryNumber.isNull())
         return QString("NULL");
     else
         return QString("'%1'").arg(inquiryNumber);
@@ -101,10 +134,15 @@ QString Offer::inquiryDateSql() const
     if(inquiryDate.isNull() || inquiryDate.isEmpty())
         return QString("NULL");
     else
-        return inquiryDate;
+        return QString("'%1'").arg(inquiryDate);
 }
 
-void Offer::setInquiryNumber(int value)
+QString Offer::getInquiryNumber() const
+{
+    return inquiryNumber;
+}
+
+void Offer::setInquiryNumber(const QString &value)
 {
     inquiryNumber = value;
 }
@@ -118,16 +156,6 @@ QString Offer::InquiryText() const
         s += QString(" z dnia %1").arg(inquiryDate);
     s += " przedstawiamy ofertę na dostawę następujących produktów:";
     return s;
-}
-
-QString Offer::getDate() const
-{
-    return date;
-}
-
-void Offer::setDate(const QString &value)
-{
-    date = value;
 }
 
 bool Offer::getPln() const
@@ -177,6 +205,8 @@ QTextDocument *Offer::document() const
     QString phone = User::current()->getPhone();
     if(!phone.isEmpty())
         phone = QString("\t\t\tTel.: %3 \n").arg(phone);
+    QString escapedRemarks = remarks;
+    escapedRemarks.replace("\n", "<br />\n");
 
     QString html = QString(
                 "<html>\n"
@@ -192,12 +222,12 @@ QTextDocument *Offer::document() const
                 "</head>\n"
                 "<body>\n"
                 "<table >\n"
-    /*NAGŁÓWEK*/
+      /*NAGŁÓWEK*/
                 "<thead>\n"
                 "<tr><td>\n"
                 "\t<table>\n"
                 "\t<tr>\n"
-   //logo
+      //logo
                 "\t\t<td colspan=2 align=left valign=bottom>\n"
                 "\t\t\t<img src=:/aliaxis height=50 ><br>\n"
                 "\t\t</td>\n"
@@ -205,7 +235,7 @@ QTextDocument *Offer::document() const
                 "\t\t\t<img src=:/fip height=50 ><br>\n"
                 "\t\t</td>\n"
                 "\t</tr>\n"
-    //adresy itp
+      //adresy itp
                 "\t<tr>\n"
                 "\t\t<td valign=top width=%1>\n"
                 "\t\t\tOferta nr: <b> %2 </b><br />\n"
@@ -240,11 +270,53 @@ QTextDocument *Offer::document() const
                 "\t%14\n"
                 "</td></tr>\n"
                 "<tr><td>\n"
+      //tabela
                 "%15"
+                "</td></tr>\n"
+                "<tr><td>\n"
+                "\tPodane ceny nie zawierają podatku VAT<br>\n"
+                "</td></tr>\n"
+      //warunki
+                "<tr><td>\n"
+                "\t<table cellspacing=3>\n"
+                "\t<tr>\n"
+                "\t\t<td width=%16>"
+                "Warunki dostawy:</td>\n"
+                "\t\t<td width=%17>%18</td>\n\t</tr>\n"
+                "\t<tr>\n"
+                "\t\t<td>Termin dostawy:</td>\n"
+                "\t\t<td>%19</td>\n"
+                "\t</tr>\n"
+                "\t<tr>\n"
+                "\t\t<td>Warunki plałatności:</td>\n"
+                "\t\t<td>%20</td>\n"
+                "\t</tr>\n"
+                "\t<tr>\n"
+                "\t\t<td>Uwagi:</td>\n"
+                "\t\t<td>%21</td>\n"
+                "\t</tr>\n"
+                "\t</table>\n"
+                "</td></tr>\n"
+                "<tr><td>\n"
+                "\t<p>"
+                "\n\t%22<br>\n"
+                "<b>Zamówienia prosimy kierować na adres:</b> order@aliaxis-ui.pl z kopią do autora oferty.<br />\n"
+                "<br />\n"
+                "\tŁączymy pozdrowienia.\n"
+                "\t</p>"
+                "\t<p align=center style=\"margin-left: 500\">\n"
+                "\t\tOfertę przygotował%23<br /><br /><br />\n"
+                "\t\t%24\n"
+                "\t</p>\n"
+                "</td></tr>\n"
+                "</tbody>\n"
+                "</table>\n"
+                "</body>\n"
+                "</html>\n"
                 )
 /* 1*/.arg(dd)
 /* 2*/.arg(numberWithYear)
-/* 3*/.arg(date)
+/* 3*/.arg(date.toString("dd.MM.yyyy"))
 /* 4*/.arg(customer.getFullName())
 /* 5*/.arg(customer.getAddress())
 /* 6*/.arg(customer.concatedName())
@@ -257,78 +329,15 @@ QTextDocument *Offer::document() const
 /*13*/.arg(User::current()->getAddress())
 /*14*/.arg(InquiryText())
 /*15*/.arg(merchandiseList->print(w, printOptions))
- //tabela
-    *sDoc += m_towarModel->print(w,
-                                 ui->kol_ilosc->isChecked(),
-                                 ui->kol_cenaKat->isChecked(),
-                                 ui->kol_cenaPln->isChecked(),
-                                 ui->kol_rabat->isChecked(),
-                                 ui->kol_cena->isChecked(),
-                                 ui->kol_specyfikacja->isChecked()
-                                 );
-     *sDoc +=
-            "</td></tr>\n"
-            "<tr><td>\n"
-            "\tPodane ceny nie zawierają podatku VAT<br>\n"
-            "</td></tr>\n"
-//warunki
-            "<tr><td>\n"
-            "\t<table cellspacing=3>\n"
-            "\t<tr>\n"
-            "\t\t<td width=";
-    *sDoc += QString::number(dw);
-    *sDoc += ">"
-             "Warunki dostawy:</td>\n"
-             "\t\t<td width=";
-    *sDoc += QString::number(w-dw-3);
-    *sDoc += ">";
-    *sDoc += ui->plainTextEdit_dostawa->toPlainText();
-    *sDoc += "</td>\n\t</tr>\n"
-             "\t<tr>\n"
-             "\t\t<td>Termin dostawy:</td>\n"
-             "\t\t<td>";
-    *sDoc += ui->plainTextEdit_termin->toPlainText();
-    *sDoc += "</td>\n"
-             "\t</tr>\n"
-             "\t<tr>\n"
-             "\t\t<td>Warunki plałatności:</td>\n"
-             "\t\t<td>";
-    *sDoc += ui->plainTextEdit_platnosc->toPlainText();
-    *sDoc += "</td>\n"
-             "\t</tr>\n";
-    QString other = ui->plainTextEdit_uwagi->toPlainText();
-    if(!other.isEmpty())
-    {
-        *sDoc += QString(
-             "\t<tr>\n"
-             "\t\t<td>Uwagi:</td>\n"
-             "\t\t<td>%1</td>\n"
-             "\t</tr>\n"
-             ).arg(other.replace("\n", "<br />\n"));
-    }
-    *sDoc += "\t</table>\n"
-             "</td></tr>\n"
-             "<tr><td>\n"
-             "\t<p>"
-             "\n\t";
-    *sDoc += ui->plainTextEdit_oferta->toPlainText();
-    *sDoc += "<br>\n"
-             "\tŁączymy pozdrowienia.\n"
-             "\t</p>"
-             "\t<p align=center style=\"margin-left: 500\">\n"
-             "\t\tOfertę przygotował";
-    if(!m_currentUser->male()) *sDoc += "a";
-    *sDoc += "<br /><br /><br />\n"
-            "\t\t";
-    *sDoc += m_currentUser->name();
-    *sDoc += "\n"
-            "\t</p>\n"
-            "</td></tr>\n"
-            "</tbody>\n"
-            "</table>\n"
-            "</body>\n"
-            "</html>\n";
-
+/*16*/.arg(dw)
+/*17*/.arg(w-dw-3)
+/*18*/.arg(shippingTerm.longDesc())
+/*19*/.arg(shipmentTime.longDesc())
+/*20*/.arg(paymentTerm.longDesc())
+/*21*/.arg(escapedRemarks)
+/*22*/.arg(offerTerm.longDesc())
+/*23*/.arg(User::current()->suffix())
+/*24*/.arg(User::current()->getName());
 
     QTextDocument* doc = new QTextDocument();
     doc->setHtml(html);

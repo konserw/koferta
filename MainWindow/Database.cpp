@@ -33,6 +33,7 @@
 #include "Database.h"
 #include "LoadDialogMerchandiseListModelMySQL.h"
 #include "Offer.h"
+#include "MerchandiseListModel.h"
 
 Database* Database::m_instance = nullptr;
 
@@ -152,10 +153,26 @@ void Database::failedTunnel(QProcess::ProcessError error) //nie dziala
 bool Database::save(const Offer &offer) const
 {
     qDebug().noquote() << "Saving offer number" << offer.numberWithYear;
-    QString queryText = QString("DELETE FROM zapisane WHERE nr_oferty = '%1'").arg(offer.numberWithYear);
+    QString queryText;
     QSqlQuery query;
-    QSqlDatabase::database().transaction();
 
+    if(QSqlDatabase::database().transaction() == false)
+    {
+        qCritical().nospace().noquote()
+                << "SQL transaction has failed!\n"
+                << "\t* Error text: " <<  QSqlDatabase::database().lastError().text();
+        return false;
+    }
+
+    if(offer.number == User::current()->currentOfferNumber)
+    {//fresh offer -> increment last offer number for user
+        if(User::current()->incrementOfferNumber() == false) //-> paste here?
+            return false;
+    }
+    else
+    {//old offer -> delete previous version from db
+        queryTest = QString("DELETE FROM zapisane WHERE nr_oferty = '%1'").arg(offer.numberWithYear);
+    }
     if(query.exec(queryText) == false)
     {
         QSqlDatabase::database().rollback();
@@ -166,6 +183,7 @@ bool Database::save(const Offer &offer) const
         return false;
     }
 
+    //save offer data itself
     QString escapedRemarks = offer.remarks;
     escapedRemarks.replace("\'", "\\\'");
     queryText = QString("INSERT INTO zapisane "
@@ -173,7 +191,7 @@ bool Database::save(const Offer &offer) const
                         "VALUES ('%1', %2, '%3', %4, %5, %6, %7, %8, '%9', %10, %11)")
             .arg(offer.numberWithYear)
             .arg(offer.customer.id)
-            .arg(offer.date)
+            .arg(offer.date.toString("dd.MM.yyyy"))
             .arg(User::current()->getUid())
             .arg(offer.shippingTerm.id())
             .arg(offer.shipmentTime.id())
@@ -192,7 +210,20 @@ bool Database::save(const Offer &offer) const
         return false;
     }
 
-    QSqlDatabase::database().commit();
+    //save merchandise
+    offer.merchandiseList
+
+
+    if(QSqlDatabase::database().commit() == false)
+    {
+        QSqlDatabase::database().rollback();
+        qCritical().nospace().noquote()
+                << "SQL query has failed!\n"
+                << "\t* Query: " << queryText << "\n"
+                << "\t* Error text: " <<  query.lastError().text();
+        return false;
+    }
+
     return true;
 }
 

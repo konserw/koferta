@@ -30,6 +30,6 @@ GIVEN("^I just turned on the application$") {
 
 THEN("^the offer table should be disabled$") {
     cucumber::ScenarioScope<MainWindow> window;
-    QCOMPARE(window->isOfferTableEnabled(), false);
+    QCOMPARE(window->isUiInitialized(), false);
     QTest::qWait(millisecondsToWait());
 }

@@ -57,8 +57,6 @@
 #include "MerchandiseListModel.h"
 #include "MerchandiseListView.h"
 
-
-
 MainWindow::MainWindow():
     QMainWindow(nullptr),
     ui(new Ui::MainWindow)
@@ -137,7 +135,7 @@ MainWindow::MainWindow():
     connect(ui->actionDodaj_warunki_dostawy, &QAction::triggered, this, &MainWindow::addShippingTerms);
     connect(ui->actionDodaj_warunki_platnosci, &QAction::triggered, this, &MainWindow::addPaymentTerms);
 
-    connect(ui->commandLinkButton_klient, &QCommandLinkButton::clicked, this, &MainWindow::selectClient);
+    connect(ui->commandLinkButton_klient, &QCommandLinkButton::clicked, this, &MainWindow::selectCustomer);
     connect(ui->commandLinkButton_offerTerms, &QCommandLinkButton::clicked, this, &MainWindow::chooseOfferTerms);
     connect(ui->commandLinkButton_paymentTerms, &QCommandLinkButton::clicked, this, &MainWindow::choosePaymentTerms);
     connect(ui->commandLinkButton_shipingTerms, &QCommandLinkButton::clicked, this, &MainWindow::chooseShippingTerms);
@@ -145,8 +143,8 @@ MainWindow::MainWindow():
 
     connect(m_calendarWidget, SIGNAL(clicked(QDate)), this, SLOT(setInquiryDate(QDate)));
     connect(ui->pushButton_zapytanieData, SIGNAL(clicked()), m_calendarWidget, SLOT(show()));
-    connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), this, SLOT(zapytanieRef()));
-    connect(ui->lineEdit_zapytanieNr, SIGNAL(textChanged(QString)), this, SLOT(zapytanieRef()));
+    connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), this, SLOT(setInquiryDate(QString)));
+    connect(ui->lineEdit_zapytanieNr, SIGNAL(textChanged(QString)), this, SLOT(setInquiryNumber(QString)));
     connect(ui->checkBox_zapytanieData, SIGNAL(toggled(bool)), this, SLOT(checkData(bool)));
     connect(ui->checkBox_zapytanieNr, SIGNAL(toggled(bool)), this, SLOT(checkNr(bool)));
 
@@ -171,8 +169,15 @@ MainWindow::~MainWindow()
     qDebug() << "destruktor mainwindow - koniec";
 }
 
-bool MainWindow::isOfferTableEnabled()
-{ return ui->tab->isEnabled(); }
+bool MainWindow::isUiInitialized() const
+{
+    return (ui->tab->isEnabled() &&
+            ui->tab_2->isEnabled() &&
+            ui->menuExport->isEnabled() &&
+            ui->actionSave->isEnabled() &&
+            ui->actionNR->isEnabled()
+            );
+}
 
 void MainWindow::setMenusEnabled(bool en)
 {
@@ -338,12 +343,12 @@ void MainWindow::changeSettings()
     dialog.exec();
 }
 
-void MainWindow::setTitle(QString* nr)
+void MainWindow::setTitle(const QString& nr)
 {
     QString s;
-    if(nr != NULL)
-        s = QString("| oferta nr: %1").arg(*nr);
-    this->setWindowTitle(QString("kOferta v. %1 %2").arg(VERSION).arg(s));
+    if(!(nr.isNull() || nr.isEmpty()))
+        s = QString("| oferta nr: %1").arg(nr);
+    setWindowTitle(QString("kOferta v. %1 %2").arg(VERSION).arg(s));
 }
 
 void MainWindow::globalDiscount()
@@ -359,34 +364,39 @@ void MainWindow::removeRow()
     currentOffer->removeMerchandiseRow(ui->tableView->currentIndex().row());
 }
 
-void MainWindow::setInquiryDate(const QDate &d)
+void MainWindow::setInquiryDate(const QDate &date)
 {
-    QString date = d.toString("dd.MM.yyyy");
-    ui->lineEdit_zapytanieData->setText(date);
     m_calendarWidget->close();
-    ui->checkBox_zapytanieData->setChecked(true);
-    currentOffer->setInquiryDate(date);
+    setInquiryDate(date.toString("dd.MM.yyyy"));
 }
 
-void MainWindow::zapytanieRef()
+void MainWindow::setInquiryDate(const QString &date)
 {
-    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->InquiryText());
+    ui->lineEdit_zapytanieData->setText(date);
+    currentOffer->setInquiryDate(date);
+    ui->checkBox_zapytanieData->setChecked(true);
 }
-//TODO
+
 void MainWindow::checkNr(bool ch)
 {
     ui->lineEdit_zapytanieNr->setEnabled(ch);
     if(!ch)
+    {
         ui->lineEdit_zapytanieNr->clear();
-    this->zapytanieRef();
+        currentOffer->setInquiryNumber(QString::null);
+    }
+    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->InquiryText());
 }
-//TODO
+
 void MainWindow::checkData(bool ch)
 {
     ui->lineEdit_zapytanieData->setEnabled(ch);
     if(!ch)
+    {
         ui->lineEdit_zapytanieData->clear();
-    this->zapytanieRef();
+        currentOffer->setInquiryDate(QString::null);
+    }
+    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->InquiryText());
 }
 
 void MainWindow::changeCurrency(bool pln)
@@ -399,7 +409,7 @@ void MainWindow::changeCurrency(bool pln)
     currentOffer->setExchangeRate(pln ? ui->kursSpinBox->value() : -1);
 }
 
-void MainWindow::selectClient()
+void MainWindow::selectCustomer()
 {
     CustomerSelection* pop = new CustomerSelection(this);
     connect(pop, SIGNAL(selectionChanged(Customer)), this, SLOT(setCustomer(Customer)));
@@ -453,35 +463,43 @@ void MainWindow::chooseShipmentTime()
         setShipmentTime(dlg->choosenTerm());
     delete dlg;
 }
-//////////////////////////////////////////////////////////////////////////////
+
+void MainWindow::setInquiryNumber(const QString &number)
+{
+    currentOffer->setInquiryNumber(number);
+    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->InquiryText());
+}
+
 void MainWindow::newOfferNumber()
 {
-    QDate d = QDate::currentDate();
-    *m_date = d.toString("dd.MM.yyyy");
-    m_calendarWidget->setSelectedDate(d);
-
-    *m_offerNumber = QString::number(m_currentUser->nrOferty());
-    m_offerNumber->append("/");
-    m_offerNumber->append(d.toString("yyyy"));
-
-    this->setTitle(m_offerNumber);
+    currentOffer->assignNewNumber();
+    m_calendarWidget->setSelectedDate(currentOffer->getDate());
+    this->setTitle(currentOffer->getNumberWithYear());
 }
 
 void MainWindow::newOffer()
 {
-    //czyszczenie starych danych
-    setCustomer(QSqlRecord());
+    if(currentOffer)
+    {
+        QMessageBox::StandardButton reply = QMessageBox::question(this, tr("Zapisać ofertę?"), tr("Zapisać ofertę przed zamknięciem?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel );
+        if(reply == QMessageBox::Cancel)
+            return;
+        if(reply == QMessageBox::Yes)
+            saveOffer();
 
-    this->newOfferNumber();
+        delete currentOffer;
+    }
 
-    if(ui->tab->isEnabled()==false)
-        this->uiInit();
-    else
-        m_towarModel->clear();
+    currentOffer = new Offer(this);
+    newOfferNumber();
+    this->uiInit();
 }
 
 void MainWindow::uiInit()
 {
+    if(isUiInitialized())
+        return;
+
     //włączenie zablokowanych części
     ui->tab->setEnabled(true);
     ui->tab_2->setEnabled(true);
@@ -491,56 +509,19 @@ void MainWindow::uiInit()
     ui->actionNR->setEnabled(true);
 
     //inicjacja tabelki
-  //  m_towarModel->clear(); //chyba niepotrzebne
-    for(int i=0; i < m_towarModel->columnCount(); i++)
+    for(int i=0; i < currentOffer->merchandiseListColumnCount(); i++)
         ui->tableView->setColumnWidth(i, 85);
     ui->tableView->setColumnWidth(1, 410);
     ui->tableView->setColumnWidth(0, 99);
-  //  ui->tableView->setSortingEnabled(true);
 }
 
 void MainWindow::saveOffer()
 {
-    if(m_client == nullptr)
+    if(currentOffer->save() == false)
     {
-        QMessageBox::warning(this, tr("Brak danych"), tr("Aby zapisanie oferty w bazie danych było możliwe należy wybrać klienta."));
+        QMessageBox::critical(this, tr("Błąd zapisywania"), tr("Wystąpił bład w trakcie zapisywania oferty.\nProszę spróbowac później, bądź skontaktować się z Administratorem."));
         return;
     }
-
-    int anr = m_offerNumber->split("/").first().toInt();
-
-    if(anr == m_currentUser->nrOferty())
-        if(m_currentUser->incrementOfferNumber() == false)
-        {
-            QMessageBox::critical(this, tr("Błąd zapisywania"), tr("Wystąpił bład w trakcie zapisywania oferty.\nProszę spróbowac później, bądź skontaktować się z Administratorem."));
-            return;
-        }
-
-    QString zData;
-    if(ui->checkBox_zapytanieData->isChecked())
-        zData = ui->lineEdit_zapytanieData->text();
-    else zData = QString::null;
-
-    QString zNumer;
-    if(ui->checkBox_zapytanieNr->isChecked())
-        zNumer =  ui->lineEdit_zapytanieNr->text();
-    else
-        zNumer = QString::null;
-
-    insert_zapisane(*m_offerNumber,
-                    m_client->value("id").toInt(),
-                    *m_date,
-                    m_currentUser->uid(),
-                    zData,
-                    zNumer,
-                    m_shippingTerm.id(),
-                    m_shipmentTime.id(),
-                    m_paymentTerm.id(),
-                    m_offerTerm.id(),
-                    ui->plainTextEdit_uwagi->toPlainText()
-                    );
-
-    m_towarModel->save(*m_offerNumber);
 }
 
 void MainWindow::loadOffer()

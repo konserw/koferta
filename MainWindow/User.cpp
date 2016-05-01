@@ -16,12 +16,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
+#include "User.h"
 #include "Database.h"
+
+#include <QDate>
 #include <QSqlError>
 #include <QString>
 #include <QStringList>
 #include <QtDebug>
-#include "User.h"
 
 User* User::instance = nullptr;
 
@@ -73,6 +75,14 @@ QString User::getDbName() const
     return dbName;
 }
 
+QString User::suffix() const
+{
+    if(male)
+        return QString::null;
+    else
+        return QString("a");
+}
+
 QString User::getMail() const
 {
     return mail;
@@ -96,4 +106,9 @@ int User::getUid() const
 int User::getCurrentOfferNumber() const
 {
     return currentOfferNumber;
+}
+
+QString User::getCurrentOfferNumberWithYear() const
+{
+    return QString("%1/%2").arg(currentOfferNumber).arg(QDate::currentDate().toString("yyyy"));
 }

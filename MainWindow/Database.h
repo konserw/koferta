@@ -80,6 +80,7 @@ public slots:
     void tunnelCancel();
     void openDatabaseConnection();
     void failedTunnel(QProcess::ProcessError error);
+
     bool save(const Customer& client) const;
     bool save(const Offer& offer) const;
 

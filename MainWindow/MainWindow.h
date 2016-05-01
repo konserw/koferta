@@ -58,16 +58,11 @@ public:
     ~MainWindow();
 
     //Cucumber
-    bool isOfferTableEnabled();
+    bool isUiInitialized() const;
 
 public slots:
     void loadOfferFromDatabase(const QString &offerId);
 
-    void zapytanieRef();
-
-    void setInquiryDate(const QDate&);
-    void checkNr(bool);
-    void checkData(bool);
 
     //opcje wydruku
     void changeCurrency(bool pln);
@@ -82,7 +77,7 @@ public slots:
     void removeRow();
 
 /*buttony na 2 zakladce*/
-    void selectClient();
+    void selectCustomer();
     void setCustomer(const Customer &customer);
 
     void chooseOfferTerms();
@@ -90,6 +85,11 @@ public slots:
     void chooseShippingTerms();
     void chooseShipmentTime();
 
+    void setInquiryNumber(const QString& number);
+    void setInquiryDate(const QDate& date);
+    void setInquiryDate(const QString& date);
+    void checkNr(bool);
+    void checkData(bool);
 /*menu*/
     //kOferta
     void databaseConnect();
@@ -130,7 +130,7 @@ private:
 
     //pomocnicze funkcje
     ///ustawia tytuł okna
-    void setTitle(QString*);
+    void setTitle(const QString &);
     ///odblokowanie interfejsu i inicjacja tabeli
     void uiInit();
     void setMenusEnabled(bool en);

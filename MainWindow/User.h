@@ -43,8 +43,10 @@ public:
     bool getMale() const;
     int getUid() const;
     int getCurrentOfferNumber() const;
+    QString getCurrentOfferNumberWithYear() const;
     QString getPhone() const;
     QString getDbName() const;
+    QString suffix() const;
 
 protected:
     QString dbName;
