@@ -50,7 +50,7 @@ public:
     bool setCurrentOfferNumber(int offerNumber);
 
     //terms
-    static void createTerm(const TermItem& term);
+    static bool createTerm(const TermItem& term);
 
     static TermModel *paymentTermsModel();
     static TermModel *shippingTermsModel();
@@ -116,7 +116,11 @@ protected:
     QTcpSocket* m_socket;
     QProcess *tunnelProcess;
     QSqlDatabase* m_database;
-    bool executeQuery(const QString &queryText) const;
+
+    static QSqlQuery transactionQuery(const QString& queryText);
+    static bool transactionRun(const QString &queryText);
+    static bool transactionOpen();
+    static bool transactionClose();
 };
 
 

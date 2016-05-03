@@ -517,11 +517,8 @@ void MainWindow::uiInit()
 
 void MainWindow::saveOffer()
 {
-    if(currentOffer->save() == false)
-    {
+    if(Database::instance()->save(*currentOffer) == false)
         QMessageBox::critical(this, tr("Błąd zapisywania"), tr("Wystąpił bład w trakcie zapisywania oferty.\nProszę spróbowac później, bądź skontaktować się z Administratorem."));
-        return;
-    }
 }
 
 void MainWindow::loadOffer()
@@ -537,7 +534,7 @@ void MainWindow::loadOfferFromDatabase(const QString& offerId)
     *m_offerNumber = offerId;
 
     this->uiInit();
-    this->setTitle(m_offerNumber);
+    this->setTitle(*m_offerNumber);
 
     QSqlTableModel model;
     model.setTable("savedOffersFullView");

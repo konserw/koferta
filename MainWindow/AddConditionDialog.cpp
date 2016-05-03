@@ -58,5 +58,16 @@ AddConditionDialog::~AddConditionDialog()
 
 void AddConditionDialog::ok()
 {
-    Database::createTerm(TermItem(m_type, ui->lineEdit_sort->text(), ui->textEdit->toPlainText()));
+    if(Database::createTerm(TermItem(
+                                m_type,
+                                ui->lineEdit_sort->text(),
+                                ui->textEdit->toPlainText()
+                                )) == false)
+    {
+        QMessageBox::critical(
+                    this,
+                    tr("Błąd bazy danych"),
+                    tr("Wystąpił błąd podczas zapisywania danych do bazy!")
+                    );
+    }//TODO: nie zamykac dialogu?
 }

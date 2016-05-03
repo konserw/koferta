@@ -34,6 +34,7 @@ class QSqlRecord;
 class MerchandiseListModel : public QAbstractTableModel
 {
     Q_OBJECT
+    friend class Database;
 public:
     explicit MerchandiseListModel(QObject *parent = 0);
     virtual ~MerchandiseListModel();

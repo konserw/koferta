@@ -150,19 +150,33 @@ void Database::failedTunnel(QProcess::ProcessError error) //nie dziala
     emit connectionFail();
 }
 
+bool Database::transactionRun(const QString& queryText)
+{
+    QSqlQuery query;
+    if(query.exec(queryText) == false)
+    {
+        qCritical().nospace().noquote()
+                << "SQL query has failed!\n"
+                << "\t* Query: " << queryText << "\n"
+                << "\t* Error text: " <<  query.lastError().text();
+        if(QSqlDatabase::database().rollback() == false)
+        {
+            qCritical().nospace().noquote()
+                << "SQL transaction rollback has failed!\n"
+                << "\t* Error text: " <<  QSqlDatabase::database().lastError().text();
+        }
+        return false;
+    }
+    return true;
+}
+
 bool Database::save(const Offer &offer) const
 {
     qDebug().noquote() << "Saving offer number" << offer.numberWithYear;
     QString queryText;
-    QSqlQuery query;
 
-    if(QSqlDatabase::database().transaction() == false)
-    {
-        qCritical().nospace().noquote()
-                << "SQL transaction has failed!\n"
-                << "\t* Error text: " <<  QSqlDatabase::database().lastError().text();
+    if(transactionOpen() == false)
         return false;
-    }
 
     if(offer.number == User::current()->currentOfferNumber)
     {//fresh offer -> increment last offer number for user
@@ -171,16 +185,12 @@ bool Database::save(const Offer &offer) const
     }
     else
     {//old offer -> delete previous version from db
-        queryTest = QString("DELETE FROM zapisane WHERE nr_oferty = '%1'").arg(offer.numberWithYear);
-    }
-    if(query.exec(queryText) == false)
-    {
-        QSqlDatabase::database().rollback();
-        qCritical().nospace().noquote()
-                << "SQL query has failed!\n"
-                << "\t* Query: " << queryText << "\n"
-                << "\t* Error text: " <<  query.lastError().text();
-        return false;
+        queryText = QString("DELETE FROM zapisane WHERE nr_oferty = '%1'").arg(offer.numberWithYear);
+        if(transactionRun(queryText) == false)
+            return false;
+        queryText = QString("DELETE FROM savedOffersMerchandise WHERE nr_oferty = '%1'").arg(offer.numberWithYear);
+        if(transactionRun(queryText) == false)
+            return false;
     }
 
     //save offer data itself
@@ -200,38 +210,92 @@ bool Database::save(const Offer &offer) const
             .arg(escapedRemarks)
             .arg(offer.inquiryDateSql())
             .arg(offer.inquiryNumberSql());
-    if(query.exec(queryText) == false)
-    {
-        QSqlDatabase::database().rollback();
-        qCritical().nospace().noquote()
-                << "SQL query has failed!\n"
-                << "\t* Query: " << queryText << "\n"
-                << "\t* Error text: " <<  query.lastError().text();
+    if(transactionRun(queryText) == false)
         return false;
-    }
 
     //save merchandise
-    offer.merchandiseList
+    QSqlQuery query;
+    query.prepare("INSERT INTO `savedOffersMerchandise` (`nr_oferty`, `sequenceNumber`, `merchandise_id`, `ilosc`, `rabat`) VALUES (:nr, :seq, :mer, :ile, :rabat)");
 
-
-    if(QSqlDatabase::database().commit() == false)
+    Merchandise* merchandise;
+    const QList<Merchandise*>& merchandiseList = offer.merchandiseList->m_list;
+    QVariantList nr, seq, mer, ile, rabat;
+    for(int i=0; i < merchandiseList.length(); ++i)
     {
-        QSqlDatabase::database().rollback();
+        merchandise = merchandiseList[i];
+        nr << offer.numberWithYear;
+        seq << i;
+        mer << merchandise->id();
+        ile << merchandise->ilosc();
+        rabat << merchandise->rabat();
+    }
+
+    query.addBindValue(nr);
+    query.addBindValue(seq);
+    query.addBindValue(mer);
+    query.addBindValue(ile);
+    query.addBindValue(rabat);
+
+    if(query.execBatch() == false)
+    {
         qCritical().nospace().noquote()
                 << "SQL query has failed!\n"
-                << "\t* Query: " << queryText << "\n"
+                << "\t* Last query: " << query.lastQuery() << "\n"
                 << "\t* Error text: " <<  query.lastError().text();
+        if(QSqlDatabase::database().rollback() == false)
+        {
+            qCritical().nospace().noquote()
+                << "SQL transaction rollback has failed!\n"
+                << "\t* Error text: " <<  QSqlDatabase::database().lastError().text();
+        }
         return false;
     }
 
+    return transactionClose();
+}
+
+bool Database::transactionOpen()
+{
+    if(QSqlDatabase::database().transaction() == false)
+    {
+        qCritical().nospace().noquote()
+                << "SQL transaction has failed!\n"
+                << "\t* Error text: " <<  QSqlDatabase::database().lastError().text();
+        return false;
+    }
+    return true;
+}
+
+bool Database::transactionClose()
+{
+    if(QSqlDatabase::database().commit() == false)
+    {
+        qCritical().nospace().noquote()
+                << "SQL transaction commit has failed!\n"
+                << "\t* Error text: " <<  QSqlDatabase::database().lastError().text();
+        if(QSqlDatabase::database().rollback() == false)
+        {
+            qCritical().nospace().noquote()
+                << "SQL transaction rollback has failed!\n"
+                << "\t* Error text: " <<  QSqlDatabase::database().lastError().text();
+        }
+        return false;
+    }
     return true;
 }
 
 bool Database::save(const Customer &client) const
 {
-    qDebug() <<  QString("Saving client >%1< to database").arg(client.concatedName());
+    qDebug().noquote() <<  QString("Saving client >%1< to database").arg(client.concatedName());
+
+    if(transactionOpen() == false)
+        return false;
+
     QString queryText= QString("INSERT INTO klient (short, full, tytul, imie, nazwisko, adres) VALUES ('%1', '%2', '%3', '%4', '%5', '%6')").arg(client.shortName, client.fullName, client.title, client.name, client.surname, client.address);
-    return executeQuery(queryText);
+    if(transactionRun(queryText) == false)
+        return false;
+
+    return transactionClose();
 }
 
 void Database::setupTunnel()
@@ -387,6 +451,25 @@ TermItem Database::getTerm(TermItem::TermType termType, int id)
     return TermItem(termType, rec.value("shortDesc").toString(), rec.value("longDesc").toString(), rec.value("id").toInt());
 }
 
+QSqlQuery Database::transactionQuery(const QString &queryText)
+{
+    QSqlQuery query;
+    if(query.exec(queryText) == false)
+    {
+        qCritical().nospace().noquote()
+                << "SQL query has failed!\n"
+                << "\t* Query: " << queryText << "\n"
+                << "\t* Error text: " <<  query.lastError().text();
+        if(QSqlDatabase::database().rollback() == false)
+        {
+            qCritical().nospace().noquote()
+                << "SQL transaction rollback has failed!\n"
+                << "\t* Error text: " <<  QSqlDatabase::database().lastError().text();
+        }
+    }
+    return query;
+}
+
 Database *Database::instance()
 {
     if(m_instance == nullptr)
@@ -418,25 +501,15 @@ User* Database::userInfo()
 bool Database::setCurrentOfferNumber(int offerNumber)
 {
     qDebug().noquote() << "Updating last offer number to:" << offerNumber;
-    QString queryText = QString("UPDATE user SET currentOfferNumber=%1 WHERE uid=%2").arg(offerNumber).arg(User::current()->getUid());
-    return executeQuery(queryText);
-}
 
-bool Database::executeQuery(const QString& queryText) const
-{
-    QSqlQuery query;
-    QSqlDatabase::database().transaction();
-    if(query.exec(queryText) == false)
-    {
-        QSqlDatabase::database().rollback();
-        qCritical().nospace().noquote()
-                << "SQL query has failed!\n"
-                << "\t* Query: " << queryText << "\n"
-                << "\t* Error text: " <<  query.lastError().text();
+    if(transactionOpen() == false)
         return false;
-    }
-    QSqlDatabase::database().commit();
-    return true;
+
+    QString queryText = QString("UPDATE user SET currentOfferNumber=%1 WHERE uid=%2").arg(offerNumber).arg(User::current()->getUid());
+    if(transactionRun(queryText) == false)
+        return false;
+
+    return transactionClose();
 }
 
 //used to fill combobox in offersearch
@@ -458,27 +531,19 @@ QStringList Database::usersList()
     return userList;
 }
 
-void Database::createTerm(const TermItem& term)
+bool Database::createTerm(const TermItem& term)
 {
-    QSqlQuery query;
     QString queryText;
+    qDebug().noquote() << "Creating new term:" << term.shortDesc();
 
-    QSqlDatabase::database().transaction();
+    if(transactionOpen() == false)
+        return false;
 
     queryText = QString("SELECT MAX(id) FROM terms WHERE termType = %1").arg(term.getType());
-    if(!query.exec(queryText))
-    {
-        QSqlDatabase::database().rollback();
-        QString error = query.lastError().text();
-        QMessageBox::warning(nullptr,
-                             tr("Database Write Error"),
-                             tr("The database reported an error: %1")
-                             .arg(error)
-                             );
-        qDebug() << "Following query failed with reason: " << error;
-        qDebug() << queryText;
-        return;
-    }
+    QSqlQuery query = transactionQuery(queryText);
+    if(query.isActive() == false)
+        return false;
+
     query.next();
     int id = query.value(0).toInt() + 1;
 
@@ -487,21 +552,10 @@ void Database::createTerm(const TermItem& term)
             .arg(id)
             .arg(term.shortDesc())
             .arg(term.longDesc());
-    if(!query.exec(queryText))
-    {
-        QSqlDatabase::database().rollback();
-        QString error = query.lastError().text();
-        QMessageBox::warning(nullptr,
-                             tr("Database Write Error"),
-                             tr("The database reported an error: %1")
-                             .arg(error)
-                             );
-        qDebug() << "Following query failed with reason: " << error;
-        qDebug() << queryText;
-        return;
-    }
+    if(transactionRun(queryText) ==false)
+        return false;
 
-    QSqlDatabase::database().commit();
+    return transactionClose();
 }
 
 TermModel* Database::paymentTermsModel()
@@ -544,70 +598,23 @@ TermItem Database::offerTerm(int id)
     return getTerm(TermItem::termOffer, id);
 }
 
-void Database::saveOfferMerchandise(const QString &offerId, const QList<Merchandise *> &merchandise)
-{
-    QString error;
-    QSqlDatabase db;
-    db.transaction();
-
-    QSqlQuery query;
-    if(!query.exec(QString("DELETE FROM savedOffersMerchandise WHERE nr_oferty = '%1'").arg(offerId)))
-    {
-        error = query.lastError().text();
-        db.rollback();
-        qWarning() << "Delete query execution failed!";
-        qDebug() << "Query string:" << query.lastQuery();
-        qDebug() << "Error string:" << error;
-        QMessageBox::critical(nullptr, tr("Błąd"), tr("Wystąpił nastepujący bład podczas zapisu oferty do bazy danych:\n%1").arg(error));
-        return;
-    }
-
-    query.clear();
-    query.prepare("INSERT INTO `savedOffersMerchandise` (`nr_oferty`, `sequenceNumber`, `merchandise_id`, `ilosc`, `rabat`) VALUES (:nr, :seq, :mer, :ile, :rabat)");
-
-    Merchandise* merch;
-    QVariantList nr, seq, mer, ile, rabat;
-    for(int i=0; i<merchandise.length(); ++i)
-    {
-        merch = merchandise[i];
-        nr << offerId;
-        seq << i;
-        mer << merch->id();
-        ile << merch->ilosc();
-        rabat << merch->rabat();
-    }
-
-    query.addBindValue(nr);
-    query.addBindValue(seq);
-    query.addBindValue(mer);
-    query.addBindValue(ile);
-    query.addBindValue(rabat);
-
-    if(query.execBatch())
-    {
-        db.commit();
-    }
-    else
-    {
-        error = query.lastError().text();
-        db.rollback();
-        qWarning() << "Database delete error:" << error;
-        QMessageBox::critical(nullptr, tr("Błąd"), tr("Wystąpił nastepujący bład podczas zapisu oferty do bazy danych:\n%1").arg(error));
-    }
-}
-
 QList<Merchandise *> Database::loadOfferMerchandise(const QString &number)
 {
     QList<Merchandise *> list;
     Merchandise* merchandise;
 
-    QSqlQuery query;
-    query.exec(QString(
+    if(transactionOpen() == false)
+        return list;
+
+    QString queryText = QString(
                         "SELECT * "
                         "FROM savedOffersMerchandiseView "
                         "WHERE nr_oferty = '%1' "
                         "ORDER BY sequenceNumber ASC"
-                        ).arg(number));
+                        ).arg(number);
+    QSqlQuery query = transactionQuery(queryText);
+    if(query.isActive() == false)
+        return list;
     while(query.next())
     {
         merchandise = new Merchandise(query.value("merchandise_id").toInt(), query.value("code").toString(), query.value("description").toString(), query.value("price").toDouble(), query.value("unit").toString() == "mb.");
@@ -615,6 +622,8 @@ QList<Merchandise *> Database::loadOfferMerchandise(const QString &number)
         merchandise->setIlosc(query.value("ilosc").toInt());
         list.append(merchandise);
     }
+
+    transactionClose();
 
     return list;
 }
