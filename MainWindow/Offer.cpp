@@ -196,7 +196,7 @@ void Offer::print(QPrinter *printer)
     delete doc;
 }
 
-QTextDocument *Offer::document() const
+QString Offer::document() const
 {
     const int w = 745;                           //szerokosc szkieletu dokumentu
     const int dd = 248;
@@ -208,7 +208,7 @@ QTextDocument *Offer::document() const
     QString escapedRemarks = remarks;
     escapedRemarks.replace("\n", "<br />\n");
 
-    QString html = QString(
+    return QString(
                 "<html>\n"
                 "<head>\n"
                 "<title>Oferta</title>\n"
@@ -338,10 +338,19 @@ QTextDocument *Offer::document() const
 /*22*/.arg(offerTerm.longDesc())
 /*23*/.arg(User::current()->suffix())
 /*24*/.arg(User::current()->getName());
+}
 
-    QTextDocument* doc = new QTextDocument();
-    doc->setHtml(html);
-    return doc;
+void Offer::print(QPrinter *printer)
+{
+    const qreal margin = 15;
+    printer->setPaperSize(QPrinter::A4);
+    printer->setResolution(96);
+    printer->setPageMargins(margin, margin, margin, margin, QPrinter::Millimeter);
+
+    QTextDocument doc;
+    doc.setHtml(document());
+    doc.setPageSize(QSizeF(printer->pageRect().size()));
+    doc.print(printer);
 }
 
 TermItem Offer::getPaymentTerm() const

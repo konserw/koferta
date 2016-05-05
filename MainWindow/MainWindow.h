@@ -57,19 +57,12 @@ public:
     explicit MainWindow();
     ~MainWindow();
 
-    //Cucumber
     bool isUiInitialized() const;
 
 public slots:
     void loadOfferFromDatabase(const QString &offerId);
-
-
     //opcje wydruku
     void changeCurrency(bool pln);
-    ///"drukowanie" dokumentu do podglądu lub pdf
-    void print(QPrinter *printer);
-    ///tworzy dokument jako kod htm do QTextDocument
-    void makeDocument(QString *sDoc);
 
 /*buttony na 1 zakladce*/
     void selectMerchandise();
@@ -105,7 +98,6 @@ public slots:
     //export
     void printPrev();
     void printPdf();
-    void printHtm();
 
     //baza
     void dodajKlient();

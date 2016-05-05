@@ -66,7 +66,7 @@ public:
 
     ///"drukowanie" dokumentu do podglądu lub pdf
     void print(QPrinter *printer);
-    QTextDocument* document() const;
+    QString document() const;
 
   //  double getExchangeRate() const;
     void setExchangeRate(double value);
