@@ -557,11 +557,6 @@ QString MerchandiseListModel::print(const int w, Offer::PrintOptions printOption
     return doc;
 }
 
-void MerchandiseListModel::save(const QString &offerId)
-{
-    Database::saveOfferMerchandise(offerId, m_list);
-}
-
 double MerchandiseListModel::przeliczSume() const
 {
     double suma = 0;

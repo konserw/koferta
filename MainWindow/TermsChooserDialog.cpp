@@ -18,39 +18,46 @@
 
 #include "TermsChooserDialog.h"
 #include "ui_TermsChooserDialog.h"
+#include "Database.h"
+//#include <QAbstractTableModel>
+#include "TermModel.h"
+#include <QDebug>
 
-TermsChooserDialog::TermsChooserDialog(QWidget *parent) :
+TermsChooserDialog::TermsChooserDialog(QWidget *parent, TermItem::TermType type) :
     QDialog(parent),
     ui(new Ui::TermsChooserDialog)
 {
     ui->setupUi(this);
-    this->setWindowTitle("Terms Chooser");
-    m_model = nullptr;
 
-    connect(ui->listView, SIGNAL(activated(QModelIndex)), this, SLOT(selectionChanged(QModelIndex)));
-}
+    switch(type)
+    {
+    case TermItem::termOffer:
+        setWindowTitle(tr("Wybór warunków oferty"));
+        break;
+    case TermItem::termPayment:
+        setWindowTitle(tr("Wybór warunków płatności"));
+        break;
+    case TermItem::termShipmentTime:
+        setWindowTitle(tr("Wybór terminu dostawy"));
+        break;
+    case TermItem::termShipping:
+        setWindowTitle(tr("Wybór warunków dostawy"));
+        break;
+    default:
+        qCritical() << "Invalid model selection";
+    }
 
-TermsChooserDialog::TermsChooserDialog(QWidget *parent, TermModel *model, QString title) :
-    QDialog(parent),
-    ui(new Ui::TermsChooserDialog)
-{
-    ui->setupUi(this);
-    this->setWindowTitle(title);
+    ui->listView->setModel(Database::instance()->getTermModel(type));
+    ui->listView->setModelColumn(1);
 
     connect(ui->listView, SIGNAL(clicked(QModelIndex)), this, SLOT(selectionChanged(QModelIndex)));
-
-    setDataModel(model);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &TermsChooserDialog::ok);
 }
 
 TermsChooserDialog::~TermsChooserDialog()
 {
+    delete ui->listView->model();
     delete ui;
-    delete m_model;
-}
-
-TermItem TermsChooserDialog::choosenTerm()
-{
-    return *static_cast<TermItem*>(ui->listView->currentIndex().internalPointer());
 }
 
 void TermsChooserDialog::selectionChanged(QModelIndex idx)
@@ -58,9 +65,7 @@ void TermsChooserDialog::selectionChanged(QModelIndex idx)
     ui->plainTextEdit->setPlainText(idx.sibling(idx.row(), 2).data().toString());
 }
 
-void TermsChooserDialog::setDataModel(TermModel* model)
+void TermsChooserDialog::ok()
 {
-    m_model = model;
-    ui->listView->setModel(m_model);
-    ui->listView->setModelColumn(1);
+    emit termChoosen(*static_cast<TermItem*>(ui->listView->currentIndex().internalPointer()));
 }

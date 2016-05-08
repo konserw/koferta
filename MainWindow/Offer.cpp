@@ -21,7 +21,11 @@
 #include "Database.h"
 #include "MerchandiseListModel.h"
 #include "User.h"
+#include "MerchandiseListView.h"
 
+#include <QtGlobal>
+#include <QHeaderView>
+#include <QDebug>
 #include <QPrinter>
 #include <QTextDocument>
 
@@ -32,6 +36,12 @@ Offer::Offer(QObject *parent) :
     remarks("Termin realizacji jest określany na podstawie stanu z dnia sporządzenia oferty i może ulec zmianie.")
 {
     date = QDate::currentDate();
+    merchandiseList = new MerchandiseListModel(this);
+}
+
+Offer::~Offer()
+{
+    delete merchandiseList;
 }
 
 void Offer::setGlobalDiscount(double discount)
@@ -61,24 +71,44 @@ bool Offer::save() const
     Database::instance()->save(*this);
 }
 
-void Offer::setOfferTerm(const TermItem &term)
+void Offer::setTerm(const TermItem& term)
 {
-    offerTerm = term;
+    switch(term.getType())
+    {
+    case TermItem::termOffer:
+        offerTerm = term;
+        break;
+    case TermItem::termPayment:
+        paymentTerm = term;
+        break;
+    case TermItem::termShipmentTime:
+        shipmentTime = term;
+        break;
+    case TermItem::termShipping:
+        shippingTerm = term;
+        break;
+    case TermItem::termRemarks:
+        remarks = term.longDesc();
+        break;
+    default:
+        qCritical() << "Invalid term assignment";
+    }
+    emit termsChanged(term);
 }
 
-void Offer::setPaymentTerm(const TermItem &term)
+void Offer::updateMerchandiseList(int id, double count)
 {
-    paymentTerm = term;
+    merchandiseList->changeItemCount(id, count);
 }
 
-void Offer::setShippingTerm(const TermItem &term)
+QHash<int, double> Offer::currentMerchandiseHash() const
 {
-    shippingTerm = term;
+    return merchandiseList->hash();
 }
 
-void Offer::setShipmentTime(const TermItem &term)
+void Offer::bindMerchandiseTable(MerchandiseListView *table)
 {
-    shipmentTime = term;
+    table->setModel(merchandiseList);
 }
 
 QDate Offer::getDate() const
@@ -101,7 +131,7 @@ void Offer::setInquiryDate(const QString &value)
     inquiryDate = value;
 }
 
-QString Offer::inquiryNumberSql() const
+QString Offer::getInquiryNumberSql() const
 {
     if(inquiryNumber.isEmpty() || inquiryNumber.isNull())
         return QString("NULL");
@@ -117,6 +147,7 @@ Customer Offer::getCustomer() const
 void Offer::setCustomer(const Customer &value)
 {
     customer = value;
+    emit customerChanged(customer);
 }
 
 QString Offer::getRemarks() const
@@ -129,12 +160,17 @@ void Offer::setRemarks(const QString &value)
     remarks = value;
 }
 
-QString Offer::inquiryDateSql() const
+QString Offer::getInquiryDateSql() const
 {
     if(inquiryDate.isNull() || inquiryDate.isEmpty())
         return QString("NULL");
     else
         return QString("'%1'").arg(inquiryDate);
+}
+
+QString Offer::getInquiryDate() const
+{
+    return inquiryDate;
 }
 
 QString Offer::getInquiryNumber() const
@@ -147,10 +183,11 @@ void Offer::setInquiryNumber(const QString &value)
     inquiryNumber = value;
 }
 
-QString Offer::InquiryText() const
+QString Offer::getInquiryText() const
 {
     QString s = "W odpowiedzi na zapytanie";
-    if(inquiryNumber > 0)
+    qDebug() << inquiryNumber;
+    if(!(inquiryNumber.isEmpty() || inquiryNumber.isNull()))
         s += QString(" numer %1").arg(inquiryNumber);
     if(!inquiryDate.isEmpty())
         s += QString(" z dnia %1").arg(inquiryDate);
@@ -183,6 +220,21 @@ TermItem Offer::getOfferTerm() const
     return offerTerm;
 }
 
+TermItem Offer::getPaymentTerm() const
+{
+    return paymentTerm;
+}
+
+TermItem Offer::getShipmentTime() const
+{
+    return shipmentTime;
+}
+
+TermItem Offer::getShippingTerm() const
+{
+    return shippingTerm;
+}
+
 void Offer::print(QPrinter *printer)
 {
     const qreal margin = 5;
@@ -190,10 +242,10 @@ void Offer::print(QPrinter *printer)
     printer->setResolution(96);
     printer->setPageMargins(margin, margin, margin, margin, QPrinter::Millimeter);
 
-    QTextDocument* doc = document();
-    doc->setPageSize(QSizeF(printer->pageRect().size()));
-    doc->print(printer);
-    delete doc;
+    QTextDocument doc;
+    doc.setHtml(document());
+    doc.setPageSize(QSizeF(printer->pageRect().size()));
+    doc.print(printer);
 }
 
 QString Offer::document() const
@@ -327,7 +379,7 @@ QString Offer::document() const
 /*11*/.arg(phone)
 /*12*/.arg(dd-50)
 /*13*/.arg(User::current()->getAddress())
-/*14*/.arg(InquiryText())
+/*14*/.arg(getInquiryText())
 /*15*/.arg(merchandiseList->print(w, printOptions))
 /*16*/.arg(dw)
 /*17*/.arg(w-dw-3)
@@ -338,32 +390,4 @@ QString Offer::document() const
 /*22*/.arg(offerTerm.longDesc())
 /*23*/.arg(User::current()->suffix())
 /*24*/.arg(User::current()->getName());
-}
-
-void Offer::print(QPrinter *printer)
-{
-    const qreal margin = 15;
-    printer->setPaperSize(QPrinter::A4);
-    printer->setResolution(96);
-    printer->setPageMargins(margin, margin, margin, margin, QPrinter::Millimeter);
-
-    QTextDocument doc;
-    doc.setHtml(document());
-    doc.setPageSize(QSizeF(printer->pageRect().size()));
-    doc.print(printer);
-}
-
-TermItem Offer::getPaymentTerm() const
-{
-    return paymentTerm;
-}
-
-TermItem Offer::getShipmentTime() const
-{
-    return shipmentTime;
-}
-
-TermItem Offer::getShippingTerm() const
-{
-    return shippingTerm;
 }

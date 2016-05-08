@@ -30,7 +30,8 @@ public:
         termShipping = 0,//dostawa
         termOffer = 1,   //oferta
         termPayment = 2, //platnosc
-        termShipmentTime = 3 //termin
+        termShipmentTime = 3, //termin
+        termRemarks = 4 //uwagi
     };
 
     //needed for declarations in header file

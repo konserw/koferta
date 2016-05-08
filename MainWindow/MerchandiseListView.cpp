@@ -20,6 +20,7 @@
 #include "MerchandiseListDelegate.h"
 #include "MerchandiseListModel.h"
 #include <QtPrintSupport>
+#include <QHeaderView>
 
 MerchandiseListView::MerchandiseListView(QWidget *parent) :
     QTableView(parent)
@@ -29,15 +30,26 @@ MerchandiseListView::MerchandiseListView(QWidget *parent) :
     setDropIndicatorShown(true);
     setSelectionBehavior(QAbstractItemView::SelectRows);
     setAcceptDrops(true);
-
     setSortingEnabled(true);
-    this->horizontalHeader()->setSortIndicatorShown(false);
+
+    header = this->horizontalHeader();
+    header->setSortIndicatorShown(false);
+    header->setDefaultSectionSize(85);
 }
 
 void MerchandiseListView::dragEnterEvent(QDragEnterEvent *event)
  {
     if(event->source() == this)
         event->acceptProposedAction();
+}
+
+void MerchandiseListView::setModel(QAbstractItemModel *model)
+{
+    QTableView::setModel(model);
+
+    for(int i=0; i < model->columnCount(); i++)
+        header->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(1, QHeaderView::Stretch);
 }
 
 void MerchandiseListView::dropEvent(QDropEvent *event)

@@ -19,10 +19,10 @@
 #ifndef TERMSCHOOSERDIALOG_H
 #define TERMSCHOOSERDIALOG_H
 
-#include <QAbstractTableModel>
 #include <QDialog>
-#include "TermModel.h"
 #include "TermItem.h"
+
+class QAbstractTableModel;
 
 namespace Ui {
 class TermsChooserDialog;
@@ -33,18 +33,18 @@ class TermsChooserDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit TermsChooserDialog(QWidget *parent = 0);
-    explicit TermsChooserDialog(QWidget *parent, TermModel* model, QString title = "Terms Chooser");
+    explicit TermsChooserDialog(QWidget *parent = 0) = delete;
+    explicit TermsChooserDialog(QWidget *parent, TermItem::TermType type);
     ~TermsChooserDialog();
 
-    TermItem choosenTerm();
+signals:
+    void termChoosen(const TermItem& term);
 
 public slots:
     void selectionChanged(QModelIndex);
-    void setDataModel(TermModel *);
+    void ok();
 
 private:
-    QAbstractTableModel* m_model;
     Ui::TermsChooserDialog *ui;
 };
 

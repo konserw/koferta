@@ -26,6 +26,7 @@
 #include <QCryptographicHash>
 #include <QProgressDialog>
 
+#include "MainWindow.h"
 #include "User.h"
 #include "Customer.h"
 #include "Merchandise.h"
@@ -39,21 +40,31 @@ Database* Database::m_instance = nullptr;
 
 Database::Database(QObject* parent) :
     QObject(parent)
-{  
+{
+    m_progressDialog = nullptr;
     m_database = nullptr;
     tunnelProcess = nullptr;
 }
 
-Database::~Database()
+void Database::dispose()
 {
-    delete m_progressDialog;
+    qDebug() << "Database class dispose";
     dropConection();
     if(tunnelProcess != nullptr)
     {
         tunnelProcess->kill();
         tunnelProcess->waitForFinished();
         delete tunnelProcess;
+        tunnelProcess = nullptr;
     }
+    delete m_progressDialog;
+    m_progressDialog = nullptr;
+}
+
+Database::~Database()
+{
+    qDebug() << "Database class destruktor";
+    dispose();
 }
 
 void Database::dropConection()
@@ -86,19 +97,19 @@ void Database::setupDatabaseConnection(const QString& keyFile, const QString &pa
              << "\t* Port:\t\t" << m_database->port() << "\n"
              << "\t* Tunneled to:\t" << m_host << "\n"
              << "\t* Via port:\t" << m_port << "\n"
-             << "\t* Login:\t" << m_databaseUserName << "\n"
+             << "\t* Login:\t\t" << m_databaseUserName << "\n"
              << "\t* Password:\t" << QCryptographicHash::hash(m_database->password().toUtf8(), QCryptographicHash::Sha1).toBase64() << "\n"
-             << "\t* Schema:\t" << m_database->databaseName();
+             << "\t* Schema:\t\t" << m_database->databaseName();
 
     setupTunnel();
 }
 
 void handleOutput(const QString& output)
 {
-    QStringList out = output.split("\r\n");
+    QStringList out = output.split("\n");
     foreach(const QString& o, out)
-        if(!o.isEmpty())
-            qDebug() << "[ssh] " << o;
+        if(o.isEmpty() == false)
+            qDebug().noquote() << "[ssh]" << o;
 }
 
 void Database::readOutput()
@@ -140,11 +151,14 @@ void Database::openDatabaseConnection()
     emit connectionSuccess();
 }
 
-void Database::failedTunnel(QProcess::ProcessError error) //nie dziala
+void Database::failedTunnel(QProcess::ProcessError error) //nie dziala ?
 {
-    m_progressDialog->cancel();
-    delete m_progressDialog;
-    m_progressDialog = nullptr;
+    if(m_progressDialog != nullptr)
+    {
+        m_progressDialog->cancel();
+        delete m_progressDialog;
+        m_progressDialog = nullptr;
+    }
     qDebug() << "ssh tunnel error:" << error;
     emit changeStatus(tr("Utworzenie tunelu do hosta %1 nie powiodło się.").arg(m_host));
     emit connectionFail();
@@ -208,8 +222,8 @@ bool Database::save(const Offer &offer) const
             .arg(offer.paymentTerm.id())
             .arg(offer.offerTerm.id())
             .arg(escapedRemarks)
-            .arg(offer.inquiryDateSql())
-            .arg(offer.inquiryNumberSql());
+            .arg(offer.getInquiryDateSql())
+            .arg(offer.getInquiryNumberSql());
     if(transactionRun(queryText) == false)
         return false;
 
@@ -252,6 +266,38 @@ bool Database::save(const Offer &offer) const
     }
 
     return transactionClose();
+}
+
+void Database::loadOffer(Offer* offer, const QString& offerId)
+{
+    QSqlTableModel model;
+    model.setTable("savedOffersFullView");
+    model.setFilter(QString("number = '%1'").arg(offerId));
+    model.select();
+    QSqlRecord rec = model.record(0);
+
+    offer->numberWithYear = offerId;
+    offer->date = QDate::fromString(rec.value("date").toString(), "dd.MM.yyyy");
+    offer->setCustomer(Customer(
+                rec.value("short").toString(),
+                rec.value("full").toString(),
+                rec.value("tytul").toString(),
+                rec.value("imie").toString(),
+                rec.value("nazwisko").toString(),
+                rec.value("adres").toString(),
+                rec.value("id").toInt()
+                ));
+
+    offer->inquiryDate = rec.value("zapytanie_data").toString();
+    offer->inquiryNumber = rec.value("zapytanie_nr").toString();
+
+    offer->setTerm(getTerm(TermItem::termShipping, rec.value("dostawa").toInt()));
+    offer->setTerm(getTerm(TermItem::termShipmentTime, rec.value("termin").toInt()));
+    offer->setTerm(getTerm(TermItem::termPayment, rec.value("platnosc").toInt()));
+    offer->setTerm(getTerm(TermItem::termOffer, rec.value("oferta").toInt()));
+    offer->setTerm(TermItem(TermItem::termRemarks, QString::null, rec.value("uwagi").toString()));
+
+    offer->merchandiseList->loadOffer(offerId); // do przerobienia
 }
 
 bool Database::transactionOpen()
@@ -556,26 +602,6 @@ bool Database::createTerm(const TermItem& term)
         return false;
 
     return transactionClose();
-}
-
-TermModel* Database::paymentTermsModel()
-{
-    return getTermModel(TermItem::termPayment);
-}
-
-TermModel* Database::shippingTermsModel()
-{
-    return getTermModel(TermItem::termShipping);
-}
-
-TermModel* Database::shipmentTimeModel()
-{
-    return getTermModel(TermItem::termShipmentTime);
-}
-
-TermModel* Database::offerTermsModel()
-{
-    return getTermModel(TermItem::termOffer);
 }
 
 TermItem Database::paymentTerm(int id)

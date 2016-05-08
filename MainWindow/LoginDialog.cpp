@@ -59,6 +59,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
         ui->comboBox->setCurrentText(settings.value("last user").toString());
     settings.endGroup();
 
+    disconnect(this, SLOT(accept()));
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &LoginDialog::ok);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &LoginDialog::reject);
     connect(Database::instance(), &Database::driverFail, this, &LoginDialog::reject);

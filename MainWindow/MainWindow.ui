@@ -654,7 +654,6 @@
      <string>Export</string>
     </property>
     <addaction name="actionDo_PDF"/>
-    <addaction name="actionDo_HTML"/>
     <addaction name="actionDruk"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -670,12 +669,10 @@
     </property>
     <addaction name="klientNowy"/>
     <addaction name="klientEdycja"/>
+    <addaction name="separator"/>
     <addaction name="actionNowy_Towar"/>
     <addaction name="separator"/>
-    <addaction name="actionDodaj_warunki_dostawy"/>
-    <addaction name="actionDodaj_termin_dostawy"/>
-    <addaction name="actionDodaj_warunki_platnosci"/>
-    <addaction name="actionDodaj_warunki_oferty"/>
+    <addaction name="actionDodaj_warunki"/>
    </widget>
    <widget class="QMenu" name="menuConnect">
     <property name="title">
@@ -826,9 +823,9 @@
     <string>Dodaj warunki platnosci</string>
    </property>
   </action>
-  <action name="actionDodaj_warunki_oferty">
+  <action name="actionDodaj_warunki">
    <property name="text">
-    <string>Dodaj warunki oferty</string>
+    <string>Dodaj warunki</string>
    </property>
   </action>
   <action name="actionUstawienia">

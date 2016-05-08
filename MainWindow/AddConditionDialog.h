@@ -16,11 +16,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef EDYCJAKOMBO_H
-#define EDYCJAKOMBO_H
+#ifndef ADDCONDITIONDIALOG_H
+#define ADDCONDITIONDIALOG_H
 
 #include <QDialog>
-#include "Database.h"
 
 namespace Ui {
 class AddConditionDialog;
@@ -31,7 +30,7 @@ class AddConditionDialog : public QDialog
     Q_OBJECT
     
 public:
-    explicit AddConditionDialog(TermItem::TermType type, QWidget *parent = 0);
+    explicit AddConditionDialog(QWidget *parent = 0);
     ~AddConditionDialog();
 
 public slots:
@@ -39,9 +38,6 @@ public slots:
     
 private:
     Ui::AddConditionDialog *ui;
-
-    TermItem::TermType m_type;
-
 };
 
-#endif // EDYCJAKOMBO_H
+#endif // ADDCONDITIONDIALOG_H

@@ -31,7 +31,7 @@ class QTextDocument;
 class QPrinter;
 class Customer;
 class Database;
-
+class MerchandiseListView;
 
 class Offer : public QObject
 {
@@ -39,7 +39,7 @@ class Offer : public QObject
     friend class Database;
 
 public:
-    enum PrintOption : uint8_t
+    enum PrintOption : int
     {
         noPrint			= 0,
         printSpecs		= 1 << 0,
@@ -52,6 +52,7 @@ public:
     Q_DECLARE_FLAGS(PrintOptions, PrintOption)
 
     explicit Offer(QObject *parent = 0);
+    ~Offer();
 
     void setGlobalDiscount(double discount);
     void removeMerchandiseRow(int row);
@@ -64,8 +65,6 @@ public:
     TermItem getPaymentTerm() const;
     TermItem getOfferTerm() const;
 
-    ///"drukowanie" dokumentu do podglądu lub pdf
-    void print(QPrinter *printer);
     QString document() const;
 
   //  double getExchangeRate() const;
@@ -75,29 +74,38 @@ public:
     void setPln(bool value);
 
     QString getRemarks() const;
-    void setRemarks(const QString &value);
 
     Customer getCustomer() const;
     void setCustomer(const Customer &value);
 
-    QString inquiryNumberSql() const;
+    QString getInquiryNumberSql() const;
     QString getInquiryNumber() const;
     void setInquiryNumber(const QString &value);
-    QString inquiryDateSql() const;
+
+    QString getInquiryDateSql() const;
+    QString getInquiryDate() const;
     void setInquiryDate(const QString &value);
-    QString InquiryText() const;
+
+    QString getInquiryText() const;
 
     QString getNumberWithYear() const;
     int getNumber() const;
     QDate getDate() const;
 
 signals:
+    void termsChanged(const TermItem& term);
+    void customerChanged(const Customer& customer);
 
 public slots:
-    void setOfferTerm(const TermItem& term);
-    void setPaymentTerm(const TermItem& term);
-    void setShippingTerm(const TermItem& term);
-    void setShipmentTime(const TermItem& term);
+    ///"drukowanie" dokumentu do podglądu lub pdf
+    void print(QPrinter *printer);
+
+    void updateMerchandiseList(int id, double count);
+    QHash<int, double> currentMerchandiseHash() const;
+    void bindMerchandiseTable(MerchandiseListView* table);
+
+    void setTerm(const TermItem &term);
+    void setRemarks(const QString &value);
 
 protected:
     int number;

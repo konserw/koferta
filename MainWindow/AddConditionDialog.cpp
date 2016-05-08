@@ -21,33 +21,18 @@
 #include "Database.h"
 #include "TermItem.h"
 
-AddConditionDialog::AddConditionDialog(TermItem::TermType type, QWidget *parent) :
+AddConditionDialog::AddConditionDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AddConditionDialog)
 {
     ui->setupUi(this);
-
-    m_type = type;
-    QString typeTransaltion;
-    switch(type)
-    {
-    case TermItem::termOffer:
-        typeTransaltion = tr("\"Warunki Oferty\"");
-        break;
-    case TermItem::termPayment:
-        typeTransaltion = tr("\"Warunki Płatności\"");
-        break;
-    case TermItem::termShipmentTime:
-        typeTransaltion = tr("\"Termin Dostawy\"");
-        break;
-    case TermItem::termShipping:
-        typeTransaltion = tr("\"Wraunki Dostawy\"");
-        break;
-    }
-
-    this->setWindowTitle(tr("Nowa opcja w menu %1").arg(typeTransaltion));
-    ui->label_typ->setText(tr("Dodaj nową opcję dla pola %1").arg(typeTransaltion));
-
+    ui->comboBox->addItems(QStringList()
+                           << tr("Wraunki Dostawy")
+                           << tr("Warunki Oferty")
+                           << tr("Warunki Płatności")
+                           << tr("Termin Dostawy")
+                           );
+    disconnect(ui->buttonBox, SIGNAL(accepted()));
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
 }
 
@@ -59,7 +44,7 @@ AddConditionDialog::~AddConditionDialog()
 void AddConditionDialog::ok()
 {
     if(Database::createTerm(TermItem(
-                                m_type,
+                                static_cast<TermItem::TermType>(ui->comboBox->currentIndex()),
                                 ui->lineEdit_sort->text(),
                                 ui->textEdit->toPlainText()
                                 )) == false)
@@ -69,5 +54,5 @@ void AddConditionDialog::ok()
                     tr("Błąd bazy danych"),
                     tr("Wystąpił błąd podczas zapisywania danych do bazy!")
                     );
-    }//TODO: nie zamykac dialogu?
+    }//TODO: nie zamykac dialogu? -> zrobione?
 }

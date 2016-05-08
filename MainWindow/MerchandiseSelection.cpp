@@ -25,7 +25,7 @@
 MerchandiseSelection::MerchandiseSelection(const QHash<int, double> &hash, QWidget *parent) :
     MerchandiseSearch(new MerchandiseSelectionModel(hash, parent), parent)
 {
-    m_merchandiseModel = new QSqlTableModel(0);
+    m_merchandiseModel = new QSqlTableModel(this);
     m_merchandiseModel->setTable("merchandise");
     m_merchandiseModel->select();
     m_merchandiseModel->setEditStrategy(QSqlTableModel::OnManualSubmit);

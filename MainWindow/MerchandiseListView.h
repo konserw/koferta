@@ -30,10 +30,11 @@ public:
     void dropEvent(QDropEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void dragEnterEvent(QDragEnterEvent *event);
+    void setModel(QAbstractItemModel *model);
 
 protected:
     QPoint dragStartPosition;
-
+    QHeaderView *header;
 };
 
 #endif // MERCHANDISELISTVIEW_H

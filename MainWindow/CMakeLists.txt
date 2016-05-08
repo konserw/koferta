@@ -45,6 +45,20 @@ set(KOFERTA_SOURCES
     Offer.cpp
     Customer.cpp
 )
+set(UI_FILES
+    LoadDialog.ui
+    MainWindow.ui
+    MerchandiseSearch.ui
+    CustomerNew.ui
+    CustomerEdit.ui
+    MerchandiseNew.ui
+    OfferSearch.ui
+    CustomerSelection.ui
+    SettingsDialog.ui
+    LoginDialog.ui
+    AddConditionDialog.ui
+    TermsChooserDialog.ui
+)
 set(TS_FILES
     translations/kOferta_pl.ts
     translations/kOferta_en.ts
@@ -59,7 +73,7 @@ IF(WIN32)
     add_definitions(-DRELEASE)
 ENDIF(WIN32)
 
-add_library(mainwindow SHARED ${KOFERTA_SOURCES} res/zasoby.qrc ${qm_files})
+add_library(mainwindow SHARED ${KOFERTA_SOURCES} ${UI_FILES} res/zasoby.qrc ${qm_files})
 set_property(TARGET  mainwindow PROPERTY CXX_STANDARD 11)
 qt5_use_modules(mainwindow Widgets Sql Network PrintSupport)
 target_link_libraries(mainwindow ${QT_LIBRARIES})

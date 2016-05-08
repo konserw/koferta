@@ -64,6 +64,7 @@ MainWindow::MainWindow():
     qInstallMessageHandler(Logger::logHandler);
 
     qDebug() << "konstruktor mainwindow";
+    currentOffer = nullptr;
 
     qDebug() << "loading translation files";
     QString translationFile = QString("kOferta_%1").arg(QLocale::system().name());
@@ -81,17 +82,8 @@ MainWindow::MainWindow():
     readSettings();
     uiReset();
 
-    qDebug() << "inicjalizacja zmiennych";
-    m_pln = false;
-
-    m_offerNumber = new QString;
-    m_date = new QString(QDate::currentDate().toString("dd.MM.yyyy"));
-
+    //m_date = new QString(QDate::currentDate().toString("dd.MM.yyyy"));
     m_calendarWidget = new QCalendarWidget;
-    m_client = NULL;
-
-    m_towarModel = new MerchandiseListModel;
-    ui->tableView->setModel(m_towarModel);
 
     qDebug() << "połaczenia sygnałów i slotów";
     /*menu:*/
@@ -101,11 +93,12 @@ MainWindow::MainWindow():
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveOffer()));
     connect(ui->actionNR, SIGNAL(triggered()), this, SLOT(newOfferNumber()));
     //baza danych
-    connect(ui->klientNowy, SIGNAL(triggered()), this, SLOT(dodajKlient()));
-    connect(ui->klientEdycja, SIGNAL(triggered()), this, SLOT(edytujKlient()));
-    connect(ui->actionNowy_Towar, SIGNAL(triggered()), this, SLOT(dodajTowar()));
+    connect(ui->klientNowy, SIGNAL(triggered()), this, SLOT(createCustomer()));
+    connect(ui->klientEdycja, SIGNAL(triggered()), this, SLOT(editCustomer()));
+    connect(ui->actionNowy_Towar, SIGNAL(triggered()), this, SLOT(createMerchandise()));
+    connect(ui->actionDodaj_warunki, &QAction::triggered, this, &MainWindow::createTerms);
     //export
-    connect(ui->actionDo_PDF, SIGNAL(triggered()), this, SLOT(saveOffer()));
+    connect(ui->actionDo_PDF, SIGNAL(triggered()), this, SLOT(saveOffer()));//TODO wywalic?
     connect(ui->actionDo_PDF, SIGNAL(triggered()), this, SLOT(printPdf()));
     connect(ui->actionDruk, SIGNAL(triggered()), this, SLOT(saveOffer()));
     connect(ui->actionDruk, SIGNAL(triggered()), this, SLOT(printPrev()));
@@ -118,20 +111,14 @@ MainWindow::MainWindow():
     connect(ui->actionUstawienia, &QAction::triggered, this, &MainWindow::changeSettings);
     connect(ui->actionExit, &QAction::triggered, qApp, &QApplication::quit);
 
-    //opcje wydruku
-    connect(ui->pln, SIGNAL(toggled(bool)), this, SLOT(changeCurrency(bool)));
-    connect(ui->kursSpinBox, SIGNAL(valueChanged(double)), m_towarModel, SLOT(setKurs(double)));
+    //opcje wydruku ------------------------------ TODO !
+  //  connect(ui->pln, SIGNAL(toggled(bool)), this, SLOT(changeCurrency(bool)));
+  //  connect(ui->kursSpinBox, SIGNAL(valueChanged(double)), m_towarModel, SLOT(setKurs(double)));
 
     //buttony w tabach
     connect(ui->addTowar, SIGNAL(clicked()), this, SLOT(selectMerchandise()));
     connect(ui->rabat, SIGNAL(clicked()), this, SLOT(globalDiscount()));
     connect(ui->delw, SIGNAL(clicked()), this, SLOT(removeRow()));
-
-    //dodawanie opcji do kombosów
-    connect(ui->actionDodaj_termin_dostawy, &QAction::triggered, this, &MainWindow::addShipmentTime);
-    connect(ui->actionDodaj_warunki_oferty, &QAction::triggered, this, &MainWindow::addOfferTerms);
-    connect(ui->actionDodaj_warunki_dostawy, &QAction::triggered, this, &MainWindow::addShippingTerms);
-    connect(ui->actionDodaj_warunki_platnosci, &QAction::triggered, this, &MainWindow::addPaymentTerms);
 
     connect(ui->commandLinkButton_klient, &QCommandLinkButton::clicked, this, &MainWindow::selectCustomer);
     connect(ui->commandLinkButton_offerTerms, &QCommandLinkButton::clicked, this, &MainWindow::chooseOfferTerms);
@@ -146,8 +133,11 @@ MainWindow::MainWindow():
     connect(ui->checkBox_zapytanieData, SIGNAL(toggled(bool)), this, SLOT(checkData(bool)));
     connect(ui->checkBox_zapytanieNr, SIGNAL(toggled(bool)), this, SLOT(checkNr(bool)));
 
-    ui->checkBox_zapytanieData->setChecked(true);
-    ui->lineEdit_zapytanieData->setText(QDate::currentDate().toString("dd.MM.yyyy"));
+    connect(ui->plainTextEdit_uwagi, &QPlainTextEdit::textChanged, this, &MainWindow::remarksSlot);
+
+    //TODO - check
+  //  ui->checkBox_zapytanieData->setChecked(true);
+  //  ui->lineEdit_zapytanieData->setText(QDate::currentDate().toString("dd.MM.yyyy"));
     ui->checkBox_zapytanieNr->setChecked(false);
     ui->plainTextEdit_zapytanie->setReadOnly(true);
 
@@ -159,10 +149,9 @@ MainWindow::~MainWindow()
     qDebug() << "destruktor mainwindow - start";
 
     delete ui;
-    delete m_offerNumber;
-    delete m_date;
     delete m_calendarWidget;
-    delete m_client;
+    delete currentOffer;
+    Database::instance()->dispose();
 
     qDebug() << "destruktor mainwindow - koniec";
 }
@@ -189,37 +178,26 @@ void MainWindow::uiReset()
 {
     ui->tabWidget->setCurrentIndex(0);
 
-    this->setTitle(NULL);
+    setTitle(QString::null);
     ui->tab->setEnabled(false);
     ui->tab_2->setEnabled(false);
+
+    ui->plainTextEdit_dostawa->clear();
+    ui->plainTextEdit_klient->clear();
+    ui->plainTextEdit_oferta->clear();
+    ui->plainTextEdit_platnosc->clear();
+    ui->plainTextEdit_termin->clear();
+    ui->plainTextEdit_uwagi->clear();
+
+    ui->checkBox_zapytanieData->setChecked(false);
+    ui->checkBox_zapytanieNr->setChecked(false);
+    ui->lineEdit_zapytanieData->clear();
+    ui->lineEdit_zapytanieNr->clear();
+    ui->plainTextEdit_zapytanie->clear();
 
     ui->menuExport->setEnabled(false);
     ui->actionSave->setEnabled(false);
     ui->actionNR->setEnabled(false);
-}
-
-void MainWindow::setOfferTerms(const TermItem &term)
-{
-    currentOffer->setOfferTerm(term);
-    ui->plainTextEdit_oferta->setPlainText(term.longDesc());
-}
-
-void MainWindow::setPaymentTerms(const TermItem &term)
-{
-    currentOffer->setPaymentTerm(term);
-    ui->plainTextEdit_platnosc->setPlainText(term.longDesc());
-}
-
-void MainWindow::setShippingTerms(const TermItem &term)
-{
-    currentOffer->setShippingTerm(term);
-    ui->plainTextEdit_dostawa->setPlainText(term.longDesc());
-}
-
-void MainWindow::setShipmentTime(const TermItem &term)
-{
-    currentOffer->setShipmentTime(term);
-    ui->plainTextEdit_termin->setPlainText(term.longDesc());
 }
 
 void MainWindow::writeSettings()
@@ -256,9 +234,19 @@ void MainWindow::readSettings()
     settings.endGroup();
 }
 
+QMessageBox::StandardButton MainWindow::messageBoxSave()
+{
+    return QMessageBox::question(this, tr("Zapis przed zamknięciem"), tr("Zapisać ofertę przed zamknięciem?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel );
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QMessageBox::StandardButton reply = QMessageBox::question(this, tr("Zapis przed zamknięciem"), tr("Zapisać ofertę przed zamknięciem?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel );
+    QMessageBox::StandardButton reply;
+    if(currentOffer == nullptr)
+        reply = QMessageBox::No;
+    else
+        reply =  messageBoxSave();
+
     if(reply == QMessageBox::Cancel)
     {
         event->ignore();
@@ -311,10 +299,9 @@ void MainWindow::about()
 
 void MainWindow::databaseConnect()
 {
-    LoginDialog *pop = new LoginDialog(this);
-    if(pop->exec() == QDialog::Accepted)
+    LoginDialog pop(this);
+    if(pop.exec() == QDialog::Accepted)
     {
-        delete pop;
         if(User::current() == nullptr)
         {
             Database::instance()->dropConection();
@@ -324,7 +311,6 @@ void MainWindow::databaseConnect()
         qDebug() << "Logged in as" << User::current()->getDbName();
         setMenusEnabled(true);
     }
-    else delete pop;
 }
 
 void MainWindow::databaseDisconnect()
@@ -333,6 +319,8 @@ void MainWindow::databaseDisconnect()
     setMenusEnabled(false);
     User::dropUser();
     Database::instance()->dropConection();
+    delete currentOffer;
+    currentOffer = nullptr;
 }
 
 void MainWindow::changeSettings()
@@ -383,7 +371,7 @@ void MainWindow::checkNr(bool ch)
         ui->lineEdit_zapytanieNr->clear();
         currentOffer->setInquiryNumber(QString::null);
     }
-    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->InquiryText());
+    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->getInquiryText());
 }
 
 void MainWindow::checkData(bool ch)
@@ -394,7 +382,7 @@ void MainWindow::checkData(bool ch)
         ui->lineEdit_zapytanieData->clear();
         currentOffer->setInquiryDate(QString::null);
     }
-    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->InquiryText());
+    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->getInquiryText());
 }
 
 void MainWindow::changeCurrency(bool pln)
@@ -407,65 +395,94 @@ void MainWindow::changeCurrency(bool pln)
     currentOffer->setExchangeRate(pln ? ui->kursSpinBox->value() : -1);
 }
 
+void MainWindow::updateTerms(const TermItem &term)
+{
+    switch(term.getType())
+    {
+    case TermItem::termOffer:
+        ui->plainTextEdit_oferta->setPlainText(term.longDesc());
+        break;
+    case TermItem::termPayment:
+        ui->plainTextEdit_platnosc->setPlainText(term.longDesc());
+        break;
+    case TermItem::termShipmentTime:
+        ui->plainTextEdit_termin->setPlainText(term.longDesc());
+        break;
+    case TermItem::termShipping:
+        ui->plainTextEdit_dostawa->setPlainText(term.longDesc());
+        break;
+    case TermItem::termRemarks:
+        ui->plainTextEdit_uwagi->setPlainText(term.longDesc());
+        break;
+    default:
+        qCritical() << "Invalid TermItem object";
+    }
+}
+
+void MainWindow::bindOffer()
+{
+    connect(currentOffer, &Offer::termsChanged, this, &MainWindow::updateTerms);
+    connect(currentOffer, &Offer::customerChanged, this, &MainWindow::updateCustomer);
+    connect(this, &MainWindow::remarksChanged, currentOffer, &Offer::setRemarks);
+}
+
 void MainWindow::selectCustomer()
 {
     CustomerSelection* pop = new CustomerSelection(this);
-    connect(pop, SIGNAL(selectionChanged(Customer)), this, SLOT(setCustomer(Customer)));
+    connect(pop, &CustomerSelection::selectionChanged, currentOffer, &Offer::setCustomer);
     pop->exec();
-    delete pop;
 }
 
 void MainWindow::selectMerchandise()
 {
-    MerchandiseSelection* pop = new MerchandiseSelection(m_towarModel->hash(), this);
-    connect(pop, &MerchandiseSelection::itemCountChanged, m_towarModel, &MerchandiseListModel::changeItemCount);
+    MerchandiseSelection* pop = new MerchandiseSelection(currentOffer->currentMerchandiseHash(), this);
+    connect(pop, &MerchandiseSelection::itemCountChanged, currentOffer, &Offer::updateMerchandiseList);
     pop->showMaximized();
     pop->exec();
-    delete pop;
 }
 
-void MainWindow::setCustomer(const Customer& customer)
+void MainWindow::updateCustomer(const Customer& customer)
 {
-    currentOffer->setCustomer(customer);
     ui->plainTextEdit_klient->setPlainText(QString("%1\n%2").arg(customer.concatedName()).arg(customer.getFullName()));
+}
+
+void MainWindow::remarksSlot()
+{
+    emit remarksChanged(ui->plainTextEdit_uwagi->toPlainText());
 }
 
 void MainWindow::chooseOfferTerms()
 {
-    TermsChooserDialog* dlg = new TermsChooserDialog(this, Database::offerTermsModel(), tr("Wybór warunków oferty"));
-    if(QDialog::Accepted == dlg->exec())
-        setOfferTerms(dlg->choosenTerm());
-    delete dlg;
+    TermsChooserDialog* dlg = new TermsChooserDialog(this, TermItem::termOffer);
+    connect(dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
+    dlg->exec();
 }
 
 void MainWindow::choosePaymentTerms()
 {
-    TermsChooserDialog* dlg = new TermsChooserDialog(this, Database::paymentTermsModel(), tr("Wybór warunków płatności"));
-    if(QDialog::Accepted == dlg->exec())
-        setPaymentTerms(dlg->choosenTerm());
-    delete dlg;
+    TermsChooserDialog* dlg = new TermsChooserDialog(this, TermItem::termPayment);
+    connect(dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
+    dlg->exec();
 }
 
 void MainWindow::chooseShippingTerms()
 {
-    TermsChooserDialog* dlg = new TermsChooserDialog(this, Database::shippingTermsModel(), tr("Wybór warunków dostawy"));
-    if(QDialog::Accepted == dlg->exec())
-        setShippingTerms(dlg->choosenTerm());
-    delete dlg;
+    TermsChooserDialog* dlg = new TermsChooserDialog(this, TermItem::termShipping);
+    connect(dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
+    dlg->exec();
 }
 
 void MainWindow::chooseShipmentTime()
 {
-    TermsChooserDialog* dlg = new TermsChooserDialog(this, Database::shipmentTimeModel(), tr("Wybór terminu dostawy"));
-    if(QDialog::Accepted == dlg->exec())
-        setShipmentTime(dlg->choosenTerm());
-    delete dlg;
+    TermsChooserDialog* dlg = new TermsChooserDialog(this, TermItem::termShipmentTime);
+    connect(dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
+    dlg->exec();
 }
 
 void MainWindow::setInquiryNumber(const QString &number)
 {
     currentOffer->setInquiryNumber(number);
-    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->InquiryText());
+    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->getInquiryText());
 }
 
 void MainWindow::newOfferNumber()
@@ -477,9 +494,9 @@ void MainWindow::newOfferNumber()
 
 void MainWindow::newOffer()
 {
-    if(currentOffer)
+    if(currentOffer != nullptr)
     {
-        QMessageBox::StandardButton reply = QMessageBox::question(this, tr("Zapisać ofertę?"), tr("Zapisać ofertę przed zamknięciem?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel );
+        QMessageBox::StandardButton reply = messageBoxSave();
         if(reply == QMessageBox::Cancel)
             return;
         if(reply == QMessageBox::Yes)
@@ -489,12 +506,16 @@ void MainWindow::newOffer()
     }
 
     currentOffer = new Offer(this);
+    bindOffer();
     newOfferNumber();
-    this->uiInit();
+    uiReset();
+    uiInit();
 }
 
 void MainWindow::uiInit()
 {
+    currentOffer->bindMerchandiseTable(ui->tableView);
+
     if(isUiInitialized())
         return;
 
@@ -505,12 +526,6 @@ void MainWindow::uiInit()
     ui->menuExport->setEnabled(true);
     ui->actionSave->setEnabled(true);
     ui->actionNR->setEnabled(true);
-
-    //inicjacja tabelki
-    for(int i=0; i < currentOffer->merchandiseListColumnCount(); i++)
-        ui->tableView->setColumnWidth(i, 85);
-    ui->tableView->setColumnWidth(1, 410);
-    ui->tableView->setColumnWidth(0, 99);
 }
 
 void MainWindow::saveOffer()
@@ -521,108 +536,80 @@ void MainWindow::saveOffer()
 
 void MainWindow::loadOffer()
 {
+    if(currentOffer != nullptr)
+    {
+        QMessageBox::StandardButton reply = messageBoxSave();
+        if(reply == QMessageBox::Cancel)
+            return;
+        if(reply == QMessageBox::Yes)
+            saveOffer();
+    }
     LoadDialog* pop = new LoadDialog(this);
     connect(pop, &LoadDialog::offerSelected, this, &MainWindow::loadOfferFromDatabase);
     pop->exec();
-    delete pop;
 }
-////////////////////////////////////////////////////////////////////////
+
 void MainWindow::loadOfferFromDatabase(const QString& offerId)
 {
-    *m_offerNumber = offerId;
+    delete currentOffer;
+    currentOffer = new Offer;
+    bindOffer();
+    uiReset();
+    uiInit();
+    setTitle(offerId);
+    Database::instance()->loadOffer(currentOffer, offerId);
 
-    this->uiInit();
-    this->setTitle(*m_offerNumber);
-
-    QSqlTableModel model;
-    model.setTable("savedOffersFullView");
-    model.setFilter(QString("number = '%1'").arg(offerId));
-    model.select();
-
-    QSqlRecord rec = model.record(0);
-    *m_date = rec.value("date").toString();
-
-    setCustomer(rec);
-
-    if(rec.value("zapytanie_data").isNull())
+    /*TODO przerobic na sygnaly i sloty*/
+    QString t = currentOffer->getInquiryDate();
+    if(t.isNull() || t.isEmpty())
         ui->checkBox_zapytanieData->setChecked(false);
     else
     {
         ui->checkBox_zapytanieData->setChecked(true);
-        ui->lineEdit_zapytanieData->setText(rec.value("zapytanie_data").toString());
+        ui->lineEdit_zapytanieData->setText(t);
     }
-    if(rec.value("zapytanie_nr").isNull())
+    t = currentOffer->getInquiryNumber();
+    if(t.isNull() || t.isEmpty())
         ui->checkBox_zapytanieNr->setChecked(false);
     else
     {
         ui->checkBox_zapytanieNr->setChecked(true);
-        ui->lineEdit_zapytanieNr->setText(rec.value("zapytanie_nr").toString());
+        ui->lineEdit_zapytanieNr->setText(t);
     }
-
-    setShippingTerms(Database::shippingTerm(rec.value("dostawa").toInt()));
-    setShipmentTime(Database::shipmentTime(rec.value("termin").toInt()));
-    setPaymentTerms(Database::paymentTerm(rec.value("platnosc").toInt()));
-    setOfferTerms(Database::offerTerm(rec.value("oferta").toInt()));
-
-    ui->plainTextEdit_uwagi->setPlainText(rec.value("uwagi").toString());
-    m_towarModel->loadOffer(*m_offerNumber);
 }
 
-void MainWindow::addShippingTerms()
+void MainWindow::createTerms()
 {
-    AddConditionDialog pop(TermItem::termShipping);
+    AddConditionDialog pop(this);
     pop.exec();
 }
 
-void MainWindow::addOfferTerms()
+void MainWindow::createCustomer()
 {
-    AddConditionDialog pop(TermItem::termOffer);
-    pop.exec();
+    CustomerNew* pop = new CustomerNew(this);
+    pop->exec();
 }
 
-void MainWindow::addShipmentTime()
+void MainWindow::editCustomer()
 {
-    AddConditionDialog pop(TermItem::termShipmentTime);
-    pop.exec();
+    CustomerEdit* pop = new CustomerEdit(this);
+    pop->exec();
 }
 
-void MainWindow::addPaymentTerms()
+void MainWindow::createMerchandise()
 {
-    AddConditionDialog pop(TermItem::termPayment);
-    pop.exec();
-}
-
-void MainWindow::dodajKlient()
-{
-    CustomerNew* nowyKlient = new CustomerNew(this);
-    nowyKlient->exec();
-    delete nowyKlient;
-}
-
-void MainWindow::edytujKlient()
-{
-    CustomerEdit* okno = new CustomerEdit(this);
-    okno->exec();
-    delete okno;
-}
-
-void MainWindow::dodajTowar()
-{
-    MerchandiseNew* okno = new MerchandiseNew(this);
-    okno->exec();
-    delete okno;
+    MerchandiseNew* pop = new MerchandiseNew(this);
+    pop->exec();
 }
 
 void MainWindow::printPrev()
 {
-    m_htm = false;
-
     QPrinter* printer = new QPrinter;
     printer->setOutputFormat(QPrinter::NativeFormat);
 
     QPrintPreviewDialog* preview = new QPrintPreviewDialog(printer, this);
     preview->setWindowFlags(Qt::Window);
-    connect(preview, SIGNAL(paintRequested(QPrinter *)), currentOffer, SLOT(print(QPrinter *)));
+    connect(preview, &QPrintPreviewDialog::paintRequested, currentOffer, &Offer::print);
     preview->exec();
 
     delete preview;

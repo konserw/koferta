@@ -19,20 +19,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QMessageBox>
 #include <QMainWindow>
 #include "TermItem.h"
 
-class QSqlTableModel;
-class QModelIndex;
-class QTextDocument;
-class QTableWidgetItem;
-class User;
-class QSqlRecord;
 class QCalendarWidget;
-class QDate;
-class QPrinter;
-class MerchandiseListModel;
-class QProcess;
 class Offer;
 class Customer;
 
@@ -60,9 +51,12 @@ public:
     bool isUiInitialized() const;
 
 public slots:
+    void remarksSlot();
     void loadOfferFromDatabase(const QString &offerId);
-    //opcje wydruku
     void changeCurrency(bool pln);
+/* refreshing gui elements */
+    void updateTerms(const TermItem& term);
+    void updateCustomer(const Customer &customer);
 
 /*buttony na 1 zakladce*/
     void selectMerchandise();
@@ -71,7 +65,6 @@ public slots:
 
 /*buttony na 2 zakladce*/
     void selectCustomer();
-    void setCustomer(const Customer &customer);
 
     void chooseOfferTerms();
     void choosePaymentTerms();
@@ -100,26 +93,22 @@ public slots:
     void printPdf();
 
     //baza
-    void dodajKlient();
-    void edytujKlient();
-    void dodajTowar();
-    //dodawanie opcji do kombosów
-    void addShippingTerms();
-    void addPaymentTerms();
-    void addShipmentTime();
-    void addOfferTerms();
+    void createCustomer();
+    void editCustomer();
+    void createMerchandise();
+    void createTerms();
 
     //help
     void about();
 
+signals:
+    void remarksChanged(const QString& remarks);
+
 protected:
+    void bindOffer();
     void writeSettings();
     void readSettings();
     void closeEvent(QCloseEvent *event);
-
-private:
-    Ui::MainWindow *ui;
-
     //pomocnicze funkcje
     ///ustawia tytuł okna
     void setTitle(const QString &);
@@ -127,31 +116,12 @@ private:
     void uiInit();
     void setMenusEnabled(bool en);
     void uiReset();
+    QMessageBox::StandardButton messageBoxSave();
 
-    //wewnętrzne zmienne
-    QString* m_offerNumber;
-    QString* m_date;
-    double m_kurs;
-    bool m_pln;
-    bool m_htm;
-
+private:
+    Ui::MainWindow *ui;
     QCalendarWidget* m_calendarWidget;
-    QSqlRecord* m_client;
-
     Offer* currentOffer;
-
-    User* m_currentUser;
-    MerchandiseListModel* m_towarModel;
-
-    void setOfferTerms(const TermItem& term);
-    void setPaymentTerms(const TermItem& term);
-    void setShippingTerms(const TermItem& term);
-    void setShipmentTime(const TermItem& term);
-
-    TermItem m_shippingTerm;
-    TermItem m_shipmentTime;
-    TermItem m_offerTerm;
-    TermItem m_paymentTerm;
 };
 
 #endif // MAINWINDOW_H

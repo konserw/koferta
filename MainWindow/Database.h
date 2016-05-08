@@ -51,25 +51,22 @@ public:
 
     //terms
     static bool createTerm(const TermItem& term);
-
-    static TermModel *paymentTermsModel();
-    static TermModel *shippingTermsModel();
-    static TermModel *shipmentTimeModel();
-    static TermModel *offerTermsModel();
+    static TermModel* getTermModel(TermItem::TermType termType);
+    static TermItem getTerm(TermItem::TermType termType, int id = -1);
 
     static TermItem paymentTerm(int id);
     static TermItem shippingTerm(int id);
     static TermItem shipmentTime(int id);
     static TermItem offerTerm(int id);
 
-    //merchandise
-    static void saveOfferMerchandise(const QString& offerId, const QList<Merchandise*>& merchandise);
+    //merchandise todo - do wywalenia przynajmniej 2
     static QList<Merchandise*> loadOfferMerchandise(const QString& number);
     static LoadDialogMerchandiseListModel* loadDialogMerchandiseListModel(QObject* parent);
 
     //other
     static QString mainAddress();
 
+    void dispose();
 public slots:
     void dropConection();
     void waitForTunnel();
@@ -83,6 +80,7 @@ public slots:
 
     bool save(const Customer& client) const;
     bool save(const Offer& offer) const;
+    void loadOffer(Offer *offer, const QString &offerId);
 
     void socketConnected();
 signals:
@@ -99,9 +97,6 @@ protected:
     void setupTunnel();
     void createMysqlDatabase();
     void readSettings();
-
-    static TermModel* getTermModel(TermItem::TermType termType);
-    static TermItem getTerm(TermItem::TermType termType, int id = -1);
 
     QString m_databaseUserName;
     QString m_keyFile;
@@ -123,7 +118,7 @@ protected:
     static bool transactionClose();
 };
 
-
+//TODO wywalic to !
 #define EXEC_SILENT(s) \
 do{ \
     if(q.exec(s) == false) \

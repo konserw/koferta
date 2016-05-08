@@ -57,7 +57,6 @@ public:
 
     void addItem(Merchandise* towar);
     void loadOffer(const QString &number);
-    void save(const QString& offerId);
 
     bool pln() const;
     double kurs() const;
