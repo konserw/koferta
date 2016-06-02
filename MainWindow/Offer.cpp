@@ -129,6 +129,7 @@ QString Offer::getNumberWithYear() const
 void Offer::setInquiryDate(const QString &value)
 {
     inquiryDate = value;
+    emit inquiryDateChanged(value);
 }
 
 QString Offer::getInquiryNumberSql() const
@@ -181,6 +182,7 @@ QString Offer::getInquiryNumber() const
 void Offer::setInquiryNumber(const QString &value)
 {
     inquiryNumber = value;
+    emit inquiryNumberChanged(value);
 }
 
 QString Offer::getInquiryText() const

@@ -19,6 +19,7 @@
 #ifndef SZUKAJKLIENTA_H
 #define SZUKAJKLIENTA_H
 
+#include "../features/step_definitions/kofertaSteps.h"
 #include <QWidget>
 
 class QSqlTableModel;
@@ -32,7 +33,8 @@ class Customer;
 class CustomerSearch : public QWidget
 {
     Q_OBJECT
-    
+    friend struct MainWindowCtx;
+
 public:
     explicit CustomerSearch(QWidget *parent = 0);
     ~CustomerSearch();

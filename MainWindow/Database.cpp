@@ -38,8 +38,8 @@
 
 Database* Database::m_instance = nullptr;
 
-Database::Database(QObject* parent) :
-    QObject(parent)
+Database::Database() :
+    QObject(nullptr)
 {
     m_progressDialog = nullptr;
     m_database = nullptr;
@@ -77,7 +77,7 @@ void Database::dropConection()
     }
 }
 
-void Database::setupDatabaseConnection(const QString& keyFile, const QString &pass)
+void Database::setupDatabaseConnection(const QString& keyFile, const QString &pass, bool tunnelSetup)
 {
     readSettings();
     createMysqlDatabase();
@@ -101,7 +101,10 @@ void Database::setupDatabaseConnection(const QString& keyFile, const QString &pa
              << "\t* Password:\t" << QCryptographicHash::hash(m_database->password().toUtf8(), QCryptographicHash::Sha1).toBase64() << "\n"
              << "\t* Schema:\t\t" << m_database->databaseName();
 
-    setupTunnel();
+    if(tunnelSetup)
+        setupTunnel();
+    else
+        waitForTunnel();
 }
 
 void handleOutput(const QString& output)

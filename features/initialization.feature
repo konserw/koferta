@@ -1,8 +1,17 @@
 # language: en
 Feature: GUI initalization
-  test the initial status of the application 
+  Test the initial status of the application and proper GUI initialization
 
-  Scenario: Initialization
-    Given I just turned on the application
+  Scenario: default state
+    Given I have just turned on the application
     Then the offer table should be disabled
 
+  Scenario: Initialization after new offer creation
+    Given I have just turned on the application
+    And I have created new offer
+    Then the offer table should be enabled
+
+  Scenario: Initialization after loading offer
+    Given I have just turned on the application
+    And I have loaded new offer
+    Then the offer table should be enabled

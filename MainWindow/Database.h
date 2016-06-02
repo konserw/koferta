@@ -71,7 +71,7 @@ public slots:
     void dropConection();
     void waitForTunnel();
     void tunelOpened();
-    void setupDatabaseConnection(const QString &keyFile, const QString& pass);
+    void setupDatabaseConnection(const QString &keyFile, const QString& pass, bool tunnelSetup = true);
     void readOutput();
     void readError();
     void tunnelCancel();
@@ -90,7 +90,7 @@ signals:
     void changeStatus(const QString&);
 
 protected:
-    explicit Database(QObject *parent = nullptr);
+    explicit Database();
     ~Database();
     static Database* m_instance;
 

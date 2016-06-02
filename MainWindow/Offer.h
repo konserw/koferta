@@ -95,6 +95,9 @@ public:
 signals:
     void termsChanged(const TermItem& term);
     void customerChanged(const Customer& customer);
+    void inquiryDateChanged(const QString& date);
+    void inquiryNumberChanged(const QString& number);
+
 
 public slots:
     ///"drukowanie" dokumentu do podglądu lub pdf

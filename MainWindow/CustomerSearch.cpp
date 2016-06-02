@@ -23,6 +23,7 @@
 #include <QSqlRecord>
 #include <QtWidgets>
 
+
 CustomerSearch::CustomerSearch(QWidget *parent) :
   QWidget(parent)
 {

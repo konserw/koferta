@@ -98,9 +98,7 @@ MainWindow::MainWindow():
     connect(ui->actionNowy_Towar, SIGNAL(triggered()), this, SLOT(createMerchandise()));
     connect(ui->actionDodaj_warunki, &QAction::triggered, this, &MainWindow::createTerms);
     //export
-    connect(ui->actionDo_PDF, SIGNAL(triggered()), this, SLOT(saveOffer()));//TODO wywalic?
     connect(ui->actionDo_PDF, SIGNAL(triggered()), this, SLOT(printPdf()));
-    connect(ui->actionDruk, SIGNAL(triggered()), this, SLOT(saveOffer()));
     connect(ui->actionDruk, SIGNAL(triggered()), this, SLOT(printPrev()));
     //info
     connect(ui->actionO_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
@@ -129,7 +127,6 @@ MainWindow::MainWindow():
     connect(m_calendarWidget, SIGNAL(clicked(QDate)), this, SLOT(setInquiryDate(QDate)));
     connect(ui->pushButton_zapytanieData, SIGNAL(clicked()), m_calendarWidget, SLOT(show()));
     connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), this, SLOT(setInquiryDate(QString)));
-    connect(ui->lineEdit_zapytanieNr, SIGNAL(textChanged(QString)), this, SLOT(setInquiryNumber(QString)));
     connect(ui->checkBox_zapytanieData, SIGNAL(toggled(bool)), this, SLOT(checkData(bool)));
     connect(ui->checkBox_zapytanieNr, SIGNAL(toggled(bool)), this, SLOT(checkNr(bool)));
 
@@ -237,6 +234,11 @@ void MainWindow::readSettings()
 QMessageBox::StandardButton MainWindow::messageBoxSave()
 {
     return QMessageBox::question(this, tr("Zapis przed zamknięciem"), tr("Zapisać ofertę przed zamknięciem?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel );
+}
+
+Offer *MainWindow::getCurrentOffer() const
+{
+    return currentOffer;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -353,14 +355,7 @@ void MainWindow::removeRow()
 void MainWindow::setInquiryDate(const QDate &date)
 {
     m_calendarWidget->close();
-    setInquiryDate(date.toString("dd.MM.yyyy"));
-}
-
-void MainWindow::setInquiryDate(const QString &date)
-{
-    ui->lineEdit_zapytanieData->setText(date);
-    currentOffer->setInquiryDate(date);
-    ui->checkBox_zapytanieData->setChecked(true);
+    currentOffer->setInquiryDate(date.toString("dd.MM.yyyy"));
 }
 
 void MainWindow::checkNr(bool ch)
@@ -423,6 +418,10 @@ void MainWindow::bindOffer()
 {
     connect(currentOffer, &Offer::termsChanged, this, &MainWindow::updateTerms);
     connect(currentOffer, &Offer::customerChanged, this, &MainWindow::updateCustomer);
+    connect(currentOffer, &Offer::inquiryDateChanged, this, &MainWindow::updateInquiryDate);
+    connect(currentOffer, &Offer::inquiryNumberChanged, this, &MainWindow::updateInquiryNumber);
+
+    connect(ui->lineEdit_zapytanieNr, SIGNAL(textChanged(QString)), currentOffer, SLOT(setInquiryNumber(QString)));
     connect(this, &MainWindow::remarksChanged, currentOffer, &Offer::setRemarks);
 }
 
@@ -444,6 +443,28 @@ void MainWindow::selectMerchandise()
 void MainWindow::updateCustomer(const Customer& customer)
 {
     ui->plainTextEdit_klient->setPlainText(QString("%1\n%2").arg(customer.concatedName()).arg(customer.getFullName()));
+}
+
+void MainWindow::updateInquiryDate(const QString& date)
+{
+    if(date.isNull() || date.isEmpty())
+        ui->checkBox_zapytanieData->setChecked(false);
+    else
+    {
+        ui->checkBox_zapytanieData->setChecked(true);
+        ui->lineEdit_zapytanieData->setText(date);
+    }
+}
+
+void MainWindow::updateInquiryNumber(const QString& number)
+{
+    if(number.isNull() || number.isEmpty())
+        ui->checkBox_zapytanieNr->setChecked(false);
+    else
+    {
+        ui->checkBox_zapytanieNr->setChecked(true);
+        ui->lineEdit_zapytanieNr->setText(number);
+    }
 }
 
 void MainWindow::remarksSlot()
@@ -558,24 +579,6 @@ void MainWindow::loadOfferFromDatabase(const QString& offerId)
     uiInit();
     setTitle(offerId);
     Database::instance()->loadOffer(currentOffer, offerId);
-
-    /*TODO przerobic na sygnaly i sloty*/
-    QString t = currentOffer->getInquiryDate();
-    if(t.isNull() || t.isEmpty())
-        ui->checkBox_zapytanieData->setChecked(false);
-    else
-    {
-        ui->checkBox_zapytanieData->setChecked(true);
-        ui->lineEdit_zapytanieData->setText(t);
-    }
-    t = currentOffer->getInquiryNumber();
-    if(t.isNull() || t.isEmpty())
-        ui->checkBox_zapytanieNr->setChecked(false);
-    else
-    {
-        ui->checkBox_zapytanieNr->setChecked(true);
-        ui->lineEdit_zapytanieNr->setText(t);
-    }
 }
 
 void MainWindow::createTerms()

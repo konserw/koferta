@@ -16,32 +16,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef KLIENT_H
-#define KLIENT_H
+#ifndef KOFERTASTEPS_H
+#define KOFERTASTEPS_H
 
-#include "../features/step_definitions/kofertaSteps.h"
-#include <QDialog>
-class Customer;
+#include "MainWindow.h"
 
-namespace Ui {
-    class CustomerSelection;
-}
-
-class CustomerSelection : public QDialog
+struct MainWindowCtx
 {
-    Q_OBJECT
-    friend struct MainWindowCtx;
+    MainWindow window;
+    QStringList items;
+    QString customer;
 
-public:
-    explicit CustomerSelection(QWidget *parent = 0);
-    ~CustomerSelection();
-
-signals:
-    void selectionChanged(const Customer&);
-
-private:
-    Ui::CustomerSelection *ui;
+    void searchCustomer(const QString& search);
 };
 
-#endif // KLIENT_H
-
+#endif

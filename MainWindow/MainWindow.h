@@ -49,6 +49,7 @@ public:
     ~MainWindow();
 
     bool isUiInitialized() const;
+    Offer *getCurrentOffer() const;
 
 public slots:
     void remarksSlot();
@@ -57,6 +58,8 @@ public slots:
 /* refreshing gui elements */
     void updateTerms(const TermItem& term);
     void updateCustomer(const Customer &customer);
+    void updateInquiryDate(const QString &date);
+    void updateInquiryNumber(const QString &number);
 
 /*buttony na 1 zakladce*/
     void selectMerchandise();
@@ -73,7 +76,6 @@ public slots:
 
     void setInquiryNumber(const QString& number);
     void setInquiryDate(const QDate& date);
-    void setInquiryDate(const QString& date);
     void checkNr(bool);
     void checkData(bool);
 /*menu*/
