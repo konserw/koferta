@@ -68,7 +68,7 @@ int Offer::merchandiseListColumnCount() const
 
 bool Offer::save() const
 {
-    Database::instance()->save(*this);
+    return Database::instance()->save(*this);
 }
 
 void Offer::setTerm(const TermItem& term)
