@@ -91,7 +91,6 @@ MainWindow::MainWindow():
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(newOffer()));
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(loadOffer()));
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveOffer()));
-    connect(ui->actionNR, SIGNAL(triggered()), this, SLOT(newOfferNumber()));
     //baza danych
     connect(ui->klientNowy, SIGNAL(triggered()), this, SLOT(createCustomer()));
     connect(ui->klientEdycja, SIGNAL(triggered()), this, SLOT(editCustomer()));
@@ -301,14 +300,15 @@ void MainWindow::about()
 
 void MainWindow::databaseConnect()
 {
-    LoginDialog pop(this);
-    if(pop.exec() == QDialog::Accepted)
+    LoginDialog* pop = new LoginDialog(this);
+    if(pop->exec() == QDialog::Accepted)
     {
         if(User::current() == nullptr)
         {
             Database::instance()->dropConection();
             QMessageBox::critical(this, tr("Nieprawidłowy użytkownik!"), tr("Użytkownik nie został odnaleziony w bazie danych.\nNastąpi zamknięcie aplikacji.\nProszę skontaktować się z administratorem i przesłąć log aplikacji."));
             qApp->quit();
+            return;
         }
         qDebug() << "Logged in as" << User::current()->getDbName();
         setMenusEnabled(true);
@@ -416,13 +416,17 @@ void MainWindow::updateTerms(const TermItem &term)
 
 void MainWindow::bindOffer()
 {
+    connect(currentOffer, &Offer::numberChnged, this, &MainWindow::setTitle);
+
     connect(currentOffer, &Offer::termsChanged, this, &MainWindow::updateTerms);
     connect(currentOffer, &Offer::customerChanged, this, &MainWindow::updateCustomer);
     connect(currentOffer, &Offer::inquiryDateChanged, this, &MainWindow::updateInquiryDate);
     connect(currentOffer, &Offer::inquiryNumberChanged, this, &MainWindow::updateInquiryNumber);
 
+    connect(ui->actionNR, SIGNAL(triggered(bool)), currentOffer, SLOT(assignNewNumber()));
     connect(ui->lineEdit_zapytanieNr, SIGNAL(textChanged(QString)), currentOffer, SLOT(setInquiryNumber(QString)));
     connect(this, &MainWindow::remarksChanged, currentOffer, &Offer::setRemarks);
+
 }
 
 void MainWindow::selectCustomer()
@@ -506,13 +510,6 @@ void MainWindow::setInquiryNumber(const QString &number)
     ui->plainTextEdit_zapytanie->setPlainText(currentOffer->getInquiryText());
 }
 
-void MainWindow::newOfferNumber()
-{
-    currentOffer->assignNewNumber();
-    m_calendarWidget->setSelectedDate(currentOffer->getDate());
-    this->setTitle(currentOffer->getNumberWithYear());
-}
-
 void MainWindow::newOffer()
 {
     if(currentOffer != nullptr)
@@ -525,12 +522,11 @@ void MainWindow::newOffer()
 
         delete currentOffer;
     }
-
     currentOffer = new Offer(this);
-    bindOffer();
-    newOfferNumber();
     uiReset();
     uiInit();
+    bindOffer();
+    currentOffer->assignNewNumber();
 }
 
 void MainWindow::uiInit()

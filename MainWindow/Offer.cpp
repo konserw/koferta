@@ -57,8 +57,10 @@ void Offer::removeMerchandiseRow(int row)
 void Offer::assignNewNumber()
 {
     date = QDate::currentDate();
+    emit dateChanged(date);
     number = User::current()->getCurrentOfferNumber();
     numberWithYear = User::current()->getCurrentOfferNumberWithYear();
+    emit numberChnged(numberWithYear);
 }
 
 int Offer::merchandiseListColumnCount() const

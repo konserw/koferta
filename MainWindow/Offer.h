@@ -56,7 +56,7 @@ public:
 
     void setGlobalDiscount(double discount);
     void removeMerchandiseRow(int row);
-    void assignNewNumber();
+
     int merchandiseListColumnCount() const;
     bool save() const;
 
@@ -80,7 +80,7 @@ public:
 
     QString getInquiryNumberSql() const;
     QString getInquiryNumber() const;
-    void setInquiryNumber(const QString &value);
+
 
     QString getInquiryDateSql() const;
     QString getInquiryDate() const;
@@ -93,6 +93,9 @@ public:
     QDate getDate() const;
 
 signals:
+    void numberChnged(const QString& numberWithYear);
+    void dateChanged(const QDate& date);
+
     void termsChanged(const TermItem& term);
     void customerChanged(const Customer& customer);
     void inquiryDateChanged(const QString& date);
@@ -109,6 +112,8 @@ public slots:
 
     void setTerm(const TermItem &term);
     void setRemarks(const QString &value);
+    void assignNewNumber();
+    void setInquiryNumber(const QString &value);
 
 protected:
     int number;

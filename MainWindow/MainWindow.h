@@ -55,7 +55,10 @@ public slots:
     void remarksSlot();
     void loadOfferFromDatabase(const QString &offerId);
     void changeCurrency(bool pln);
-/* refreshing gui elements */
+
+    /* refreshing gui elements */
+    void setTitle(const QString &);///ustawia tytuł okna
+
     void updateTerms(const TermItem& term);
     void updateCustomer(const Customer &customer);
     void updateInquiryDate(const QString &date);
@@ -88,7 +91,6 @@ public slots:
     void newOffer();
     void saveOffer();
     void loadOffer();
-    void newOfferNumber();
 
     //export
     void printPrev();
@@ -112,8 +114,7 @@ protected:
     void readSettings();
     void closeEvent(QCloseEvent *event);
     //pomocnicze funkcje
-    ///ustawia tytuł okna
-    void setTitle(const QString &);
+
     ///odblokowanie interfejsu i inicjacja tabeli
     void uiInit();
     void setMenusEnabled(bool en);
