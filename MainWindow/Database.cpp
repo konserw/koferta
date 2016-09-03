@@ -89,7 +89,11 @@ void Database::setupDatabaseConnection(const QString& keyFile, const QString &pa
     m_database->setHostName("127.0.0.1");
     m_database->setPort(m_localPort);
     m_database->setDatabaseName(m_schema);
+#ifdef RELEASE
     m_database->setUserName(m_databaseUserName);
+#else
+    m_database->setUserName("sshUser");
+#endif
     m_database->setPassword(pass);
 
     qDebug().nospace().noquote() << "Set up connection details:\n"

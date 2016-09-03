@@ -48,9 +48,22 @@ LoginDialog::LoginDialog(QWidget *parent) :
     m_kOfertaLogo = new QPixmap(":/klog");
     ui->img->setPixmap(*m_kOfertaLogo);
 
+    QStringList userList;
+#ifdef RELEASE
     QStringList nameFilter("*.ppk");
     QDir directory(qApp->applicationDirPath());
-    QStringList userList = directory.entryList(nameFilter);
+    userList = directory.entryList(nameFilter);
+#else
+    userList
+        << "kOf_Strzempowicz.ppk"
+        << "kOf_Gubernat.ppk"
+        << "kOf_Przybycien.ppk"
+        << "kOf_Bauza.ppk"
+        << "kOf_Baryla.ppk"
+        << "kOf_Admin.ppk"
+        << "kOf_Ciesielska.ppk";
+#endif
+
     ui->comboBox->addItems(userList);
 
     QSettings settings;
