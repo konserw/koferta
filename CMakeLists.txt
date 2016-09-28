@@ -48,15 +48,15 @@ if(BUILD_CUKE)
         ExternalProject_Add(
             cucumber-cpp 
             GIT_REPOSITORY https://github.com/konserw/cucumber-cpp.git
-            GIT_TAG kofertaNewBranch
+            GIT_TAG ultimatekoferta
             PREFIX ${CUCUMBER_ROOT}
-            CMAKE_ARGS "-DCUKE_DISABLE_BOOST_TEST=on -DCUKE_DISABLE_GTEST=on -DCUKE_DISABLE_E2E_TESTS=on -DCUKE_DISABLE_UNIT_TESTS=on"
+            CMAKE_ARGS -DCUKE_DISABLE_BOOST_TEST:bool=on -DCUKE_DISABLE_GTEST:bool=on -DCUKE_DISABLE_E2E_TESTS:bool=on -DCUKE_DISABLE_UNIT_TESTS:bool=on -DCUKE_ENABLE_EXAMPLES:bool=off -DGMOCK_VER:string=1.7.0
             INSTALL_COMMAND ""
             LOG_DOWNLOAD ON
             LOG_CONFIGURE ON
             LOG_BUILD ON
             BUILD_BYPRODUCTS "${CUCUMBER_LIBRARY}"
-            BUILD_BYPRODUCTS "${CUCUMBER_MAIN_LIBRARY}"
+       #     BUILD_BYPRODUCTS "${CUCUMBER_MAIN_LIBRARY}"
         )
     
         add_library(libcucumber-cpp IMPORTED STATIC GLOBAL)
