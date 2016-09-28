@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 project(kOferta)
 
 if(NOT CMAKE_BUILD_TYPE )
-  set(CMAKE_BUILD_TYPE Release CACHE STRING 
+  set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
        "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
        FORCE )
 endif()
@@ -23,6 +23,7 @@ find_package(Qt5Widgets REQUIRED)
 set(QT_LIBRARIES Qt5::Core Qt5::Widgets Qt5::Test)
 
 add_subdirectory(MainWindow)
+add_subdirectory(Logger)
 
 IF(WIN32)
     SET(GUI_TYPE WIN32)
@@ -30,9 +31,9 @@ ENDIF(WIN32)
 
 add_executable(koferta ${GUI_TYPE} Main.cpp)
 add_dependencies(koferta mainwindow)
+add_dependencies(koferta logger)
 set_property(TARGET koferta PROPERTY CXX_STANDARD 11)
-#qt5_use_modules(koferta Widgets Sql Network PrintSupport)
-target_link_libraries(koferta Qt5::Widgets mainwindow)
+target_link_libraries(koferta Qt5::Widgets mainwindow logger)
 
 #
 # Cucumber
@@ -71,6 +72,7 @@ if(BUILD_CUKE)
         set(CUKE_LIBRARIES ${CUCUMBER_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY} ${Boost_DATE_TIME_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
         add_executable(kofertaSteps features/step_definitions/kofertaSteps ${CUKE_FEATURES})
         set_property(TARGET kofertaSteps PROPERTY CXX_STANDARD 11)
+        add_dependencies(kofertaSteps cucumber-cpp)
         target_link_libraries(kofertaSteps mainwindow ${QT_LIBRARIES} ${CUKE_LIBRARIES})
     endif()
 endif()

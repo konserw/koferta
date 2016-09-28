@@ -12,20 +12,33 @@
 #include <QLineEdit>
 #include <QPrinter>
 #include <QTableView>
+#include <QDebug>
+#include <QObject>
+#include <iostream>
 
-void openConnection()
+static int argc = 0;
+static QApplication app(argc, 0);
+static int milliseconds = -1;
+
+void MainWindowCtx::openConnection()
 {
     QSettings settings;
     settings.beginGroup("connection");
     settings.setValue("autoconnect", false);
     settings.setValue("testDB", true);
     settings.endGroup();
-    Database::instance()->setupDatabaseConnection("sshUser.ppk", "", false);
-}
 
-static int argc = 0;
-static QApplication app(argc, 0);
-static int milliseconds = -1;
+    /* Create the QEventLoop */
+    QEventLoop pause;
+    QObject::connect(Database::instance(), SIGNAL(connectionSuccess()), &pause, SLOT(quit()));
+    QObject::connect(Database::instance(), SIGNAL(connectionFail()), &pause, SLOT(quit()));
+    qDebug() << "Opening database connection using cert name:" << databaseConnectionCert;
+    /* The code that will run during the QEventLoop */
+    Database::instance()->setupDatabaseConnection(databaseConnectionCert, "", false);
+    /* Execute the QEventLoop - it will quit when the above finished due to the connect() */
+    pause.exec();
+    qDebug() << "Database connection opened";
+}
 
 int millisecondsToWait() {
     if (milliseconds < 0)
@@ -42,7 +55,8 @@ std::ostream& operator<< (std::ostream& out, const QString& val) { out << val.to
 /* Initialization feature */
 
 GIVEN("^I have just turned on the application$") {
-    openConnection();
+    qWarning() << "first step";
+   // MainWindowCtx::openConnection(); does not work!
     cucumber::ScenarioScope<MainWindowCtx> windowCtx;
     auto window = &(windowCtx.get()->window);
 
@@ -53,8 +67,11 @@ GIVEN("^I have just turned on the application$") {
 }
 
 GIVEN("^I have created new offer$") {
+    qWarning() << "second step";
     cucumber::ScenarioScope<MainWindowCtx> windowCtx;
     auto window = &(windowCtx.get()->window);
+
+    qDebug() << "new offer"; //logger to be implemented - qInstallMessageHendler appears not to be working
 
     window->newOffer();
     QTest::qWait(millisecondsToWait());

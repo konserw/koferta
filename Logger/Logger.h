@@ -19,30 +19,34 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <QObject>
+#include <QtCore/QtGlobal>
 
-class QIODevice;
 class QTextStream;
 class QFile;
 
-class Logger : public QObject
+#if defined EXPORT_LOGGER
+ #define DLLSPEC Q_DECL_EXPORT
+#else
+ #define DLLSPEC Q_DECL_IMPORT
+#endif
+
+class DLLSPEC Logger
 {
-    Q_OBJECT
 public:
-    static Logger* instance();
-    static void logHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
+    static Logger& instance();
+    static void logToFile(QtMsgType type, const QMessageLogContext &context, const QString &msg);
     void logOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
-signals:
-    void logMsg(QString);
-
+    Logger(Logger const&) = delete;
+    void operator=(Logger const&) = delete;
 protected:
     Logger();
     virtual ~Logger();
 
-    static Logger* m_instance;
     QTextStream *m_out;
     QFile* m_log;
+
+    static const char* messageTypes[];
 };
 
 #endif // LOGGER_H

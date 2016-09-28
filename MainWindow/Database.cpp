@@ -101,7 +101,8 @@ void Database::setupDatabaseConnection(const QString& keyFile, const QString &pa
              << "\t* Port:\t\t" << m_database->port() << "\n"
              << "\t* Tunneled to:\t" << m_host << "\n"
              << "\t* Via port:\t" << m_port << "\n"
-             << "\t* Login:\t\t" << m_databaseUserName << "\n"
+             << "\t* kOferta User Name: " << m_databaseUserName << "\n"
+             << "\t* Database User Name:" << m_database->userName() << "\n"
              << "\t* Password:\t" << QCryptographicHash::hash(m_database->password().toUtf8(), QCryptographicHash::Sha1).toBase64() << "\n"
              << "\t* Schema:\t\t" << m_database->databaseName();
 

@@ -18,7 +18,7 @@
 
 #include <QApplication>
 #include <QTextCodec>
-
+#include "Logger/Logger.h"
 #include "MainWindow/MainWindow.h"
 
 int main(int argc, char *argv[])
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     //QCoreApplication::setOrganizationDomain("koferta.no-ip.biz");
     QCoreApplication::setApplicationName("kOferta");
 
+    qInstallMessageHandler(Logger::logToFile);
     MainWindow w;
-
     return app.exec();
 }

@@ -35,7 +35,6 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
-#include "Logger.h"
 #include "Database.h"
 #include "LoginDialog.h"
 #include "LoadDialog.h"
@@ -61,7 +60,7 @@ MainWindow::MainWindow():
     QMainWindow(nullptr),
     ui(new Ui::MainWindow)
 {
-    qInstallMessageHandler(Logger::logHandler);
+    qWarning() << "warn test";
 
     qDebug() << "konstruktor mainwindow";
     currentOffer = nullptr;

@@ -1,5 +1,3 @@
-project(kOferta)
-
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -18,7 +16,6 @@ set(KOFERTA_SOURCES
     LoadDialog.cpp 
     MainWindow.cpp 
     User.cpp 
-    Logger.cpp 
     Merchandise.cpp 
     MerchandiseSearch.cpp 
     MerchandiseSearchModel.cpp 
