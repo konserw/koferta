@@ -19,6 +19,7 @@
 static int argc = 0;
 static QApplication app(argc, 0);
 static int milliseconds = -1;
+QString MainWindowCtx::databaseConnectionCert = "kOf_Admin.ppk";
 
 void MainWindowCtx::openConnection()
 {

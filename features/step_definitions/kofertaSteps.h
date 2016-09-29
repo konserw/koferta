@@ -27,7 +27,7 @@ struct MainWindowCtx
     QStringList items;
     QString customer;
 
-    constexpr static const char * const databaseConnectionCert = "kOf_Admin.ppk";
+    static QString databaseConnectionCert;
 
     void searchCustomer(const QString& search);
     static void openConnection();
