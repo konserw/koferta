@@ -27,22 +27,22 @@
 
 const char* Logger::messageTypes[] =
 {
-    "Debug",
-    "Warning",
-    "Error",
-    "Fatal error",
-    "Info"
+    "[   Debug   ]",
+    "[  Warning  ]",
+    "[   Error   ]",
+    "[Fatal error]",
+    "[    Info   ]"
 };
 
 void Logger::logOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-    QString debugInfo;
-    if(type == QtDebugMsg)
-        debugInfo = QString("[%1] %2").arg(QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")).arg(msg);
-    else
-        debugInfo = QString("[%1] %4 in %2, line %3:\n%5").arg(QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss")).arg(context.function).arg(context.line).arg(messageTypes[type]).arg(msg);
-
-    (*m_out) << debugInfo << endl;
+    (*m_out) << QStringLiteral("[%1]%2[%3:%4 (%5)] ")
+                .arg(QDateTime::currentDateTime().toString("dd.MM.yyyy hh:mm:ss"))
+                .arg(messageTypes[type])
+                .arg(context.file)
+                .arg(context.line)
+                .arg(context.function)
+             << msg << endl;
 
     if(type == QtFatalMsg)
     {
@@ -60,7 +60,7 @@ Logger::Logger()
     if(m_log->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
     {
         m_out = new QTextStream(m_log);
-        (*m_out) << "\nStafrting kOferta version " << VERSION << "\n";
+        (*m_out) << "\nStafrting kOferta version " << VERSION << endl;
     }
     else
     {

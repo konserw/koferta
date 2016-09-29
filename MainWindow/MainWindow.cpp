@@ -60,8 +60,6 @@ MainWindow::MainWindow():
     QMainWindow(nullptr),
     ui(new Ui::MainWindow)
 {
-    qWarning() << "warn test";
-
     qDebug() << "konstruktor mainwindow";
     currentOffer = nullptr;
 
