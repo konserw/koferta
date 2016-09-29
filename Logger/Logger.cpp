@@ -60,7 +60,7 @@ Logger::Logger()
     if(m_log->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text))
     {
         m_out = new QTextStream(m_log);
-        (*m_out) << "\nStafrting kOferta version " << VERSION << endl;
+        (*m_out) << "\nStarting kOferta version " << VERSION << endl;
     }
     else
     {

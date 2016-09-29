@@ -229,11 +229,17 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="lineEdit_zapytanieData">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
+                 </property>
+                 <property name="readOnly">
+                  <bool>false</bool>
                  </property>
                 </widget>
                </item>
@@ -273,6 +279,9 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="lineEdit_zapytanieNr">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -297,6 +306,9 @@
                    <height>0</height>
                   </size>
                  </property>
+                 <property name="readOnly">
+                  <bool>false</bool>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -316,6 +328,9 @@
                <width>16777215</width>
                <height>16777215</height>
               </size>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -637,7 +652,7 @@
      <x>0</x>
      <y>0</y>
      <width>1134</width>
-     <height>27</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOferta">

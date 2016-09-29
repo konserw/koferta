@@ -114,6 +114,7 @@ public slots:
     void setRemarks(const QString &value);
     void assignNewNumber();
     void setInquiryNumber(const QString &value);
+    void setInquiryDate(const QDate& date);
 
 protected:
     int number;

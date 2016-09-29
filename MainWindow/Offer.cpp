@@ -187,15 +187,20 @@ void Offer::setInquiryNumber(const QString &value)
     emit inquiryNumberChanged(value);
 }
 
+void Offer::setInquiryDate(const QDate &date)
+{
+    setInquiryDate(date.toString("dd.MM.yyyy"));
+}
+
 QString Offer::getInquiryText() const
 {
     QString s = "W odpowiedzi na zapytanie";
-    qDebug() << inquiryNumber;
     if(!(inquiryNumber.isEmpty() || inquiryNumber.isNull()))
         s += QString(" numer %1").arg(inquiryNumber);
     if(!inquiryDate.isEmpty())
         s += QString(" z dnia %1").arg(inquiryDate);
     s += " przedstawiamy ofertę na dostawę następujących produktów:";
+    qDebug() << s;
     return s;
 }
 

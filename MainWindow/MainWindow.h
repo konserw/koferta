@@ -63,6 +63,7 @@ public slots:
     void updateCustomer(const Customer &customer);
     void updateInquiryDate(const QString &date);
     void updateInquiryNumber(const QString &number);
+    void updateInquiryText();
 
 /*buttony na 1 zakladce*/
     void selectMerchandise();
@@ -77,8 +78,6 @@ public slots:
     void chooseShippingTerms();
     void chooseShipmentTime();
 
-    void setInquiryNumber(const QString& number);
-    void setInquiryDate(const QDate& date);
     void checkNr(bool);
     void checkData(bool);
 /*menu*/

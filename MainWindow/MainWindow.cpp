@@ -56,6 +56,18 @@
 #include "MerchandiseListModel.h"
 #include "MerchandiseListView.h"
 
+MainWindow::~MainWindow()
+{
+    qDebug() << "destruktor mainwindow - start";
+
+    delete ui;
+    delete m_calendarWidget;
+    delete currentOffer;
+    Database::instance()->dispose();
+
+    qDebug() << "destruktor mainwindow - koniec";
+}
+
 MainWindow::MainWindow():
     QMainWindow(nullptr),
     ui(new Ui::MainWindow)
@@ -120,33 +132,40 @@ MainWindow::MainWindow():
     connect(ui->commandLinkButton_shipingTerms, &QCommandLinkButton::clicked, this, &MainWindow::chooseShippingTerms);
     connect(ui->commandLinkButton_shipmentTime, &QCommandLinkButton::clicked, this, &MainWindow::chooseShipmentTime);
 
-    connect(m_calendarWidget, SIGNAL(clicked(QDate)), this, SLOT(setInquiryDate(QDate)));
     connect(ui->pushButton_zapytanieData, SIGNAL(clicked()), m_calendarWidget, SLOT(show()));
-    connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), this, SLOT(setInquiryDate(QString)));
+  //  connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), this, SLOT(setInquiryDate(QString)));
     connect(ui->checkBox_zapytanieData, SIGNAL(toggled(bool)), this, SLOT(checkData(bool)));
     connect(ui->checkBox_zapytanieNr, SIGNAL(toggled(bool)), this, SLOT(checkNr(bool)));
 
     connect(ui->plainTextEdit_uwagi, &QPlainTextEdit::textChanged, this, &MainWindow::remarksSlot);
+    connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), this, SLOT(updateInquiryText()));
+    connect(ui->lineEdit_zapytanieNr, SIGNAL(textChanged(QString)), this, SLOT(updateInquiryText()));
 
     //TODO - check
   //  ui->checkBox_zapytanieData->setChecked(true);
   //  ui->lineEdit_zapytanieData->setText(QDate::currentDate().toString("dd.MM.yyyy"));
-    ui->checkBox_zapytanieNr->setChecked(false);
-    ui->plainTextEdit_zapytanie->setReadOnly(true);
+  //  ui->checkBox_zapytanieNr->setChecked(false);
+  //  ui->plainTextEdit_zapytanie->setReadOnly(true);
 
     setMenusEnabled(false);
 }
 
-MainWindow::~MainWindow()
+void MainWindow::bindOffer()
 {
-    qDebug() << "destruktor mainwindow - start";
+    //inquiry related ui->offer
+    connect(ui->lineEdit_zapytanieNr, SIGNAL(textChanged(QString)), currentOffer, SLOT(setInquiryNumber(QString)));
+    connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), currentOffer, SLOT(setInquiryNumber(QString)));
+    connect(m_calendarWidget, SIGNAL(clicked(QDate)), currentOffer, SLOT(setInquiryDate(QDate)));
 
-    delete ui;
-    delete m_calendarWidget;
-    delete currentOffer;
-    Database::instance()->dispose();
+    connect(ui->actionNR, SIGNAL(triggered(bool)), currentOffer, SLOT(assignNewNumber()));
+    connect(this, &MainWindow::remarksChanged, currentOffer, &Offer::setRemarks);
 
-    qDebug() << "destruktor mainwindow - koniec";
+    connect(currentOffer, &Offer::numberChnged, this, &MainWindow::setTitle);
+    connect(currentOffer, &Offer::termsChanged, this, &MainWindow::updateTerms);
+    connect(currentOffer, &Offer::customerChanged, this, &MainWindow::updateCustomer);
+    //inquiry related offer->ui
+    connect(currentOffer, &Offer::inquiryDateChanged, this, &MainWindow::updateInquiryDate);
+    connect(currentOffer, &Offer::inquiryNumberChanged, this, &MainWindow::updateInquiryNumber);
 }
 
 bool MainWindow::isUiInitialized() const
@@ -349,12 +368,6 @@ void MainWindow::removeRow()
     currentOffer->removeMerchandiseRow(ui->tableView->currentIndex().row());
 }
 
-void MainWindow::setInquiryDate(const QDate &date)
-{
-    m_calendarWidget->close();
-    currentOffer->setInquiryDate(date.toString("dd.MM.yyyy"));
-}
-
 void MainWindow::checkNr(bool ch)
 {
     ui->lineEdit_zapytanieNr->setEnabled(ch);
@@ -363,7 +376,6 @@ void MainWindow::checkNr(bool ch)
         ui->lineEdit_zapytanieNr->clear();
         currentOffer->setInquiryNumber(QString::null);
     }
-    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->getInquiryText());
 }
 
 void MainWindow::checkData(bool ch)
@@ -374,7 +386,6 @@ void MainWindow::checkData(bool ch)
         ui->lineEdit_zapytanieData->clear();
         currentOffer->setInquiryDate(QString::null);
     }
-    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->getInquiryText());
 }
 
 void MainWindow::changeCurrency(bool pln)
@@ -411,20 +422,6 @@ void MainWindow::updateTerms(const TermItem &term)
     }
 }
 
-void MainWindow::bindOffer()
-{
-    connect(currentOffer, &Offer::numberChnged, this, &MainWindow::setTitle);
-
-    connect(currentOffer, &Offer::termsChanged, this, &MainWindow::updateTerms);
-    connect(currentOffer, &Offer::customerChanged, this, &MainWindow::updateCustomer);
-    connect(currentOffer, &Offer::inquiryDateChanged, this, &MainWindow::updateInquiryDate);
-    connect(currentOffer, &Offer::inquiryNumberChanged, this, &MainWindow::updateInquiryNumber);
-
-    connect(ui->actionNR, SIGNAL(triggered(bool)), currentOffer, SLOT(assignNewNumber()));
-    connect(ui->lineEdit_zapytanieNr, SIGNAL(textChanged(QString)), currentOffer, SLOT(setInquiryNumber(QString)));
-    connect(this, &MainWindow::remarksChanged, currentOffer, &Offer::setRemarks);
-
-}
 
 void MainWindow::selectCustomer()
 {
@@ -468,6 +465,11 @@ void MainWindow::updateInquiryNumber(const QString& number)
     }
 }
 
+void MainWindow::updateInquiryText()
+{
+    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->getInquiryText());
+}
+
 void MainWindow::remarksSlot()
 {
     emit remarksChanged(ui->plainTextEdit_uwagi->toPlainText());
@@ -499,12 +501,6 @@ void MainWindow::chooseShipmentTime()
     TermsChooserDialog* dlg = new TermsChooserDialog(this, TermItem::termShipmentTime);
     connect(dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
     dlg->exec();
-}
-
-void MainWindow::setInquiryNumber(const QString &number)
-{
-    currentOffer->setInquiryNumber(number);
-    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->getInquiryText());
 }
 
 void MainWindow::newOffer()
