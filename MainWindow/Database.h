@@ -46,7 +46,7 @@ public:
 /* Database Interface */
     //user-related
     QStringList usersList();
-    User *userInfo();
+    User *userInfo(const QString &userName);
     bool setCurrentOfferNumber(int offerNumber);
 
     //terms
@@ -66,14 +66,13 @@ public:
     //other
     static QString mainAddress();
 
-    void dispose();
 public slots:
     void dropConection();
-    void waitForTunnel();
+    void waitForTunnel(const QString &host, unsigned port);
     void tunelOpened();
-    void setupDatabaseConnection(const QString &keyFile, const QString& pass, bool tunnelSetup = true);
-    void readOutput();
-    void readError();
+    void socketConnected();
+    void setupDatabaseConnection(const QString &host, unsigned port, const QString &schema);
+    void logIn(const QString& user, const QString& password);
     void tunnelCancel();
     void openDatabaseConnection();
     void failedTunnel(QProcess::ProcessError error);
@@ -82,7 +81,6 @@ public slots:
     bool save(const Offer& offer) const;
     void loadOffer(Offer *offer, const QString &offerId);
 
-    void socketConnected();
 signals:
     void driverFail();
     void connectionFail();
@@ -94,22 +92,10 @@ protected:
     ~Database();
     static Database* m_instance;
 
-    void setupTunnel();
     void createMysqlDatabase();
-    void readSettings();
-
-    QString m_databaseUserName;
-    QString m_keyFile;
-    QString m_host;
-    static const int m_port = 2292;
-    static const int m_localPort = 13306;
-    static const int m_hostPort = 3306;
-    QString m_previousHost;
-    QString m_schema;
 
     QProgressDialog* m_progressDialog;
     QTcpSocket* m_socket;
-    QProcess *tunnelProcess;
     QSqlDatabase* m_database;
 
     static QSqlQuery transactionQuery(const QString& queryText);

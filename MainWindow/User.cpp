@@ -27,8 +27,8 @@
 
 User* User::instance = nullptr;
 
-User::User(int Uid, const QString &Name, const QString &Phone, const QString &Mail, const QString &Address, bool Male, int CurrentOfferNumber, const QString& DbName)
-    : uid(Uid), name(Name), phone(Phone), mail(Mail), address(Address), male(Male), currentOfferNumber(CurrentOfferNumber), dbName(DbName)
+User::User(int Uid, const QString &Name, const QString &Phone, const QString &Mail, const QString &Address, bool Male, int CurrentOfferNumber)
+    : uid(Uid), name(Name), phone(Phone), mail(Mail), address(Address), male(Male), currentOfferNumber(CurrentOfferNumber)
 {
     qDebug() << "Creating new user:" << uid << Name << Phone << Mail << Address << Male << CurrentOfferNumber;
 }
@@ -40,7 +40,7 @@ User::~User()
 User *User::current()
 {
     if(!instance)
-        instance = Database::instance()->userInfo();
+        instance = Database::instance()->userInfo("");//TODO
     return instance;
 }
 
@@ -68,11 +68,6 @@ QString User::getName() const
 QString User::getPhone() const
 {
     return phone;
-}
-
-QString User::getDbName() const
-{
-    return dbName;
 }
 
 QString User::suffix() const

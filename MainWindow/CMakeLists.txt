@@ -30,7 +30,6 @@ set(KOFERTA_SOURCES
     CustomerSearch.cpp 
     OfferSearch.cpp 
     CustomerSelection.cpp 
-    SettingsDialog.cpp 
     LoginDialog.cpp 
     AddConditionDialog.cpp 
     TermsChooserDialog.cpp 
@@ -51,7 +50,6 @@ set(UI_FILES
     MerchandiseNew.ui
     OfferSearch.ui
     CustomerSelection.ui
-    SettingsDialog.ui
     LoginDialog.ui
     AddConditionDialog.ui
     TermsChooserDialog.ui
@@ -66,6 +64,8 @@ qt5_add_translation(qm_files ${TS_FILES})
 add_definitions(-DVERSION="${KOFERTA_VERSION}")
 add_definitions(-DEXPORT_MAINWINDOW)
 add_definitions(-DQT_MESSAGELOGCONTEXT)
+add_definitions(-DSQL_USER="${KOFERTA_SQL_USER}")
+add_definitions(-DSQL_PWD="${KOFERTA_SQL_PWD}")
 
 IF(WIN32)
     add_definitions(-DWIN32)

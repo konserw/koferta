@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>470</width>
-    <height>269</height>
+    <width>508</width>
+    <height>484</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,7 +23,7 @@
    <iconset resource="res/zasoby.qrc">
     <normaloff>:/ico</normaloff>:/ico</iconset>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
@@ -40,7 +40,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="img">
+      <widget class="QLabel" name="label_logo">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -68,14 +68,14 @@
     </layout>
    </item>
    <item>
-    <spacer name="verticalSpacer">
+    <spacer name="verticalSpacer_2">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
-       <height>89</height>
+       <height>153</height>
       </size>
      </property>
     </spacer>
@@ -103,7 +103,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QComboBox" name="comboBox">
+      <widget class="QComboBox" name="comboBox_user">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -143,7 +143,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit">
+      <widget class="QLineEdit" name="lineEdit_password">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -175,13 +175,72 @@
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="info">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Baza Danych</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Adres:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit_ip"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Port:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit_port"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBox_useTestDB">
+        <property name="text">
+         <string>Testowa baza danych</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_apply">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Zastosuj i połącz ponownie</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_statusBar">
+     <property name="frameShape">
+      <enum>QFrame::Panel</enum>
+     </property>
      <property name="text">
-      <string notr="true">                                            </string>
+      <string notr="true">status bar</string>
      </property>
     </widget>
    </item>
   </layout>
+  <zorder>label_statusBar</zorder>
+  <zorder>verticalSpacer_2</zorder>
+  <zorder>groupBox</zorder>
  </widget>
  <resources>
   <include location="res/zasoby.qrc"/>

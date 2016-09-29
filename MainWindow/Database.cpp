@@ -43,28 +43,15 @@ Database::Database() :
 {
     m_progressDialog = nullptr;
     m_database = nullptr;
-    tunnelProcess = nullptr;
-}
-
-void Database::dispose()
-{
-    qDebug() << "Database class dispose";
-    dropConection();
-    if(tunnelProcess != nullptr)
-    {
-        tunnelProcess->kill();
-        tunnelProcess->waitForFinished();
-        delete tunnelProcess;
-        tunnelProcess = nullptr;
-    }
-    delete m_progressDialog;
-    m_progressDialog = nullptr;
+    m_socket = nullptr;
 }
 
 Database::~Database()
 {
     qDebug() << "Database class destruktor";
-    dispose();
+    dropConection();
+    delete m_progressDialog;
+    delete m_socket;
 }
 
 void Database::dropConection()
@@ -77,62 +64,39 @@ void Database::dropConection()
     }
 }
 
-void Database::setupDatabaseConnection(const QString& keyFile, const QString &pass, bool tunnelSetup)
+void Database::setupDatabaseConnection(const QString &host, unsigned port, const QString& schema)
 {
-    readSettings();
     createMysqlDatabase();
 
-    m_keyFile = keyFile;
-    m_databaseUserName = keyFile;
-    m_databaseUserName.chop(4);
-
-    m_database->setHostName("127.0.0.1");
-    m_database->setPort(m_localPort);
-    m_database->setDatabaseName(m_schema);
-#ifdef RELEASE
-    m_database->setUserName(m_databaseUserName);
-#else
-    m_database->setUserName("sshUser");
-#endif
-    m_database->setPassword(pass);
+    m_database->setHostName(host);
+    m_database->setPort(port);
+    m_database->setDatabaseName(schema);
+    m_database->setUserName(SQL_USER);
+    m_database->setPassword(SQL_PWD);
+    qWarning() << "user: " << SQL_USER << " pwd: " << SQL_PWD;
 
     qDebug().nospace().noquote() << "Set up connection details:\n"
              << "\t* Host:\t\t" << m_database->hostName() << "\n"
              << "\t* Port:\t\t" << m_database->port() << "\n"
-             << "\t* Tunneled to:\t" << m_host << "\n"
-             << "\t* Via port:\t" << m_port << "\n"
-             << "\t* kOferta User Name: " << m_databaseUserName << "\n"
-             << "\t* Database User Name:" << m_database->userName() << "\n"
+             << "\t* UserName:\t" << m_database->userName() << "\n"
              << "\t* Password:\t" << QCryptographicHash::hash(m_database->password().toUtf8(), QCryptographicHash::Sha1).toBase64() << "\n"
-             << "\t* Schema:\t\t" << m_database->databaseName();
+             << "\t* Schema:\t" << m_database->databaseName();
 
-    if(tunnelSetup)
-        setupTunnel();
-    else
-        waitForTunnel();
+    waitForTunnel(host, port);
 }
 
-void handleOutput(const QString& output)
+void Database::logIn(const QString &user, const QString &password)
 {
-    QStringList out = output.split("\n");
-    foreach(const QString& o, out)
-        if(o.isEmpty() == false)
-            qDebug().noquote() << "[ssh]" << o;
+    //TODO:
+    //implement password checking for koferta users
+    //and generate User object
 }
 
-void Database::readOutput()
-{
-    handleOutput(tunnelProcess->readAllStandardOutput());
-}
-
-void Database::readError()
-{
-    handleOutput(tunnelProcess->readAllStandardError());
-}
 
 void Database::tunnelCancel()
 {
     delete m_socket;
+    m_socket = nullptr;
     qDebug() << "ssh: canceled by user";
     failedTunnel(QProcess::UnknownError);
 }
@@ -150,12 +114,12 @@ void Database::openDatabaseConnection()
         << "\t* database error:" << m_database->lastError().databaseText() << "\n"
         << "\t* driver error:" << m_database->lastError().driverText();
 
-        emit changeStatus(tr("Połączenie z bazą danych %1 na %2 nie powiodło się.").arg(m_schema, m_host));
+        emit changeStatus(tr("Połączenie z bazą danych powiodło się."));
         emit connectionFail();
         return;
     }
 
-    emit changeStatus(tr("Połączono z bazą danych %1 na %2").arg(m_schema, m_host));
+    emit changeStatus(tr("Połączono z bazą danych"));
     emit connectionSuccess();
 }
 
@@ -168,7 +132,7 @@ void Database::failedTunnel(QProcess::ProcessError error) //nie dziala ?
         m_progressDialog = nullptr;
     }
     qDebug() << "ssh tunnel error:" << error;
-    emit changeStatus(tr("Utworzenie tunelu do hosta %1 nie powiodło się.").arg(m_host));
+    emit changeStatus(tr("Utworzenie tunelu do hosta %1 nie powiodło się."));
     emit connectionFail();
 }
 
@@ -352,52 +316,6 @@ bool Database::save(const Customer &client) const
     return transactionClose();
 }
 
-void Database::setupTunnel()
-{
-    qDebug() << "setup ssh tunel";
-
-    if(tunnelProcess != nullptr)
-    {
-        if(m_previousHost == m_host)
-        {
-            waitForTunnel();
-            return;
-        }
-        else
-        {
-            tunnelProcess->kill();
-            emit changeStatus(tr("Niszczenie tunelu do hosta %1...").arg(m_previousHost));
-            tunnelProcess->waitForFinished(50000);
-            delete tunnelProcess;
-        }
-    }
-
-    m_previousHost = m_host;
-    emit changeStatus(tr("Tworzenie tunelu do hosta %1...").arg(m_host));
-
-    tunnelProcess = new QProcess(this);
-    QString program;
-    QStringList arguments;
-
-#ifdef WIN32
-    program = "./plink.exe";
-    arguments << "-v" << "-ssh" << m_host << "-l" << m_databaseUserName << "-P" << QString::number(m_port) << "-2" << "-4" << "-i" << m_keyFile << "-C" << "-T" << "-N" << "-L" << QString("%1:%2:%3").arg(m_localPort).arg(m_host).arg(m_hostPort);
-#else
-    program = "ssh";
-    arguments << "-v" << m_host << "-p" << QString::number(m_port) << "-l" << "konserw" << "-i" << "~/.ssh/koferta_rsa" << "-N" /*<< "-f" << "-n"*/ << "-L" << QString("%1:%2:%3").arg(m_localPort).arg(m_host).arg(m_hostPort);
-#endif
-
-    qDebug().noquote() << program << arguments.join(" ");
-
-    connect(tunnelProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(readOutput()));
-    connect(tunnelProcess, SIGNAL(readyReadStandardError()), this, SLOT(readError()));
-    connect(tunnelProcess, &QProcess::started, this, &Database::waitForTunnel);
-    connect(tunnelProcess, SIGNAL(error(QProcess::ProcessError)), this, SLOT(failedTunnel(QProcess::ProcessError)));
-
-    tunnelProcess->start(program, arguments);
-    qDebug() << "tunnel started";
-}
-
 void Database::createMysqlDatabase()
 {
     if(m_database != nullptr)
@@ -423,21 +341,7 @@ void Database::createMysqlDatabase()
     }
 }
 
-void Database::readSettings()
-{
-    QSettings settings;
-    settings.beginGroup("connection");
-
-    m_host = settings.value("selected host", "localhost").toString();
-    if(settings.value("testDB").toBool())
-        m_schema = "kOferta_test";
-    else
-        m_schema = "kOferta_v3";
-
-    settings.endGroup();
-}
-
-void Database::waitForTunnel()
+void Database::waitForTunnel(const QString& host, unsigned port)
 {
     qDebug() << "Waiting for tunnel";
     m_socket = new QTcpSocket;
@@ -451,7 +355,7 @@ void Database::waitForTunnel()
 
     m_progressDialog->open();
 
-    m_socket->connectToHost("127.0.0.1", m_localPort);
+    m_socket->connectToHost(host, port);
     qDebug() << "Connecting socket";
 }
 
@@ -462,10 +366,11 @@ void Database::socketConnected()
 
 void Database::tunelOpened()
 {
-    emit changeStatus(tr("Tworzenie tunelu do hosta %1 zakończone powodzeniem").arg(m_host));
-    qDebug() << "ssh tunnel opened to host " << m_host << " as " << m_databaseUserName;
+    emit changeStatus(tr("Tworzenie tunelu zakończone powodzeniem"));
+    qDebug() << "ssh tunnel opened ";
     m_socket->disconnectFromHost();
     delete m_socket;
+    m_socket = nullptr;
     m_progressDialog->accept();
     delete m_progressDialog;
     m_progressDialog = nullptr;
@@ -532,24 +437,24 @@ Database *Database::instance()
     return m_instance;
 }
 
-User* Database::userInfo()
+User* Database::userInfo(const QString& userName)
 {
-    qDebug() << "Downloading user info for" << m_databaseUserName;
+    qDebug() << "Downloading user info for" << userName;
 
     QSqlTableModel usersTable;
     usersTable.setTable("usersView");
-    usersTable.setFilter(QString("dbName = '%1'").arg(m_databaseUserName));
+    usersTable.setFilter(QString("dbName = '%1'").arg(userName));
     usersTable.select();
  //   qDebug() << "users table row count after filter:" << usersTable.rowCount();
     if(usersTable.rowCount() < 1)
     {
-        qCritical().noquote() << "Invalid user selected:" << m_databaseUserName;
+        qCritical().noquote() << "Invalid user selected:" << userName;
         return nullptr;
     }
 
     QSqlRecord r = usersTable.record(0);
     //qDebug() << "user record" << r;
-    return new User(r.value("uid").toInt(), r.value("name").toString(), r.value("phone").toString(), r.value("mail").toString(), r.value("address").toString(), r.value("male").toBool(), r.value("currentOfferNumber").toInt(), m_databaseUserName);
+    return new User(r.value("uid").toInt(), r.value("name").toString(), r.value("phone").toString(), r.value("mail").toString(), r.value("address").toString(), r.value("male").toBool(), r.value("currentOfferNumber").toInt());
 }
 
 bool Database::setCurrentOfferNumber(int offerNumber)

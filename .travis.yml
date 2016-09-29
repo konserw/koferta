@@ -1,43 +1,33 @@
 language: cpp
 os:
-  - linux
+- linux
 sudo: required
 dist: trusty
 compiler:
-  - clang
-  - gcc
-
+- clang
+- gcc
 install:
-  - if [ "$CXX" = "g++" ]; then g++ -v; else clang -v; fi
-  - gem install bundler #cucumber -v 2.0.0
-
+- if [ "$CXX" = "g++" ]; then g++ -v; else clang -v; fi
+- gem install bundler
 addons:
-#  apt:
-#    sources:
-#      - ubuntu-toolchain-r-test
-    packages:
-      - ninja-build
-      - clang
-      - libmysqlclient18
-#      - qtbase5-dev
-#      - qttools5-dev
-#      - qttools5-dev-tools
-#      - libqt5sql5-mysql 
-      - libboost-thread-dev 
-      - libboost-system-dev
-      - libboost-regex-dev
-      - libboost-date-time-dev 
-      - libboost-program-options-dev
-
+  packages:
+  - ninja-build
+  - clang
+  - libmysqlclient18
+  - libboost-thread-dev
+  - libboost-system-dev
+  - libboost-regex-dev
+  - libboost-date-time-dev
+  - libboost-program-options-dev
 before_script:
-  - sudo add-apt-repository -y ppa:beineri/opt-qt561-trusty 
-  - sudo apt-get -qq update
-  - sudo apt-get install -y qt56base qt56tools ninja-build 
-  - QTDIR="/opt/qt56" && PATH="$QTDIR/bin:$PATH"
-  - source /opt/qt56/bin/qt56-env.sh 
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-
-script: ./travis.sh 
-#after_script: cat /home/travis/build/konserw/koferta/build/cucumber/src/cucumber-cpp-stamp/cucumber-cpp-build-*.log
-
+- sudo add-apt-repository -y ppa:beineri/opt-qt561-trusty
+- sudo apt-get -qq update
+- sudo apt-get install -y qt56base qt56tools ninja-build
+- QTDIR="/opt/qt56" && PATH="$QTDIR/bin:$PATH"
+- source /opt/qt56/bin/qt56-env.sh
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+script: "./travis.sh"
+env:
+  global:
+  - secure: vMwqCTy+npZOtscC9bUDx1YC2gRPCvP+cHEWrAw9nS1LO2ibw5SvGrokxzIVGojWL3b0StGC5As2ff59uNULcVL3XwUgzu8MWmStcQVewY3BuGrRvhvl8Bl5vEVCLDPB07c28XLo2DLdYD0FSGV+MOWul9pU7zGcKDa3VW79Qxrt8Hlyw29EjBOyKXFGXdQQaBvarSCk5OA2wsd3h/wUZ4euJtcjJUbPoDB+fL1sPKZjDHPBz3vwT4SNZhrmvHOVotN7mt0kpCjJ8IAZy/blAZtEJAXcxYOfkFkUcQqDS0qencA4AVePqFiiosmf5o/veda0C+iTunmW4u+lG10MBQJuzFZ4dSPVZtHbHJg6XciF3+v1iDkGU+t2ADrtaHBQRiBJMPAABaGq4Tv5z1dRoRAU6tZ5BfeeQ/DXQjN+h6sKv28SejojTFBAn2Q5CEqAPGW6fMdp8p6vI3qMNzGO+X2fi4LPmxLwJX75b23n+mZ1rv9VEOP9bN7j+wfJGdGF097gOIzzTmVT+vpGL+kDZ90jDNC6U0CXkS2dlBg0r4GyNY54CU8GOGH0zMxwbGyOE4HErLkSicFXd7w30O5OmnUQ0fnKiez40ps2kny9Mq/mcoG4KM59c8ZDkEEx3kYB21OuCUx5Aafo9wpDFgCOYC/bEGbVhw5f0nv+qxBPqKw=

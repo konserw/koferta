@@ -84,7 +84,6 @@ public slots:
     //kOferta
     void databaseConnect();
     void databaseDisconnect();
-    void changeSettings();
 
     //oferta
     void newOffer();

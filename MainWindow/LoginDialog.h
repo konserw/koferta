@@ -37,6 +37,7 @@ public:
     ~LoginDialog();
 
 public slots:
+    void openDBconnectionAndGetUserList();
     void ok();
     void failed();
 
@@ -45,5 +46,8 @@ private:
 
     QPixmap* m_kOfertaLogo;
     QString m_lastUser;
+
+    void readSettings();
+    void writeSettings();
 };
 #endif // LOG_H

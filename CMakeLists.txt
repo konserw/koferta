@@ -2,20 +2,11 @@ cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
 
 project(kOferta)
 
-if(NOT CMAKE_BUILD_TYPE )
-  set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
-       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
-       FORCE )
-endif()
-
-if(NOT KOFERTA_VERSION )
-  set(KOFERTA_VERSION "3.x-mannual" CACHE STRING
-       "Please provide build version string"
-       FORCE )
-endif()
-if(NOT CMAKE_BUILD_TYPE )
-    set(BUILD_CUKE on CACHE BOOL "Build E2E test using cucumber" FORCE )
-endif()
+set(KOFERTA_SQL_USER CACHE STRING "SQL Database user" )
+set(KOFERTA_SQL_PWD  CACHE STRING "SQL Database Password" )
+set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." )
+set(KOFERTA_VERSION "3.x-mannual" CACHE STRING "Please provide build version string" )
+set(BUILD_CUKE off CACHE BOOL "Build E2E test using cucumber" )
 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Test REQUIRED)

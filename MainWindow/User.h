@@ -45,11 +45,9 @@ public:
     int getCurrentOfferNumber() const;
     QString getCurrentOfferNumberWithYear() const;
     QString getPhone() const;
-    QString getDbName() const;
     QString suffix() const;
 
 protected:
-    QString dbName;
     QString name;
     QString phone;
     QString mail;
@@ -58,7 +56,7 @@ protected:
     int uid;
     int currentOfferNumber;
 
-    User(int Uid, const QString& Name, const QString& Phone, const QString& Mail, const QString& Address, bool Male, int CurrentOfferNumber, const QString& DbName);
+    User(int Uid, const QString& Name, const QString& Phone, const QString& Mail, const QString& Address, bool Male, int CurrentOfferNumber);
     static User* instance;
 };
 

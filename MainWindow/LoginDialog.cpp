@@ -21,12 +21,9 @@
 #include <QStringList>
 #include <QString>
 #include <QSettings>
-#include <QDir>
-#include <QApplication>
 
 #include "LoginDialog.h"
 #include "ui_LoginDialog.h"
-#include "User.h"
 #include "Database.h"
 
 LoginDialog::~LoginDialog()
@@ -35,6 +32,25 @@ LoginDialog::~LoginDialog()
 
     delete ui;
     delete m_kOfertaLogo;
+}
+
+void LoginDialog::openDBconnectionAndGetUserList()
+{
+    ui->comboBox_user->clear();
+    writeSettings();
+
+    QString schema;
+    if(ui->checkBox_useTestDB->isChecked())
+        schema = "kOferta_test";
+    else
+        schema = "kOferta_v3";
+
+    Database::instance()->setupDatabaseConnection(ui->lineEdit_ip->text(), ui->lineEdit_port->text().toUInt(), schema);
+    QStringList userList = Database::instance()->usersList();
+
+    ui->comboBox_user->addItems(userList);
+    if(!(m_lastUser.isEmpty() || m_lastUser.isNull()) && userList.contains(m_lastUser))
+        ui->comboBox_user->setCurrentText(m_lastUser);
 }
 
 LoginDialog::LoginDialog(QWidget *parent) :
@@ -46,54 +62,55 @@ LoginDialog::LoginDialog(QWidget *parent) :
     ui->setupUi(this);
 
     m_kOfertaLogo = new QPixmap(":/klog");
-    ui->img->setPixmap(*m_kOfertaLogo);
-
-    QStringList userList;
-#ifdef RELEASE
-    QStringList nameFilter("*.ppk");
-    QDir directory(qApp->applicationDirPath());
-    userList = directory.entryList(nameFilter);
-#else
-    userList
-        << "kOf_Strzempowicz.ppk"
-        << "kOf_Gubernat.ppk"
-        << "kOf_Przybycien.ppk"
-        << "kOf_Bauza.ppk"
-        << "kOf_Baryla.ppk"
-        << "kOf_Admin.ppk"
-        << "kOf_Ciesielska.ppk";
-#endif
-
-    ui->comboBox->addItems(userList);
-
-    QSettings settings;
-    settings.beginGroup("connection");
-    if(settings.contains("last user"))
-        ui->comboBox->setCurrentText(settings.value("last user").toString());
-    settings.endGroup();
+    ui->label_logo->setPixmap(*m_kOfertaLogo);
 
     disconnect(this, SLOT(accept()));
+    connect(ui->pushButton_apply, &QPushButton::clicked, this, &LoginDialog::openDBconnectionAndGetUserList);
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &LoginDialog::ok);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &LoginDialog::reject);
     connect(Database::instance(), &Database::driverFail, this, &LoginDialog::reject);
     connect(Database::instance(), &Database::connectionFail, this, &LoginDialog::failed);
     connect(Database::instance(), &Database::connectionSuccess, this, &LoginDialog::accept);
-    connect(Database::instance(), &Database::changeStatus, ui->info, &QLabel::setText);
+    connect(Database::instance(), &Database::changeStatus, ui->label_statusBar, &QLabel::setText);
+
+    readSettings();
+    openDBconnectionAndGetUserList();
 }
 
 void LoginDialog::ok()
 {
     ui->buttonBox->setEnabled(false);
-
+    QString user = ui->comboBox_user->currentText();
     QSettings settings;
     settings.beginGroup("connection");
-    settings.setValue("last user", ui->comboBox->currentText());
+    settings.setValue("last user", user);
     settings.endGroup();
-
-    Database::instance()->setupDatabaseConnection(ui->comboBox->currentText(), ui->lineEdit->text());
+    Database::instance()->logIn(user, ui->lineEdit_password->text());
 }
 
 void LoginDialog::failed()
 {
     ui->buttonBox->setEnabled(true);
+}
+
+void LoginDialog::readSettings()
+{
+    QSettings settings;
+    settings.beginGroup("connection");
+    if(settings.contains("last user"))
+        m_lastUser = settings.value("last user").toString();
+    ui->checkBox_useTestDB->setChecked(settings.value("testDB", false).toBool());
+    ui->lineEdit_ip->setText(settings.value("DB_host", "127.0.0.1").toString());
+    ui->lineEdit_port->setText(settings.value("DB_port", "13306").toString());
+    settings.endGroup();
+}
+
+void LoginDialog::writeSettings()
+{
+    QSettings settings;
+    settings.beginGroup("connection");
+    settings.setValue("testDB", ui->checkBox_useTestDB->isChecked());
+    settings.setValue("DB_host", ui->lineEdit_ip->text());
+    settings.setValue("DB_port", ui->lineEdit_port->text());
+    settings.endGroup();
 }

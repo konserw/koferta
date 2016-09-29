@@ -42,7 +42,6 @@
 #include "Offer.h"
 
 #include "AddConditionDialog.h"
-#include "SettingsDialog.h"
 #include "TermsChooserDialog.h"
 
 #include "Customer.h"
@@ -63,7 +62,6 @@ MainWindow::~MainWindow()
     delete ui;
     delete m_calendarWidget;
     delete currentOffer;
-    Database::instance()->dispose();
 
     qDebug() << "destruktor mainwindow - koniec";
 }
@@ -114,7 +112,6 @@ MainWindow::MainWindow():
     //kOferta
     connect(ui->actionConnect, &QAction::triggered, this, &MainWindow::databaseConnect);
     connect(ui->actionDisconnect, &QAction::triggered, this, &MainWindow::databaseDisconnect);
-    connect(ui->actionUstawienia, &QAction::triggered, this, &MainWindow::changeSettings);
     connect(ui->actionExit, &QAction::triggered, qApp, &QApplication::quit);
 
     //opcje wydruku ------------------------------ TODO !
@@ -326,7 +323,6 @@ void MainWindow::databaseConnect()
             qApp->quit();
             return;
         }
-        qDebug() << "Logged in as" << User::current()->getDbName();
         setMenusEnabled(true);
     }
 }
@@ -339,12 +335,6 @@ void MainWindow::databaseDisconnect()
     Database::instance()->dropConection();
     delete currentOffer;
     currentOffer = nullptr;
-}
-
-void MainWindow::changeSettings()
-{
-    SettingsDialog dialog;
-    dialog.exec();
 }
 
 void MainWindow::setTitle(const QString& nr)
