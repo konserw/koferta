@@ -334,8 +334,8 @@ void Database::loadOffer(Offer* offer, const QString& offerId)
                 rec.value("id").toInt()
                 ));
 
-    offer->inquiryDate = rec.value("zapytanie_data").toString();
-    offer->inquiryNumber = rec.value("zapytanie_nr").toString();
+    offer->setInquiryDate(rec.value("zapytanie_data").toString());
+    offer->setInquiryNumber(rec.value("zapytanie_nr").toString());
 
     offer->setTerm(getTerm(TermItem::termShipping, rec.value("dostawa").toInt()));
     offer->setTerm(getTerm(TermItem::termShipmentTime, rec.value("termin").toInt()));

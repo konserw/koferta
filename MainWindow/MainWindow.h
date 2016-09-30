@@ -63,7 +63,6 @@ public slots:
     void updateCustomer(const Customer &customer);
     void updateInquiryDate(const QString &date);
     void updateInquiryNumber(const QString &number);
-    void updateInquiryText();
 
 /*buttony na 1 zakladce*/
     void selectMerchandise();
