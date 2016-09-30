@@ -15,6 +15,10 @@ on_finish:
 
 environment:
   QTDIR: C:\Qt\5.5\msvc2013 
+  KOFERTA_SQL_USER:
+    secure: 19mGGsfTpPugnOgB7dY9iA== 
+  KOFERTA_SQL_PWD:
+    secure: M29h/Xk+S5xlKx22exgIz4j5M8Iu9cAwHHpyi25Yd9QKty65NIzlPSQvgZSvkzUD
 
 install:
 #- git submodule init
