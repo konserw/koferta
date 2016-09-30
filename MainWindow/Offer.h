@@ -81,7 +81,6 @@ public:
     QString getInquiryNumberSql() const;
     QString getInquiryNumber() const;
 
-
     QString getInquiryDateSql() const;
     QString getInquiryDate() const;
     void setInquiryDate(const QString &value);

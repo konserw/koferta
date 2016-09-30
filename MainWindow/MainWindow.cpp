@@ -94,6 +94,11 @@ MainWindow::MainWindow():
 
     qDebug() << "połaczenia sygnałów i slotów";
     /*menu:*/
+    //kOferta
+    connect(ui->actionConnect, &QAction::triggered, this, &MainWindow::databaseConnect);
+    connect(ui->actionDisconnect, &QAction::triggered, this, &MainWindow::databaseDisconnect);
+    connect(ui->action_changePassword, &QAction::triggered, Database::instance(), &Database::changePasswordDialog);
+    connect(ui->actionExit, &QAction::triggered, qApp, &QApplication::quit);
     //oferta
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(newOffer()));
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(loadOffer()));
@@ -109,11 +114,6 @@ MainWindow::MainWindow():
     //info
     connect(ui->actionO_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui->actionO_kOferta, SIGNAL(triggered()), this, SLOT(about()));
-    //kOferta
-    connect(ui->actionConnect, &QAction::triggered, this, &MainWindow::databaseConnect);
-    connect(ui->actionDisconnect, &QAction::triggered, this, &MainWindow::databaseDisconnect);
-    connect(ui->action_changePassword, &QAction::triggered, Database::instance(), &Database::changePasswordDialog);
-    connect(ui->actionExit, &QAction::triggered, qApp, &QApplication::quit);
 
     //opcje wydruku ------------------------------ TODO !
   //  connect(ui->pln, SIGNAL(toggled(bool)), this, SLOT(changeCurrency(bool)));
@@ -202,7 +202,7 @@ void MainWindow::uiReset()
     ui->plainTextEdit_oferta->clear();
     ui->plainTextEdit_platnosc->clear();
     ui->plainTextEdit_termin->clear();
-    ui->plainTextEdit_uwagi->clear();
+    ui->plainTextEdit_uwagi->clear();Prev
 
     ui->checkBox_zapytanieData->setChecked(false);
     ui->checkBox_zapytanieNr->setChecked(false);
@@ -294,8 +294,8 @@ void MainWindow::about()
          "Aplikacja kliencka ma także możliwość częściowej edycji bazy danych.\n"
          "\n"
          "\tLicencja:\n"
-         "kOferta - system usprawniajacy proces ofertowania\n"
-         "Copyright (C) 2011  Kamil 'konserw' Strzempowicz, konserw@gmail.com\n"
+         "kOferta - system wspomagającys ofertowanie\n"
+         "Copyright (C) 2011-2016 Kamil Strzempowicz, kamil.strzempowicz@gmail.com\n"
          "\n"
          "This program is free software: you can redistribute it and/or modify "
          "it under the terms of the GNU General Public License as published by "
@@ -304,14 +304,14 @@ void MainWindow::about()
          "\n"
          "This program is distributed in the hope that it will be useful, "
          "but WITHOUT ANY WARRANTY; without even the implied warranty of "
-         "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the "
+         "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the "
          "GNU General Public License for more details.\n"
          "\n"
          "You should have received a copy of the GNU General Public License "
          "along with this program.  If not, see http://www.gnu.org/licenses/.\n"
          "\n"
-         "W programie wykorzystano klasę implementującą szyfrowanie SHA1 "
-         "autorstwa Michael D. Leonhard na warunkach licencyjnych opisanych w pliku SHA1_LICENSE\n"
+         "For license information of third party libraries and applications"
+         "please see license files in 3rdParty direcotry."
          "\n\nBuild date: %2");
 
     QMessageBox::about(this, tr("O kOferta"), aboutText.arg(VERSION).arg(__DATE__));
@@ -521,6 +521,8 @@ void MainWindow::uiInit()
     ui->menuExport->setEnabled(true);
     ui->actionSave->setEnabled(true);
     ui->actionNR->setEnabled(true);
+
+    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->getInquiryText());
 }
 
 void MainWindow::saveOffer()
