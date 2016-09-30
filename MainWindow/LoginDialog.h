@@ -20,9 +20,7 @@
 #define LOG_H
 
 #include <QDialog>
-
-class QStringList;
-class Database;
+#include <QHash>
 
 namespace Ui {
     class LoginDialog;
@@ -37,15 +35,16 @@ public:
     ~LoginDialog();
 
 public slots:
-    void openDBconnectionAndGetUserList();
+    void openDBconnection();
     void ok();
-    void failed();
+    void connected();
 
 private:
     Ui::LoginDialog *ui;
 
     QPixmap* m_kOfertaLogo;
     QString m_lastUser;
+    QHash<QString, int> m_userList;
 
     void readSettings();
     void writeSettings();

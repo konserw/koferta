@@ -29,12 +29,10 @@ class User
     friend class Database;
 
 public:
-    User() = delete;
     User(const User&) = delete;
     void operator=(const User&) = delete;
-    ~User();
-    static User* current();
-    static void dropUser();
+    virtual ~User();
+    static User& current();
 
     bool incrementOfferNumber();
     QString getName() const;
@@ -56,8 +54,7 @@ protected:
     int uid;
     int currentOfferNumber;
 
-    User(int Uid, const QString& Name, const QString& Phone, const QString& Mail, const QString& Address, bool Male, int CurrentOfferNumber);
-    static User* instance;
+    User();
 };
 
 

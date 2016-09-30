@@ -45,7 +45,7 @@ public:
 
 /* Database Interface */
     //user-related
-    QStringList usersList();
+    QHash<QString, int> usersList();
     User *userInfo(const QString &userName);
     bool setCurrentOfferNumber(int offerNumber);
 
@@ -68,22 +68,14 @@ public:
 
 public slots:
     void dropConection();
-    void waitForTunnel(const QString &host, unsigned port);
-    void tunelOpened();
-    void socketConnected();
     void setupDatabaseConnection(const QString &host, unsigned port, const QString &schema);
-    void logIn(const QString& user, const QString& password);
-    void tunnelCancel();
-    void openDatabaseConnection();
-    void failedTunnel(QProcess::ProcessError error);
+    bool logIn(int uid, const QString& password);
 
     bool save(const Customer& client) const;
     bool save(const Offer& offer) const;
     void loadOffer(Offer *offer, const QString &offerId);
 
 signals:
-    void driverFail();
-    void connectionFail();
     void connectionSuccess();
     void changeStatus(const QString&);
 
@@ -91,17 +83,16 @@ protected:
     explicit Database();
     ~Database();
     static Database* m_instance;
-
-    void createMysqlDatabase();
-
-    QProgressDialog* m_progressDialog;
-    QTcpSocket* m_socket;
     QSqlDatabase* m_database;
 
+    //SQL Tranaction/Query support
     static QSqlQuery transactionQuery(const QString& queryText);
     static bool transactionRun(const QString &queryText);
     static bool transactionOpen();
     static bool transactionClose();
+
+    static QByteArray hmacSha1(QByteArray key, QByteArray baseString);
+    static QString saltPassword(const QString &salt, const QString &password);
 };
 
 //TODO wywalic to !

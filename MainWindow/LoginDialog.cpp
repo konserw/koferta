@@ -21,7 +21,7 @@
 #include <QStringList>
 #include <QString>
 #include <QSettings>
-
+#include <QDialogButtonBox>
 #include "LoginDialog.h"
 #include "ui_LoginDialog.h"
 #include "Database.h"
@@ -34,8 +34,9 @@ LoginDialog::~LoginDialog()
     delete m_kOfertaLogo;
 }
 
-void LoginDialog::openDBconnectionAndGetUserList()
+void LoginDialog::openDBconnection()
 {
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     ui->comboBox_user->clear();
     writeSettings();
 
@@ -46,11 +47,6 @@ void LoginDialog::openDBconnectionAndGetUserList()
         schema = "kOferta_v3";
 
     Database::instance()->setupDatabaseConnection(ui->lineEdit_ip->text(), ui->lineEdit_port->text().toUInt(), schema);
-    QStringList userList = Database::instance()->usersList();
-
-    ui->comboBox_user->addItems(userList);
-    if(!(m_lastUser.isEmpty() || m_lastUser.isNull()) && userList.contains(m_lastUser))
-        ui->comboBox_user->setCurrentText(m_lastUser);
 }
 
 LoginDialog::LoginDialog(QWidget *parent) :
@@ -63,34 +59,50 @@ LoginDialog::LoginDialog(QWidget *parent) :
 
     m_kOfertaLogo = new QPixmap(":/klog");
     ui->label_logo->setPixmap(*m_kOfertaLogo);
+    ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
 
     disconnect(this, SLOT(accept()));
-    connect(ui->pushButton_apply, &QPushButton::clicked, this, &LoginDialog::openDBconnectionAndGetUserList);
+    connect(ui->pushButton_apply, &QPushButton::clicked, this, &LoginDialog::openDBconnection);
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &LoginDialog::ok);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &LoginDialog::reject);
-    connect(Database::instance(), &Database::driverFail, this, &LoginDialog::reject);
-    connect(Database::instance(), &Database::connectionFail, this, &LoginDialog::failed);
-    connect(Database::instance(), &Database::connectionSuccess, this, &LoginDialog::accept);
+    connect(Database::instance(), &Database::connectionSuccess, this, &LoginDialog::connected);
     connect(Database::instance(), &Database::changeStatus, ui->label_statusBar, &QLabel::setText);
 
     readSettings();
-    openDBconnectionAndGetUserList();
+    openDBconnection();
 }
 
 void LoginDialog::ok()
 {
-    ui->buttonBox->setEnabled(false);
     QString user = ui->comboBox_user->currentText();
+    qDebug() << "Log in as" << user; // << "using password" << QCryptographicHash::hash(ui->lineEdit_password->text().toUtf8(), QCryptographicHash::Sha1).toBase64();
+
     QSettings settings;
     settings.beginGroup("connection");
     settings.setValue("last user", user);
     settings.endGroup();
-    Database::instance()->logIn(user, ui->lineEdit_password->text());
+
+    if(Database::instance()->logIn(m_userList.value(user), ui->lineEdit_password->text()))
+    {
+        qDebug() << "Logged in successfully";
+        this->accept();
+    }
+    else
+    {
+        qDebug() << "Login failed";
+        ui->label_statusBar->setText(tr("Logowanie nie powiodło się; sprawdź użytkownika i hasło."));
+    }
 }
 
-void LoginDialog::failed()
+void LoginDialog::connected()
 {
-    ui->buttonBox->setEnabled(true);
+    qDebug() << "Database connected successfully";
+    m_userList = Database::instance()->usersList();
+    ui->comboBox_user->addItems(m_userList.keys());
+    if(!(m_lastUser.isEmpty() || m_lastUser.isNull()) && m_userList.contains(m_lastUser))
+        ui->comboBox_user->setCurrentText(m_lastUser);
+
+    ui->buttonBox->button(QDialogButtonBox::StandardButton::Ok)->setEnabled(true);
 }
 
 void LoginDialog::readSettings()

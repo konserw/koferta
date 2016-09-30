@@ -58,8 +58,8 @@ void Offer::assignNewNumber()
 {
     date = QDate::currentDate();
     emit dateChanged(date);
-    number = User::current()->getCurrentOfferNumber();
-    numberWithYear = User::current()->getCurrentOfferNumberWithYear();
+    number = User::current().getCurrentOfferNumber();
+    numberWithYear = User::current().getCurrentOfferNumberWithYear();
     emit numberChnged(numberWithYear);
 }
 
@@ -263,7 +263,7 @@ QString Offer::document() const
     const int dd = 248;
     const int dw = 140;                          //szerokosc pierwszej kolumny w szkielecie poniżej tabeli
 
-    QString phone = User::current()->getPhone();
+    QString phone = User::current().getPhone();
     if(!phone.isEmpty())
         phone = QString("\t\t\tTel.: %3 \n").arg(phone);
     QString escapedRemarks = remarks;
@@ -383,11 +383,11 @@ QString Offer::document() const
 /* 6*/.arg(customer.concatedName())
 /* 7*/.arg(dd+50)
 /* 8*/.arg(Database::mainAddress())
-/* 9*/.arg(User::current()->getName())
-/*10*/.arg(User::current()->getMail())
+/* 9*/.arg(User::current().getName())
+/*10*/.arg(User::current().getMail())
 /*11*/.arg(phone)
 /*12*/.arg(dd-50)
-/*13*/.arg(User::current()->getAddress())
+/*13*/.arg(User::current().getAddress())
 /*14*/.arg(getInquiryText())
 /*15*/.arg(merchandiseList->print(w, printOptions))
 /*16*/.arg(dw)
@@ -397,6 +397,6 @@ QString Offer::document() const
 /*20*/.arg(paymentTerm.longDesc())
 /*21*/.arg(escapedRemarks)
 /*22*/.arg(offerTerm.longDesc())
-/*23*/.arg(User::current()->suffix())
-/*24*/.arg(User::current()->getName());
+/*23*/.arg(User::current().suffix())
+/*24*/.arg(User::current().getName());
 }

@@ -20,34 +20,20 @@
 #include "Database.h"
 
 #include <QDate>
-#include <QSqlError>
-#include <QString>
-#include <QStringList>
-#include <QtDebug>
 
-User* User::instance = nullptr;
-
-User::User(int Uid, const QString &Name, const QString &Phone, const QString &Mail, const QString &Address, bool Male, int CurrentOfferNumber)
-    : uid(Uid), name(Name), phone(Phone), mail(Mail), address(Address), male(Male), currentOfferNumber(CurrentOfferNumber)
+User::User()
 {
-    qDebug() << "Creating new user:" << uid << Name << Phone << Mail << Address << Male << CurrentOfferNumber;
+    uid = -1;
 }
 
 User::~User()
 {
 }
 
-User *User::current()
+User& User::current()
 {
-    if(!instance)
-        instance = Database::instance()->userInfo("");//TODO
+    static User instance;
     return instance;
-}
-
-void User::dropUser()
-{
-    delete instance;
-    instance = nullptr;
 }
 
 bool User::incrementOfferNumber()

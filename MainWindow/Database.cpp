@@ -21,10 +21,8 @@
 #include <QtDebug>
 #include <QVariant>
 #include <QMessageBox>
-#include <QSettings>
 #include <QTcpSocket>
 #include <QCryptographicHash>
-#include <QProgressDialog>
 
 #include "MainWindow.h"
 #include "User.h"
@@ -38,24 +36,55 @@
 
 Database* Database::m_instance = nullptr;
 
+// Returns HMAC-SHA1 encrypted signature composed of public key and secret base string
+// function pasted from https://developersarea.wordpress.com/2014/11/27/cryptographic-hashes-in-qt-hmac-sha1-pbkdf2-md5/
+// copyright Neha Gupta
+// with modifications by Kamil Strzempowicz
+QByteArray Database::hmacSha1(QByteArray key, QByteArray baseString)
+{
+    int blockSize = 64; // HMAC-SHA-1 block size, defined in SHA-1 standard
+    if (key.length() > blockSize) { // if key is longer than block size (64), reduce key length with SHA-1 compression
+        key = QCryptographicHash::hash(key, QCryptographicHash::Sha1);
+    }
+    QByteArray innerPadding(blockSize, char(0x36)); // initialize inner padding with char "6"
+    QByteArray outerPadding(blockSize, char(0x5c)); // initialize outer padding with char "\"
+    // ascii characters 0x36 ("6") and 0x5c ("\") are selected because they have large
+    // Hamming distance (http://en.wikipedia.org/wiki/Hamming_distance)
+
+    for (int i = 0; i < key.length(); i++) {
+        innerPadding[i] = innerPadding[i] ^ key.at(i); // XOR operation between every byte in key and innerpadding, of key length
+        outerPadding[i] = outerPadding[i] ^ key.at(i); // XOR operation between every byte in key and outerpadding, of key length
+    }
+
+    // result = hash ( outerPadding CONCAT hash ( innerPadding CONCAT baseString ) ).toBase64
+    QByteArray total = outerPadding;
+    QByteArray part = innerPadding;
+    part.append(baseString);
+    total.append(QCryptographicHash::hash(part, QCryptographicHash::Sha1));
+    return QCryptographicHash::hash(total, QCryptographicHash::Sha1);
+}
+
+// wraper for hmacSha1 for salting passwords
+QString Database::saltPassword(const QString& salt, const QString& password)
+{
+    return hmacSha1(password.toUtf8(), salt.toUtf8()).toBase64();
+}
+
 Database::Database() :
     QObject(nullptr)
 {
-    m_progressDialog = nullptr;
     m_database = nullptr;
-    m_socket = nullptr;
 }
 
 Database::~Database()
 {
     qDebug() << "Database class destruktor";
     dropConection();
-    delete m_progressDialog;
-    delete m_socket;
 }
 
 void Database::dropConection()
 {
+    qDebug() << "drop database connection";
     if(m_database != nullptr)
     {
         m_database->close();
@@ -66,14 +95,46 @@ void Database::dropConection()
 
 void Database::setupDatabaseConnection(const QString &host, unsigned port, const QString& schema)
 {
-    createMysqlDatabase();
+    qDebug() << "Setup database connection";
+    dropConection();
+    qDebug() << "Database object does not exist - creating it";
+    if(QSqlDatabase::drivers().contains("QMYSQL"))
+         m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"));
+    else
+    {
+        QMessageBox::critical(nullptr, QObject::tr("Błąd"), QObject::tr("Bład sterownika bazy danych!"));
 
+        qDebug() << "library paths: ";
+        QStringList list = qApp->libraryPaths();
+        for(int i=0; i<list.size(); i++)
+            qDebug() << "\t" << list[i];
+
+        qDebug() << "aviable drivers: ";
+        list = QSqlDatabase::drivers();
+        for(int i=0; i<list.size(); i++)
+            qDebug() << "\t" << list[i];
+        qFatal("Failed to create database object - QMYSQL driver not found.");
+        //Application will close
+    }
+
+    qDebug().noquote().nospace() << "Check if TCP socket " << host << ":" << port << " is reachable";
+    QTcpSocket socket;
+    socket.connectToHost(host, port);
+    if(socket.waitForReadyRead() == false)
+    {
+        qCritical() << "Socket connection failed";
+        emit changeStatus(tr("Wystąpił błąd - uruchom ponownie lub popraw dane połączenia"));
+        return;
+    }
+    socket.disconnectFromHost();
+    qDebug() << "Socket has been successfully opened";
+
+    //fill in database connection details
     m_database->setHostName(host);
     m_database->setPort(port);
     m_database->setDatabaseName(schema);
     m_database->setUserName(SQL_USER);
     m_database->setPassword(SQL_PWD);
-    qWarning() << "user: " << SQL_USER << " pwd: " << SQL_PWD;
 
     qDebug().nospace().noquote() << "Set up connection details:\n"
              << "\t* Host:\t\t" << m_database->hostName() << "\n"
@@ -82,27 +143,8 @@ void Database::setupDatabaseConnection(const QString &host, unsigned port, const
              << "\t* Password:\t" << QCryptographicHash::hash(m_database->password().toUtf8(), QCryptographicHash::Sha1).toBase64() << "\n"
              << "\t* Schema:\t" << m_database->databaseName();
 
-    waitForTunnel(host, port);
-}
+    //open database connection
 
-void Database::logIn(const QString &user, const QString &password)
-{
-    //TODO:
-    //implement password checking for koferta users
-    //and generate User object
-}
-
-
-void Database::tunnelCancel()
-{
-    delete m_socket;
-    m_socket = nullptr;
-    qDebug() << "ssh: canceled by user";
-    failedTunnel(QProcess::UnknownError);
-}
-
-void Database::openDatabaseConnection()
-{
     if(!m_database->open())
     {
         qCritical().nospace().noquote() << "Unable to connect to database! Details:\n"
@@ -114,8 +156,7 @@ void Database::openDatabaseConnection()
         << "\t* database error:" << m_database->lastError().databaseText() << "\n"
         << "\t* driver error:" << m_database->lastError().driverText();
 
-        emit changeStatus(tr("Połączenie z bazą danych powiodło się."));
-        emit connectionFail();
+        emit changeStatus(tr("Połączenie z bazą danych nie powiodło się."));
         return;
     }
 
@@ -123,17 +164,34 @@ void Database::openDatabaseConnection()
     emit connectionSuccess();
 }
 
-void Database::failedTunnel(QProcess::ProcessError error) //nie dziala ?
+bool Database::logIn(int uid, const QString &password)
 {
-    if(m_progressDialog != nullptr)
+    qDebug() << "Downloading user info for" << uid;
+
+    QSqlTableModel usersTable;
+    usersTable.setTable("usersView");
+    usersTable.setFilter(QString("uid = '%1'").arg(uid));
+    usersTable.select();
+    if(usersTable.rowCount() < 1)
     {
-        m_progressDialog->cancel();
-        delete m_progressDialog;
-        m_progressDialog = nullptr;
+        qCritical().noquote() << "Invalid user selected";
+        return false;
     }
-    qDebug() << "ssh tunnel error:" << error;
-    emit changeStatus(tr("Utworzenie tunelu do hosta %1 nie powiodło się."));
-    emit connectionFail();
+
+    QSqlRecord r = usersTable.record(0);
+    //qDebug() << "user record" << r;
+    User::current().uid = r.value("uid").toInt();
+    User::current().name = r.value("name").toString();
+    User::current().phone = r.value("phone").toString();
+    User::current().mail = r.value("mail").toString();
+    User::current().address = r.value("address").toString();
+    User::current().male = r.value("male").toBool();
+    User::current().currentOfferNumber = r.value("currentOfferNumber").toInt();
+    QString dbPassword = r.value("password").toString();
+    QString salt = r.value("salt").toString();
+
+    qDebug() << "User's salt:" << salt;
+    return (saltPassword(salt, password) == dbPassword);
 }
 
 bool Database::transactionRun(const QString& queryText)
@@ -164,9 +222,9 @@ bool Database::save(const Offer &offer) const
     if(transactionOpen() == false)
         return false;
 
-    if(offer.number == User::current()->currentOfferNumber)
+    if(offer.number == User::current().currentOfferNumber)
     {//fresh offer -> increment last offer number for user
-        if(User::current()->incrementOfferNumber() == false) //-> paste here?
+        if(User::current().incrementOfferNumber() == false) //-> paste here?
             return false;
     }
     else
@@ -188,7 +246,7 @@ bool Database::save(const Offer &offer) const
             .arg(offer.numberWithYear)
             .arg(offer.customer.id)
             .arg(offer.date.toString("dd.MM.yyyy"))
-            .arg(User::current()->getUid())
+            .arg(User::current().getUid())
             .arg(offer.shippingTerm.id())
             .arg(offer.shipmentTime.id())
             .arg(offer.paymentTerm.id())
@@ -316,67 +374,6 @@ bool Database::save(const Customer &client) const
     return transactionClose();
 }
 
-void Database::createMysqlDatabase()
-{
-    if(m_database != nullptr)
-        return;
-
-    if(QSqlDatabase::drivers().contains("QMYSQL"))
-         m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"));
-    else
-    {
-        QMessageBox::critical(nullptr, QObject::tr("Błąd"), QObject::tr("Bład sterownika bazy danych!"));
-        qCritical() << "invalid driver";
-
-        qDebug() << "library paths: ";
-        QStringList list = qApp->libraryPaths();
-        for(int i=0; i<list.size(); i++)
-            qDebug() << "\t" << list[i];
-
-        qDebug() << "aviable drivers: ";
-        list = QSqlDatabase::drivers();
-        for(int i=0; i<list.size(); i++)
-            qDebug() << "\t" << list[i];
-        emit driverFail();
-    }
-}
-
-void Database::waitForTunnel(const QString& host, unsigned port)
-{
-    qDebug() << "Waiting for tunnel";
-    m_socket = new QTcpSocket;
-
-    m_progressDialog = new QProgressDialog(tr("Trwa łączenie z bazą danych, prosze czekać."), tr("Anuluj"), 0, 0);
-    m_progressDialog->setWindowModality(Qt::ApplicationModal);
-
-    connect(m_socket, &QTcpSocket::readyRead, this, &Database::tunelOpened);
-    connect(m_socket, &QTcpSocket::connected, this, &Database::socketConnected);
-    connect(m_progressDialog, &QProgressDialog::canceled, this, &Database::tunnelCancel);
-
-    m_progressDialog->open();
-
-    m_socket->connectToHost(host, port);
-    qDebug() << "Connecting socket";
-}
-
-void Database::socketConnected()
-{
-    qDebug() << "socket connected";
-}
-
-void Database::tunelOpened()
-{
-    emit changeStatus(tr("Tworzenie tunelu zakończone powodzeniem"));
-    qDebug() << "ssh tunnel opened ";
-    m_socket->disconnectFromHost();
-    delete m_socket;
-    m_socket = nullptr;
-    m_progressDialog->accept();
-    delete m_progressDialog;
-    m_progressDialog = nullptr;
-    openDatabaseConnection();
-}
-
 TermModel *Database::getTermModel(TermItem::TermType termType)
 {
     QSqlTableModel model;
@@ -437,26 +434,6 @@ Database *Database::instance()
     return m_instance;
 }
 
-User* Database::userInfo(const QString& userName)
-{
-    qDebug() << "Downloading user info for" << userName;
-
-    QSqlTableModel usersTable;
-    usersTable.setTable("usersView");
-    usersTable.setFilter(QString("dbName = '%1'").arg(userName));
-    usersTable.select();
- //   qDebug() << "users table row count after filter:" << usersTable.rowCount();
-    if(usersTable.rowCount() < 1)
-    {
-        qCritical().noquote() << "Invalid user selected:" << userName;
-        return nullptr;
-    }
-
-    QSqlRecord r = usersTable.record(0);
-    //qDebug() << "user record" << r;
-    return new User(r.value("uid").toInt(), r.value("name").toString(), r.value("phone").toString(), r.value("mail").toString(), r.value("address").toString(), r.value("male").toBool(), r.value("currentOfferNumber").toInt());
-}
-
 bool Database::setCurrentOfferNumber(int offerNumber)
 {
     qDebug().noquote() << "Updating last offer number to:" << offerNumber;
@@ -464,17 +441,16 @@ bool Database::setCurrentOfferNumber(int offerNumber)
     if(transactionOpen() == false)
         return false;
 
-    QString queryText = QString("UPDATE user SET currentOfferNumber=%1 WHERE uid=%2").arg(offerNumber).arg(User::current()->getUid());
+    QString queryText = QString("UPDATE user SET currentOfferNumber=%1 WHERE uid=%2").arg(offerNumber).arg(User::current().getUid());
     if(transactionRun(queryText) == false)
         return false;
 
     return transactionClose();
 }
 
-//used to fill combobox in offersearch
-QStringList Database::usersList()
+QHash<QString, int> Database::usersList()
 {
-    QStringList userList;
+    QHash<QString, int> userList;
     QSqlTableModel usersTable;
 
     usersTable.setTable("user");
@@ -485,7 +461,7 @@ QStringList Database::usersList()
          usersTable.fetchMore();
 
     for (int r = 0; r < usersTable.rowCount(); ++r)
-        userList << usersTable.data(usersTable.index(r,1)).toString();
+        userList.insert(usersTable.data(usersTable.index(r,1)).toString(), usersTable.data(usersTable.index(r,0)).toInt());
 
     return userList;
 }

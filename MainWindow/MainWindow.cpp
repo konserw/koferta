@@ -316,13 +316,6 @@ void MainWindow::databaseConnect()
     LoginDialog* pop = new LoginDialog(this);
     if(pop->exec() == QDialog::Accepted)
     {
-        if(User::current() == nullptr)
-        {
-            Database::instance()->dropConection();
-            QMessageBox::critical(this, tr("Nieprawidłowy użytkownik!"), tr("Użytkownik nie został odnaleziony w bazie danych.\nNastąpi zamknięcie aplikacji.\nProszę skontaktować się z administratorem i przesłąć log aplikacji."));
-            qApp->quit();
-            return;
-        }
         setMenusEnabled(true);
     }
 }
@@ -331,7 +324,6 @@ void MainWindow::databaseDisconnect()
 {
     uiReset();
     setMenusEnabled(false);
-    User::dropUser();
     Database::instance()->dropConection();
     delete currentOffer;
     currentOffer = nullptr;
