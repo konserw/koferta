@@ -695,6 +695,8 @@
     </property>
     <addaction name="actionConnect"/>
     <addaction name="actionDisconnect"/>
+    <addaction name="action_changePassword"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuConnect"/>
@@ -843,6 +845,11 @@
   <action name="actionUstawienia">
    <property name="text">
     <string>Ustawienia</string>
+   </property>
+  </action>
+  <action name="action_changePassword">
+   <property name="text">
+    <string>Zmień hasło</string>
    </property>
   </action>
  </widget>

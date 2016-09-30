@@ -25,6 +25,7 @@
 #include "LoginDialog.h"
 #include "ui_LoginDialog.h"
 #include "Database.h"
+#include "User.h"
 
 LoginDialog::~LoginDialog()
 {
@@ -75,16 +76,22 @@ LoginDialog::LoginDialog(QWidget *parent) :
 void LoginDialog::ok()
 {
     QString user = ui->comboBox_user->currentText();
-    qDebug() << "Log in as" << user; // << "using password" << QCryptographicHash::hash(ui->lineEdit_password->text().toUtf8(), QCryptographicHash::Sha1).toBase64();
+    int uid = m_userList.value(user);
+    qDebug() << QString("Log in as %1 (%2)").arg(user).arg(uid);
 
     QSettings settings;
     settings.beginGroup("connection");
     settings.setValue("last user", user);
     settings.endGroup();
 
-    if(Database::instance()->logIn(m_userList.value(user), ui->lineEdit_password->text()))
+    if(Database::instance()->logIn(uid, ui->lineEdit_password->text()))
     {
         qDebug() << "Logged in successfully";
+        if(User::current().shouldChangePassword())
+        {
+            qDebug() << "User shall update password";
+            Database::instance()->changePasswordDialog();
+        }
         this->accept();
     }
     else

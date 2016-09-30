@@ -112,6 +112,7 @@ MainWindow::MainWindow():
     //kOferta
     connect(ui->actionConnect, &QAction::triggered, this, &MainWindow::databaseConnect);
     connect(ui->actionDisconnect, &QAction::triggered, this, &MainWindow::databaseDisconnect);
+    connect(ui->action_changePassword, &QAction::triggered, Database::instance(), &Database::changePasswordDialog);
     connect(ui->actionExit, &QAction::triggered, qApp, &QApplication::quit);
 
     //opcje wydruku ------------------------------ TODO !
@@ -181,6 +182,7 @@ void MainWindow::setMenusEnabled(bool en)
     ui->menuKlient->setEnabled(en);
     ui->actionDisconnect->setEnabled(en);
     ui->actionConnect->setEnabled(!en);
+    ui->action_changePassword->setEnabled(en);
 }
 
 void MainWindow::uiReset()

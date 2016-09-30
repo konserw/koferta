@@ -44,6 +44,7 @@ public:
     QString getCurrentOfferNumberWithYear() const;
     QString getPhone() const;
     QString suffix() const;
+    bool shouldChangePassword() const;
 
 protected:
     QString name;
@@ -53,6 +54,7 @@ protected:
     bool male;
     int uid;
     int currentOfferNumber;
+    bool resetPassword;
 
     User();
 };

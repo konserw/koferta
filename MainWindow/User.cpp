@@ -64,6 +64,11 @@ QString User::suffix() const
         return QString("a");
 }
 
+bool User::shouldChangePassword() const
+{
+    return resetPassword;
+}
+
 QString User::getMail() const
 {
     return mail;

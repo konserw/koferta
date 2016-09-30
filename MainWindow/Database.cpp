@@ -15,7 +15,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
-
+#include <QMessageBox>
+#include <QInputDialog>
 #include <QString>
 #include <QtSql>
 #include <QtDebug>
@@ -23,7 +24,7 @@
 #include <QMessageBox>
 #include <QTcpSocket>
 #include <QCryptographicHash>
-
+#include <random>
 #include "MainWindow.h"
 #include "User.h"
 #include "Customer.h"
@@ -140,7 +141,7 @@ void Database::setupDatabaseConnection(const QString &host, unsigned port, const
              << "\t* Host:\t\t" << m_database->hostName() << "\n"
              << "\t* Port:\t\t" << m_database->port() << "\n"
              << "\t* UserName:\t" << m_database->userName() << "\n"
-             << "\t* Password:\t" << QCryptographicHash::hash(m_database->password().toUtf8(), QCryptographicHash::Sha1).toBase64() << "\n"
+//             << "\t* Password:\t" << QCryptographicHash::hash(m_database->password().toUtf8(), QCryptographicHash::Sha1).toBase64() << "\n"
              << "\t* Schema:\t" << m_database->databaseName();
 
     //open database connection
@@ -162,6 +163,20 @@ void Database::setupDatabaseConnection(const QString &host, unsigned port, const
 
     emit changeStatus(tr("Połączono z bazą danych"));
     emit connectionSuccess();
+}
+
+bool Database::setPassword(int uid, QString password)
+{
+    std::random_device rd;
+    QString salt = QCryptographicHash::hash(QByteArray::number(uid + rd()), QCryptographicHash::Sha1).toBase64();
+    qDebug() << "new salt for user" << uid << "is" << salt;
+
+    QString queryText = QString("UPDATE user SET password='%1', salt='%2', resetPassword=0 WHERE uid=%3")
+            .arg(saltPassword(salt, password))
+            .arg(salt)
+            .arg(uid);
+
+    return transactionRun(queryText);
 }
 
 bool Database::logIn(int uid, const QString &password)
@@ -187,6 +202,7 @@ bool Database::logIn(int uid, const QString &password)
     User::current().address = r.value("address").toString();
     User::current().male = r.value("male").toBool();
     User::current().currentOfferNumber = r.value("currentOfferNumber").toInt();
+    User::current().resetPassword = r.value("resetPassword").toBool();
     QString dbPassword = r.value("password").toString();
     QString salt = r.value("salt").toString();
 
@@ -328,6 +344,29 @@ void Database::loadOffer(Offer* offer, const QString& offerId)
     offer->setTerm(TermItem(TermItem::termRemarks, QString::null, rec.value("uwagi").toString()));
 
     offer->merchandiseList->loadOffer(offerId); // do przerobienia
+}
+
+void Database::changePasswordDialog()
+{
+    int uid = User::current().getUid();
+    QString password = QInputDialog::getText(nullptr, tr("Zmiana hasła"), tr("Proszę wprowadzić nowe hasło"), QLineEdit::Password);
+    if(password.isEmpty() || password.isNull())
+    {
+        qDebug() << "Skipped password change";
+    }
+    else
+    {
+        if(Database::instance()->setPassword(uid, password))
+        {
+            qDebug() << "Password updated";
+            QMessageBox::information(nullptr, tr("Hasło zmienione"), tr("Nowe hasło zostało poprawnie zapisane w baziedanych."));
+        }
+        else
+        {
+            qDebug() << "Some error during password change occured";
+            QMessageBox::warning(nullptr, tr("Hasło nie zmienione"), tr("Wystąpił błąd podczas zmiany hasła.\nHasło nie zostało zmienione"));
+        }
+    }
 }
 
 bool Database::transactionOpen()

@@ -46,7 +46,6 @@ public:
 /* Database Interface */
     //user-related
     QHash<QString, int> usersList();
-    User *userInfo(const QString &userName);
     bool setCurrentOfferNumber(int offerNumber);
 
     //terms
@@ -66,6 +65,7 @@ public:
     //other
     static QString mainAddress();
 
+    bool setPassword(int uid, QString password);
 public slots:
     void dropConection();
     void setupDatabaseConnection(const QString &host, unsigned port, const QString &schema);
@@ -75,6 +75,7 @@ public slots:
     bool save(const Offer& offer) const;
     void loadOffer(Offer *offer, const QString &offerId);
 
+    void changePasswordDialog();
 signals:
     void connectionSuccess();
     void changeStatus(const QString&);

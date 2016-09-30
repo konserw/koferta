@@ -87,7 +87,7 @@ void CustomerEdit::app()
 
 void CustomerEdit::del()
 {
-    if(QMessageBox::warning(this, "Usuń klienta", "Czy na pewno chcesz usunąć tego klienta z bazy danych?", QMessageBox::Ok, QMessageBox::Cancel)==QMessageBox::Cancel)
+    if(QMessageBox::warning(this, tr("Usuń klienta"), tr("Czy na pewno chcesz usunąć tego klienta z bazy danych?"), QMessageBox::Ok, QMessageBox::Cancel)==QMessageBox::Cancel)
         return;
 
     qDebug() <<  "usuwanie klienta id: " << id;
