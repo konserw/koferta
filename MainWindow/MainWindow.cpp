@@ -202,7 +202,7 @@ void MainWindow::uiReset()
     ui->plainTextEdit_oferta->clear();
     ui->plainTextEdit_platnosc->clear();
     ui->plainTextEdit_termin->clear();
-    ui->plainTextEdit_uwagi->clear();Prev
+    ui->plainTextEdit_uwagi->clear();
 
     ui->checkBox_zapytanieData->setChecked(false);
     ui->checkBox_zapytanieNr->setChecked(false);

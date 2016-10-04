@@ -31,7 +31,8 @@ OfferSearch::OfferSearch(QWidget *parent) :
 
     ui->dateEdit->setDisplayFormat("MMMM yy");
     ui->dateEdit->setDate(QDate::currentDate());
-    ui->comboBox->insertItems(0, Database::instance()->usersList().keys());
+    ui->comboBox->addItem(tr("Wybierz użytkownika"));
+    ui->comboBox->addItems(Database::instance()->usersList().keys());
 
     model = new QSqlTableModel(this);
     model->setTable("savedOffersView");
