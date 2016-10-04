@@ -575,17 +575,3 @@ void MerchandiseListModel::addItem(Merchandise *towar)
     m_list.append(towar);
     endInsertRows();
 }
-
-void MerchandiseListModel::loadOffer(const QString& number)
-{
-    clear();
-
-    QList<Merchandise *> list = Database::loadOfferMerchandise(number);
-
-    if(list.count() > 0)
-    {
-        beginInsertRows(QModelIndex(), 0, list.count() - 1);
-        m_list.append(list);
-        endInsertRows();
-    }
-}

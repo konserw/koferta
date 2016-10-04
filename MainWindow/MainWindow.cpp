@@ -113,10 +113,6 @@ MainWindow::MainWindow():
     connect(ui->actionO_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui->actionO_kOferta, SIGNAL(triggered()), this, SLOT(about()));
 
-    //opcje wydruku ------------------------------ TODO !
-  //  connect(ui->pln, SIGNAL(toggled(bool)), this, SLOT(changeCurrency(bool)));
-  //  connect(ui->spinBox_exchangeRate, SIGNAL(valueChanged(double)), m_towarModel, SLOT(setKurs(double)));
-
     //buttony w tabach
     connect(ui->addTowar, SIGNAL(clicked()), this, SLOT(selectMerchandise()));
     connect(ui->rabat, SIGNAL(clicked()), this, SLOT(globalDiscount()));
@@ -132,12 +128,6 @@ MainWindow::MainWindow():
     connect(ui->checkBox_zapytanieData, SIGNAL(toggled(bool)), this, SLOT(checkData(bool)));
     connect(ui->checkBox_zapytanieNr, SIGNAL(toggled(bool)), this, SLOT(checkNr(bool)));
     connect(ui->plainTextEdit_uwagi, &QPlainTextEdit::textChanged, this, &MainWindow::remarksSlot);
-
-    //TODO - check
-  //  ui->checkBox_zapytanieData->setChecked(true);
-  //  ui->lineEdit_zapytanieData->setText(QDate::currentDate().toString("dd.MM.yyyy"));
-  //  ui->checkBox_zapytanieNr->setChecked(false);
-  //  ui->plainTextEdit_zapytanie->setReadOnly(true);
 
     setMenusEnabled(false);
 }
@@ -171,8 +161,6 @@ void MainWindow::bindOffer()
     connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), currentOffer, SLOT(setInquiryDate(QString)));
     connect(m_calendarWidget, SIGNAL(clicked(QDate)), currentOffer, SLOT(setInquiryDate(QDate)));
     connect(m_calendarWidget, SIGNAL(clicked(QDate)), m_calendarWidget, SLOT(close()));
-
-
 }
 
 bool MainWindow::isUiInitialized() const
@@ -563,7 +551,13 @@ void MainWindow::loadOfferFromDatabase(const QString& offerId)
     uiReset();
     uiInit();
     setTitle(offerId);
-    Database::instance()->loadOffer(currentOffer, offerId);
+    if(Database::instance()->loadOffer(currentOffer, offerId) == false)
+    {
+        delete currentOffer;
+        currentOffer = nullptr;
+        uiReset();
+        QMessageBox::critical(this, tr("Błąd"), tr("Wystąpił błąd podczas wczytywania oferty.\nSpróbuj ponownie"));
+    }
 }
 
 void MainWindow::createTerms()

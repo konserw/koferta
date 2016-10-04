@@ -242,6 +242,14 @@
   <zorder>verticalSpacer_2</zorder>
   <zorder>groupBox</zorder>
  </widget>
+ <tabstops>
+  <tabstop>comboBox_user</tabstop>
+  <tabstop>lineEdit_password</tabstop>
+  <tabstop>lineEdit_ip</tabstop>
+  <tabstop>lineEdit_port</tabstop>
+  <tabstop>checkBox_useTestDB</tabstop>
+  <tabstop>pushButton_apply</tabstop>
+ </tabstops>
  <resources>
   <include location="res/zasoby.qrc"/>
  </resources>

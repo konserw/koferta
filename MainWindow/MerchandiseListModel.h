@@ -56,7 +56,6 @@ public:
     virtual void sort(int column, Qt::SortOrder order);
 
     void addItem(Merchandise* towar);
-    void loadOffer(const QString &number);
 
     bool isPLN() const;
     void setPLN(bool value);

@@ -58,8 +58,6 @@ public:
     static TermItem shipmentTime(int id);
     static TermItem offerTerm(int id);
 
-    //merchandise todo - do wywalenia przynajmniej 2
-    static QList<Merchandise*> loadOfferMerchandise(const QString& number);
     static LoadDialogMerchandiseListModel* loadDialogMerchandiseListModel(QObject* parent);
 
     //other
@@ -73,7 +71,7 @@ public slots:
 
     bool save(const Customer& client) const;
     bool save(const Offer& offer) const;
-    void loadOffer(Offer *offer, const QString &offerId);
+    bool loadOffer(Offer *offer, const QString &offerId);
 
     void changePasswordDialog();
 signals:

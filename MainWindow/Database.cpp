@@ -315,12 +315,18 @@ bool Database::save(const Offer &offer) const
     return transactionClose();
 }
 
-void Database::loadOffer(Offer* offer, const QString& offerId)
+bool Database::loadOffer(Offer* offer, const QString& offerId)
 {
+    qDebug() << "Loading offer" << offerId;
+
     QSqlTableModel model;
     model.setTable("savedOffersFullView");
     model.setFilter(QString("number = '%1'").arg(offerId));
-    model.select();
+    if(model.select() == false)
+    {
+        qDebug() << "Something went wrong whilke reading data from savedOffersFullView";
+        return false;
+    }
     QSqlRecord rec = model.record(0);
 
     offer->numberWithYear = offerId;
@@ -353,7 +359,50 @@ void Database::loadOffer(Offer* offer, const QString& offerId)
     offer->setTerm(getTerm(TermItem::termOffer, rec.value("oferta").toInt()));
     offer->setTerm(TermItem(TermItem::termRemarks, QString::null, rec.value("uwagi").toString()));
 
-    offer->merchandiseList->loadOffer(offerId); // do przerobienia
+    //merch list
+    if(transactionOpen() == false)
+    {
+        qDebug() << "Something went wrong when retriving merchandise list";
+        return false;
+    }
+
+    QString queryText = QString(
+                        "SELECT * "
+                        "FROM savedOffersMerchandiseView "
+                        "WHERE nr_oferty = '%1' "
+                        "ORDER BY sequenceNumber ASC"
+                        ).arg(offerId);
+    QSqlQuery query = transactionQuery(queryText);
+    if(query.isActive() == false)
+    {
+        qDebug() << "Something went wrong when retrivin merchandise list";
+        return false;
+    }
+
+    int merchandiseCount = query.size();
+    if(merchandiseCount > 0)
+    {
+        Merchandise* merchandise;
+        offer->merchandiseList->beginInsertRows(QModelIndex(), 0, merchandiseCount - 1);
+        while(query.next())
+        {
+            qDebug() << "Loading merchandise: " << query.value("code").toString();
+            merchandise = new Merchandise(
+                        query.value("merchandise_id").toInt(),
+                        query.value("code").toString(),
+                        query.value("description").toString(),
+                        query.value("price").toDouble(),
+                        query.value("unit").toString() == "mb.");
+            merchandise->setRabat(query.value("rabat").toDouble());
+            merchandise->setIlosc(query.value("ilosc").toInt());
+            offer->merchandiseList->m_list.append(merchandise);
+        }
+        offer->merchandiseList->endInsertRows();
+    }
+
+    transactionClose();
+    qDebug() << "Done Loading!";
+    return true;
 }
 
 void Database::changePasswordDialog()
@@ -560,36 +609,6 @@ TermItem Database::shipmentTime(int id)
 TermItem Database::offerTerm(int id)
 {
     return getTerm(TermItem::termOffer, id);
-}
-
-QList<Merchandise *> Database::loadOfferMerchandise(const QString &number)
-{
-    QList<Merchandise *> list;
-    Merchandise* merchandise;
-
-    if(transactionOpen() == false)
-        return list;
-
-    QString queryText = QString(
-                        "SELECT * "
-                        "FROM savedOffersMerchandiseView "
-                        "WHERE nr_oferty = '%1' "
-                        "ORDER BY sequenceNumber ASC"
-                        ).arg(number);
-    QSqlQuery query = transactionQuery(queryText);
-    if(query.isActive() == false)
-        return list;
-    while(query.next())
-    {
-        merchandise = new Merchandise(query.value("merchandise_id").toInt(), query.value("code").toString(), query.value("description").toString(), query.value("price").toDouble(), query.value("unit").toString() == "mb.");
-        merchandise->setRabat(query.value("rabat").toDouble());
-        merchandise->setIlosc(query.value("ilosc").toInt());
-        list.append(merchandise);
-    }
-
-    transactionClose();
-
-    return list;
 }
 
 LoadDialogMerchandiseListModel *Database::loadDialogMerchandiseListModel(QObject *parent)
