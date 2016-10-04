@@ -88,8 +88,6 @@ MainWindow::MainWindow():
     ui->setupUi(this);
     readSettings();
     uiReset();
-
-    //m_date = new QString(QDate::currentDate().toString("dd.MM.yyyy"));
     m_calendarWidget = new QCalendarWidget;
 
     qDebug() << "połaczenia sygnałów i slotów";
@@ -117,7 +115,7 @@ MainWindow::MainWindow():
 
     //opcje wydruku ------------------------------ TODO !
   //  connect(ui->pln, SIGNAL(toggled(bool)), this, SLOT(changeCurrency(bool)));
-  //  connect(ui->kursSpinBox, SIGNAL(valueChanged(double)), m_towarModel, SLOT(setKurs(double)));
+  //  connect(ui->spinBox_exchangeRate, SIGNAL(valueChanged(double)), m_towarModel, SLOT(setKurs(double)));
 
     //buttony w tabach
     connect(ui->addTowar, SIGNAL(clicked()), this, SLOT(selectMerchandise()));
@@ -157,13 +155,20 @@ void MainWindow::bindOffer()
     connect(currentOffer, &Offer::customerChanged, this, &MainWindow::updateCustomer);
     //ui->offer
     connect(this, &MainWindow::remarksChanged, currentOffer, &Offer::setRemarks);
-//inquiry related
+    //exchange rate related
+    //offer->ui
+    connect(currentOffer, &Offer::currencyChanged, this, &MainWindow::changeCurrency);
+    connect(currentOffer, &Offer::exchangeRateChanged, ui->spinBox_exchangeRate, &QDoubleSpinBox::setValue);
+    //ui->offer
+    connect(ui->radioButton_PLN, &QRadioButton::toggled, currentOffer, &Offer::setPln);
+    connect(ui->spinBox_exchangeRate, SIGNAL(valueChanged(double)), currentOffer, SLOT(setExchangeRate(double)));
+    //inquiry related
     //offer->ui
     connect(currentOffer, &Offer::inquiryDateChanged, this, &MainWindow::updateInquiryDate);
     connect(currentOffer, &Offer::inquiryNumberChanged, this, &MainWindow::updateInquiryNumber);
     //ui->offer
     connect(ui->lineEdit_zapytanieNr, SIGNAL(textChanged(QString)), currentOffer, SLOT(setInquiryNumber(QString)));
-    connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), currentOffer, SLOT(setInquiryDate(QDate)));
+    connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), currentOffer, SLOT(setInquiryDate(QString)));
     connect(m_calendarWidget, SIGNAL(clicked(QDate)), currentOffer, SLOT(setInquiryDate(QDate)));
     connect(m_calendarWidget, SIGNAL(clicked(QDate)), m_calendarWidget, SLOT(close()));
 
@@ -210,6 +215,9 @@ void MainWindow::uiReset()
     ui->lineEdit_zapytanieNr->clear();
     ui->plainTextEdit_zapytanie->clear();
 
+    ui->radioButton_EUR->setChecked(true);
+    this->changeCurrency(false);
+
     ui->menuExport->setEnabled(false);
     ui->actionSave->setEnabled(false);
     ui->actionNR->setEnabled(false);
@@ -223,7 +231,7 @@ void MainWindow::writeSettings()
     settings.setValue("maximized", isMaximized());
     settings.setValue("size", size());
     settings.setValue("pos", pos());
-    settings.setValue("exchangeRate", ui->kursSpinBox->value());
+    settings.setValue("exchangeRate", ui->spinBox_exchangeRate->value());
     settings.endGroup();
 }
 
@@ -232,7 +240,7 @@ void MainWindow::readSettings()
     QSettings settings;
 
     settings.beginGroup("MainWindow");
-    ui->kursSpinBox->setValue(settings.value("exchangeRate", 4.18453702).toDouble());
+    ui->spinBox_exchangeRate->setValue(settings.value("exchangeRate", 4.18453702).toDouble());
     if(settings.value("maximized", false).toBool())
         this->showMaximized();
     else
@@ -378,12 +386,13 @@ void MainWindow::checkData(bool ch)
 
 void MainWindow::changeCurrency(bool pln)
 {
-    ui->kursSpinBox->setEnabled(pln);
-    ui->kurs_label->setEnabled(pln);
+    qDebug() << "currency changed pln:" << pln;
+    ui->spinBox_exchangeRate->setEnabled(pln);
     ui->kol_cenaPln->setEnabled(pln);
     ui->kol_cenaPln->setChecked(pln);
-
-    currentOffer->setExchangeRate(pln ? ui->kursSpinBox->value() : -1);
+    ui->radioButton_PLN->setChecked(pln);
+    if(pln)
+        currentOffer->setExchangeRate(ui->spinBox_exchangeRate->value());
 }
 
 void MainWindow::updateTerms(const TermItem &term)

@@ -57,7 +57,6 @@ public:
     void setGlobalDiscount(double discount);
     void removeMerchandiseRow(int row);
 
-    int merchandiseListColumnCount() const;
     bool save() const;
 
     TermItem getShippingTerm() const;
@@ -67,24 +66,17 @@ public:
 
     QString document() const;
 
-  //  double getExchangeRate() const;
-    void setExchangeRate(double value);
-
     bool getPln() const;
-    void setPln(bool value);
+    QString getExchangeRateSql() const;
 
     QString getRemarks() const;
-
     Customer getCustomer() const;
-    void setCustomer(const Customer &value);
 
     QString getInquiryNumberSql() const;
     QString getInquiryNumber() const;
 
     QString getInquiryDateSql() const;
     QString getInquiryDate() const;
-    void setInquiryDate(const QString &value);
-
     QString getInquiryText() const;
 
     QString getNumberWithYear() const;
@@ -99,6 +91,8 @@ signals:
     void customerChanged(const Customer& customer);
     void inquiryDateChanged(const QString& date);
     void inquiryNumberChanged(const QString& number);
+    void currencyChanged(bool isPLN);
+    void exchangeRateChanged(double exchangeRate);
 
 
 public slots:
@@ -109,17 +103,20 @@ public slots:
     QHash<int, double> currentMerchandiseHash() const;
     void bindMerchandiseTable(MerchandiseListView* table);
 
+    void setCustomer(const Customer &value);
     void setTerm(const TermItem &term);
+    void setPln(bool value);
+    void setExchangeRate(double value);
     void setRemarks(const QString &value);
     void assignNewNumber();
     void setInquiryNumber(const QString &value);
     void setInquiryDate(const QDate& date);
+    void setInquiryDate(const QString& date);
 
 protected:
     int number;
     QString numberWithYear;
     QDate date;
-    bool pln;
     QString inquiryDate;
     QString inquiryNumber;
     PrintOptions printOptions;

@@ -130,7 +130,7 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_3">
            <item row="0" column="0" colspan="3">
-            <widget class="QRadioButton" name="eur">
+            <widget class="QRadioButton" name="radioButton_EUR">
              <property name="text">
               <string>Euro</string>
              </property>
@@ -140,7 +140,7 @@
             </widget>
            </item>
            <item row="1" column="0" colspan="3">
-            <widget class="QRadioButton" name="pln">
+            <widget class="QRadioButton" name="radioButton_PLN">
              <property name="text">
               <string>Złotówki</string>
              </property>
@@ -160,9 +160,9 @@
             </spacer>
            </item>
            <item row="2" column="2">
-            <widget class="QLabel" name="kurs_label">
+            <widget class="QLabel" name="label_exchangeRate">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="text">
               <string>Kurs:</string>
@@ -183,7 +183,10 @@
             </spacer>
            </item>
            <item row="3" column="2">
-            <widget class="QDoubleSpinBox" name="kursSpinBox">
+            <widget class="QDoubleSpinBox" name="spinBox_exchangeRate">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="decimals">
               <number>4</number>
              </property>

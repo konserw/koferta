@@ -63,11 +63,6 @@ void Offer::assignNewNumber()
     emit numberChnged(numberWithYear);
 }
 
-int Offer::merchandiseListColumnCount() const
-{
-    return merchandiseList->columnCount();
-}
-
 bool Offer::save() const
 {
     return Database::instance()->save(*this);
@@ -206,22 +201,27 @@ QString Offer::getInquiryText() const
 
 bool Offer::getPln() const
 {
-    return pln;
+    return merchandiseList->isPLN();
+}
+
+QString Offer::getExchangeRateSql() const
+{
+    if(getPln())
+        return QString::number(merchandiseList->getExchangeRate());
+    return QString("NULL");
 }
 
 void Offer::setPln(bool value)
 {
-    pln = value;
+    merchandiseList->setPLN(value);
+    emit currencyChanged(value);
 }
-/*
-double Offer::getExchangeRate() const
-{
-    return exchangeRate;
-}
-*/
+
 void Offer::setExchangeRate(double value)
 {
-    merchandiseList->setKurs(value);
+    qDebug() << "set exchange rate" << value;
+    merchandiseList->setExchangeRate(value);
+    emit exchangeRateChanged(value);
 }
 
 TermItem Offer::getOfferTerm() const

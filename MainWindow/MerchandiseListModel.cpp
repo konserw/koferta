@@ -27,7 +27,7 @@
 #include <algorithm>
 
 MerchandiseListModel::MerchandiseListModel(QObject *parent) :
-    QAbstractTableModel(parent), m_pln(false), m_kurs(1)
+    QAbstractTableModel(parent), currencyIsPLN(false), exchangeRate(1)
 {
 }
 
@@ -43,7 +43,7 @@ int MerchandiseListModel::rowCount(const QModelIndex & /*parent*/) const
 
 int MerchandiseListModel::columnCount(const QModelIndex & /*parent*/) const
 {
-    return (m_pln ? 9 : 8);
+    return (currencyIsPLN ? 9 : 8);
 }
 
 bool MerchandiseListModel::setData(const QModelIndex &index, const QVariant &value, int role)
@@ -95,7 +95,7 @@ QVariant MerchandiseListModel::data(const QModelIndex &index, int role) const
         return QVariant();
     }
 
-    if(m_pln)
+    if(currencyIsPLN)
     {
         if(index.row() == m_list.count())
         {
@@ -110,12 +110,12 @@ QVariant MerchandiseListModel::data(const QModelIndex &index, int role) const
             case 0: return t->kod();
             case 1: return t->nazwa();
             case 2: return QString::number(t->cenaKat(), 'f', 2);
-            case 3: return QString::number(t->cenaKat(m_kurs), 'f', 2);
+            case 3: return QString::number(t->cenaKat(exchangeRate), 'f', 2);
             case 4: return QString::number(t->rabat(), 'f', 2);
-            case 5: return QString::number(t->cena(m_kurs), 'f', 2);
+            case 5: return QString::number(t->cena(exchangeRate), 'f', 2);
             case 6: return QString::number(t->ilosc(), 'f', 2);
             case 7: return tr(t->metr() ? "mb." : "szt.");
-            case 8: return QString::number(t->wartosc(m_kurs), 'f', 2);
+            case 8: return QString::number(t->wartosc(exchangeRate), 'f', 2);
         }
     }
     else
@@ -158,7 +158,7 @@ QVariant MerchandiseListModel::headerData(int section, Qt::Orientation orientati
         return QString::number(section+1);
     }
 
-    if(m_pln) switch(section)
+    if(currencyIsPLN) switch(section)
     {
     case 0: return tr("Kod");
     case 1: return tr("Nazwa");
@@ -216,9 +216,9 @@ QModelIndex MerchandiseListModel::index(int row, int column, const QModelIndex &
     return QAbstractTableModel::createIndex(row, column, m_list[row]);
 }
 
-bool MerchandiseListModel::pln() const
+bool MerchandiseListModel::isPLN() const
 {
-    return m_pln;
+    return currencyIsPLN;
 }
 
 void MerchandiseListModel::clear()
@@ -231,42 +231,28 @@ void MerchandiseListModel::clear()
     m_list.clear();
     endRemoveRows();
 }
-double MerchandiseListModel::kurs() const
+double MerchandiseListModel::getExchangeRate() const
 {
-    return m_kurs;
+    return exchangeRate;
 }
 
 bool MerchandiseListModel::isRabat(const QModelIndex &i) const
 {
-    if(i.row() < m_list.count() && ((m_pln && i.column() == 4) || (!m_pln && i.column() == 3)))
+    if(i.row() < m_list.count() && ((currencyIsPLN && i.column() == 4) || (!currencyIsPLN && i.column() == 3)))
         return true;
     return false;
 }
 
 bool MerchandiseListModel::isIlosc(const QModelIndex &i) const
 {
-    if(i.row() < m_list.count() && ((m_pln && i.column() == 6) || (!m_pln && i.column() == 5)))
+    if(i.row() < m_list.count() && ((currencyIsPLN && i.column() == 6) || (!currencyIsPLN && i.column() == 5)))
         return true;
     return false;
 }
 
-void MerchandiseListModel::setKurs(double kurs)
+void MerchandiseListModel::setExchangeRate(double kurs)
 {
-    m_kurs = kurs;
-
-    if(m_pln && kurs == -1)
-    {
-        m_kurs = 1;
-        beginRemoveColumns(QModelIndex(), 3, 3);
-        m_pln = false;
-        endRemoveColumns();
-    }
-    else if(!m_pln)
-    {   
-        beginInsertColumns(QModelIndex(), 3, 3);
-        m_pln = true;
-        endInsertColumns();
-    }
+    exchangeRate = kurs;
 }
 
 void MerchandiseListModel::changeItemCount(int id, double ile)
@@ -298,6 +284,23 @@ void MerchandiseListModel::changeItemCount(int id, double ile)
         endInsertRows();
     }
     delete t;
+}
+
+void MerchandiseListModel::setPLN(bool value)
+{
+    if(currencyIsPLN == true && value == false) //back to EUR
+    {
+        beginRemoveColumns(QModelIndex(), 3, 3);
+//        exchangeRate = 1;
+        currencyIsPLN = false;
+        endRemoveColumns();
+    }
+    else if(currencyIsPLN == false && value == true)
+    {
+        beginInsertColumns(QModelIndex(), 3, 3);
+        currencyIsPLN = true;
+        endInsertColumns();
+    }
 }
 
 bool MerchandiseListModel::removeRows(int row, int count, const QModelIndex & /*parent*/)
@@ -343,7 +346,7 @@ void MerchandiseListModel::sort(int column, Qt::SortOrder order)
 {
     auto begin = m_list.begin();
     auto end = m_list.end();
-    double kurs = m_kurs;
+    double kurs = exchangeRate;
 
     beginResetModel();
 
@@ -368,14 +371,14 @@ void MerchandiseListModel::sort(int column, Qt::SortOrder order)
         else
             std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->cenaKat() > b->cenaKat(); });
     }
-    else if(column == 3 && m_pln)//Cena Kat. zl
+    else if(column == 3 && currencyIsPLN)//Cena Kat. zl
     {
         if(order == Qt::AscendingOrder)
             std::sort(begin, end, [&kurs](Merchandise* a, Merchandise* b) { return a->cenaKat(kurs) < b->cenaKat(kurs); });
         else
             std::sort(begin, end, [&kurs](Merchandise* a, Merchandise* b) { return a->cenaKat(kurs) > b->cenaKat(kurs); });
     }
-    else if(column == 3 || (column == 4 && m_pln))//Rabat
+    else if(column == 3 || (column == 4 && currencyIsPLN))//Rabat
     {
         if(order == Qt::AscendingOrder)
             std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->rabat() < b->rabat(); });
@@ -389,21 +392,21 @@ void MerchandiseListModel::sort(int column, Qt::SortOrder order)
         else
             std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->cena() > b->cena(); });
     }
-    else if(column == 5 && m_pln)//Cena zl
+    else if(column == 5 && currencyIsPLN)//Cena zl
     {
         if(order == Qt::AscendingOrder)
             std::sort(begin, end, [&kurs](Merchandise* a, Merchandise* b) { return a->cena(kurs) < b->cena(kurs); });
         else
             std::sort(begin, end, [&kurs](Merchandise* a, Merchandise* b) { return a->cena(kurs) > b->cena(kurs); });
     }
-    else if(column == 5 || (column == 6 && m_pln))//Ilosc
+    else if(column == 5 || (column == 6 && currencyIsPLN))//Ilosc
     {
         if(order == Qt::AscendingOrder)
             std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->ilosc() < b->ilosc(); });
         else
             std::sort(begin, end, [](Merchandise* a, Merchandise* b) { return a->ilosc() > b->ilosc(); });
     }
-    else if(column == 6 || (column == 7 && m_pln))//jednostka
+    else if(column == 6 || (column == 7 && currencyIsPLN))//jednostka
     {
         if(order == Qt::AscendingOrder)
             std::sort(begin, end, [](Merchandise* a, Merchandise* /*b*/) { return a->metr(); });
@@ -450,7 +453,7 @@ QHash<int, double> MerchandiseListModel::hash() const
 QString MerchandiseListModel::print(const int w, Offer::PrintOptions printOptions) const
 {
     QString waluta;
-    if(pln()) waluta = "zł";
+    if(isPLN()) waluta = "zł";
     else waluta= "€";
 
     const int columnWidthOrderNumber = 40;
@@ -512,15 +515,15 @@ QString MerchandiseListModel::print(const int w, Offer::PrintOptions printOption
         Merchandise* item = m_list[i];
         double dCena;
         double wartosc;
-        if(m_pln)
+        if(currencyIsPLN)
         {
-            dCena = item->cena(m_kurs);
-            wartosc = item->wartosc(m_kurs);
+            dCena = item->cena(exchangeRate);
+            wartosc = item->wartosc(exchangeRate);
         }
         else
         {
             dCena = item->cena();
-            wartosc = item->wartosc(m_kurs);
+            wartosc = item->wartosc(exchangeRate);
         }
         QString style = i%2 == 0 ? "row0" : "row1";
 
@@ -530,7 +533,7 @@ QString MerchandiseListModel::print(const int w, Offer::PrintOptions printOption
         if(printOptions.testFlag(Offer::printRawPrice))
             doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cenaKat(), 0, 'f', 2);
         if(printOptions.testFlag(Offer::printRawPricePLN))
-            doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cenaKat(m_kurs), 0, 'f', 2);
+            doc += QString("\t\t<td align = right>%1</td>\n").arg(item->cenaKat(exchangeRate), 0, 'f', 2);
         if(printOptions.testFlag(Offer::printDiscount))
             doc += QString("\t\t<td align = right>%1%</td>\n").arg(item->rabat());
         if(printOptions.testFlag(Offer::printPrice))
@@ -561,7 +564,7 @@ double MerchandiseListModel::przeliczSume() const
 {
     double suma = 0;
     foreach(Merchandise* t, m_list)
-        suma += t->wartosc(m_kurs);
+        suma += t->wartosc(exchangeRate);
     return suma;
 }
 

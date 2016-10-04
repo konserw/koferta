@@ -58,8 +58,9 @@ public:
     void addItem(Merchandise* towar);
     void loadOffer(const QString &number);
 
-    bool pln() const;
-    double kurs() const;
+    bool isPLN() const;
+    void setPLN(bool value);
+    double getExchangeRate() const;
     void setGlobalRabat(double r);
 
     bool isRabat(const QModelIndex & i) const;
@@ -70,14 +71,14 @@ public:
 
 public slots:
     void clear();
-    void setKurs(double kurs);
+    void setExchangeRate(double getExchangeRate);
     void changeItemCount(int id, double ile);
 
 protected:
     QList<Merchandise*> m_list;
 
-    bool m_pln;
-    double m_kurs;
+    bool currencyIsPLN;
+    double exchangeRate;
 
     double przeliczSume() const;
 };

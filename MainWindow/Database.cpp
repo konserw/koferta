@@ -257,8 +257,8 @@ bool Database::save(const Offer &offer) const
     QString escapedRemarks = offer.remarks;
     escapedRemarks.replace("\'", "\\\'");
     queryText = QString("INSERT INTO zapisane "
-                        "(nr_oferty, id_klienta, data, uid, dostawa, termin, platnosc, oferta, uwagi, zapytanie_data, zapytanie_nr) "
-                        "VALUES ('%1', %2, '%3', %4, %5, %6, %7, %8, '%9', %10, %11)")
+                        "(nr_oferty, id_klienta, data, uid, dostawa, termin, platnosc, oferta, uwagi, zapytanie_data, zapytanie_nr, dExchangeRate) "
+                        "VALUES ('%1', %2, '%3', %4, %5, %6, %7, %8, '%9', %10, %11, %12)")
             .arg(offer.numberWithYear)
             .arg(offer.customer.id)
             .arg(offer.date.toString("dd.MM.yyyy"))
@@ -269,7 +269,8 @@ bool Database::save(const Offer &offer) const
             .arg(offer.offerTerm.id())
             .arg(escapedRemarks)
             .arg(offer.getInquiryDateSql())
-            .arg(offer.getInquiryNumberSql());
+            .arg(offer.getInquiryNumberSql())
+            .arg(offer.getExchangeRateSql());
     if(transactionRun(queryText) == false)
         return false;
 
@@ -336,6 +337,15 @@ void Database::loadOffer(Offer* offer, const QString& offerId)
 
     offer->setInquiryDate(rec.value("zapytanie_data").toString());
     offer->setInquiryNumber(rec.value("zapytanie_nr").toString());
+
+    QVariant exchange = rec.value("dExchangeRate");
+    if(exchange.isNull())
+        offer->setPln(false);
+    else
+    {
+        offer->setPln(true);
+        offer->setExchangeRate(exchange.toDouble());
+    }
 
     offer->setTerm(getTerm(TermItem::termShipping, rec.value("dostawa").toInt()));
     offer->setTerm(getTerm(TermItem::termShipmentTime, rec.value("termin").toInt()));
