@@ -93,25 +93,35 @@ signals:
     void inquiryNumberChanged(const QString& number);
     void currencyChanged(bool isPLN);
     void exchangeRateChanged(double exchangeRate);
-
+    void printOptionsChanged(PrintOptions options);
 
 public slots:
     ///"drukowanie" dokumentu do podglądu lub pdf
     void print(QPrinter *printer);
+    void assignNewNumber();
 
     void updateMerchandiseList(int id, double count);
     QHash<int, double> currentMerchandiseHash() const;
     void bindMerchandiseTable(MerchandiseListView* table);
 
+//setters
     void setCustomer(const Customer &value);
     void setTerm(const TermItem &term);
     void setPln(bool value);
     void setExchangeRate(double value);
     void setRemarks(const QString &value);
-    void assignNewNumber();
+    //inquiry related
     void setInquiryNumber(const QString &value);
     void setInquiryDate(const QDate& date);
     void setInquiryDate(const QString& date);
+    //print options
+    void setPrintOptions(PrintOptions value);
+    void setPrintSpecs(bool value);
+    void setPrintRawPrice(bool value);
+    void setPrintRawPricePLN(bool value);
+    void setPrintDiscount(bool value);
+    void setPrintPrice(bool value);
+    void setPrintNumber(bool value);
 
 protected:
     int number;

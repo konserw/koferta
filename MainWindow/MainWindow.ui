@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1134</width>
-    <height>918</height>
+    <height>1045</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -99,7 +99,7 @@
           <item>
            <widget class="QPlainTextEdit" name="plainTextEdit_klient">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -358,6 +358,12 @@
            </item>
            <item row="1" column="1">
             <widget class="QPlainTextEdit" name="plainTextEdit_dostawa">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="maximumSize">
               <size>
                <width>16777215</width>
@@ -439,6 +445,12 @@
            </item>
            <item row="7" column="1">
             <widget class="QPlainTextEdit" name="plainTextEdit_oferta">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="maximumSize">
               <size>
                <width>16777215</width>
@@ -468,6 +480,12 @@
            </item>
            <item row="9" column="1">
             <widget class="QPlainTextEdit" name="plainTextEdit_uwagi">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="maximumSize">
               <size>
                <width>16777215</width>

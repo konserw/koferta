@@ -257,20 +257,27 @@ bool Database::save(const Offer &offer) const
     QString escapedRemarks = offer.remarks;
     escapedRemarks.replace("\'", "\\\'");
     queryText = QString("INSERT INTO zapisane "
-                        "(nr_oferty, id_klienta, data, uid, dostawa, termin, platnosc, oferta, uwagi, zapytanie_data, zapytanie_nr, dExchangeRate) "
-                        "VALUES ('%1', %2, '%3', %4, %5, %6, %7, %8, '%9', %10, %11, %12)")
-            .arg(offer.numberWithYear)
-            .arg(offer.customer.id)
-            .arg(offer.date.toString("dd.MM.yyyy"))
-            .arg(User::current().getUid())
-            .arg(offer.shippingTerm.id())
-            .arg(offer.shipmentTime.id())
-            .arg(offer.paymentTerm.id())
-            .arg(offer.offerTerm.id())
-            .arg(escapedRemarks)
-            .arg(offer.getInquiryDateSql())
-            .arg(offer.getInquiryNumberSql())
-            .arg(offer.getExchangeRateSql());
+                        "(nr_oferty, id_klienta, data, uid, dostawa, termin, platnosc, oferta, uwagi, zapytanie_data, zapytanie_nr, "
+                        "dExchangeRate, bPrintSpecs, bPrintRawPrice, bPrintRawPricePLN, bPrintDiscount, bPrintPrice, bPrintNumber) "
+                        "VALUES ('%1', %2, '%3', %4, %5, %6, %7, %8, '%9', %10, %11, %12, %13, %14, %15, %16, %17, %18)")
+            .arg(offer.numberWithYear)				//1
+            .arg(offer.customer.id)					//2
+            .arg(offer.date.toString("dd.MM.yyyy"))	//3
+            .arg(User::current().getUid())			//4
+            .arg(offer.shippingTerm.id())			//5
+            .arg(offer.shipmentTime.id())			//6
+            .arg(offer.paymentTerm.id())			//7
+            .arg(offer.offerTerm.id())				//8
+            .arg(escapedRemarks)					//9
+            .arg(offer.getInquiryDateSql())			//10
+            .arg(offer.getInquiryNumberSql())		//11
+            .arg(offer.getExchangeRateSql())		//12
+            .arg(offer.printOptions.testFlag(Offer::printSpecs)? "1" : "0")			//13
+            .arg(offer.printOptions.testFlag(Offer::printRawPrice)? "1" : "0")		//14
+            .arg(offer.printOptions.testFlag(Offer::printRawPricePLN)? "1" : "0")	//15
+            .arg(offer.printOptions.testFlag(Offer::printDiscount)? "1" : "0")		//16
+            .arg(offer.printOptions.testFlag(Offer::printPrice)? "1" : "0")			//17
+            .arg(offer.printOptions.testFlag(Offer::printNumber)? "1" : "0");		//18
     if(transactionRun(queryText) == false)
         return false;
 
@@ -344,6 +351,21 @@ bool Database::loadOffer(Offer* offer, const QString& offerId)
     offer->setInquiryDate(rec.value("zapytanie_data").toString());
     offer->setInquiryNumber(rec.value("zapytanie_nr").toString());
 
+    offer->setTerm(getTerm(TermItem::termShipping, rec.value("dostawa").toInt()));
+    offer->setTerm(getTerm(TermItem::termShipmentTime, rec.value("termin").toInt()));
+    offer->setTerm(getTerm(TermItem::termPayment, rec.value("platnosc").toInt()));
+    offer->setTerm(getTerm(TermItem::termOffer, rec.value("oferta").toInt()));
+    offer->setTerm(TermItem(TermItem::termRemarks, QString::null, rec.value("uwagi").toString()));
+
+    Offer::PrintOptions options;
+    options.setFlag(Offer::printSpecs, rec.value("bPrintSpecs").toBool());
+    options.setFlag(Offer::printRawPrice, rec.value("bPrintRawPrice").toBool());
+    options.setFlag(Offer::printRawPricePLN, rec.value("bPrintRawPricePLN").toBool());
+    options.setFlag(Offer::printDiscount, rec.value("bPrintDiscount").toBool());
+    options.setFlag(Offer::printPrice, rec.value("bPrintPrice").toBool());
+    options.setFlag(Offer::printNumber, rec.value("bPrintNumber").toBool());
+    offer->setPrintOptions(options);
+
     QVariant exchange = rec.value("dExchangeRate");
     if(exchange.isNull())
         offer->setPln(false);
@@ -352,12 +374,6 @@ bool Database::loadOffer(Offer* offer, const QString& offerId)
         offer->setPln(true);
         offer->setExchangeRate(exchange.toDouble());
     }
-
-    offer->setTerm(getTerm(TermItem::termShipping, rec.value("dostawa").toInt()));
-    offer->setTerm(getTerm(TermItem::termShipmentTime, rec.value("termin").toInt()));
-    offer->setTerm(getTerm(TermItem::termPayment, rec.value("platnosc").toInt()));
-    offer->setTerm(getTerm(TermItem::termOffer, rec.value("oferta").toInt()));
-    offer->setTerm(TermItem(TermItem::termRemarks, QString::null, rec.value("uwagi").toString()));
 
     //merch list
     if(transactionOpen() == false)

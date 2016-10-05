@@ -19,6 +19,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "Offer.h"
 #include <QMessageBox>
 #include <QMainWindow>
 #include "TermItem.h"
@@ -63,6 +64,7 @@ public slots:
     void updateCustomer(const Customer &customer);
     void updateInquiryDate(const QString &date);
     void updateInquiryNumber(const QString &number);
+    void updtaPrintOptions(Offer::PrintOptions options);
 
 /*buttony na 1 zakladce*/
     void selectMerchandise();
@@ -71,14 +73,14 @@ public slots:
 
 /*buttony na 2 zakladce*/
     void selectCustomer();
-
     void chooseOfferTerms();
     void choosePaymentTerms();
     void chooseShippingTerms();
     void chooseShipmentTime();
-
+    //checkboxy
     void checkNr(bool);
     void checkData(bool);
+
 /*menu*/
     //kOferta
     void databaseConnect();

@@ -129,6 +129,42 @@ void Offer::setInquiryDate(const QString &value)
     emit inquiryDateChanged(value);
 }
 
+void Offer::setPrintOptions(PrintOptions value)
+{
+    printOptions = value;
+    emit printOptionsChanged(printOptions);
+}
+
+void Offer::setPrintSpecs(bool value)
+{
+    printOptions.setFlag(Offer::printSpecs, value);
+}
+
+void Offer::setPrintRawPrice(bool value)
+{
+    printOptions.setFlag(Offer::printRawPrice, value);
+}
+
+void Offer::setPrintRawPricePLN(bool value)
+{
+    printOptions.setFlag(Offer::printRawPricePLN, value);
+}
+
+void Offer::setPrintDiscount(bool value)
+{
+    printOptions.setFlag(Offer::printDiscount, value);
+}
+
+void Offer::setPrintPrice(bool value)
+{
+    printOptions.setFlag(Offer::printPrice, value);
+}
+
+void Offer::setPrintNumber(bool value)
+{
+    printOptions.setFlag(Offer::printNumber, value);
+}
+
 QString Offer::getInquiryNumberSql() const
 {
     if(inquiryNumber.isEmpty() || inquiryNumber.isNull())

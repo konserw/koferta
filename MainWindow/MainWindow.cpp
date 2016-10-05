@@ -161,6 +161,16 @@ void MainWindow::bindOffer()
     connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), currentOffer, SLOT(setInquiryDate(QString)));
     connect(m_calendarWidget, SIGNAL(clicked(QDate)), currentOffer, SLOT(setInquiryDate(QDate)));
     connect(m_calendarWidget, SIGNAL(clicked(QDate)), m_calendarWidget, SLOT(close()));
+    //print options
+    //offer->ui
+    connect(currentOffer, &Offer::printOptionsChanged, this, &MainWindow::updtaPrintOptions);
+    //ui->offer
+    connect(ui->kol_specyfikacja, &QCheckBox::toggled, currentOffer, &Offer::setPrintSpecs);
+    connect(ui->kol_cenaKat, &QCheckBox::toggled, currentOffer, &Offer::setPrintRawPrice);
+    connect(ui->kol_cenaPln, &QCheckBox::toggled, currentOffer, &Offer::setPrintRawPricePLN);
+    connect(ui->kol_rabat, &QCheckBox::toggled, currentOffer, &Offer::setPrintDiscount);
+    connect(ui->kol_cena, &QCheckBox::toggled, currentOffer, &Offer::setPrintPrice);
+    connect(ui->kol_ilosc, &QCheckBox::toggled, currentOffer, &Offer::setPrintNumber);
 }
 
 bool MainWindow::isUiInitialized() const
@@ -452,6 +462,16 @@ void MainWindow::updateInquiryNumber(const QString& number)
     ui->plainTextEdit_zapytanie->setPlainText(currentOffer->getInquiryText());
 }
 
+void MainWindow::updtaPrintOptions(Offer::PrintOptions options)
+{
+    ui->kol_specyfikacja->setChecked(options.testFlag(Offer::printSpecs));
+    ui->kol_cenaKat->setChecked(options.testFlag(Offer::printRawPrice));
+    ui->kol_cenaPln->setChecked(options.testFlag(Offer::printRawPricePLN));
+    ui->kol_rabat->setChecked(options.testFlag(Offer::printDiscount));
+    ui->kol_cena->setChecked(options.testFlag(Offer::printPrice));
+    ui->kol_ilosc->setChecked(options.testFlag(Offer::printNumber));
+}
+
 void MainWindow::remarksSlot()
 {
     emit remarksChanged(ui->plainTextEdit_uwagi->toPlainText());
@@ -502,6 +522,12 @@ void MainWindow::newOffer()
     uiInit();
     bindOffer();
     currentOffer->assignNewNumber();
+    currentOffer->setPrintOptions(
+                Offer::printDiscount |
+                Offer::printNumber |
+                Offer::printPrice |
+                Offer::printRawPrice |
+                Offer::printSpecs);
 }
 
 void MainWindow::uiInit()
