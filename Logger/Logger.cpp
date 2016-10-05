@@ -52,7 +52,7 @@ void Logger::logOutput(QtMsgType type, const QMessageLogContext &context, const 
 
 Logger::Logger()
 {
-    QDir dir(QCoreApplication::applicationDirPath());
+    QDir dir(QDir::currentPath());
     dir.mkdir("log");
     dir.cd("log");
     QString logFilePath = dir.absoluteFilePath(QString("%1.log").arg(QDate::currentDate().toString("yyyy-MM-dd")));
