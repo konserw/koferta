@@ -14,7 +14,7 @@ on_finish:
 #   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 environment:
-  QTDIR: C:\Qt\5.5\msvc2013 
+  QTDIR: C:\Qt\5.7\msvc2013 
   KOFERTA_SQL_USER:
     secure: 19mGGsfTpPugnOgB7dY9iA== 
   KOFERTA_SQL_PWD:
