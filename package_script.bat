@@ -8,6 +8,7 @@ cp ../build/MainWindow/*.qm ./bin/
 cp ../3rdParty/* ./bin/
 cp ../LICENSE.md ./
 cp ../README.md ./
+cp ../koferta.bat ./
 cd bin
 cp "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\redist\x86\Microsoft.VC120.CRT\msvcp120.dll" ./
 cp "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\redist\x86\Microsoft.VC120.CRT\msvcr120.dll" ./
