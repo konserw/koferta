@@ -1,20 +1,20 @@
-#kOferta
+# kOferta
 
 [![Join the chat at https://gitter.im/konserw/koferta](https://badges.gitter.im/konserw/koferta.svg)](https://gitter.im/konserw/koferta?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/konserw/koferta.svg?branch=master)](https://travis-ci.org/konserw/koferta)
 [![Build status](https://ci.appveyor.com/api/projects/status/at9gkx5uqx1c28hw?svg=true)](https://ci.appveyor.com/project/konserw/koferta)
 
-##Wstęp
+## Wstęp
 
 kOferta jest to kompletny system wspomagający tworzenie ofert handlowych
 
-##Co to jest oferta
+## Co to jest oferta
 
 Oferta jest to formalna propozycja dokonania transakcji. Zawiera listę i ilość
 towarów ich ceny, dane klienta i sprzedającego. Dodatkowymi elementami mogą być
 informacje o sposobie płatności, czy terminie dostawy.
 
-##Cel i zakres projektu
+## Cel i zakres projektu
 
 Projekt kOferta ma ułatwić sprzedającemu tworzenie ofert handlowych poprzez dostęp do bazy danych z klientami i produktami.
 System umożliwia również archiwizowanie stworzonych już wcześniej ofert.
@@ -29,14 +29,14 @@ możliwe jest szybkie uzupełnienie bazy importując dane klientów i towarów z
 
 3. Aplikacja umożliwiająca szybkie tworzenie ofert w oparciu o lokalną bazę danych.
 
-##Wykorzystanie
+## Wykorzystanie
 
 System ten wykorzystywany jest aktualnie przez przedstawicieli handlowych firmy Marley.
 W czasie projektowania, systemu przeprowadzane były konsultacje z jej pracownikami.
 
 Podczas testów i wdrażania systemu wykorzystano issue tracker platformy bitbucklet.com
 
-##To do
+## To do
 * zastąpienie makra EXEC_SILENT i funkcji insert_towar etc. odpowiednimi funkcjami w klasie bazy danych
 * Rodzielenie oferty od MainWindow poprzez nową klasę dla oferty
 * Klasa Klient zamiast sqlrecord
