@@ -45,7 +45,7 @@ void LoginDialog::openDBconnection()
     if(ui->checkBox_useTestDB->isChecked())
         schema = "kOferta_test";
     else
-        schema = "kOferta_v3";
+        schema = "kOferta_v4";
 
     Database::instance()->setupDatabaseConnection(ui->lineEdit_ip->text(), ui->lineEdit_port->text().toUInt(), schema);
 }
