@@ -37,7 +37,6 @@ set(KOFERTA_SOURCES
     TermModel.cpp 
     MerchandiseListView.cpp 
     LoadDialogMerchandiseListModel.cpp 
-    LoadDialogMerchandiseListModelMySQL.cpp
     Offer.cpp
     Customer.cpp
 )
