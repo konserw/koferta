@@ -32,12 +32,14 @@ LoadDialog::LoadDialog(QWidget *parent) :
     model = Database::loadDialogMerchandiseListModel(this);
 
     ui->tableView->setModel(model);
+    ui->tableView->hideColumn(0);
+    ui->tableView->hideColumn(1);
     ui->tableView->hideColumn(4);
+    ui->tableView->hideColumn(7);
+    ui->tableView->hideColumn(8);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(ok()));
-    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
     connect(ui->widget, &OfferSearch::selectionChanged, model, &LoadDialogMerchandiseListModel::setOfferId);
 }
 
@@ -46,16 +48,7 @@ LoadDialog::~LoadDialog()
     delete ui;
 }
 
-void LoadDialog::ok()
+int LoadDialog::selectedOfferId() const
 {
-    QString offerId = ui->widget->currentOffer();
-
-    if(offerId.isNull())
-    {
-        this->reject();
-        return;
-    }
-
-    emit offerSelected(offerId);
-    this->accept();
+    return ui->widget->currentOffer();
 }

@@ -36,16 +36,6 @@ User& User::current()
     return instance;
 }
 
-bool User::incrementOfferNumber()
-{
-    if(Database::instance()->setCurrentOfferNumber(currentOfferNumber+1))
-    {
-        currentOfferNumber++;
-        return true;
-    }
-    return false;
-}
-
 QString User::getName() const
 {
     return name;
@@ -56,12 +46,28 @@ QString User::getPhone() const
     return phone;
 }
 
-QString User::suffix() const
+QString User::getGenderSuffix() const
 {
     if(male)
         return QString::null;
     else
         return QString("a");
+}
+
+QString User::getNewOfferSymbol() const
+{
+    int newOfferNumber = Database::instance()->getNewOfferNumber();
+/* Example: I1804P01
+    1 znak - oznaczenie biznesu,
+2 i 3 znak - rok,
+4 i 5 znak – miesiąc,
+    6 znak – osoba ofertująca (czyli A – Agata, M – Marek, P – Patryk itd.),
+7 i 8 znak – numeracja ofert danej osoby w danym miesiącu,
+*/
+    return QString("I%1%2%3")
+            .arg(QDate::currentDate().toString("yyMM"))
+            .arg(charForOfferSymbol)
+            .arg(QString::number(newOfferNumber).rightJustified(2, '0'));
 }
 
 bool User::shouldChangePassword() const
@@ -74,11 +80,6 @@ QString User::getMail() const
     return mail;
 }
 
-QString User::getAddress() const
-{
-    return address;
-}
-
 bool User::getMale() const
 {
     return male;
@@ -87,14 +88,4 @@ bool User::getMale() const
 int User::getUid() const
 {
     return uid;
-}
-
-int User::getCurrentOfferNumber() const
-{
-    return currentOfferNumber;
-}
-
-QString User::getCurrentOfferNumberWithYear() const
-{
-    return QString("%1/%2").arg(currentOfferNumber).arg(QDate::currentDate().toString("yyyy"));
 }

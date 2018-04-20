@@ -19,11 +19,10 @@
 #include "TermsChooserDialog.h"
 #include "ui_TermsChooserDialog.h"
 #include "Database.h"
-//#include <QAbstractTableModel>
 #include "TermModel.h"
 #include <QDebug>
 
-TermsChooserDialog::TermsChooserDialog(QWidget *parent, TermItem::TermType type) :
+TermsChooserDialog::TermsChooserDialog(QWidget *parent, TermType type) :
     QDialog(parent),
     ui(new Ui::TermsChooserDialog)
 {
@@ -31,16 +30,16 @@ TermsChooserDialog::TermsChooserDialog(QWidget *parent, TermItem::TermType type)
 
     switch(type)
     {
-    case TermItem::termOffer:
+    case TermType::offer:
         setWindowTitle(tr("Wybór warunków oferty"));
         break;
-    case TermItem::termPayment:
+    case TermType::billing:
         setWindowTitle(tr("Wybór warunków płatności"));
         break;
-    case TermItem::termShipmentTime:
+    case TermType::deliveryDate:
         setWindowTitle(tr("Wybór terminu dostawy"));
         break;
-    case TermItem::termShipping:
+    case TermType::delivery:
         setWindowTitle(tr("Wybór warunków dostawy"));
         break;
     default:

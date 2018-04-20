@@ -30,7 +30,7 @@ public:
     virtual ~LoadDialogMerchandiseListModel(){}
 
 public slots:
-    virtual void setOfferId(const QString& offerId);
+    virtual void setOfferId(int offerId);
 };
 
 #endif // LOADDIALOGMERCHANDISELISTMODEL_H

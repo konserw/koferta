@@ -34,26 +34,23 @@ public:
     virtual ~User();
     static User& current();
 
-    bool incrementOfferNumber();
     QString getName() const;
     QString getMail() const;
-    QString getAddress() const;
     bool getMale() const;
     int getUid() const;
-    int getCurrentOfferNumber() const;
-    QString getCurrentOfferNumberWithYear() const;
     QString getPhone() const;
-    QString suffix() const;
     bool shouldChangePassword() const;
+
+    QString getGenderSuffix() const;
+    QString getNewOfferSymbol() const;
 
 protected:
     QString name;
     QString phone;
     QString mail;
-    QString address;
+    QString charForOfferSymbol;
     bool male;
     int uid;
-    int currentOfferNumber;
     bool resetPassword;
 
     User();

@@ -28,9 +28,9 @@ CustomerSearch::CustomerSearch(QWidget *parent) :
   QWidget(parent)
 {
     setupUi();
-
+//TODO: przerobic na dedykowany model
     model = new QSqlTableModel(this);
-    model->setTable("klient");
+    model->setTable("customersView");
     model->setEditStrategy(QSqlTableModel::OnManualSubmit);
     model->select();
 
@@ -74,18 +74,18 @@ void CustomerSearch::select(const QModelIndex &idx)
         emit selectionChanged(Customer(
                 rec.value("short").toString(),
                 rec.value("full").toString(),
-                rec.value("tytul").toString(),
-                rec.value("imie").toString(),
-                rec.value("nazwisko").toString(),
-                rec.value("adres").toString(),
-                rec.value("id").toInt()
+                rec.value("title").toString(),
+                rec.value("name").toString(),
+                rec.value("surname").toString(),
+                rec.value("address").toString(),
+                rec.value("customerID").toInt()
                 ));
 }
 
 void CustomerSearch::ref(const QString& in)
 {
     model->setFilter(QString("%1 like '%2%'")
-                     .arg(radioButton_nazwa->isChecked() ? "short" : "nazwisko")
+                     .arg(radioButton_nazwa->isChecked() ? "short" : "surname")
                      .arg(in)
                      );
 }

@@ -21,6 +21,7 @@
 #include <QSqlTableModel>
 #include <QSqlRecord>
 #include <QtDebug>
+#include <QtWidgets>
 #include "Database.h"
 
 OfferSearch::OfferSearch(QWidget *parent) :
@@ -29,7 +30,7 @@ OfferSearch::OfferSearch(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->dateEdit->setDisplayFormat("MMMM yy");
+    ui->dateEdit->setDisplayFormat("MMMM yyyy");
     ui->dateEdit->setDate(QDate::currentDate());
     ui->comboBox->addItem(tr("Wybierz użytkownika"));
     ui->comboBox->addItems(Database::instance()->usersList().keys());
@@ -45,10 +46,11 @@ OfferSearch::OfferSearch(QWidget *parent) :
     ui->tableView->setSortingEnabled(true);
     ui->tableView->sortByColumn(1, Qt::DescendingOrder);
 
-    connect(ui->tableView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(select(const QModelIndex&)));
-    connect(ui->lineEdit_Id, SIGNAL(textEdited(QString)), this, SLOT(refId(const QString&)));
-    connect(ui->lineEdit_Client, SIGNAL(textEdited(QString)), this, SLOT(refClient(const QString&)));
-    connect(ui->dateEdit, SIGNAL(dateChanged(QDate)), this, SLOT(refDate(const QDate&)));
+    connect(ui->tableView, &QTableView::clicked, this, &OfferSearch::select);
+    connect(ui->lineEdit_Id, &QLineEdit::textEdited, this, &OfferSearch::refSymbol);
+    connect(ui->lineEdit_Client,  &QLineEdit::textEdited, this, &OfferSearch::refCustomer);
+    connect(ui->dateEdit, &QDateEdit::dateChanged, this, &OfferSearch::refDate);
+    //connect(ui->comboBox, &QComboBox::currentIndexChanged, this, &OfferSearch::refUser);
     connect(ui->comboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(refUser(const QString&)));
 }
 
@@ -57,28 +59,31 @@ OfferSearch::~OfferSearch()
     delete ui;
 }
 
-QString OfferSearch::currentOffer()
+int OfferSearch::offerIDfromIndex(const QModelIndex& index)
 {
-    QModelIndex idx = ui->tableView->currentIndex();
-    return model->data(idx.sibling(idx.row(), 0)).toString();
+    return model->data(index.sibling(index.row(), 0)).toInt();
+}
+
+int OfferSearch::currentOffer()
+{
+    return offerIDfromIndex(ui->tableView->currentIndex());
 }
 
 void OfferSearch::select(const QModelIndex& index)
 {
-    int row = index.row();
-    QString offerId = model->data(index.sibling(row, 0)).toString();
-    qDebug() << "selected row:" << row << "id:" << offerId;
-    emit selectionChanged(offerId);
+    int offerID = offerIDfromIndex(index);
+    qDebug() << "selected row:" << index.row() << "id:" << offerID;
+    emit selectionChanged(offerID);
 }
 
-void OfferSearch::refId(const QString& id)
+void OfferSearch::refSymbol(const QString& symbol)
 {
-    model->setFilter(QString("number like '%1%'").arg(id));
+    model->setFilter(QString("offerSymbol like '%%%1%'").arg(symbol));
 }
 
-void OfferSearch::refClient(const QString& client)
+void OfferSearch::refCustomer(const QString& client)
 {
-    model->setFilter(QString("customerCompany like '%1%' OR customerName like '%1%'").arg(client));
+    model->setFilter(QString("customerCompany like '%%%1%' OR customerName like '%%%1%'").arg(client));
 }
 
 void OfferSearch::refDate(const QDate& date)

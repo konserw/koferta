@@ -26,19 +26,36 @@ class Customer
 public:
     explicit Customer();
     Customer(
-        const QString& ShortName,
-        const QString& FullName,
-        const QString& Title,
-        const QString& Name,
-        const QString& Surname,
-        const QString& Address,
-        int id = -1
-           );
+            const QString& ShortName,
+            const QString& FullName,
+            const QString& Title,
+            const QString& Name,
+            const QString& Surname,
+            const QString& Address,
+            int id = -1
+            );
 
     QString concatedName() const;
-    QString getAddress() const;
+    bool isValid() const;
+
     QString getShortName() const;
+    void setShortName(const QString &value);
+
     QString getFullName() const;
+    void setFullName(const QString &value);
+
+    QString getTitle() const;
+    void setTitle(const QString &value);
+
+    QString getName() const;
+    void setName(const QString &value);
+
+    QString getSurname() const;
+    void setSurname(const QString &value);
+
+    QString getHtmlAddress() const;
+    QString getAddress() const;
+    void setAddress(const QString &value);
 
 private:
     int id;

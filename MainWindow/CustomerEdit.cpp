@@ -19,9 +19,7 @@
 #include "CustomerEdit.h"
 #include "ui_CustomerEdit.h"
 #include "Database.h"
-#include <QSqlQuery>
-#include <QString>
-#include <QtSql>
+#include <QtDebug>
 
 CustomerEdit::~CustomerEdit()
 {
@@ -36,53 +34,36 @@ CustomerEdit::CustomerEdit(QWidget *parent) :
 
     ui->setupUi(this);
 
-    connect(ui->apply, SIGNAL(clicked()), this, SLOT(app()));
-    connect(ui->close, SIGNAL(clicked()), this, SLOT(close()));
-    connect(ui->widget, SIGNAL(selectionChanged(QSqlRecord)), this, SLOT(change(QSqlRecord)));
-    connect(ui->del, SIGNAL(clicked()), this, SLOT(del()));
+    connect(ui->apply, &QPushButton::clicked, this, &CustomerEdit::app);
+    connect(ui->close, &QPushButton::clicked, this, &CustomerEdit::close);
+    connect(ui->widget, &CustomerSearch::selectionChanged, this, &CustomerEdit::change);
+    connect(ui->del, &QPushButton::clicked, this, &CustomerEdit::del);
 }
 
-void CustomerEdit::change(const QSqlRecord& rec)
+void CustomerEdit::change(Customer c)
 {
-    QString s;
-    id = rec.value("id").toString();
+    customer = c;
 
-    ui->skrocona->setText(rec.value("short").toString());
-    ui->pelna->setText(rec.value("full").toString());
-    ui->tytul->setText(rec.value("tytul").toString());
-    ui->imie->setText(rec.value("imie").toString());
-    ui->nazwisko->setText(rec.value("nazwisko").toString());
-    s = rec.value("adres").toString();
-    s.remove("<br>");
-    ui->adres->setPlainText(s);
+    ui->skrocona->setText(c.getShortName());
+    ui->pelna->setText(c.getFullName());
+    ui->tytul->setText(c.getTitle());
+    ui->imie->setText(c.getName());
+    ui->nazwisko->setText(c.getSurname());
+    ui->adres->setPlainText(c.getAddress());
 }
 
 
 void CustomerEdit::app()
 {
-    if(id == 0) return;
+    if(customer.isValid() == false) return;
 
-    QString s, tmp;
-    QSqlQuery q;
-
-    s = "UPDATE klient SET short = '";
-    s += ui->skrocona->text();
-    s += "', full='";
-    s += ui->pelna->text();
-    s += "', tytul='";
-    s += ui->tytul->text();
-    s += "', imie='";
-    s += ui->imie->text();
-    s += "', nazwisko='";
-    s += ui->nazwisko->text();
-    s += "', adres='";
-    tmp = ui->adres->toPlainText();
-    tmp.replace("\n", "<br>\n");
-    s += tmp;
-    s += "' WHERE id=";
-    s += id;
-
-    EXEC_SILENT(s);
+    customer.setShortName(ui->skrocona->text());
+    customer.setFullName(ui->pelna->text());
+    customer.setTitle(ui->tytul->text());
+    customer.setName(ui->imie->text());
+    customer.setSurname(ui->nazwisko->text());
+    customer.setAddress(ui->adres->toPlainText());
+    Database::instance()->editCustomer(customer);
 }
 
 void CustomerEdit::del()
@@ -90,13 +71,7 @@ void CustomerEdit::del()
     if(QMessageBox::warning(this, tr("Usuń klienta"), tr("Czy na pewno chcesz usunąć tego klienta z bazy danych?"), QMessageBox::Ok, QMessageBox::Cancel)==QMessageBox::Cancel)
         return;
 
-    qDebug() <<  "usuwanie klienta id: " << id;
-    QSqlQuery q;
-    QString s;
-    s = "DELETE FROM klient WHERE id=";
-    s += id;
-
-    EXEC_SILENT(s);
+    Database::instance()->deleteCustomer(customer);
 
     ui->skrocona->clear();
     ui->pelna->clear();

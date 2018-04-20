@@ -19,6 +19,7 @@
 #include "AddConditionDialog.h"
 #include "ui_AddConditionDialog.h"
 #include "Database.h"
+#include "DatabaseHelpers.hpp"
 #include "TermItem.h"
 
 AddConditionDialog::AddConditionDialog(QWidget *parent) :
@@ -43,11 +44,16 @@ AddConditionDialog::~AddConditionDialog()
 
 void AddConditionDialog::ok()
 {
-    if(Database::createTerm(TermItem(
-                                static_cast<TermItem::TermType>(ui->comboBox->currentIndex()),
-                                ui->lineEdit_sort->text(),
-                                ui->textEdit->toPlainText()
-                                )) == false)
+    try
+    {
+        Database::createTerm(TermItem(
+                                 static_cast<TermType>(ui->comboBox->currentIndex()),
+                                 ui->lineEdit_sort->text(),
+                                 ui->textEdit->toPlainText()
+                                 )
+                             );
+    }
+    catch (const DatabaseException& e)
     {
         QMessageBox::critical(
                     this,

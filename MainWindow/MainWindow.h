@@ -19,14 +19,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "Offer.h"
 #include <QMessageBox>
 #include <QMainWindow>
-#include "TermItem.h"
+#include <QCalendarWidget>
+#include <QPlainTextEdit>
 
-class QCalendarWidget;
-class Offer;
-class Customer;
+#include "Offer.h"
+#include "TermItem.h"
+#include "Customer.h"
+
 
 namespace Ui {
     class MainWindow;
@@ -38,9 +39,6 @@ namespace Ui {
  #define DLLSPEC Q_DECL_IMPORT
 #endif
 
-/*!
- * \brief Główne okno programu
- */
 class DLLSPEC MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -54,11 +52,11 @@ public:
 
 public slots:
     void remarksSlot();
-    void loadOfferFromDatabase(const QString &offerId);
+    void loadOfferFromDatabase(int offerID);
     void changeCurrency(bool pln);
 
     /* refreshing gui elements */
-    void setTitle(const QString &);///ustawia tytuł okna
+    void setTitle(const QString &);
 
     void updateTerms(const TermItem& term);
     void updateCustomer(const Customer &customer);
@@ -85,6 +83,7 @@ public slots:
     //kOferta
     void databaseConnect();
     void databaseDisconnect();
+    void changePassword();
 
     //oferta
     void newOffer();
@@ -124,6 +123,8 @@ private:
     Ui::MainWindow *ui;
     QCalendarWidget* m_calendarWidget;
     Offer* currentOffer;
+
+    QHash<TermType, QPlainTextEdit*> term_controls;
 };
 
 #endif // MAINWINDOW_H

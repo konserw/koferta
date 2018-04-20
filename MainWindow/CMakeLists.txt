@@ -13,6 +13,7 @@ set(QT_LIBRARIES Qt5::Core Qt5::Widgets Qt5::Sql Qt5::Network Qt5::PrintSupport)
 
 set(KOFERTA_SOURCES
     Database.cpp 
+    DatabaseHelpers.cpp
     LoadDialog.cpp 
     MainWindow.cpp 
     User.cpp 
@@ -71,7 +72,7 @@ IF(WIN32)
     add_definitions(-DRELEASE)
 ENDIF(WIN32)
 
-add_library(mainwindow SHARED ${KOFERTA_SOURCES} ${UI_FILES} res/zasoby.qrc ${qm_files})
+add_library(mainwindow SHARED DatabaseHelpers.hpp ${KOFERTA_SOURCES} ${UI_FILES} res/zasoby.qrc ${qm_files})
 set_property(TARGET  mainwindow PROPERTY CXX_STANDARD 11)
 qt5_use_modules(mainwindow Widgets Sql Network PrintSupport)
 target_link_libraries(mainwindow ${QT_LIBRARIES})

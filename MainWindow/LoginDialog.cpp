@@ -87,11 +87,6 @@ void LoginDialog::ok()
     if(Database::instance()->logIn(uid, ui->lineEdit_password->text()))
     {
         qDebug() << "Logged in successfully";
-        if(User::current().shouldChangePassword())
-        {
-            qDebug() << "User shall update password";
-            Database::instance()->changePasswordDialog();
-        }
         this->accept();
     }
     else

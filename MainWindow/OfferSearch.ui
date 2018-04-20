@@ -34,7 +34,7 @@
      </property>
      <widget class="QWidget" name="tab_id">
       <attribute name="title">
-       <string>Nr oferty</string>
+       <string>Symbol oferty</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>

@@ -38,18 +38,20 @@ public:
     explicit OfferSearch(QWidget *parent = 0);
     ~OfferSearch();
 
-    QString currentOffer();
+    int currentOffer();
 
 public slots:
     void select(const QModelIndex &);
-    void refId(const QString&);
-    void refClient(const QString &);
+    void refSymbol(const QString&);
+    void refCustomer(const QString &);
     void refDate(const QDate&);
     void refUser(const QString &);
 
 signals:
-    void selectionChanged(const QString&);
+    void selectionChanged(int);
 
+protected:
+    int offerIDfromIndex(const QModelIndex &index);
 private:
     QSqlTableModel* model;
     Ui::OfferSearch *ui;

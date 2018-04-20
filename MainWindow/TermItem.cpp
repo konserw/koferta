@@ -41,10 +41,16 @@ QString TermItem::shortDesc() const
     return m_shortDesc;
 }
 
-TermItem::TermType TermItem::getType() const
+TermType TermItem::getType() const
 {
     return type;
 }
+
+void TermItem::setLongDesc(const QString &longDesc)
+{
+    m_longDesc = longDesc;
+}
+
 int TermItem::id() const
 {
     return m_id;

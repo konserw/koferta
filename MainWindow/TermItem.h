@@ -17,31 +17,38 @@
 **/
 
 #include <QString>
+#include <QHash>
 
 #ifndef TERMITEM_H
 #define TERMITEM_H
+
+enum class TermType : uint
+{
+    delivery = 0,
+    offer,
+    billing,
+    deliveryDate,
+    remarks
+};
+inline uint qHash(TermType key, uint seed)
+{
+    return qHash(static_cast<uint>(key), seed);
+}
 
 
 class TermItem
 {
 public:
-    enum TermType
-    {
-        termShipping = 0,//dostawa
-        termOffer = 1,   //oferta
-        termPayment = 2, //platnosc
-        termShipmentTime = 3, //termin
-        termRemarks = 4 //uwagi
-    };
 
-    //needed for declarations in header file
     TermItem();
     TermItem(TermType Type, QString shortDesc, QString longDesc, int id = -1);
 
     int id() const;
     QString longDesc() const;
     QString shortDesc() const;
-    TermItem::TermType getType() const;
+    TermType getType() const;
+
+    void setLongDesc(const QString &longDesc);
 
 private:
     TermType type;

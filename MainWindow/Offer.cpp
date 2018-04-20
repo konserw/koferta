@@ -32,11 +32,11 @@
 
 Offer::Offer(QObject *parent) :
     QObject(parent),
-    printOptions(Offer::printDiscount | Offer::printNumber | Offer::printPrice | Offer::printRawPrice | Offer::printSpecs),
-    remarks("Termin realizacji jest określany na podstawie stanu z dnia sporządzenia oferty i może ulec zmianie.")
+    printOptions(Offer::printDiscount | Offer::printNumber | Offer::printPrice | Offer::printRawPrice | Offer::printSpecs)
 {
     date = QDate::currentDate();
     merchandiseList = new MerchandiseListModel(this);
+    terms[TermType::remarks] = TermItem(TermType::remarks, QString::null, "Termin realizacji jest określany na podstawie stanu z dnia sporządzenia oferty i może ulec zmianie.");
 }
 
 Offer::~Offer()
@@ -54,42 +54,22 @@ void Offer::removeMerchandiseRow(int row)
     merchandiseList->removeRow(row);
 }
 
-void Offer::assignNewNumber()
+void Offer::assignNewSymbol()
 {
+    symbol = User::current().getNewOfferSymbol();
+    emit symbolChnged(symbol);
     date = QDate::currentDate();
     emit dateChanged(date);
-    number = User::current().getCurrentOfferNumber();
-    numberWithYear = User::current().getCurrentOfferNumberWithYear();
-    emit numberChnged(numberWithYear);
 }
 
-bool Offer::save() const
+void Offer::save() const
 {
-    return Database::instance()->save(*this);
+    Database::instance()->saveOffer(*this);
 }
 
 void Offer::setTerm(const TermItem& term)
 {
-    switch(term.getType())
-    {
-    case TermItem::termOffer:
-        offerTerm = term;
-        break;
-    case TermItem::termPayment:
-        paymentTerm = term;
-        break;
-    case TermItem::termShipmentTime:
-        shipmentTime = term;
-        break;
-    case TermItem::termShipping:
-        shippingTerm = term;
-        break;
-    case TermItem::termRemarks:
-        remarks = term.longDesc();
-        break;
-    default:
-        qCritical() << "Invalid term assignment";
-    }
+    terms[term.getType()] = term;
     emit termsChanged(term);
 }
 
@@ -111,16 +91,6 @@ void Offer::bindMerchandiseTable(MerchandiseListView *table)
 QDate Offer::getDate() const
 {
     return date;
-}
-
-int Offer::getNumber() const
-{
-    return number;
-}
-
-QString Offer::getNumberWithYear() const
-{
-    return numberWithYear;
 }
 
 void Offer::setInquiryDate(const QString &value)
@@ -165,6 +135,17 @@ void Offer::setPrintNumber(bool value)
     printOptions.setFlag(Offer::printNumber, value);
 }
 
+QString Offer::getSymbol() const
+{
+    return symbol;
+}
+
+void Offer::setSymbol(const QString &value)
+{
+    symbol = value;
+    emit symbolChnged(symbol);
+}
+
 QString Offer::getInquiryNumberSql() const
 {
     if(inquiryNumber.isEmpty() || inquiryNumber.isNull())
@@ -184,14 +165,9 @@ void Offer::setCustomer(const Customer &value)
     emit customerChanged(customer);
 }
 
-QString Offer::getRemarks() const
-{
-    return remarks;
-}
-
 void Offer::setRemarks(const QString &value)
 {
-    remarks = value;
+    terms[TermType::remarks].setLongDesc(value);
 }
 
 QString Offer::getInquiryDateSql() const
@@ -247,6 +223,18 @@ QString Offer::getExchangeRateSql() const
     return QString("NULL");
 }
 
+QString Offer::getRemarks() const
+{
+    return terms[TermType::remarks].longDesc();
+}
+
+QString Offer::getTermIDforDB(TermType type) const
+{
+    if(terms.contains(type))
+        return QString::number(terms[type].id());
+    return "NULL";
+}
+
 void Offer::setPln(bool value)
 {
     merchandiseList->setPLN(value);
@@ -258,26 +246,6 @@ void Offer::setExchangeRate(double value)
     qDebug() << "set exchange rate" << value;
     merchandiseList->setExchangeRate(value);
     emit exchangeRateChanged(value);
-}
-
-TermItem Offer::getOfferTerm() const
-{
-    return offerTerm;
-}
-
-TermItem Offer::getPaymentTerm() const
-{
-    return paymentTerm;
-}
-
-TermItem Offer::getShipmentTime() const
-{
-    return shipmentTime;
-}
-
-TermItem Offer::getShippingTerm() const
-{
-    return shippingTerm;
 }
 
 void Offer::print(QPrinter *printer)
@@ -302,8 +270,10 @@ QString Offer::document() const
     QString phone = User::current().getPhone();
     if(!phone.isEmpty())
         phone = QString("\t\t\tTel.: %3 \n").arg(phone);
-    QString escapedRemarks = remarks;
+    QString escapedRemarks = getRemarks();
     escapedRemarks.replace("\n", "<br />\n");
+    QString escapedAddress = Database::mainAddress();
+    escapedAddress.replace("\n", "<br />\n");
 
     return QString(
                 "<html>\n"
@@ -350,7 +320,7 @@ QString Offer::document() const
                 "%11"
                 "\t\t</td>\n"
                 "\t\t<td width=%12>\n"
-                "%13\n"
+                //TODO! adjust layout as address is no longer printed
                 "\t\t</td>\n"
                 "\t</tr>\n"
                 "\t<tr>\n"
@@ -412,27 +382,26 @@ QString Offer::document() const
                 "</html>\n"
                 )
 /* 1*/.arg(dd)
-/* 2*/.arg(numberWithYear)
+/* 2*/.arg(symbol)
 /* 3*/.arg(date.toString("dd.MM.yyyy"))
 /* 4*/.arg(customer.getFullName())
-/* 5*/.arg(customer.getAddress())
+/* 5*/.arg(customer.getHtmlAddress())
 /* 6*/.arg(customer.concatedName())
 /* 7*/.arg(dd+50)
-/* 8*/.arg(Database::mainAddress())
+/* 8*/.arg(escapedAddress)
 /* 9*/.arg(User::current().getName())
 /*10*/.arg(User::current().getMail())
 /*11*/.arg(phone)
 /*12*/.arg(dd-50)
-/*13*/.arg(User::current().getAddress())
 /*14*/.arg(getInquiryText())
 /*15*/.arg(merchandiseList->print(w, printOptions))
 /*16*/.arg(dw)
 /*17*/.arg(w-dw-3)
-/*18*/.arg(shippingTerm.longDesc())
-/*19*/.arg(shipmentTime.longDesc())
-/*20*/.arg(paymentTerm.longDesc())
+/*18*/.arg(terms.value(TermType::delivery, TermItem()).longDesc())
+/*19*/.arg(terms.value(TermType::deliveryDate, TermItem()).longDesc())
+/*20*/.arg(terms.value(TermType::billing, TermItem()).longDesc())
 /*21*/.arg(escapedRemarks)
-/*22*/.arg(offerTerm.longDesc())
-/*23*/.arg(User::current().suffix())
+/*22*/.arg(terms.value(TermType::offer, TermItem()).longDesc())
+/*23*/.arg(User::current().getGenderSuffix())
 /*24*/.arg(User::current().getName());
 }

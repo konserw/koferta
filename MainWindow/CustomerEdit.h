@@ -20,8 +20,7 @@
 #define EDYCJAKLIENTA_H
 
 #include <QDialog>
-
-class QSqlRecord;
+#include "Customer.h"
 
 namespace Ui {
     class CustomerEdit;
@@ -37,12 +36,12 @@ public:
 
 public slots:
     void app();
-    void change(const QSqlRecord&);
+    void change(Customer);
     void del();
 
 private:
     Ui::CustomerEdit *ui;
-    QString id;
+    Customer customer;
 };
 
 #endif // EDYCJAKLIENTA_H

@@ -36,6 +36,7 @@
 #include "ui_MainWindow.h"
 
 #include "Database.h"
+#include "DatabaseHelpers.hpp"
 #include "LoginDialog.h"
 #include "LoadDialog.h"
 #include "User.h"
@@ -90,12 +91,21 @@ MainWindow::MainWindow():
     uiReset();
     m_calendarWidget = new QCalendarWidget;
 
+    term_controls =
+    {
+        {TermType::billing, ui->plainTextEdit_platnosc},
+        {TermType::delivery, ui->plainTextEdit_dostawa},
+        {TermType::deliveryDate, ui->plainTextEdit_termin},
+        {TermType::offer, ui->plainTextEdit_oferta},
+        {TermType::remarks, ui->plainTextEdit_uwagi}
+    };
+
     qDebug() << "połaczenia sygnałów i slotów";
     /*menu:*/
     //kOferta
     connect(ui->actionConnect, &QAction::triggered, this, &MainWindow::databaseConnect);
     connect(ui->actionDisconnect, &QAction::triggered, this, &MainWindow::databaseDisconnect);
-    connect(ui->action_changePassword, &QAction::triggered, Database::instance(), &Database::changePasswordDialog);
+    connect(ui->action_changePassword, &QAction::triggered, this, &MainWindow::changePassword);
     connect(ui->actionExit, &QAction::triggered, qApp, &QApplication::quit);
     //oferta
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(newOffer()));
@@ -136,7 +146,7 @@ void MainWindow::bindOffer()
 {
 //general
     //offer->ui
-    connect(currentOffer, &Offer::numberChnged, this, &MainWindow::setTitle);
+    connect(currentOffer, &Offer::symbolChnged, this, &MainWindow::setTitle);
     //ui->offer
     connect(ui->actionNR, SIGNAL(triggered(bool)), currentOffer, SLOT(assignNewNumber()));
 //second tab
@@ -200,12 +210,10 @@ void MainWindow::uiReset()
     ui->tab->setEnabled(false);
     ui->tab_2->setEnabled(false);
 
-    ui->plainTextEdit_dostawa->clear();
     ui->plainTextEdit_klient->clear();
-    ui->plainTextEdit_oferta->clear();
-    ui->plainTextEdit_platnosc->clear();
-    ui->plainTextEdit_termin->clear();
-    ui->plainTextEdit_uwagi->clear();
+
+    for(auto* control : term_controls.values())
+        control->clear();
 
     ui->checkBox_zapytanieData->setChecked(false);
     ui->checkBox_zapytanieNr->setChecked(false);
@@ -328,6 +336,11 @@ void MainWindow::databaseConnect()
     LoginDialog* pop = new LoginDialog(this);
     if(pop->exec() == QDialog::Accepted)
     {
+        if(User::current().shouldChangePassword())
+        {
+            qDebug() << "User shall update password";
+            changePassword();
+        }
         setMenusEnabled(true);
     }
 }
@@ -341,11 +354,11 @@ void MainWindow::databaseDisconnect()
     currentOffer = nullptr;
 }
 
-void MainWindow::setTitle(const QString& nr)
+void MainWindow::setTitle(const QString& symbol)
 {
     QString s;
-    if(!(nr.isNull() || nr.isEmpty()))
-        s = QString("| oferta nr: %1").arg(nr);
+    if(!(symbol.isNull() || symbol.isEmpty()))
+        s = tr("| oferta: %1").arg(symbol);
     setWindowTitle(QString("kOferta v. %1 %2").arg(VERSION).arg(s));
 }
 
@@ -395,26 +408,7 @@ void MainWindow::changeCurrency(bool pln)
 
 void MainWindow::updateTerms(const TermItem &term)
 {
-    switch(term.getType())
-    {
-    case TermItem::termOffer:
-        ui->plainTextEdit_oferta->setPlainText(term.longDesc());
-        break;
-    case TermItem::termPayment:
-        ui->plainTextEdit_platnosc->setPlainText(term.longDesc());
-        break;
-    case TermItem::termShipmentTime:
-        ui->plainTextEdit_termin->setPlainText(term.longDesc());
-        break;
-    case TermItem::termShipping:
-        ui->plainTextEdit_dostawa->setPlainText(term.longDesc());
-        break;
-    case TermItem::termRemarks:
-        ui->plainTextEdit_uwagi->setPlainText(term.longDesc());
-        break;
-    default:
-        qCritical() << "Invalid TermItem object";
-    }
+    term_controls[term.getType()]->setPlainText(term.longDesc());
 }
 
 
@@ -479,28 +473,28 @@ void MainWindow::remarksSlot()
 
 void MainWindow::chooseOfferTerms()
 {
-    TermsChooserDialog* dlg = new TermsChooserDialog(this, TermItem::termOffer);
+    TermsChooserDialog* dlg = new TermsChooserDialog(this, TermType::offer);
     connect(dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
     dlg->exec();
 }
 
 void MainWindow::choosePaymentTerms()
 {
-    TermsChooserDialog* dlg = new TermsChooserDialog(this, TermItem::termPayment);
+    TermsChooserDialog* dlg = new TermsChooserDialog(this, TermType::billing);
     connect(dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
     dlg->exec();
 }
 
 void MainWindow::chooseShippingTerms()
 {
-    TermsChooserDialog* dlg = new TermsChooserDialog(this, TermItem::termShipping);
+    TermsChooserDialog* dlg = new TermsChooserDialog(this, TermType::delivery);
     connect(dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
     dlg->exec();
 }
 
 void MainWindow::chooseShipmentTime()
 {
-    TermsChooserDialog* dlg = new TermsChooserDialog(this, TermItem::termShipmentTime);
+    TermsChooserDialog* dlg = new TermsChooserDialog(this, TermType::deliveryDate);
     connect(dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
     dlg->exec();
 }
@@ -521,7 +515,7 @@ void MainWindow::newOffer()
     uiReset();
     uiInit();
     bindOffer();
-    currentOffer->assignNewNumber();
+    currentOffer->assignNewSymbol();
     currentOffer->setPrintOptions(
                 Offer::printDiscount |
                 Offer::printNumber |
@@ -550,8 +544,14 @@ void MainWindow::uiInit()
 
 void MainWindow::saveOffer()
 {
-    if(Database::instance()->save(*currentOffer) == false)
+    try
+    {
+        Database::instance()->saveOffer(*currentOffer);
+    }
+    catch (const DatabaseException& e)
+    {
         QMessageBox::critical(this, tr("Błąd zapisywania"), tr("Wystąpił bład w trakcie zapisywania oferty.\nProszę spróbowac później, bądź skontaktować się z Administratorem."));
+    }
 }
 
 void MainWindow::loadOffer()
@@ -564,20 +564,49 @@ void MainWindow::loadOffer()
         if(reply == QMessageBox::Yes)
             saveOffer();
     }
-    LoadDialog* pop = new LoadDialog(this);
-    connect(pop, &LoadDialog::offerSelected, this, &MainWindow::loadOfferFromDatabase);
-    pop->exec();
+    LoadDialog pop(this);
+    //connect(pop, &LoadDialog::offerSelected, this, &MainWindow::loadOfferFromDatabase);
+    if(pop.exec() == QDialog::Accepted)
+        loadOfferFromDatabase(pop.selectedOfferId());
 }
 
-void MainWindow::loadOfferFromDatabase(const QString& offerId)
+void MainWindow::changePassword()
+{
+    int uid = User::current().getUid();
+    QString password = QInputDialog::getText(nullptr, tr("Zmiana hasła"), tr("Proszę wprowadzić nowe hasło"), QLineEdit::Password);
+    if(password.isEmpty() || password.isNull())
+    {
+        qDebug() << "Skipped password change";
+        return;
+    }
+
+    try
+    {
+        Database::instance()->setPassword(uid, password);
+    }
+    catch (const DatabaseException& e)
+    {
+        qDebug() << "Some error during password change occured";
+        QMessageBox::warning(nullptr, tr("Hasło nie zmienione"), tr("Wystąpił błąd podczas zmiany hasła.\nHasło nie zostało zmienione"));
+        return;
+    }
+
+    qDebug() << "Password updated";
+    QMessageBox::information(nullptr, tr("Hasło zmienione"), tr("Nowe hasło zostało poprawnie zapisane w baziedanych."));
+}
+
+void MainWindow::loadOfferFromDatabase(int offerID)
 {
     delete currentOffer;
     currentOffer = new Offer;
     bindOffer();
     uiReset();
     uiInit();
-    setTitle(offerId);
-    if(Database::instance()->loadOffer(currentOffer, offerId) == false)
+    try
+    {
+        Database::instance()->loadOffer(currentOffer, offerID);
+    }
+    catch (const DatabaseException& e)
     {
         delete currentOffer;
         currentOffer = nullptr;

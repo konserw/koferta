@@ -21,17 +21,17 @@
 LoadDialogMerchandiseListModel::LoadDialogMerchandiseListModel(QObject *parent) :
     QSqlTableModel(parent)
 {
-    setTable("savedOffersMerchandiseShortView");
+    setTable("savedOffersMerchandiseView");
     setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-    setHeaderData(0, Qt::Horizontal, tr("Kod"));
-    setHeaderData(1, Qt::Horizontal, tr("Opis"));
     setHeaderData(2, Qt::Horizontal, tr("Ilość"));
     setHeaderData(3, Qt::Horizontal, tr("Rabat"));
+    setHeaderData(5, Qt::Horizontal, tr("Kod"));
+    setHeaderData(6, Qt::Horizontal, tr("Opis"));
 }
 
-void LoadDialogMerchandiseListModelMySQL::setOfferId(const QString &offerId)
+void LoadDialogMerchandiseListModel::setOfferId(int offerID)
 {
-    setFilter(QString("nr_oferty = '%1'").arg(offerId));
+    setFilter(QString("offerID = '%1'").arg(offerID));
     select();
 }

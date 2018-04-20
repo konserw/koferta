@@ -34,9 +34,9 @@ QString Customer::concatedName() const
     return QString("%1 %2 %3").arg(title).arg(name).arg(surname);
 }
 
-QString Customer::getAddress() const
+bool Customer::isValid() const
 {
-    return address;
+    return id >= 0;
 }
 
 QString Customer::getShortName() const
@@ -44,7 +44,64 @@ QString Customer::getShortName() const
     return shortName;
 }
 
+void Customer::setShortName(const QString &value)
+{
+    shortName = value;
+}
+
 QString Customer::getFullName() const
 {
     return fullName;
+}
+
+void Customer::setFullName(const QString &value)
+{
+    fullName = value;
+}
+
+QString Customer::getTitle() const
+{
+    return title;
+}
+
+void Customer::setTitle(const QString &value)
+{
+    title = value;
+}
+
+QString Customer::getName() const
+{
+    return name;
+}
+
+void Customer::setName(const QString &value)
+{
+    name = value;
+}
+
+QString Customer::getSurname() const
+{
+    return surname;
+}
+
+void Customer::setSurname(const QString &value)
+{
+    surname = value;
+}
+
+QString Customer::getHtmlAddress() const
+{
+    QString ret = address;
+    ret.replace("\n", "<br />\n");
+    return ret;
+}
+
+QString Customer::getAddress() const
+{
+    return address;
+}
+
+void Customer::setAddress(const QString &value)
+{
+    address = value;
 }

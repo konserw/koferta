@@ -39,7 +39,7 @@ void CustomerNew::acc(){
     QString adres = ui->adres->toPlainText();
     adres.replace("\n", "<br>\n");
     Customer client(ui->skrocona->text(), ui->pelna->text(), ui->tytul->text(), ui->imie->text(), ui->nazwisko->text(), adres);
-    Database::instance()->save(client);
+    Database::instance()->saveCustomer(client);
     this->accept();
 }
 

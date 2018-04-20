@@ -34,7 +34,7 @@ class TermsChooserDialog : public QDialog
 
 public:
     explicit TermsChooserDialog(QWidget *parent = 0) = delete;
-    explicit TermsChooserDialog(QWidget *parent, TermItem::TermType type);
+    explicit TermsChooserDialog(QWidget *parent, TermType type);
     ~TermsChooserDialog();
 
 signals:

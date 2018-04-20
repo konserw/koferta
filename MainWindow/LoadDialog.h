@@ -39,11 +39,7 @@ public:
     explicit LoadDialog(QWidget *parent = 0);
     ~LoadDialog();
 
-public slots:
-    void ok();
-
-signals:
-    void offerSelected(const QString &);
+    int selectedOfferId() const;
 
 private:
     Ui::LoadDialog *ui;

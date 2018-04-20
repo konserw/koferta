@@ -57,12 +57,7 @@ public:
     void setGlobalDiscount(double discount);
     void removeMerchandiseRow(int row);
 
-    bool save() const;
-
-    TermItem getShippingTerm() const;
-    TermItem getShipmentTime() const;
-    TermItem getPaymentTerm() const;
-    TermItem getOfferTerm() const;
+    void save() const;
 
     QString document() const;
 
@@ -70,6 +65,7 @@ public:
     QString getExchangeRateSql() const;
 
     QString getRemarks() const;
+    QString getTermIDforDB(TermType type) const;
     Customer getCustomer() const;
 
     QString getInquiryNumberSql() const;
@@ -79,12 +75,13 @@ public:
     QString getInquiryDate() const;
     QString getInquiryText() const;
 
-    QString getNumberWithYear() const;
-    int getNumber() const;
     QDate getDate() const;
 
+    QString getSymbol() const;
+    void setSymbol(const QString &value);
+
 signals:
-    void numberChnged(const QString& numberWithYear);
+    void symbolChnged(const QString& symbol);
     void dateChanged(const QDate& date);
 
     void termsChanged(const TermItem& term);
@@ -98,7 +95,7 @@ signals:
 public slots:
     ///"drukowanie" dokumentu do podglądu lub pdf
     void print(QPrinter *printer);
-    void assignNewNumber();
+    void assignNewSymbol();
 
     void updateMerchandiseList(int id, double count);
     QHash<int, double> currentMerchandiseHash() const;
@@ -124,8 +121,8 @@ public slots:
     void setPrintNumber(bool value);
 
 protected:
-    int number;
-    QString numberWithYear;
+    int id;
+    QString symbol;
     QDate date;
     QString inquiryDate;
     QString inquiryNumber;
@@ -134,11 +131,7 @@ protected:
     MerchandiseListModel* merchandiseList;
     Customer customer;
 
-    TermItem shippingTerm;
-    TermItem shipmentTime;
-    TermItem offerTerm;
-    TermItem paymentTerm;
-    QString remarks;
+    QHash<TermType, TermItem> terms;
 };
 
 //Code for flags
