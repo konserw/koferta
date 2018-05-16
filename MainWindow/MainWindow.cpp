@@ -333,8 +333,8 @@ void MainWindow::about()
 
 void MainWindow::databaseConnect()
 {
-    LoginDialog* pop = new LoginDialog(this);
-    if(pop->exec() == QDialog::Accepted)
+    LoginDialog pop(this);
+    if(pop.exec() == QDialog::Accepted)
     {
         if(User::current().shouldChangePassword())
         {
@@ -411,20 +411,19 @@ void MainWindow::updateTerms(const TermItem &term)
     term_controls[term.getType()]->setPlainText(term.longDesc());
 }
 
-
 void MainWindow::selectCustomer()
 {
-    CustomerSelection* pop = new CustomerSelection(this);
-    connect(pop, &CustomerSelection::selectionChanged, currentOffer, &Offer::setCustomer);
-    pop->exec();
+    CustomerSelection pop(this);
+    connect(&pop, &CustomerSelection::selectionChanged, currentOffer, &Offer::setCustomer);
+    pop.exec();
 }
 
 void MainWindow::selectMerchandise()
 {
-    MerchandiseSelection* pop = new MerchandiseSelection(currentOffer->currentMerchandiseHash(), this);
-    connect(pop, &MerchandiseSelection::itemCountChanged, currentOffer, &Offer::updateMerchandiseList);
-    pop->showMaximized();
-    pop->exec();
+    MerchandiseSelection pop(currentOffer->currentMerchandiseHash(), this);
+    connect(&pop, &MerchandiseSelection::itemCountChanged, currentOffer, &Offer::updateMerchandiseList);
+    pop.showMaximized();
+    pop.exec();
 }
 
 void MainWindow::updateCustomer(const Customer& customer)
@@ -473,30 +472,30 @@ void MainWindow::remarksSlot()
 
 void MainWindow::chooseOfferTerms()
 {
-    TermsChooserDialog* dlg = new TermsChooserDialog(this, TermType::offer);
-    connect(dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
-    dlg->exec();
+    TermsChooserDialog dlg(this, TermType::offer);
+    connect(&dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
+    dlg.exec();
 }
 
 void MainWindow::choosePaymentTerms()
 {
-    TermsChooserDialog* dlg = new TermsChooserDialog(this, TermType::billing);
-    connect(dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
-    dlg->exec();
+    TermsChooserDialog dlg(this, TermType::billing);
+    connect(&dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
+    dlg.exec();
 }
 
 void MainWindow::chooseShippingTerms()
 {
-    TermsChooserDialog* dlg = new TermsChooserDialog(this, TermType::delivery);
-    connect(dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
-    dlg->exec();
+    TermsChooserDialog dlg(this, TermType::delivery);
+    connect(&dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
+    dlg.exec();
 }
 
 void MainWindow::chooseShipmentTime()
 {
-    TermsChooserDialog* dlg = new TermsChooserDialog(this, TermType::deliveryDate);
-    connect(dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
-    dlg->exec();
+    TermsChooserDialog dlg(this, TermType::deliveryDate);
+    connect(&dlg, &TermsChooserDialog::termChoosen, currentOffer, &Offer::setTerm);
+    dlg.exec();
 }
 
 void MainWindow::newOffer()
@@ -565,7 +564,6 @@ void MainWindow::loadOffer()
             saveOffer();
     }
     LoadDialog pop(this);
-    //connect(pop, &LoadDialog::offerSelected, this, &MainWindow::loadOfferFromDatabase);
     if(pop.exec() == QDialog::Accepted)
         loadOfferFromDatabase(pop.selectedOfferId());
 }
@@ -623,34 +621,31 @@ void MainWindow::createTerms()
 
 void MainWindow::createCustomer()
 {
-    CustomerNew* pop = new CustomerNew(this);
-    pop->exec();
+    CustomerNew pop(this);
+    pop.exec();
 }
 
 void MainWindow::editCustomer()
 {
-    CustomerEdit* pop = new CustomerEdit(this);
-    pop->exec();
+    CustomerEdit pop(this);
+    pop.exec();
 }
 
 void MainWindow::createMerchandise()
 {
-    MerchandiseNew* pop = new MerchandiseNew(this);
-    pop->exec();
+    MerchandiseNew pop(this);
+    pop.exec();
 }
 
 void MainWindow::printPrev()
 {
-    QPrinter* printer = new QPrinter;
-    printer->setOutputFormat(QPrinter::NativeFormat);
+    QPrinter printer;
+    printer.setOutputFormat(QPrinter::NativeFormat);
 
-    QPrintPreviewDialog* preview = new QPrintPreviewDialog(printer, this);
-    preview->setWindowFlags(Qt::Window);
-    connect(preview, &QPrintPreviewDialog::paintRequested, currentOffer, &Offer::print);
-    preview->exec();
-
-    delete preview;
-    delete printer;
+    QPrintPreviewDialog preview(&printer, this);
+    preview.setWindowFlags(Qt::Window);
+    connect(&preview, &QPrintPreviewDialog::paintRequested, currentOffer, &Offer::print);
+    preview.exec();
 }
 
 void MainWindow::printPdf()
