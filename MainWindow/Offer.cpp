@@ -53,11 +53,6 @@ void Offer::removeMerchandiseRow(int row)
     merchandiseList->removeRow(row);
 }
 
-void Offer::save() const
-{
-    Database::instance()->saveOffer(*this);
-}
-
 void Offer::setTerm(const TermItem& term)
 {
     terms[term.getType()] = term;

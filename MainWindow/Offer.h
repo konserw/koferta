@@ -58,8 +58,6 @@ public:
     void setGlobalDiscount(double discount);
     void removeMerchandiseRow(int row);
 
-    void save() const;
-
     QString document() const;
 
     bool getPln() const;
