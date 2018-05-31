@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
 project(kOferta)
 
@@ -23,10 +23,11 @@ IF(WIN32)
 ENDIF(WIN32)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 add_executable(koferta ${GUI_TYPE} Main.cpp koferta.rc)
-add_dependencies(koferta mainwindow)
-add_dependencies(koferta logger)
-set_property(TARGET koferta PROPERTY CXX_STANDARD 11)
 target_link_libraries(koferta Qt5::Widgets mainwindow logger)
 
 #
