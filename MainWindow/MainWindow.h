@@ -24,6 +24,7 @@
 #include <QCalendarWidget>
 #include <QPlainTextEdit>
 
+#include "User.h"
 #include "Offer.h"
 #include "TermItem.h"
 #include "Customer.h"
@@ -123,6 +124,7 @@ private:
     Ui::MainWindow *ui;
     QCalendarWidget* m_calendarWidget;
     Offer* currentOffer;
+    User m_user;
 
     QHash<TermType, QPlainTextEdit*> term_controls;
 };

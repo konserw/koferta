@@ -164,7 +164,7 @@ void Database::setPassword(int uid, QString password)
     Transaction::commit();
 }
 
-bool Database::logIn(int uid, const QString &password)
+User Database::logIn(int uid, const QString &password)
 {
     qDebug() << "Downloading user info for" << uid;
 
@@ -175,23 +175,30 @@ bool Database::logIn(int uid, const QString &password)
     if(usersTable.rowCount() < 1)
     {
         qCritical().noquote() << "Invalid user selected";
-        return false;
+        return User();
     }
 
     QSqlRecord r = usersTable.record(0);
     //qDebug() << "user record" << r;
-    User::current().uid = r.value("id").toInt();
-    User::current().name = r.value("name").toString();
-    User::current().phone = r.value("phone").toString();
-    User::current().mail = r.value("mail").toString();
-    User::current().male = r.value("male").toBool();
-    User::current().resetPassword = r.value("resetPassword").toBool();
-    User::current().charForOfferSymbol = r.value("charForOfferSymbol").toString();
     QString dbPassword = r.value("password").toString();
     QString salt = r.value("salt").toString();
 
     qDebug() << "User's salt:" << salt;
-    return (saltPassword(salt, password) == dbPassword);
+    if(saltPassword(salt, password) != dbPassword)
+    {
+        qCritical().noquote() << "Wrong password has been given";
+        return User();
+    }
+
+    return User(
+                r.value("id").toInt(),
+                r.value("name").toString(),
+                r.value("phone").toString(),
+                r.value("mail").toString(),
+                r.value("charForOfferSymbol").toString(),
+                r.value("male").toBool(),
+                r.value("resetPassword").toBool()
+                );
 }
 
 void Database::saveOffer(const Offer &offer) const
@@ -222,7 +229,7 @@ void Database::saveOffer(const Offer &offer) const
                         "bPrintNumber"
                         ") VALUES ('%2', %3, %4, '%5', %6, %7, %8, '%9', %10, %11, '%12', %13, %14, %15, %16, %17, %18, %19)")
 /* offerSymbol */   	.arg(offer.symbol)
-/* userID */        	.arg(User::current().getUid())
+/* userID */        	.arg(offer.getUser().getUid())
 /* customerID */    	.arg(offer.customer.id)
 /* offerDate */     	.arg(offer.date.toString("dd.MM.yyyy"))
 /* inquiryDate */   	.arg(offer.getInquiryDateSql())
@@ -438,12 +445,11 @@ TermItem Database::getTerm(TermType termType, int id)
     return TermItem(termType, rec.value("shortDesc").toString(), rec.value("longDesc").toString(), rec.value("id").toInt());
 }
 
-int Database::getNewOfferNumber()
+int Database::getNewOfferNumber(int uid) const
 {
-    int uid = User::current().getUid();
     qDebug().noquote() << "Getting new offer number for user: " << uid;
 
-    QString queryText = QString("select get_new_offer_number(%1) as 'newOfferNumber'").arg(User::current().getUid());
+    QString queryText = QString("select get_new_offer_number(%1) as 'newOfferNumber'").arg(uid);
     Transaction::open();
     QSqlQuery query = Transaction::run(queryText);
     if(query.isActive() == false)
@@ -456,6 +462,22 @@ int Database::getNewOfferNumber()
     Transaction::commit();
     qDebug().noquote().nospace() << "New offer numbwer = " << newOfferNumber;
     return newOfferNumber;
+}
+
+QString Database::getNewOfferSymbolForUser(const User& u) const
+{
+    int newOfferNumber = getNewOfferNumber(u.getUid());
+/* Example: I1804P01
+    1 znak - oznaczenie biznesu,
+2 i 3 znak - rok,
+4 i 5 znak – miesiąc,
+    6 znak – osoba ofertująca (czyli A – Agata, M – Marek, P – Patryk itd.),
+7 i 8 znak – numeracja ofert danej osoby w danym miesiącu,
+*/
+    return QString("I%1%2%3")
+            .arg(QDate::currentDate().toString("yyMM"))
+            .arg(u.getCharForOfferSymbol())
+            .arg(QString::number(newOfferNumber).rightJustified(2, '0'));
 }
 
 QHash<QString, int> Database::usersList()

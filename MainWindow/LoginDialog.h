@@ -21,6 +21,8 @@
 
 #include <QDialog>
 #include <QHash>
+#include "User.h"
+
 
 namespace Ui {
     class LoginDialog;
@@ -34,6 +36,8 @@ public:
     explicit LoginDialog(QWidget *parent = 0);
     ~LoginDialog();
 
+    User user() const;
+
 public slots:
     void openDBconnection();
     void ok();
@@ -45,6 +49,7 @@ private:
     QPixmap* m_kOfertaLogo;
     QString m_lastUser;
     QHash<QString, int> m_userList;
+    User m_user;
 
     void readSettings();
     void writeSettings();

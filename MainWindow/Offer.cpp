@@ -17,10 +17,8 @@
 **/
 
 #include "Offer.h"
-#include "Customer.h"
 #include "Database.h"
 #include "MerchandiseListModel.h"
-#include "User.h"
 #include "MerchandiseListView.h"
 
 #include <QtGlobal>
@@ -30,8 +28,9 @@
 #include <QTextDocument>
 
 
-Offer::Offer(QObject *parent) :
+Offer::Offer(User u, QObject *parent) :
     QObject(parent),
+    user(u),
     printOptions(Offer::printDiscount | Offer::printNumber | Offer::printPrice | Offer::printRawPrice | Offer::printSpecs)
 {
     date = QDate::currentDate();
@@ -52,14 +51,6 @@ void Offer::setGlobalDiscount(double discount)
 void Offer::removeMerchandiseRow(int row)
 {
     merchandiseList->removeRow(row);
-}
-
-void Offer::assignNewSymbol()
-{
-    symbol = User::current().getNewOfferSymbol();
-    emit symbolChnged(symbol);
-    date = QDate::currentDate();
-    emit dateChanged(date);
 }
 
 void Offer::save() const
@@ -133,6 +124,21 @@ void Offer::setPrintPrice(bool value)
 void Offer::setPrintNumber(bool value)
 {
     printOptions.setFlag(Offer::printNumber, value);
+}
+
+User Offer::getUser() const
+{
+    return user;
+}
+
+void Offer::setUser(const User &value)
+{
+    user = value;
+}
+
+void Offer::setDate(const QDate &value)
+{
+    date = value;
 }
 
 QString Offer::getSymbol() const
@@ -267,7 +273,7 @@ QString Offer::document() const
     const int dd = 248;
     const int dw = 140;                          //szerokosc pierwszej kolumny w szkielecie poniżej tabeli
 
-    QString phone = User::current().getPhone();
+    QString phone = user.getPhone();
     if(!phone.isEmpty())
         phone = QString("\t\t\tTel.: %3 \n").arg(phone);
     QString escapedRemarks = getRemarks();
@@ -389,8 +395,8 @@ QString Offer::document() const
 /* 6*/.arg(customer.concatedName())
 /* 7*/.arg(dd+50)
 /* 8*/.arg(escapedAddress)
-/* 9*/.arg(User::current().getName())
-/*10*/.arg(User::current().getMail())
+/* 9*/.arg(user.getName())
+/*10*/.arg(user.getMail())
 /*11*/.arg(phone)
 /*12*/.arg(dd-50)
 /*14*/.arg(getInquiryText())
@@ -402,6 +408,6 @@ QString Offer::document() const
 /*20*/.arg(terms.value(TermType::billing, TermItem()).longDesc())
 /*21*/.arg(escapedRemarks)
 /*22*/.arg(terms.value(TermType::offer, TermItem()).longDesc())
-/*23*/.arg(User::current().getGenderSuffix())
-/*24*/.arg(User::current().getName());
+/*23*/.arg(user.getGenderSuffix())
+/*24*/.arg(user.getName());
 }

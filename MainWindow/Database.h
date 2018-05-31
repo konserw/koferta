@@ -48,7 +48,7 @@ public:
     //user-related
     QHash<QString, int> usersList();
     void setPassword(int uid, QString password);
-    int getNewOfferNumber();
+    int getNewOfferNumber(int uid) const;
 
     //terms
     static void createTerm(const TermItem& term);
@@ -60,10 +60,11 @@ public:
     //other
     static QString mainAddress();
 
+    QString getNewOfferSymbolForUser(const User &u) const;
 public slots:
     void dropConection();
     void setupDatabaseConnection(const QString &host, unsigned port, const QString &schema);
-    bool logIn(int uid, const QString& password);
+    User logIn(int uid, const QString& password);
 
     void deleteCustomer(Customer c) const;
     void editCustomer(const Customer& customer) const;

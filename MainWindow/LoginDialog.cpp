@@ -25,7 +25,6 @@
 #include "LoginDialog.h"
 #include "ui_LoginDialog.h"
 #include "Database.h"
-#include "User.h"
 
 LoginDialog::~LoginDialog()
 {
@@ -84,7 +83,8 @@ void LoginDialog::ok()
     settings.setValue("last user", user);
     settings.endGroup();
 
-    if(Database::instance()->logIn(uid, ui->lineEdit_password->text()))
+    m_user = Database::instance()->logIn(uid, ui->lineEdit_password->text());
+    if(m_user.isValid())
     {
         qDebug() << "Logged in successfully";
         this->accept();
@@ -105,6 +105,11 @@ void LoginDialog::connected()
         ui->comboBox_user->setCurrentText(m_lastUser);
 
     ui->buttonBox->button(QDialogButtonBox::StandardButton::Ok)->setEnabled(true);
+}
+
+User LoginDialog::user() const
+{
+    return m_user;
 }
 
 void LoginDialog::readSettings()

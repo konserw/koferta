@@ -21,19 +21,17 @@
 
 #include <QDate>
 
-User::User()
+User::User() : uid(-1)
 {
-    uid = -1;
+}
+
+User::User(int Uid, QString Name, QString Phone, QString Mail, QString CharForOfferSymbol, bool Male, bool ResetPassword) :
+    uid(Uid), name(Name), phone(Phone), mail(Mail), charForOfferSymbol(CharForOfferSymbol), male(Male), resetPassword(ResetPassword)
+{
 }
 
 User::~User()
 {
-}
-
-User& User::current()
-{
-    static User instance;
-    return instance;
 }
 
 QString User::getName() const
@@ -54,25 +52,19 @@ QString User::getGenderSuffix() const
         return QString("a");
 }
 
-QString User::getNewOfferSymbol() const
+QString User::getCharForOfferSymbol() const
 {
-    int newOfferNumber = Database::instance()->getNewOfferNumber();
-/* Example: I1804P01
-    1 znak - oznaczenie biznesu,
-2 i 3 znak - rok,
-4 i 5 znak – miesiąc,
-    6 znak – osoba ofertująca (czyli A – Agata, M – Marek, P – Patryk itd.),
-7 i 8 znak – numeracja ofert danej osoby w danym miesiącu,
-*/
-    return QString("I%1%2%3")
-            .arg(QDate::currentDate().toString("yyMM"))
-            .arg(charForOfferSymbol)
-            .arg(QString::number(newOfferNumber).rightJustified(2, '0'));
+    return charForOfferSymbol;
 }
 
 bool User::shouldChangePassword() const
 {
     return resetPassword;
+}
+
+bool User::isValid() const
+{
+    return uid > -1;
 }
 
 QString User::getMail() const

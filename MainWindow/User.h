@@ -29,20 +29,20 @@ class User
     friend class Database;
 
 public:
-    User(const User&) = delete;
-    void operator=(const User&) = delete;
+    User();
+    User(int Uid, QString Name, QString Phone, QString Mail, QString CharForOfferSymbol, bool Male, bool ResetPassword);
     virtual ~User();
-    static User& current();
 
     QString getName() const;
     QString getMail() const;
     bool getMale() const;
     int getUid() const;
     QString getPhone() const;
+    QString getCharForOfferSymbol() const;
     bool shouldChangePassword() const;
+    bool isValid() const;
 
     QString getGenderSuffix() const;
-    QString getNewOfferSymbol() const;
 
 protected:
     QString name;
@@ -53,7 +53,6 @@ protected:
     int uid;
     bool resetPassword;
 
-    User();
 };
 
 

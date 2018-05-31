@@ -39,7 +39,6 @@
 #include "DatabaseHelpers.hpp"
 #include "LoginDialog.h"
 #include "LoadDialog.h"
-#include "User.h"
 #include "Offer.h"
 
 #include "AddConditionDialog.h"
@@ -336,7 +335,8 @@ void MainWindow::databaseConnect()
     LoginDialog pop(this);
     if(pop.exec() == QDialog::Accepted)
     {
-        if(User::current().shouldChangePassword())
+        m_user = pop.user();
+        if(m_user.shouldChangePassword())
         {
             qDebug() << "User shall update password";
             changePassword();
@@ -510,11 +510,13 @@ void MainWindow::newOffer()
 
         delete currentOffer;
     }
-    currentOffer = new Offer(this);
+    currentOffer = new Offer(m_user, this);
     uiReset();
     uiInit();
     bindOffer();
-    currentOffer->assignNewSymbol();
+    QString symbol = Database::instance()->getNewOfferSymbolForUser(m_user);
+    currentOffer->setSymbol(symbol);
+    currentOffer->setDate(QDate::currentDate());
     currentOffer->setPrintOptions(
                 Offer::printDiscount |
                 Offer::printNumber |
@@ -570,7 +572,7 @@ void MainWindow::loadOffer()
 
 void MainWindow::changePassword()
 {
-    int uid = User::current().getUid();
+    int uid = m_user.getUid();
     QString password = QInputDialog::getText(nullptr, tr("Zmiana hasła"), tr("Proszę wprowadzić nowe hasło"), QLineEdit::Password);
     if(password.isEmpty() || password.isNull())
     {
@@ -596,7 +598,7 @@ void MainWindow::changePassword()
 void MainWindow::loadOfferFromDatabase(int offerID)
 {
     delete currentOffer;
-    currentOffer = new Offer;
+    currentOffer = new Offer(m_user, this);
     bindOffer();
     uiReset();
     uiInit();

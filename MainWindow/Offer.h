@@ -21,6 +21,7 @@
 
 #include "TermItem.h"
 #include "Customer.h"
+#include "User.h"
 
 #include <QObject>
 #include <QString>
@@ -51,7 +52,7 @@ public:
     };
     Q_DECLARE_FLAGS(PrintOptions, PrintOption)
 
-    explicit Offer(QObject *parent = 0);
+    explicit Offer(User u, QObject *parent = 0);
     ~Offer();
 
     void setGlobalDiscount(double discount);
@@ -67,6 +68,9 @@ public:
     QString getRemarks() const;
     QString getTermIDforDB(TermType type) const;
     Customer getCustomer() const;
+    QDate getDate() const;
+    QString getSymbol() const;
+    User getUser() const;
 
     QString getInquiryNumberSql() const;
     QString getInquiryNumber() const;
@@ -75,14 +79,8 @@ public:
     QString getInquiryDate() const;
     QString getInquiryText() const;
 
-    QDate getDate() const;
-
-    QString getSymbol() const;
-    void setSymbol(const QString &value);
-
 signals:
     void symbolChnged(const QString& symbol);
-    void dateChanged(const QDate& date);
 
     void termsChanged(const TermItem& term);
     void customerChanged(const Customer& customer);
@@ -95,18 +93,20 @@ signals:
 public slots:
     ///"drukowanie" dokumentu do podglądu lub pdf
     void print(QPrinter *printer);
-    void assignNewSymbol();
 
     void updateMerchandiseList(int id, double count);
     QHash<int, double> currentMerchandiseHash() const;
     void bindMerchandiseTable(MerchandiseListView* table);
 
 //setters
+    void setUser(const User &value);
     void setCustomer(const Customer &value);
     void setTerm(const TermItem &term);
     void setPln(bool value);
     void setExchangeRate(double value);
     void setRemarks(const QString &value);
+    void setSymbol(const QString &value);
+    void setDate(const QDate &value);
     //inquiry related
     void setInquiryNumber(const QString &value);
     void setInquiryDate(const QDate& date);
@@ -130,6 +130,7 @@ protected:
 
     MerchandiseListModel* merchandiseList;
     Customer customer;
+    User user;
 
     QHash<TermType, TermItem> terms;
 };
