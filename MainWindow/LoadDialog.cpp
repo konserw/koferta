@@ -21,6 +21,7 @@
 #include "OfferSearch.h"
 #include "LoadDialogMerchandiseListModel.h"
 #include "Database.h"
+#include <QHeaderView>
 
 LoadDialog::LoadDialog(QWidget *parent) :
     QDialog(parent),
@@ -39,6 +40,9 @@ LoadDialog::LoadDialog(QWidget *parent) :
     ui->tableView->hideColumn(8);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    QHeaderView *headerView = ui->tableView->horizontalHeader();
+    headerView->moveSection(5, 0);
+    headerView->moveSection(6, 1);
 
     connect(ui->widget, &OfferSearch::selectionChanged, model, &LoadDialogMerchandiseListModel::setOfferId);
 }
