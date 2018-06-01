@@ -88,6 +88,7 @@ public slots:
 
     //oferta
     void newOffer();
+    void assignNewSymbol();
     void saveOffer();
     void loadOffer();
 

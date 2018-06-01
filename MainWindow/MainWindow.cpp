@@ -107,9 +107,10 @@ MainWindow::MainWindow():
     connect(ui->action_changePassword, &QAction::triggered, this, &MainWindow::changePassword);
     connect(ui->actionExit, &QAction::triggered, qApp, &QApplication::quit);
     //oferta
-    connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(newOffer()));
-    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(loadOffer()));
-    connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveOffer()));
+    connect(ui->actionNew, &QAction::triggered, this, &MainWindow::newOffer);
+    connect(ui->actionNR, &QAction::triggered, this, &MainWindow::assignNewSymbol);
+    connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::loadOffer);
+    connect(ui->actionSave, &QAction::triggered, this, &MainWindow::saveOffer);
     //baza danych
     connect(ui->klientNowy, SIGNAL(triggered()), this, SLOT(createCustomer()));
     connect(ui->klientEdycja, SIGNAL(triggered()), this, SLOT(editCustomer()));
@@ -146,8 +147,6 @@ void MainWindow::bindOffer()
 //general
     //offer->ui
     connect(currentOffer, &Offer::symbolChnged, this, &MainWindow::setTitle);
-    //ui->offer
-    connect(ui->actionNR, SIGNAL(triggered(bool)), currentOffer, SLOT(assignNewNumber()));
 //second tab
     //offer -> ui
     connect(currentOffer, &Offer::termsChanged, this, &MainWindow::updateTerms);
@@ -514,8 +513,7 @@ void MainWindow::newOffer()
     uiReset();
     uiInit();
     bindOffer();
-    QString symbol = Database::instance()->getNewOfferSymbolForUser(m_user);
-    currentOffer->setSymbol(symbol);
+    currentOffer->setSymbol(Database::instance()->getNewOfferSymbolForUser(m_user));
     currentOffer->setDate(QDate::currentDate());
     currentOffer->setPrintOptions(
                 Offer::printDiscount |
@@ -523,6 +521,12 @@ void MainWindow::newOffer()
                 Offer::printPrice |
                 Offer::printRawPrice |
                 Offer::printSpecs);
+}
+
+void MainWindow::assignNewSymbol()
+{
+    currentOffer->setDate(QDate::currentDate());
+    currentOffer->setSymbol(Database::instance()->getNewOfferSymbolForUser(m_user));
 }
 
 void MainWindow::uiInit()

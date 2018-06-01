@@ -33,7 +33,6 @@ Offer::Offer(User u, QObject *parent) :
     user(u),
     printOptions(Offer::printDiscount | Offer::printNumber | Offer::printPrice | Offer::printRawPrice | Offer::printSpecs)
 {
-    date = QDate::currentDate();
     merchandiseList = new MerchandiseListModel(this);
     terms[TermType::remarks] = TermItem(TermType::remarks, QString::null, "Termin realizacji jest określany na podstawie stanu z dnia sporządzenia oferty i może ulec zmianie.");
 }
