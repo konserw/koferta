@@ -521,10 +521,17 @@ LoadDialogMerchandiseListModel *Database::loadDialogMerchandiseListModel(QObject
 QString Database::mainAddress()
 {
     QSqlTableModel model;
-    model.setTable("address");
+    model.setTable("addresses");
     model.setFilter(QString("id = 2"));
     model.select();
 
+    if(model.rowCount() < 1)
+    {
+        qCritical() << "Company address not found!";
+        return QString::null;
+    }
     QSqlRecord rec = model.record(0);
-    return rec.value("address").toString();
+    QString address = rec.value("address").toString();
+    qDebug() << "Company address:" << address;
+    return address;
 }
