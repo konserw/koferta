@@ -55,12 +55,17 @@ public:
     static TermModel* getTermModel(TermType termType);
     static TermItem getTerm(TermType termType, int id = -1);
 
+    //offer
+    void saveOffer(const Offer& offer) const;
+    void loadOffer(Offer *offer, int offerID);
+
+    //models
     static LoadDialogMerchandiseListModel* loadDialogMerchandiseListModel(QObject* parent);
 
     //other
     static QString mainAddress();
-
     QString getNewOfferSymbolForUser(const User &u) const;
+
 public slots:
     void dropConection();
     void setupDatabaseConnection(const QString &host, unsigned port, const QString &schema);
@@ -69,9 +74,6 @@ public slots:
     void deleteCustomer(Customer c) const;
     void editCustomer(const Customer& customer) const;
     void saveCustomer(const Customer& customer) const;
-
-    void saveOffer(const Offer& offer) const;
-    void loadOffer(Offer *offer, int offerID);
 
 signals:
     void connectionSuccess();

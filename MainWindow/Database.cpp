@@ -231,7 +231,7 @@ void Database::saveOffer(const Offer &offer) const
 /* offerSymbol */   	.arg(offer.symbol)
 /* userID */        	.arg(offer.getUser().getUid())
 /* customerID */    	.arg(offer.customer.id)
-/* offerDate */     	.arg(offer.date.toString("dd.MM.yyyy"))
+/* offerDate */     	.arg(offer.date.toString("yyyy-MM-dd"))
 /* inquiryDate */   	.arg(offer.getInquiryDateSql())
 /* InquiryNumber */ 	.arg(offer.getInquiryNumberSql())
 /* deliveryTerms */ 	.arg(offer.getTermIDforDB(TermType::delivery))
@@ -288,7 +288,7 @@ void Database::loadOffer(Offer* offer, int offerID)
 
     offer->id = offerID; //need it?
     offer->setSymbol(rec.value("offerSymbol").toString());
-    offer->date = QDate::fromString(rec.value("date").toString(), "dd.MM.yyyy");
+    offer->date = rec.value("offerDate").toDate();
     offer->setCustomer(Customer(
                 rec.value("short").toString(),
                 rec.value("full").toString(),

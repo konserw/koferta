@@ -44,7 +44,7 @@ OfferSearch::OfferSearch(QWidget *parent) :
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableView->setSortingEnabled(true);
-    ui->tableView->sortByColumn(1, Qt::DescendingOrder);
+    ui->tableView->sortByColumn(0, Qt::DescendingOrder);
 
     connect(ui->tableView, &QTableView::clicked, this, &OfferSearch::select);
     connect(ui->lineEdit_Id, &QLineEdit::textEdited, this, &OfferSearch::refSymbol);
@@ -88,8 +88,11 @@ void OfferSearch::refCustomer(const QString& client)
 
 void OfferSearch::refDate(const QDate& date)
 {
-    QString sd = date.toString("MM.yyyy");
-    model->setFilter(QString("date >= str_to_date('1.%1', '%d.%m.%Y') AND  date <= str_to_date('31.%1', '%d.%m.%Y')").arg(sd));
+    QString filter = QString("offerDate >= str_to_date('01.%1', '%d.%m.%Y') AND offerDate < str_to_date('01.%2', '%d.%m.%Y')")
+                     .arg(date.toString("MM.yyyy"))
+                     .arg(date.addMonths(1).toString("MM.yyyy"));
+    qDebug() << "Date filter:" << filter;
+    model->setFilter(filter);
 }
 
 
