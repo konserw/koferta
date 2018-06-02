@@ -73,6 +73,5 @@ IF(WIN32)
 ENDIF(WIN32)
 
 add_library(mainwindow SHARED DatabaseHelpers.hpp ${KOFERTA_SOURCES} ${UI_FILES} res/zasoby.qrc ${qm_files})
-set_property(TARGET  mainwindow PROPERTY CXX_STANDARD 11)
-qt5_use_modules(mainwindow Widgets Sql Network PrintSupport)
+set_property(TARGET  mainwindow PROPERTY CXX_STANDARD 14)
 target_link_libraries(mainwindow ${QT_LIBRARIES})
