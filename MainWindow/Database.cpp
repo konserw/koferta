@@ -227,7 +227,7 @@ void Database::saveOffer(const Offer &offer) const
                         "bPrintDiscount,"
                         "bPrintPrice,"
                         "bPrintNumber"
-                        ") VALUES ('%2', %3, %4, '%5', %6, %7, %8, '%9', %10, %11, '%12', %13, %14, %15, %16, %17, %18, %19)")
+                        ") VALUES ('%2', %3, %4, '%5', %6, %7, %8, %9, %10, %11, '%12', %13, %14, %15, %16, %17, %18, %19)")
 /* offerSymbol */   	.arg(offer.symbol)
 /* userID */        	.arg(offer.getUser().getUid())
 /* customerID */    	.arg(offer.customer.id)
@@ -250,7 +250,7 @@ void Database::saveOffer(const Offer &offer) const
     //save merchandise
     QSqlQuery query;
     query.prepare("INSERT INTO `savedOffersMerchandise` (`offerID`, `sequenceNumber`, `merchandiseID`, `quantity`, `discount`) "
-                  "VALUES (LAST_INSERT_ID(), :seq, :mer, :ile, :rabat)"); //TODO test
+                  "VALUES (LAST_INSERT_ID(), :seq, :mer, :ile, :rabat)");
 
     Merchandise* merchandise;
     const QList<Merchandise*>& merchandiseList = offer.merchandiseList->m_list;
@@ -302,10 +302,12 @@ void Database::loadOffer(Offer* offer, int offerID)
     offer->setInquiryDate(rec.value("inquiryDate").toString());
     offer->setInquiryNumber(rec.value("inquiryNumber").toString());
 
-    offer->setTerm(getTerm(TermType::delivery, rec.value("deliveryTerms").toInt()));
-    offer->setTerm(getTerm(TermType::deliveryDate, rec.value("deliveryDateTerms").toInt()));
-    offer->setTerm(getTerm(TermType::billing, rec.value("billingTerms").toInt()));
-    offer->setTerm(getTerm(TermType::offer, rec.value("offerTerms").toInt()));
+    for(auto it = termTable.begin(); it != termTable.end(); ++it)
+    {
+        auto val = rec.value(it.value());
+        if(!val.isNull())
+            offer->setTerm(getTerm(it.key(), val.toInt()));
+    }
     offer->setTerm(TermItem(TermType::remarks, QString::null, rec.value("remarks").toString()));
 
     QVariant exchange = rec.value("dExchangeRate");
