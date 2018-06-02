@@ -230,7 +230,7 @@ void Database::saveOffer(const Offer &offer) const
                         ") VALUES ('%2', %3, %4, '%5', %6, %7, %8, %9, %10, %11, '%12', %13, %14, %15, %16, %17, %18, %19)")
 /* offerSymbol */   	.arg(offer.symbol)
 /* userID */        	.arg(offer.getUser().getUid())
-/* customerID */    	.arg(offer.customer.id)
+/* customerID */    	.arg(offer.customer.getIDorNull())
 /* offerDate */     	.arg(offer.date.toString("yyyy-MM-dd"))
 /* inquiryDate */   	.arg(offer.getInquiryDateSql())
 /* InquiryNumber */ 	.arg(offer.getInquiryNumberSql())
@@ -289,15 +289,16 @@ void Database::loadOffer(Offer* offer, int offerID)
     offer->id = offerID; //need it?
     offer->setSymbol(rec.value("offerSymbol").toString());
     offer->date = rec.value("offerDate").toDate();
-    offer->setCustomer(Customer(
-                rec.value("short").toString(),
-                rec.value("full").toString(),
-                rec.value("title").toString(),
-                rec.value("name").toString(),
-                rec.value("surname").toString(),
-                rec.value("address").toString(),
-                rec.value("customerID").toInt()
-                ));
+    if(!rec.value("customerID").isNull())
+        offer->setCustomer(Customer(
+                    rec.value("short").toString(),
+                    rec.value("full").toString(),
+                    rec.value("title").toString(),
+                    rec.value("name").toString(),
+                    rec.value("surname").toString(),
+                    rec.value("address").toString(),
+                    rec.value("customerID").toInt()
+                    ));
 
     offer->setInquiryDate(rec.value("inquiryDate").toString());
     offer->setInquiryNumber(rec.value("inquiryNumber").toString());

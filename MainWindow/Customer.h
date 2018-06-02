@@ -57,6 +57,7 @@ public:
     QString getAddress() const;
     void setAddress(const QString &value);
 
+    QString getIDorNull() const;
 private:
     int id;
     QString shortName;

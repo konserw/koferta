@@ -105,3 +105,10 @@ void Customer::setAddress(const QString &value)
 {
     address = value;
 }
+
+QString Customer::getIDorNull() const
+{
+    if(id > -1)
+        return QString::number(id);
+    return "NULL";
+}
