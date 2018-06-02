@@ -15,42 +15,23 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
-       
-#ifndef OFFER_SEARCH_H
-#define OFFER_SEARCH_H
 
-#include <QWidget>
-#include "OfferSearchModel.h"
+#ifndef OFFER_SEARCH_MODEL_H
+#define OFFER_SEARCH_MODEL_H
 
-class QModelIndex;
-class QDate;
-class QSqlRecord;
+#include <QIdentityProxyModel>
+#include <QDate>
 
-namespace Ui {
-    class OfferSearch;
-}
-
-class OfferSearch : public QWidget
+class OfferSearchModel: public QIdentityProxyModel
 {
-    Q_OBJECT
-    
 public:
-    explicit OfferSearch(QWidget *parent = 0);
-    ~OfferSearch();
-
-    int currentOffer();
-
+    explicit OfferSearchModel(QObject* parent);
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 public slots:
-    void select(const QModelIndex &);
-
-signals:
-    void selectionChanged(int);
-
-private:
-    int offerIDfromIndex(const QModelIndex &index);
-
-    OfferSearchModel* model;
-    Ui::OfferSearch *ui;
+    void filterByDate(const QDate& date);
+    void filterBySymbol(QStringView symbol);
+    void filterByCustomer(QStringView customer);
+    void filterByAuthor(QStringView author);
 };
 
-#endif // OFFER_SEARCH_H
+#endif

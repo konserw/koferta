@@ -40,6 +40,7 @@ set(KOFERTA_SOURCES
     LoadDialogMerchandiseListModel.cpp 
     Offer.cpp
     Customer.cpp
+    OfferSearchModel.cpp
 )
 set(UI_FILES
     LoadDialog.ui

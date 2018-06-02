@@ -25,6 +25,7 @@
 #include <QProcess>
 #include "TermItem.h"
 #include "TermModel.h"
+#include "OfferSearchModel.h"
 
 class QString;
 class User;
@@ -61,6 +62,7 @@ public:
 
     //models
     static LoadDialogMerchandiseListModel* loadDialogMerchandiseListModel(QObject* parent);
+    static OfferSearchModel* offerSearchModel(QObject* parent);
 
     //other
     static QString mainAddress();

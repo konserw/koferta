@@ -518,6 +518,19 @@ LoadDialogMerchandiseListModel *Database::loadDialogMerchandiseListModel(QObject
     return new LoadDialogMerchandiseListModel(parent);
 }
 
+OfferSearchModel *Database::offerSearchModel(QObject *parent)
+{
+    auto model = new OfferSearchModel(parent);
+
+    auto sourceModel = new QSqlTableModel(model);
+    sourceModel->setTable("savedOffersView");
+    sourceModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    sourceModel->select();
+
+    model->setSourceModel(sourceModel);
+    return model;
+}
+
 QString Database::mainAddress()
 {
     QSqlTableModel model;

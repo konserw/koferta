@@ -35,10 +35,7 @@ OfferSearch::OfferSearch(QWidget *parent) :
     ui->comboBox->addItem(tr("Wybierz użytkownika"));
     ui->comboBox->addItems(Database::instance()->usersList().keys());
 
-    model = new QSqlTableModel(this);
-    model->setTable("savedOffersView");
-    model->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    model->select();
+    model = Database::instance()->offerSearchModel(this);
 
     ui->tableView->setModel(model);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -47,11 +44,10 @@ OfferSearch::OfferSearch(QWidget *parent) :
     ui->tableView->sortByColumn(0, Qt::DescendingOrder);
 
     connect(ui->tableView, &QTableView::clicked, this, &OfferSearch::select);
-    connect(ui->lineEdit_Id, &QLineEdit::textEdited, this, &OfferSearch::refSymbol);
-    connect(ui->lineEdit_Client,  &QLineEdit::textEdited, this, &OfferSearch::refCustomer);
-    connect(ui->dateEdit, &QDateEdit::dateChanged, this, &OfferSearch::refDate);
-    //connect(ui->comboBox, &QComboBox::currentIndexChanged, this, &OfferSearch::refUser);
-    connect(ui->comboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(refUser(const QString&)));
+    connect(ui->lineEdit_Id, &QLineEdit::textEdited, model, &OfferSearchModel::filterBySymbol);
+    connect(ui->lineEdit_Client,  &QLineEdit::textEdited, model, &OfferSearchModel::filterByCustomer);
+    connect(ui->dateEdit, &QDateEdit::dateChanged, model, &OfferSearchModel::filterByDate);
+    connect(ui->comboBox, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::currentIndexChanged), model, &OfferSearchModel::filterByAuthor);
 }
 
 OfferSearch::~OfferSearch()
@@ -76,27 +72,3 @@ void OfferSearch::select(const QModelIndex& index)
     emit selectionChanged(offerID);
 }
 
-void OfferSearch::refSymbol(const QString& symbol)
-{
-    model->setFilter(QString("offerSymbol like '%%%1%'").arg(symbol));
-}
-
-void OfferSearch::refCustomer(const QString& client)
-{
-    model->setFilter(QString("customerCompany like '%%%1%' OR customerName like '%%%1%'").arg(client));
-}
-
-void OfferSearch::refDate(const QDate& date)
-{
-    QString filter = QString("offerDate >= str_to_date('01.%1', '%d.%m.%Y') AND offerDate < str_to_date('01.%2', '%d.%m.%Y')")
-                     .arg(date.toString("MM.yyyy"))
-                     .arg(date.addMonths(1).toString("MM.yyyy"));
-    qDebug() << "Date filter:" << filter;
-    model->setFilter(filter);
-}
-
-
-void OfferSearch::refUser(const QString& user)
-{
-    model->setFilter(QString("author = '%1'").arg(user));
-}
