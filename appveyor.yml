@@ -2,10 +2,10 @@ version: "{branch}-ci-{build}"
 shallow_clone: true
 
 os:
-- Visual Studio 2013
+- Visual Studio 2017
 
 platform:
-- Win32
+- x64
 
 configuration:
 - Release
@@ -14,18 +14,11 @@ on_finish:
 #   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 environment:
-  QTDIR: C:\Qt\5.7\msvc2013 
+  QTDIR: C:\Qt\5.11\msvc2017_64
   KOFERTA_SQL_USER:
     secure: 19mGGsfTpPugnOgB7dY9iA== 
   KOFERTA_SQL_PWD:
     secure: M29h/Xk+S5xlKx22exgIz4j5M8Iu9cAwHHpyi25Yd9QKty65NIzlPSQvgZSvkzUD
-
-install:
-#- git submodule init
-#- git submodule update
-- cmd: '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86'
-- set PATH=%PATH%;%QTDIR%\bin
-- qmake -v
 
 build_script:
 - cmd: build_script.bat
@@ -36,8 +29,8 @@ after_build:
 test_script:
 
 artifacts:
-  - path: kOferta_x86.7z
-    name: kOferta_x86.7z
+  - path: kOferta.7z
+    name: kOferta.7z
 
 notifications:
 - provider: Email
@@ -49,15 +42,15 @@ notifications:
   on_build_status_changed: true
 
 deploy:
-  description: "# Version %APPVEYOR_REPO_TAG_NAME% arch x86 
+  description: "# Version %APPVEYOR_REPO_TAG_NAME%
 
 ## Requirements:
 
-* none"
+* Visual studio 2017 redist package installed"
   provider: GitHub
   auth_token:
     secure: ogmv8nz5XumGTJew9jWXUvPQ8U4J9t4z7WcAIG+xYHrbqnenBO5x0NUZvCMitga6 
-  artifact: kOferta_x86.7z 
+  artifact: kOferta.7z 
   draft: false
   prerelease: false
   on:
