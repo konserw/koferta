@@ -5,10 +5,10 @@ project(kOferta)
 set(KOFERTA_SQL_USER CACHE STRING "SQL Database user" )
 set(KOFERTA_SQL_PWD  CACHE STRING "SQL Database Password" )
 set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." )
-set(KOFERTA_VERSION        "4.x-mannual" CACHE STRING "Please provide build version string" )
-option(BUILD_CUKE 	       "Build E2E test using cucumber" OFF)
-option(DISABLE_UNIT_TESTS  "Disable unit tests" OFF)
-option(VALGRIND_TESTS      "Run tests within Valgrind" OFF)
+set(KOFERTA_VERSION     "4.x-mannual" CACHE STRING "Please provide build version string" )
+option(BUILD_CUKE 	    "Build E2E test using cucumber" OFF)
+option(UNIT_TESTS       "Enable unit tests" OFF)
+option(VALGRIND_TESTS   "Run tests within Valgrind" OFF)
 
 set(GMOCK_VER "1.8.0")
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
@@ -106,22 +106,20 @@ endif()
 # Tests
 #
 
-if(DISABLE_UNIT_TESTS)
-    message(STATUS "Skipping unit tests")
-else()
+if(UNIT_TESTS)
     if(NOT GMOCK_ROOT)
         set(GMOCK_ROOT "${CMAKE_CURRENT_BINARY_DIR}/gmock")
     endif()
     set(GTEST_USE_STATIC_LIBS ON)
     set(GTEST_HAS_STD_TUPLE 1)
     find_package(GMock REQUIRED)
-    if(GMOCK_FOUND)
-        set(GMOCK_LIBRARIES
-            GTest::GTest
-            GMock::GMock
-            GMock::Main
-            )
-    endif()
+#    if(GMOCK_FOUND)
+#        set(GMOCK_LIBRARIES
+#            GTest::GTest
+#            GMock::GMock
+#            GMock::Main
+#            )
+#    endif()
 
     enable_testing()
     add_subdirectory(tests)
