@@ -50,8 +50,9 @@ class Transaction
 public:
     Transaction() = delete;
     static void open();
-    static QSqlQuery run(QString queryText);
-    static void runBatch(QSqlQuery query);
+    static QSqlQuery run(const QString &queryText);
+    static void run(QSqlQuery& query);
+    static void runBatch(QSqlQuery& query);
     static void commit();
 };
 

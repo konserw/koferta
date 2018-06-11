@@ -33,36 +33,36 @@ void Transaction::open()
     opened = true;
 }
 
-QSqlQuery Transaction::run(QString queryText)
+QSqlQuery Transaction::run(const QString& queryText)
 {
-    QSqlQuery query;
-    if(query.exec(queryText) == false)
-    {
-        QString error = QString(
-                    "SQL query has failed!\n"
-                    "\t* Query: %1\n"
-                    "\t* Error text: %2\n"
-                    "\t* Database Error text: %3\n"
-                    )
-                .arg(queryText)
-                .arg(query.lastError().text())
-                .arg(QSqlDatabase::database().lastError().text());
-        if(opened)
-        {
-            error += "\t* Rolling back transaction";
-            if(QSqlDatabase::database().rollback() == false)
-            {
-                error += QString("\t* SQL transaction rollback has failed!\n"
-                                 "\t* Error text: %1")
-                        .arg(QSqlDatabase::database().lastError().text());
-            }
-        }
-        throw DatabaseException(error);
-    }
+    QSqlQuery query(queryText);
+    run(query);
     return query;
 }
 
-void Transaction::runBatch(QSqlQuery query)
+void Transaction::run(QSqlQuery &query)
+{
+    if(query.exec() == false)
+    {
+        QString error = QString("SQL query has failed!\n"
+                                "\t* Query: %1\n"
+                                "\t* Query error text: %2\n"
+                                "\t* Error text: %3\n"
+                                "\t* Rolling back transaction")
+                .arg(query.lastQuery())
+                .arg(query.lastError().text())
+                .arg(QSqlDatabase::database().lastError().text());
+        if(QSqlDatabase::database().rollback() == false)
+        {
+            error += QString("\t* SQL transaction rollback has failed!\n"
+                             "\t* Error text: %1")
+                    .arg(QSqlDatabase::database().lastError().text());
+        }
+        throw DatabaseException(error);
+    }
+}
+
+void Transaction::runBatch(QSqlQuery &query)
 {
     if(query.execBatch() == false)
     {

@@ -73,7 +73,7 @@ public slots:
     void setupDatabaseConnection(const QString &host, unsigned port, const QString &schema);
     User logIn(int uid, const QString& password);
 
-    void deleteCustomer(Customer c) const;
+    void deleteCustomer(const Customer &customer) const;
     void editCustomer(const Customer& customer) const;
     void saveCustomer(const Customer& customer) const;
 

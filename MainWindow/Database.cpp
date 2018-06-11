@@ -367,14 +367,13 @@ void Database::loadOffer(Offer* offer, int offerID)
     qDebug() << "Done Loading!";
 }
 
-void Database::deleteCustomer(Customer c) const
+void Database::deleteCustomer(const Customer& customer) const
 {
-    qDebug().noquote() <<  QString("deleting customer >%1< from database").arg(c.concatedName());
+    qDebug().noquote() <<  QString("deleting customer >%1< from database").arg(customer.concatedName());
 
 
-    QString queryText= QString("DELETE FROM customersView"
-                               "WHERE customerID=%1")
-            .arg(c.id);
+    QString queryText= QString("DELETE FROM customers WHERE id=%1")
+            .arg(customer.id);
 
     Transaction::open();
     Transaction::run(queryText);
@@ -386,19 +385,27 @@ void Database::editCustomer(const Customer &customer) const
     qDebug().noquote() <<  QString("Updating customer >%1< in database").arg(customer.concatedName());
 
 
-    QString queryText= QString("UPDATE customersView "
-                               "SET short='%1', full='%2', title='%3', name='%4', surname='%5', address='%6' "
-                               "WHERE customerID=%7")
-            .arg(customer.shortName)
-            .arg(customer.fullName)
-            .arg(customer.title)
-            .arg(customer.name)
-            .arg(customer.surname)
-            .arg(customer.address)
-            .arg(customer.id);
+    QSqlQuery query1;
+    query1.prepare("UPDATE customersView "
+                   "SET short=?, full=?, title=?, name=?, surname=?"
+                   "WHERE customerID=?");
+    query1.addBindValue(customer.shortName);
+    query1.addBindValue(customer.fullName);
+    query1.addBindValue(customer.title);
+    query1.addBindValue(customer.name);
+    query1.addBindValue(customer.surname);
+    query1.addBindValue(customer.id);
+
+    QSqlQuery query2;
+    query2.prepare("UPDATE customersView "
+                   "SET address=?"
+                   "WHERE customerID=?");
+    query2.addBindValue(customer.address);
+    query2.addBindValue(customer.id);
 
     Transaction::open();
-    Transaction::run(queryText);
+    Transaction::run(query1);
+    Transaction::run(query2);
     Transaction::commit();
 }
 
@@ -407,12 +414,21 @@ void Database::saveCustomer(const Customer &customer) const
     qDebug().noquote() <<  QString("Saving customer >%1< to database").arg(customer.concatedName());
 
 
-    QString queryText= QString("INSERT INTO customersView (short, full, title, name, surname, address) "
-                               "VALUES ('%1', '%2', '%3', '%4', '%5', '%6')")
-            .arg(customer.shortName, customer.fullName, customer.title, customer.name, customer.surname, customer.address);
+    QSqlQuery query1;
+    query1.prepare("INSERT INTO addresses (address) VALUES (?)");
+    query1.addBindValue(customer.address);
+    QSqlQuery query2;
+    query2.prepare("INSERT INTO customers (short, full, title, name, surname, addressID) "
+                               "VALUES (?, ?, ?, ?, ?, LAST_INSERT_ID())");
+    query2.addBindValue(customer.shortName);
+    query2.addBindValue(customer.fullName);
+    query2.addBindValue(customer.title);
+    query2.addBindValue(customer.name);
+    query2.addBindValue(customer.surname);
 
     Transaction::open();
-    Transaction::run(queryText);
+    Transaction::run(query1);
+    Transaction::run(query2);
     Transaction::commit();
 }
 
