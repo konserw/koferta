@@ -18,6 +18,15 @@ find_package(Qt5Test REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 set(QT_LIBRARIES Qt5::Core Qt5::Widgets Qt5::Test)
 
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+SET(CMAKE_AUTORCC ON)
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 add_subdirectory(MainWindow)
 add_subdirectory(Logger)
 
@@ -25,12 +34,7 @@ IF(WIN32)
     SET(GUI_TYPE WIN32)
 ENDIF(WIN32)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
-add_executable(koferta ${GUI_TYPE} Main.cpp koferta.rc)
+add_executable(koferta ${GUI_TYPE} Main.cpp resources/mainwindow.qrc resources/icon.rc)
 target_link_libraries(koferta Qt5::Widgets mainwindow logger)
 
 #

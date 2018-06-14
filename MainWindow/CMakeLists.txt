@@ -1,8 +1,3 @@
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
-SET(CMAKE_AUTORCC ON)
-
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Sql REQUIRED)
@@ -73,6 +68,6 @@ IF(WIN32)
     add_definitions(-DRELEASE)
 ENDIF(WIN32)
 
-add_library(mainwindow SHARED DatabaseHelpers.hpp ${KOFERTA_SOURCES} ${UI_FILES} res/zasoby.qrc ${qm_files})
-set_property(TARGET  mainwindow PROPERTY CXX_STANDARD 14)
+add_library(mainwindow SHARED DatabaseHelpers.hpp ${KOFERTA_SOURCES} ${UI_FILES} ${qm_files})
+#set_property(TARGET  mainwindow PROPERTY CXX_STANDARD 14)
 target_link_libraries(mainwindow ${QT_LIBRARIES})
