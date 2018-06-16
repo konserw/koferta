@@ -46,7 +46,7 @@ void LoginDialog::openDBconnection()
     else
         schema = "kOferta_v4";
 
-    Database::instance()->setupDatabaseConnection(ui->lineEdit_ip->text(), ui->lineEdit_port->text().toUInt(), schema);
+    Database::instance()->setupDatabaseConnection(ui->lineEdit_ip->text(), ui->lineEdit_port->text().toUInt(), schema, SQL_USER, SQL_PWD);
 }
 
 LoginDialog::LoginDialog(QWidget *parent) :

@@ -47,10 +47,8 @@ QHash<TermType, QString> termTable
 };
 
 Database::Database() :
-    QObject(nullptr)
-{
-    m_database = nullptr;
-}
+    QObject(nullptr), m_database(nullptr), connected(false)
+{ }
 
 Database::~Database()
 {
@@ -75,9 +73,10 @@ void Database::dropConection()
         delete m_database;
         m_database = nullptr;
     }
+    connected = false;
 }
 
-void Database::setupDatabaseConnection(const QString &host, unsigned port, const QString& schema)
+void Database::setupDatabaseConnection(const QString &host, unsigned port, const QString& schema, const QString& user, const QString& password)
 {
     qDebug() << "Setup database connection";
     dropConection();
@@ -117,8 +116,8 @@ void Database::setupDatabaseConnection(const QString &host, unsigned port, const
     m_database->setHostName(host);
     m_database->setPort(port);
     m_database->setDatabaseName(schema);
-    m_database->setUserName(SQL_USER);
-    m_database->setPassword(SQL_PWD);
+    m_database->setUserName(user);
+    m_database->setPassword(password);
 
     qDebug().nospace().noquote() << "Set up connection details:\n"
              << "\t* Host:\t\t" << m_database->hostName() << "\n"
@@ -144,6 +143,7 @@ void Database::setupDatabaseConnection(const QString &host, unsigned port, const
         return;
     }
 
+    connected = true;
     emit changeStatus(tr("Połączono z bazą danych"));
     emit connectionSuccess();
 }
@@ -497,6 +497,11 @@ QString Database::getNewOfferSymbolForUser(const User& u) const
             .arg(QDate::currentDate().toString("yyMM"))
             .arg(u.getCharForOfferSymbol())
             .arg(QString::number(newOfferNumber).rightJustified(2, '0'));
+}
+
+bool Database::isConnected() const
+{
+    return connected;
 }
 
 QHash<QString, int> Database::usersList()

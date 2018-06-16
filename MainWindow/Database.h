@@ -68,9 +68,10 @@ public:
     static QString mainAddress();
     QString getNewOfferSymbolForUser(const User &u) const;
 
+    bool isConnected() const;
 public slots:
     void dropConection();
-    void setupDatabaseConnection(const QString &host, unsigned port, const QString &schema);
+    void setupDatabaseConnection(const QString &host, unsigned port, const QString &schema, const QString &user, const QString &password);
     User logIn(int uid, const QString& password);
 
     void deleteCustomer(const Customer &customer) const;
@@ -86,6 +87,7 @@ protected:
     ~Database();
     static Database* m_instance;
     QSqlDatabase* m_database;
+    bool connected;
 };
 
 #endif // DATABASE_H
