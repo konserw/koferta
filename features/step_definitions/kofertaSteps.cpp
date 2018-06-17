@@ -4,11 +4,11 @@
 #include <QApplication>
 #include <QSettings>
 #include <cstdlib>
-#include "Database.h"
-#include "Offer.h"
-#include "kofertaSteps.h"
+#include "Database.hpp"
+#include "Offer.hpp"
+#include "kofertaSteps.hpp"
 #include "../../build/MainWindow/ui_CustomerSelection.h"
-#include "CustomerSearch.h"
+#include "CustomerSearch.hpp"
 #include <QLineEdit>
 #include <QPrinter>
 #include <QTableView>

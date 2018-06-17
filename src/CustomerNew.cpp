@@ -16,21 +16,30 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef KOFERTASTEPS_H
-#define KOFERTASTEPS_H
+#include "CustomerNew.hpp"
+#include "ui_CustomerNew.h"
+#include "Database.hpp"
+#include "Customer.hpp"
 
-#include "MainWindow.hpp"
-
-struct MainWindowCtx
+CustomerNew::CustomerNew(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::CustomerNew)
 {
-    MainWindow window;
-    QStringList items;
-    QString customer;
+    ui->setupUi(this);
+    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(acc()));
+    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(close()));
+}
 
-    static QString databaseConnectionCert;
+CustomerNew::~CustomerNew()
+{
+    delete ui;
+}
 
-    void searchCustomer(const QString& search);
-    static void openConnection();
-};
+void CustomerNew::acc(){
+    Customer client(ui->skrocona->text(), ui->pelna->text(), ui->tytul->text(), ui->imie->text(), ui->nazwisko->text(), ui->adres->toPlainText());
+    Database::instance()->saveCustomer(client);
+    this->accept();
+}
 
-#endif
+
+

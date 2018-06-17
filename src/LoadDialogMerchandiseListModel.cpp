@@ -16,21 +16,22 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef KOFERTASTEPS_H
-#define KOFERTASTEPS_H
+#include "LoadDialogMerchandiseListModel.hpp"
 
-#include "MainWindow.hpp"
-
-struct MainWindowCtx
+LoadDialogMerchandiseListModel::LoadDialogMerchandiseListModel(QObject *parent) :
+    QSqlTableModel(parent)
 {
-    MainWindow window;
-    QStringList items;
-    QString customer;
+    setTable("savedOffersMerchandiseView");
+    setEditStrategy(QSqlTableModel::OnManualSubmit);
 
-    static QString databaseConnectionCert;
+    setHeaderData(2, Qt::Horizontal, tr("Ilość"));
+    setHeaderData(3, Qt::Horizontal, tr("Rabat"));
+    setHeaderData(5, Qt::Horizontal, tr("Kod"));
+    setHeaderData(6, Qt::Horizontal, tr("Opis"));
+}
 
-    void searchCustomer(const QString& search);
-    static void openConnection();
-};
-
-#endif
+void LoadDialogMerchandiseListModel::setOfferId(int offerID)
+{
+    setFilter(QString("offerID = '%1'").arg(offerID));
+    select();
+}

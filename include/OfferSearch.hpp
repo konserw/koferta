@@ -15,22 +15,42 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
+       
+#ifndef OFFER_SEARCH_H
+#define OFFER_SEARCH_H
 
-#ifndef KOFERTASTEPS_H
-#define KOFERTASTEPS_H
+#include <QWidget>
+#include "OfferSearchModel.hpp"
 
-#include "MainWindow.hpp"
+class QModelIndex;
+class QDate;
+class QSqlRecord;
 
-struct MainWindowCtx
+namespace Ui {
+    class OfferSearch;
+}
+
+class OfferSearch : public QWidget
 {
-    MainWindow window;
-    QStringList items;
-    QString customer;
+    Q_OBJECT
+    
+public:
+    explicit OfferSearch(QWidget *parent = 0);
+    ~OfferSearch();
 
-    static QString databaseConnectionCert;
+    int currentOffer();
 
-    void searchCustomer(const QString& search);
-    static void openConnection();
+public slots:
+    void select(const QModelIndex &);
+
+signals:
+    void selectionChanged(int);
+
+private:
+    int offerIDfromIndex(const QModelIndex &index);
+
+    OfferSearchModel* model;
+    Ui::OfferSearch *ui;
 };
 
-#endif
+#endif // OFFER_SEARCH_H

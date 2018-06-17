@@ -16,21 +16,42 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef KOFERTASTEPS_H
-#define KOFERTASTEPS_H
+#include "TermItem.hpp"
 
-#include "MainWindow.hpp"
-
-struct MainWindowCtx
+TermItem::TermItem()
 {
-    MainWindow window;
-    QStringList items;
-    QString customer;
 
-    static QString databaseConnectionCert;
+}
 
-    void searchCustomer(const QString& search);
-    static void openConnection();
-};
+TermItem::TermItem(TermType Type, QString shortDesc, QString longDesc, int id) :
+    type(Type),
+    m_id(id),
+    m_shortDesc(shortDesc),
+    m_longDesc(longDesc)
+{
+}
 
-#endif
+QString TermItem::longDesc() const
+{
+    return m_longDesc;
+}
+
+QString TermItem::shortDesc() const
+{
+    return m_shortDesc;
+}
+
+TermType TermItem::getType() const
+{
+    return type;
+}
+
+void TermItem::setLongDesc(const QString &longDesc)
+{
+    m_longDesc = longDesc;
+}
+
+int TermItem::id() const
+{
+    return m_id;
+}

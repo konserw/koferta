@@ -13,27 +13,46 @@ option(VALGRIND_TESTS   "Run tests within Valgrind" OFF)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 
 find_package(Qt5Core REQUIRED)
-find_package(Qt5Test REQUIRED)
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Sql REQUIRED)
+find_package(Qt5PrintSupport REQUIRED)
+find_package(Qt5Network REQUIRED)
+find_package(Qt5LinguistTools REQUIRED)
+find_package(Qt5Test REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOUIC_SEARCH_PATHS ${PROJECT_SOURCE_DIR}/forms) 
 SET(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_subdirectory(MainWindow)
+set(KOFERTA_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
+set(TS_FILES
+    ${PROJECT_SOURCE_DIR}/translations/kOferta_pl.ts
+    ${PROJECT_SOURCE_DIR}/translations/kOferta_en.ts
+    ${PROJECT_SOURCE_DIR}/translations/kOferta_de.ts
+)
+#qt5_create_translation(qm_files ${CMAKE_SOURCE_DIR}/src/ ${TS_FILES})# OPTIONS ...)
+qt5_add_translation(QM_FILES ${TS_FILES})
+#set_source_files_properties(${qm_files} PROPERTIES GENERATED TRUE)
+ADD_CUSTOM_TARGET (translations ALL DEPENDS ${QM_FILES})
+
+#message(STATUS "Adding UI files to project")
+#file(GLOB_RECURSE UI_SOURCES "forms/*.ui")
+#qt5_wrap_ui(UI_GENERATED_HEADERS ${UI_SOURCES})
+#set_source_files_properties(${UI_GENERATED_HEADERS} PROPERTIES GENERATED TRUE)
+
+set(KOFERTA_RESOURCES 
+    ${PROJECT_SOURCE_DIR}/resources/mainwindow.qrc
+    ${PROJECT_SOURCE_DIR}/resources/icon.rc
+)
+
+add_subdirectory(src)
 add_subdirectory(Logger)
-
-IF(WIN32)
-    SET(GUI_TYPE WIN32)
-ENDIF(WIN32)
-
-add_executable(koferta ${GUI_TYPE} Main.cpp resources/mainwindow.qrc resources/icon.rc)
-target_link_libraries(koferta Qt5::Widgets mainwindow logger)
 
 #
 # Colored Terminal Output

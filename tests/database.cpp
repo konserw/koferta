@@ -1,5 +1,5 @@
 #include <QtTest/QtTest>
-#include "../MainWindow/Database.h"
+#include "Database.hpp"
 namespace tests {
 
 class database : public QObject {

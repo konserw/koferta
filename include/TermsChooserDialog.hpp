@@ -16,21 +16,36 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef KOFERTASTEPS_H
-#define KOFERTASTEPS_H
+#ifndef TERMSCHOOSERDIALOG_H
+#define TERMSCHOOSERDIALOG_H
 
-#include "MainWindow.hpp"
+#include <QDialog>
+#include "TermItem.hpp"
 
-struct MainWindowCtx
+class QAbstractTableModel;
+
+namespace Ui {
+class TermsChooserDialog;
+}
+
+class TermsChooserDialog : public QDialog
 {
-    MainWindow window;
-    QStringList items;
-    QString customer;
+    Q_OBJECT
 
-    static QString databaseConnectionCert;
+public:
+    explicit TermsChooserDialog(QWidget *parent = 0) = delete;
+    explicit TermsChooserDialog(QWidget *parent, TermType type);
+    ~TermsChooserDialog();
 
-    void searchCustomer(const QString& search);
-    static void openConnection();
+signals:
+    void termChoosen(const TermItem& term);
+
+public slots:
+    void selectionChanged(QModelIndex);
+    void ok();
+
+private:
+    Ui::TermsChooserDialog *ui;
 };
 
-#endif
+#endif // TERMSCHOOSERDIALOG_H

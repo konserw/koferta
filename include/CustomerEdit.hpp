@@ -16,21 +16,32 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef KOFERTASTEPS_H
-#define KOFERTASTEPS_H
+#ifndef EDYCJAKLIENTA_H
+#define EDYCJAKLIENTA_H
 
-#include "MainWindow.hpp"
+#include <QDialog>
+#include "Customer.hpp"
 
-struct MainWindowCtx
+namespace Ui {
+    class CustomerEdit;
+}
+
+class CustomerEdit : public QDialog
 {
-    MainWindow window;
-    QStringList items;
-    QString customer;
+    Q_OBJECT
 
-    static QString databaseConnectionCert;
+public:
+    explicit CustomerEdit(QWidget *parent = 0);
+    ~CustomerEdit();
 
-    void searchCustomer(const QString& search);
-    static void openConnection();
+public slots:
+    void app();
+    void change(Customer);
+    void del();
+
+private:
+    Ui::CustomerEdit *ui;
+    Customer customer;
 };
 
-#endif
+#endif // EDYCJAKLIENTA_H

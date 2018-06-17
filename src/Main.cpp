@@ -16,21 +16,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef KOFERTASTEPS_H
-#define KOFERTASTEPS_H
-
+#include <QApplication>
+#include <QTextCodec>
+#include "Logger.hpp"
 #include "MainWindow.hpp"
 
-struct MainWindowCtx
+int main(int argc, char *argv[])
 {
-    MainWindow window;
-    QStringList items;
-    QString customer;
+    QApplication app(argc, argv);
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
+    QCoreApplication::setOrganizationName("Konserw  Software");
+    //QCoreApplication::setOrganizationDomain("koferta.no-ip.biz");
+    QCoreApplication::setApplicationName("kOferta");
 
-    static QString databaseConnectionCert;
-
-    void searchCustomer(const QString& search);
-    static void openConnection();
-};
-
-#endif
+    qInstallMessageHandler(Logger::logToFile);
+    MainWindow w;
+    return app.exec();
+}

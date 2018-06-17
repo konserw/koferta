@@ -1,36 +1,46 @@
 /**
     kOferta - system usprawniajacy proces ofertowania
     Copyright (C) 2011  Kamil 'konserw' Strzempowicz, konserw@gmail.com
-
+    
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-
+    
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-
+    
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef KOFERTASTEPS_H
-#define KOFERTASTEPS_H
+#ifndef WYBORTOWARU_H
+#define WYBORTOWARU_H
 
-#include "MainWindow.hpp"
+#include "MerchandiseSearch.hpp"
 
-struct MainWindowCtx
+class QSqlRecord;
+class QSqlTableModel;
+class QModelIndex;
+
+/*!
+ * \brief Klasa umożliwiająca dodanie towaru do oferty
+ */
+class MerchandiseSelection : public MerchandiseSearch
 {
-    MainWindow window;
-    QStringList items;
-    QString customer;
+    Q_OBJECT
+    
+public:
+    explicit MerchandiseSelection(const QHash<int, double>& hash, QWidget *parent = 0);
+    ~MerchandiseSelection();
 
-    static QString databaseConnectionCert;
+signals:
+    void itemCountChanged(int id, double count);
 
-    void searchCustomer(const QString& search);
-    static void openConnection();
+protected:
+    QSqlTableModel* m_merchandiseModel;
 };
 
-#endif
+#endif // WYBORTOWARU_H

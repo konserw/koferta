@@ -16,21 +16,42 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef KOFERTASTEPS_H
-#define KOFERTASTEPS_H
+#ifndef LOG_H
+#define LOG_H
 
-#include "MainWindow.hpp"
+#include <QDialog>
+#include <QHash>
+#include "User.hpp"
 
-struct MainWindowCtx
+
+namespace Ui {
+    class LoginDialog;
+}
+
+class LoginDialog : public QDialog
 {
-    MainWindow window;
-    QStringList items;
-    QString customer;
+    Q_OBJECT
 
-    static QString databaseConnectionCert;
+public:
+    explicit LoginDialog(QWidget *parent = 0);
+    ~LoginDialog();
 
-    void searchCustomer(const QString& search);
-    static void openConnection();
+    User user() const;
+
+public slots:
+    void openDBconnection();
+    void ok();
+    void connected();
+
+private:
+    Ui::LoginDialog *ui;
+
+    QPixmap* m_kOfertaLogo;
+    QString m_lastUser;
+    QHash<QString, int> m_userList;
+    User m_user;
+
+    void readSettings();
+    void writeSettings();
 };
-
-#endif
+#endif // LOG_H
