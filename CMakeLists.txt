@@ -7,16 +7,14 @@ set(KOFERTA_SQL_PWD  CACHE STRING "SQL Database Password" )
 set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." )
 set(KOFERTA_VERSION     "4.x-mannual" CACHE STRING "Please provide build version string" )
 option(BUILD_CUKE 	    "Build E2E test using cucumber" OFF)
-option(UNIT_TESTS       "Enable unit tests" OFF)
+option(UNIT_TESTS       "Enable unit tests" ON)
 option(VALGRIND_TESTS   "Run tests within Valgrind" OFF)
 
-set(GMOCK_VER "1.8.0")
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Test REQUIRED)
 find_package(Qt5Widgets REQUIRED)
-set(QT_LIBRARIES Qt5::Core Qt5::Widgets Qt5::Test)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -107,20 +105,6 @@ endif()
 #
 
 if(UNIT_TESTS)
-    if(NOT GMOCK_ROOT)
-        set(GMOCK_ROOT "${CMAKE_CURRENT_BINARY_DIR}/gmock")
-    endif()
-    set(GTEST_USE_STATIC_LIBS ON)
-    set(GTEST_HAS_STD_TUPLE 1)
-    find_package(GMock REQUIRED)
-#    if(GMOCK_FOUND)
-#        set(GMOCK_LIBRARIES
-#            GTest::GTest
-#            GMock::GMock
-#            GMock::Main
-#            )
-#    endif()
-
     enable_testing()
     add_subdirectory(tests)
 endif()
@@ -164,6 +148,6 @@ if(BUILD_CUKE)
         add_executable(kofertaSteps features/step_definitions/kofertaSteps ${CUKE_FEATURES})
         set_property(TARGET kofertaSteps PROPERTY CXX_STANDARD 11)
         add_dependencies(kofertaSteps cucumber-cpp)
-        target_link_libraries(kofertaSteps mainwindow ${QT_LIBRARIES} ${CUKE_LIBRARIES})
+        target_link_libraries(kofertaSteps mainwindow Qt5::Core Qt5::Widgets Qt5::Test ${CUKE_LIBRARIES})
     endif()
 endif()
