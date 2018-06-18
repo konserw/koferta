@@ -1,0 +1,10 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: konserw/koferta:ubuntu
+    steps:
+      - checkout
+      - run: ./circleci.sh
+      - store_test_results:
+          path: build/test-results

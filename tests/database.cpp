@@ -7,9 +7,8 @@ class database : public QObject {
 private slots:
     void setup_connection()
     {
-        QString db_name = QProcessEnvironment::systemEnvironment().value("DATABASE_MYSQL_USERNAME", "test_user");
-        QString db_pass = QProcessEnvironment::systemEnvironment().value("DATABASE_MYSQL_PASSWORD", "test_password");
-        Database::instance()->setupDatabaseConnection("localhost", 3306, "kOferta_test", db_name, db_pass);
+        QString db_name = QProcessEnvironment::systemEnvironment().value("DATABASE", "kOferta_test");
+        Database::instance()->setupDatabaseConnection("localhost", 3306, db_name);
         QVERIFY(Database::instance()->isConnected());
         Database::instance()->dropConection();
     }

@@ -116,8 +116,11 @@ void Database::setupDatabaseConnection(const QString &host, unsigned port, const
     m_database->setHostName(host);
     m_database->setPort(port);
     m_database->setDatabaseName(schema);
-    m_database->setUserName(user);
-    m_database->setPassword(password);
+    if(!user.isNull() && !password.isNull())
+    {
+        m_database->setUserName(user);
+        m_database->setPassword(password);
+    }
 
     qDebug().nospace().noquote() << "Set up connection details:\n"
              << "\t* Host:\t\t" << m_database->hostName() << "\n"

@@ -71,7 +71,7 @@ public:
     bool isConnected() const;
 public slots:
     void dropConection();
-    void setupDatabaseConnection(const QString &host, unsigned port, const QString &schema, const QString &user, const QString &password);
+    void setupDatabaseConnection(const QString &host, unsigned port, const QString &schema, const QString &user = QString(), const QString &password = QString());
     User logIn(int uid, const QString& password);
 
     void deleteCustomer(const Customer &customer) const;
