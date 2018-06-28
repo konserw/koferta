@@ -5,10 +5,10 @@ project(kOferta)
 set(KOFERTA_SQL_USER CACHE STRING "SQL Database user" )
 set(KOFERTA_SQL_PWD  CACHE STRING "SQL Database Password" )
 set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." )
-set(KOFERTA_VERSION     "4.x-mannual" CACHE STRING "Please provide build version string" )
-option(BUILD_CUKE 	    "Build E2E test using cucumber" OFF)
-option(DISABLE_UNIT_TESTS       "Disable unit tests" OFF)
-option(VALGRIND_TESTS   "Run tests within Valgrind" OFF)
+set(KOFERTA_VERSION         "4.x-mannual" CACHE STRING "Please provide build version string" )
+option(BUILD_CUKE 	        "Build E2E test using cucumber" OFF)
+option(DISABLE_UNIT_TESTS   "Disable unit tests" OFF)
+option(VALGRIND_TESTS       "Run tests within Valgrind" OFF)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 
@@ -35,15 +35,8 @@ set(TS_FILES
     ${PROJECT_SOURCE_DIR}/translations/kOferta_en.ts
     ${PROJECT_SOURCE_DIR}/translations/kOferta_de.ts
 )
-#qt5_create_translation(qm_files ${CMAKE_SOURCE_DIR}/src/ ${TS_FILES})# OPTIONS ...)
 qt5_add_translation(QM_FILES ${TS_FILES})
-#set_source_files_properties(${qm_files} PROPERTIES GENERATED TRUE)
 ADD_CUSTOM_TARGET (translations ALL DEPENDS ${QM_FILES})
-
-#message(STATUS "Adding UI files to project")
-#file(GLOB_RECURSE UI_SOURCES "forms/*.ui")
-#qt5_wrap_ui(UI_GENERATED_HEADERS ${UI_SOURCES})
-#set_source_files_properties(${UI_GENERATED_HEADERS} PROPERTIES GENERATED TRUE)
 
 set(KOFERTA_RESOURCES 
     ${PROJECT_SOURCE_DIR}/resources/mainwindow.qrc

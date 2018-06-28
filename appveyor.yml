@@ -1,17 +1,18 @@
 version: "{branch}-ci-{build}"
 shallow_clone: true
+clone_depth: 1
 
 os:
-- Visual Studio 2017
+  - Visual Studio 2017
 
 platform:
-- x64
+  - x64
 
 configuration:
-- Release
+  - Release
 
-on_finish:
-#   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+services:
+  - mysql
 
 environment:
   QTDIR: C:\Qt\5.11\msvc2017_64
@@ -19,14 +20,55 @@ environment:
     secure: 19mGGsfTpPugnOgB7dY9iA== 
   KOFERTA_SQL_PWD:
     secure: M29h/Xk+S5xlKx22exgIz4j5M8Iu9cAwHHpyi25Yd9QKty65NIzlPSQvgZSvkzUD
+  SQL_PASS: Password12!
 
 build_script:
-- cmd: build_script.bat
-
-after_build:
-- cmd: package_script.bat
+  - cmd: |
+      set PATH=%PATH%;%QTDIR%\bin
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+      IF %APPVEYOR_REPO_TAG% EQU true (set ver=%APPVEYOR_REPO_TAG_NAME%) ELSE (set ver=%APPVEYOR_REPO_BRANCH%-%APPVEYOR_BUILD_NUMBER%)
+      echo Setting version: %ver%
+      cmake -E make_directory build
+      cmake -E chdir build cmake -G "NMake Makefiles" -DCMAKE_GENERATOR_PLATFORM=x64 -DKOFERTA_VERSION=%ver% -DKOFERTA_SQL_USER=%KOFERTA_SQL_USER% -DKOFERTA_SQL_PWD=%KOFERTA_SQL_PWD% -DDISABLE_UNIT_TESTS=OFF ..
+      cmake --build build --config Release
 
 test_script:
+  - SET PATH=C:\Program Files\MySQL\MySQL Server 5.7\bin;C:\Program Files\MySQL\MySQL Server 5.7\lib;%PATH%
+  - mysql -u root -p%SQL_PASS% < database_scripts/test_database_ddl.sql
+  - set CTEST_OUTPUT_ON_FAILURE=ON
+  - cmake --build build --target test
+
+after_test:
+- for /r %%v in (TEST-*.xml) do curl -s -F "file=@%%v;filename=%%~nxv" https://ci.appveyor.com/api/testresults/junit/%APPVEYOR_JOB_ID%
+
+on_success:
+  - cmd: | 
+      mkdir koferta
+      cd koferta
+      mkdir bin
+      cp ../build/src/Release/koferta.exe ./bin/
+      cp ../build/*.qm ./bin/
+      cp ../3rdParty/* ./bin/
+      cp ../LICENSE.md ./
+      cp ../README.md ./
+      cp ../koferta.bat ./
+      cp C:\Qt/5.11/msvc2017_64/bin/Qt5Core.dll ./bin/
+      cp C:\Qt/5.11/msvc2017_64/bin/Qt5Gui.dll ./bin/
+      cp C:\Qt/5.11/msvc2017_64/bin/Qt5PrintSupport.dll ./bin/
+      cp C:\Qt/5.11/msvc2017_64/bin/Qt5Sql.dll ./bin/
+      cp C:\Qt/5.11/msvc2017_64/bin/Qt5Widgets.dll ./bin/
+      cp C:\Qt/5.11/msvc2017_64/bin/Qt5Network.dll ./bin/
+      mkdir ./bin/platforms
+      cp C:\Qt/5.11/msvc2017_64/plugins/platforms/qwindows.dll ./bin/platforms/
+      mkdir ./bin/printsupport
+      cp C:\Qt/5.11/msvc2017_64/plugins/printsupport/windowsprintersupport.dll ./bin/printsupport/
+      mkdir ./bin/sqldrivers
+      cp C:\Qt/5.11/msvc2017_64/plugins/sqldrivers/qsqlmysql.dll ./bin/sqldrivers/
+      cd ..
+      7z a kOferta.7z koferta
+
+on_finish:
+   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 artifacts:
   - path: kOferta.7z
@@ -46,7 +88,8 @@ deploy:
 
 ## Requirements:
 
-* Visual studio 2017 redist package installed"
+* Visual studio 2017 redist package installed
+[download link](https://aka.ms/vs/15/release/vc_redist.x64.exe)"
   provider: GitHub
   auth_token:
     secure: ogmv8nz5XumGTJew9jWXUvPQ8U4J9t4z7WcAIG+xYHrbqnenBO5x0NUZvCMitga6 
