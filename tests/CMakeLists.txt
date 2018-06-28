@@ -6,6 +6,11 @@ function(qt_add_test TEST_FILE)
         add_custom_target(make-directory-${TEST_NAME} ALL
             COMMAND ${CMAKE_COMMAND} -E make_directory ../test-results/${TEST_NAME})
         add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME} -o -,txt -o ../test-results/${TEST_NAME}/result.xml,xunitxml)
+        target_include_directories(${TEST_NAME}
+            PUBLIC
+                $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+                $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+        )
 endfunction()
 
 add_custom_target(make-directory-results ALL
