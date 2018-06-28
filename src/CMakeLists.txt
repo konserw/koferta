@@ -36,24 +36,20 @@ set(KOFERTA_SOURCES
     list(APPEND KOFERTA_SOURCES ${KOFERTA_HEADERS})
 #endif()
 
-add_definitions(-DVERSION="${KOFERTA_VERSION}")
-add_definitions(-DEXPORT_MAINWINDOW)
-add_definitions(-DQT_MESSAGELOGCONTEXT)
-add_definitions(-DSQL_USER="${KOFERTA_SQL_USER}")
-add_definitions(-DSQL_PWD="${KOFERTA_SQL_PWD}")
-
 IF(WIN32)
     add_definitions(-DWIN32)
     add_definitions(-DRELEASE)
-ENDIF(WIN32)
+    SET(GUI_TYPE WIN32)
+ENDIF()
 
 add_library(mainwindow SHARED ${KOFERTA_SOURCES})# ${UI_GENERATED_HEADERS})
 #set_property(TARGET  mainwindow PROPERTY CXX_STANDARD 14)
 target_link_libraries(mainwindow Qt5::Core Qt5::Widgets Qt5::Sql Qt5::Network Qt5::PrintSupport)
-
-IF(WIN32)
-    SET(GUI_TYPE WIN32)
-ENDIF(WIN32)
+target_compile_definitions(mainwindow PRIVATE VERSION="${KOFERTA_VERSION}")
+target_compile_definitions(mainwindow PRIVATE EXPORT_MAINWINDOW)
+target_compile_definitions(mainwindow PRIVATE QT_MESSAGELOGCONTEXT)
+target_compile_definitions(mainwindow PRIVATE SQL_USER="${KOFERTA_SQL_USER}")
+target_compile_definitions(mainwindow PRIVATE SQL_PWD="${KOFERTA_SQL_PWD}")
 
 add_executable(koferta ${GUI_TYPE} Main.cpp ${KOFERTA_RESOURCES}) 
 target_link_libraries(koferta mainwindow logger)
