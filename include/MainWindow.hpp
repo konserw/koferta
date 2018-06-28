@@ -35,12 +35,12 @@ namespace Ui {
 }
 
 #if defined EXPORT_MAINWINDOW
- #define DLLSPEC Q_DECL_EXPORT
+ #define MAINWINDOW_DLL Q_DECL_EXPORT
 #else
- #define DLLSPEC Q_DECL_IMPORT
+ #define MAINWINDOW_DLL Q_DECL_IMPORT
 #endif
 
-class DLLSPEC MainWindow : public QMainWindow
+class MAINWINDOW_DLL MainWindow : public QMainWindow
 {
     Q_OBJECT
 
