@@ -7,7 +7,7 @@ set(KOFERTA_SQL_PWD  CACHE STRING "SQL Database Password" )
 set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." )
 set(KOFERTA_VERSION     "4.x-mannual" CACHE STRING "Please provide build version string" )
 option(BUILD_CUKE 	    "Build E2E test using cucumber" OFF)
-option(UNIT_TESTS       "Enable unit tests" ON)
+option(DISABLE_UNIT_TESTS       "Disable unit tests" OFF)
 option(VALGRIND_TESTS   "Run tests within Valgrind" OFF)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
@@ -123,7 +123,7 @@ endif()
 # Tests
 #
 
-if(UNIT_TESTS)
+if(NOT DISABLE_UNIT_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()

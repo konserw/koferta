@@ -29,7 +29,6 @@ cmake -E chdir build cmake \
     -GNinja \
     -DKOFERTA_SQL_USER="${KOFERTA_SQL_USER}" \
     -DKOFERTA_SQL_PWD="${KOFERTA_SQL_PWD}" \
-    -DUNIT_TESTS=on \
     ${VALGRIND_TESTS:+"-DVALGRIND_TESTS=${VALGRIND_TESTS}"} \
     ..
 cmake --build build
