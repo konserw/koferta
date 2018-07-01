@@ -25,6 +25,7 @@
 #include "LoginDialog.hpp"
 #include "ui_LoginDialog.h"
 #include "Database.hpp"
+#include "DatabaseHelpers.hpp"
 
 LoginDialog::~LoginDialog()
 {
@@ -46,7 +47,13 @@ void LoginDialog::openDBconnection()
     else
         schema = "kOferta_v4";
 
+    try {
     Database::instance()->setupDatabaseConnection(ui->lineEdit_ip->text(), ui->lineEdit_port->text().toUInt(), schema, SQL_USER, SQL_PWD);
+    } catch(const DatabaseException& e) {
+        QMessageBox::critical(nullptr, QObject::tr("Błąd"), QObject::tr("Bład sterownika bazy danych!"));
+        qFatal("%s", e.what());
+        //Application will close
+    }
 }
 
 LoginDialog::LoginDialog(QWidget *parent) :

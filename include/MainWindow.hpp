@@ -19,7 +19,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMessageBox>
 #include <QMainWindow>
 #include <QCalendarWidget>
 #include <QPlainTextEdit>
@@ -29,18 +28,11 @@
 #include "TermItem.hpp"
 #include "Customer.hpp"
 
-
 namespace Ui {
     class MainWindow;
 }
 
-#if defined EXPORT_MAINWINDOW
- #define MAINWINDOW_DLL Q_DECL_EXPORT
-#else
- #define MAINWINDOW_DLL Q_DECL_IMPORT
-#endif
-
-class MAINWINDOW_DLL MainWindow : public QMainWindow
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
@@ -119,7 +111,7 @@ protected:
     void uiInit();
     void setMenusEnabled(bool en);
     void uiReset();
-    QMessageBox::StandardButton messageBoxSave();
+    bool messageBoxSave(); //return true if canceled
 
 private:
     Ui::MainWindow *ui;

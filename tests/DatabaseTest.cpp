@@ -17,4 +17,4 @@ private slots:
 }
 
 QTEST_MAIN(tests::database)
-#include "database.moc"
+#include "DatabaseTest.moc"

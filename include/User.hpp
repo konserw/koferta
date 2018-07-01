@@ -16,14 +16,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#include <QString>
-
 #ifndef USER_H
 #define USER_H
 
-/*!
- * \brief Klasa przechowująca dane użytkownika
- */
+#include <QString>
+
 class User
 {
     friend class Database;

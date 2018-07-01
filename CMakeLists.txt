@@ -30,7 +30,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(KOFERTA_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(TS_FILES
     ${PROJECT_SOURCE_DIR}/translations/kOferta_pl.ts
     ${PROJECT_SOURCE_DIR}/translations/kOferta_en.ts
@@ -51,8 +50,9 @@ set(KOFERTA_RESOURCES
     ${PROJECT_SOURCE_DIR}/resources/icon.rc
 )
 
+set(KOFERTA_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/include)
 add_subdirectory(src)
-add_subdirectory(Logger)
 
 #
 # Colored Terminal Output

@@ -16,7 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#include "Logger.hpp"
 #include <QDate>
 #include <QDebug>
 #include <QTextStream>
@@ -24,6 +23,8 @@
 #include <QFile>
 #include <QDir>
 #include <QCoreApplication>
+
+#include "Logger.hpp"
 
 const char* Logger::messageTypes[] =
 {

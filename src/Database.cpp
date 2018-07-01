@@ -17,19 +17,14 @@
 **/
 #include <random>
 
-#include <QMessageBox>
-#include <QInputDialog>
+#include <QSqlDatabase>
 #include <QString>
 #include <QVariant>
-#include <QMessageBox>
 #include <QTcpSocket>
 #include <QHash>
 
-#include "MainWindow.hpp"
-#include "User.hpp"
 #include "Customer.hpp"
 #include "Merchandise.hpp"
-#include "User.hpp"
 #include "Database.hpp"
 #include "DatabaseHelpers.hpp"
 #include "LoadDialogMerchandiseListModel.hpp"
@@ -85,8 +80,6 @@ void Database::setupDatabaseConnection(const QString &host, unsigned port, const
          m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"));
     else
     {
-        QMessageBox::critical(nullptr, QObject::tr("Błąd"), QObject::tr("Bład sterownika bazy danych!"));
-
         qDebug() << "library paths: ";
         QStringList list = qApp->libraryPaths();
         for(int i=0; i<list.size(); i++)
@@ -96,8 +89,7 @@ void Database::setupDatabaseConnection(const QString &host, unsigned port, const
         list = QSqlDatabase::drivers();
         for(int i=0; i<list.size(); i++)
             qDebug() << "\t" << list[i];
-        qFatal("Failed to create database object - QMYSQL driver not found.");
-        //Application will close
+        throw DatabaseException("Failed to create database object - QMYSQL driver not found.");
     }
 
     qDebug().noquote().nospace() << "Check if TCP socket " << host << ":" << port << " is reachable";

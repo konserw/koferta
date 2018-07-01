@@ -16,16 +16,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
+
+#include <QMessageBox>
 #include <QDate>
-#include <QSqlQuery>
 #include <QInputDialog>
 #include <QList>
 #include <QtWidgets>
 #include <QFile>
 #include <QTextStream>
 #include <QTextCodec>
-#include <QSqlRecord>
-#include <QSqlTableModel>
 #include <QTextDocument>
 #include <QtPrintSupport>
 #include <QPrintDialog>
@@ -261,9 +260,14 @@ void MainWindow::readSettings()
     settings.endGroup();
 }
 
-QMessageBox::StandardButton MainWindow::messageBoxSave()
+bool MainWindow::messageBoxSave()
 {
-    return QMessageBox::question(this, tr("Zapis przed zamknięciem"), tr("Zapisać ofertę przed zamknięciem?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel );
+    auto reply = QMessageBox::question(this, tr("Zapis przed zamknięciem"), tr("Zapisać ofertę przed zamknięciem?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel );
+    if(reply == QMessageBox::Cancel)
+        return true;
+    if(reply == QMessageBox::Yes)
+        saveOffer();
+    return false;
 }
 
 Offer *MainWindow::getCurrentOffer() const
@@ -273,23 +277,11 @@ Offer *MainWindow::getCurrentOffer() const
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QMessageBox::StandardButton reply;
-    if(currentOffer == nullptr)
-        reply = QMessageBox::No;
-    else
-        reply =  messageBoxSave();
-
-    if(reply == QMessageBox::Cancel)
-    {
-        event->ignore();
-    }
-    else
-    {
-        if(reply == QMessageBox::Yes)
-            saveOffer();
-        writeSettings();
-        event->accept();
-    }
+    if(currentOffer != nullptr)
+        if(messageBoxSave())
+            event->ignore();
+    writeSettings();
+    event->accept();
 }
 
 void MainWindow::about()
@@ -501,12 +493,8 @@ void MainWindow::newOffer()
 {
     if(currentOffer != nullptr)
     {
-        QMessageBox::StandardButton reply = messageBoxSave();
-        if(reply == QMessageBox::Cancel)
+        if(messageBoxSave())
             return;
-        if(reply == QMessageBox::Yes)
-            saveOffer();
-
         delete currentOffer;
     }
     currentOffer = new Offer(m_user, this);
@@ -562,13 +550,9 @@ void MainWindow::saveOffer()
 void MainWindow::loadOffer()
 {
     if(currentOffer != nullptr)
-    {
-        QMessageBox::StandardButton reply = messageBoxSave();
-        if(reply == QMessageBox::Cancel)
+        if(messageBoxSave())
             return;
-        if(reply == QMessageBox::Yes)
-            saveOffer();
-    }
+
     LoadDialog pop(this);
     if(pop.exec() == QDialog::Accepted)
         loadOfferFromDatabase(pop.selectedOfferId());

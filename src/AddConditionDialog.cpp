@@ -16,6 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
+#include <QMessageBox>
+
 #include "AddConditionDialog.hpp"
 #include "ui_AddConditionDialog.h"
 #include "Database.hpp"

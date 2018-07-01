@@ -20,15 +20,13 @@
 #define DATABASE_H
 
 #include <QObject>
-#include <QSqlDatabase>
-#include <QMessageBox>
-#include <QProcess>
 #include "TermItem.hpp"
 #include "TermModel.hpp"
 #include "OfferSearchModel.hpp"
+#include "User.hpp"
 
+class QSqlDatabase;
 class QString;
-class User;
 class QSqlTableModel;
 class Merchandise;
 class LoadDialogMerchandiseListModel;
