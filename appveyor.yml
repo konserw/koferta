@@ -20,6 +20,7 @@ environment:
     secure: 19mGGsfTpPugnOgB7dY9iA== 
   KOFERTA_SQL_PWD:
     secure: M29h/Xk+S5xlKx22exgIz4j5M8Iu9cAwHHpyi25Yd9QKty65NIzlPSQvgZSvkzUD
+  SQL_USER: root
   SQL_PASS: Password12!
 
 build_script:
@@ -34,19 +35,18 @@ build_script:
 
 test_script:
   - SET PATH=C:\Program Files\MySQL\MySQL Server 5.7\bin;C:\Program Files\MySQL\MySQL Server 5.7\lib;%PATH%
-  - mysql -u root -p%SQL_PASS% < database_scripts/test_database_ddl.sql
+  - mysql -u %SQL_USER% -p%SQL_PASS% < database_scripts/test_database_ddl.sql
   - set CTEST_OUTPUT_ON_FAILURE=ON
   - cmake --build build --target test
 
 after_test:
-- for /r %%v in (build/test-results/*/result.xml) do curl -s -F "file=@%%v;filename=%%~nxv" https://ci.appveyor.com/api/testresults/junit/%APPVEYOR_JOB_ID%
-
-on_success:
+  - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\build\test-results\DatabaseTest\result.xml))
+#package artifact
   - cmd: | 
       mkdir koferta
       cd koferta
       mkdir bin
-      cp ../build/src/Release/koferta.exe ./bin/
+      cp ../build/src/koferta.exe ./bin/
       cp ../build/*.qm ./bin/
       cp ../3rdParty/* ./bin/
       cp ../LICENSE.md ./
@@ -58,17 +58,17 @@ on_success:
       cp C:\Qt/5.11/msvc2017_64/bin/Qt5Sql.dll ./bin/
       cp C:\Qt/5.11/msvc2017_64/bin/Qt5Widgets.dll ./bin/
       cp C:\Qt/5.11/msvc2017_64/bin/Qt5Network.dll ./bin/
-      mkdir ./bin/platforms
+      mkdir bin\platforms
       cp C:\Qt/5.11/msvc2017_64/plugins/platforms/qwindows.dll ./bin/platforms/
-      mkdir ./bin/printsupport
+      mkdir bin\printsupport
       cp C:\Qt/5.11/msvc2017_64/plugins/printsupport/windowsprintersupport.dll ./bin/printsupport/
-      mkdir ./bin/sqldrivers
+      mkdir bin\sqldrivers
       cp C:\Qt/5.11/msvc2017_64/plugins/sqldrivers/qsqlmysql.dll ./bin/sqldrivers/
       cd ..
       7z a kOferta.7z koferta
 
-on_finish:
-   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+#on_finish:
+#   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 artifacts:
   - path: kOferta.7z
