@@ -53,7 +53,7 @@ target_compile_definitions(logger PUBLIC QT_MESSAGELOGCONTEXT)
 target_link_libraries(logger Qt5::Core)
 
 add_library(database STATIC ${DATABASE_SOURCES})
-target_link_libraries(database PUBLIC Qt5::Core Qt5::Sql Qt5::Network)
+target_link_libraries(database PUBLIC Qt5::Core Qt5::Sql Qt5::Network mainwindow)
 
 add_library(mainwindow STATIC ${MAINWINDOW_SOURCES})
 target_link_libraries(mainwindow Qt5::Sql Qt5::Core Qt5::Widgets Qt5::PrintSupport database)
