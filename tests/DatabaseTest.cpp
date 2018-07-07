@@ -1,5 +1,7 @@
 #include <QtTest/QtTest>
 #include "Database.hpp"
+#include "DatabaseHelpers.hpp"
+#include "TermItem.hpp"
 
 class DatabaseTest: public QObject {
     Q_OBJECT
@@ -25,9 +27,27 @@ private slots:
     {
         Database::instance()->dropConection();
     }
-    void firstTest()
+    void createTermTest()
     {
-        QVERIFY(true);
+        QHash<TermType, QString> termTable
+        {
+            {TermType::billing, "billingTerms"},
+            {TermType::delivery, "deliveryTerms"},
+            {TermType::deliveryDate, "deliveryDateTerms"},
+            {TermType::offer, "offerTerms"}
+        };
+        TermItem testTerm(TermType::billing, "billing short", "billing long");
+        Database::createTerm(testTerm);
+
+        QString queryText;
+        queryText = QString("SELECT id, shortDesc, longDesc FROM %1")
+                .arg(termTable[testTerm.getType()]);
+
+        Transaction::open();
+        auto query = Transaction::run(queryText);
+        Transaction::commit();
+        QVERIFY(query.isActive());
+        QCOMPARE(query.size(), 1);
     }
 };
 
