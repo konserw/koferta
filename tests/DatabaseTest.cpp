@@ -1,11 +1,11 @@
 #include <QtTest/QtTest>
 #include "Database.hpp"
-namespace tests {
 
-class database : public QObject {
+class DatabaseTest: public QObject {
     Q_OBJECT
-private slots:
-    void setup_connection()
+
+private:
+    void setupConnection()
     {
         QString db_name = QProcessEnvironment::systemEnvironment().value("DATABASE", "kOferta_test");
         QString db_user = QProcessEnvironment::systemEnvironment().value("SQL_USER", "");
@@ -14,12 +14,23 @@ private slots:
             Database::instance()->setupDatabaseConnection("localhost", 3306, db_name);
         else
             Database::instance()->setupDatabaseConnection("localhost", 3306, db_name, db_user, db_pass);
+    }
+private slots:
+    void initTestCase()
+    {
+        setupConnection();
         QVERIFY(Database::instance()->isConnected());
+    }
+    void cleanupTestCase()
+    {
         Database::instance()->dropConection();
+    }
+    void firstTest()
+    {
+        QVERIFY(true);
     }
 };
 
-}
 
-QTEST_MAIN(tests::database)
+QTEST_MAIN(DatabaseTest)
 #include "DatabaseTest.moc"

@@ -85,7 +85,6 @@ protected:
     ~Database();
     static Database* m_instance;
     QSqlDatabase* m_database;
-    bool connected;
 };
 
 #endif // DATABASE_H

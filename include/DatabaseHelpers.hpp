@@ -43,7 +43,6 @@ QByteArray hmacSha1(QByteArray key, QByteArray baseString);
 // wraper for hmacSha1 for salting passwords
 QString saltPassword(const QString& salt, const QString& password);
 
-
 class Transaction
 {
     static bool opened;

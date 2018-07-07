@@ -42,7 +42,7 @@ QHash<TermType, QString> termTable
 };
 
 Database::Database() :
-    QObject(nullptr), m_database(nullptr), connected(false)
+    QObject(nullptr), m_database(nullptr)
 { }
 
 Database::~Database()
@@ -68,7 +68,6 @@ void Database::dropConection()
         delete m_database;
         m_database = nullptr;
     }
-    connected = false;
 }
 
 void Database::setupDatabaseConnection(const QString &host, unsigned port, const QString& schema, const QString& user, const QString& password)
@@ -138,7 +137,6 @@ void Database::setupDatabaseConnection(const QString &host, unsigned port, const
         return;
     }
 
-    connected = true;
     emit changeStatus(tr("Połączono z bazą danych"));
     emit connectionSuccess();
 }
@@ -496,7 +494,7 @@ QString Database::getNewOfferSymbolForUser(const User& u) const
 
 bool Database::isConnected() const
 {
-    return connected;
+    return QSqlDatabase::database().isOpen();
 }
 
 QHash<QString, int> Database::usersList()
