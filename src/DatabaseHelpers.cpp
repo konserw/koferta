@@ -35,7 +35,8 @@ void Transaction::open()
 
 QSqlQuery Transaction::run(const QString& queryText)
 {
-    QSqlQuery query(queryText);
+    QSqlQuery query;
+    query.prepare(queryText);
     run(query);
     return query;
 }
