@@ -53,6 +53,8 @@ public:
     static void run(QSqlQuery& query);
     static void runBatch(QSqlQuery& query);
     static void commit();
+protected:
+    inline static void handleError(const QSqlQuery& query);
 };
 
 #endif // DATABASE_HELPERS_HPP

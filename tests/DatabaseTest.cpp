@@ -51,9 +51,7 @@ private slots:
         QString queryText;
         queryText = QString("SELECT shortDesc, longDesc FROM %1")
                 .arg(table);
-        Transaction::open();
         auto query = Transaction::run(queryText);
-        Transaction::commit();
 
         QVERIFY(query.isActive());
         QCOMPARE(query.size(), 1);

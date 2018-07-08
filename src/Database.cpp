@@ -61,9 +61,9 @@ Database *Database::instance()
 
 void Database::dropConection()
 {
-    qDebug() << "drop database connection";
     if(m_database != nullptr)
     {
+        qDebug() << "drop database connection";
         m_database->close();
         delete m_database;
         m_database = nullptr;
@@ -74,7 +74,6 @@ void Database::setupDatabaseConnection(const QString &host, unsigned port, const
 {
     qDebug() << "Setup database connection";
     dropConection();
-    qDebug() << "Database object does not exist - creating it";
     if(QSqlDatabase::drivers().contains("QMYSQL"))
          m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"));
     else

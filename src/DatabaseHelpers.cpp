@@ -1,9 +1,15 @@
+#include <QtDebug>
 #include "DatabaseHelpers.hpp"
 
 bool Transaction::opened = false;
 
 void Transaction::commit()
 {
+    if(opened == false)
+    {
+        qWarning() << "Tried to commit without opened transaction";
+        return;
+    }
     opened = false;
     if(QSqlDatabase::database().commit() == false)
     {
@@ -33,6 +39,29 @@ void Transaction::open()
     opened = true;
 }
 
+void Transaction::handleError(const QSqlQuery &query)
+{
+    QString error = QString("SQL query has failed!\n"
+                            "\t* Query: %1\n"
+                            "\t* Query error text: %2\n"
+                            "\t* Error text: %3\n")
+            .arg(query.lastQuery())
+            .arg(query.lastError().text())
+            .arg(QSqlDatabase::database().lastError().text());
+    if(opened)
+    {
+        error += "\t* Rolling back transaction";
+        if(QSqlDatabase::database().rollback())
+            error += "\t* Rollback successful";
+        else
+            error += QString("\t* SQL transaction rollback has failed!\n"
+                             "\t* Error text: %1")
+                    .arg(QSqlDatabase::database().lastError().text());
+        opened = false;
+    }
+    throw DatabaseException(error);
+}
+
 QSqlQuery Transaction::run(const QString& queryText)
 {
     QSqlQuery query;
@@ -44,45 +73,13 @@ QSqlQuery Transaction::run(const QString& queryText)
 void Transaction::run(QSqlQuery &query)
 {
     if(query.exec() == false)
-    {
-        QString error = QString("SQL query has failed!\n"
-                                "\t* Query: %1\n"
-                                "\t* Query error text: %2\n"
-                                "\t* Error text: %3\n"
-                                "\t* Rolling back transaction")
-                .arg(query.lastQuery())
-                .arg(query.lastError().text())
-                .arg(QSqlDatabase::database().lastError().text());
-        if(QSqlDatabase::database().rollback() == false)
-        {
-            error += QString("\t* SQL transaction rollback has failed!\n"
-                             "\t* Error text: %1")
-                    .arg(QSqlDatabase::database().lastError().text());
-        }
-        throw DatabaseException(error);
-    }
+        handleError(query);
 }
 
 void Transaction::runBatch(QSqlQuery &query)
 {
     if(query.execBatch() == false)
-    {
-        QString error = QString("SQL query has failed!\n"
-                                "\t* Query: %1\n"
-                                "\t* Query error text: %2\n"
-                                "\t* Error text: %3\n"
-                                "\t* Rolling back transaction")
-                .arg(query.lastQuery())
-                .arg(query.lastError().text())
-                .arg(QSqlDatabase::database().lastError().text());
-        if(QSqlDatabase::database().rollback() == false)
-        {
-            error += QString("\t* SQL transaction rollback has failed!\n"
-                             "\t* Error text: %1")
-                    .arg(QSqlDatabase::database().lastError().text());
-        }
-        throw DatabaseException(error);
-    }
+        handleError(query);
 }
 
 QByteArray hmacSha1(QByteArray key, QByteArray baseString)
