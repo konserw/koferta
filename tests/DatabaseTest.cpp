@@ -27,27 +27,39 @@ private slots:
     {
         Database::instance()->dropConection();
     }
-    void createTermTest()
+    void createTerm_data()
     {
-        QHash<TermType, QString> termTable
-        {
-            {TermType::billing, "billingTerms"},
-            {TermType::delivery, "deliveryTerms"},
-            {TermType::deliveryDate, "deliveryDateTerms"},
-            {TermType::offer, "offerTerms"}
-        };
-        TermItem testTerm(TermType::billing, "billing short", "billing long");
+        QTest::addColumn<TermType>("term_type");
+        QTest::addColumn<QString>("table");
+        QTest::addColumn<QString>("short_desc");
+        QTest::addColumn<QString>("long_desc");
+
+        QTest::newRow("billing") << TermType::billing << "billingTerms" << "billing short" << "billing long";
+        QTest::newRow("delivery") << TermType::delivery << "deliveryTerms" << "delivery short" << "delivery long";
+        QTest::newRow("delivery date") << TermType::deliveryDate << "deliveryDateTerms" << "delivery date short" << "delivery date long";
+        QTest::newRow("offer") << TermType::offer << "offerTerms" << "offer short" << "offer long";
+    }
+    void createTerm()
+    {
+        QFETCH(TermType, term_type);
+        QFETCH(QString, table);
+        QFETCH(QString, short_desc);
+        QFETCH(QString, long_desc);
+        TermItem testTerm(term_type, short_desc, long_desc);
         Database::createTerm(testTerm);
 
         QString queryText;
-        queryText = QString("SELECT id, shortDesc, longDesc FROM %1")
-                .arg(termTable[testTerm.getType()]);
-
+        queryText = QString("SELECT shortDesc, longDesc FROM %1")
+                .arg(table);
         Transaction::open();
         auto query = Transaction::run(queryText);
         Transaction::commit();
+
         QVERIFY(query.isActive());
         QCOMPARE(query.size(), 1);
+        query.next();
+        QCOMPARE(query.value("shortDesc").toString(), short_desc);
+        QCOMPARE(query.value("longDesc").toString(), long_desc);
     }
 };
 

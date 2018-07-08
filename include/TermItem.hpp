@@ -21,6 +21,7 @@
 
 #include <QString>
 #include <QHash>
+#include <QMetaType>
 
 enum class TermType : uint
 {
@@ -34,7 +35,7 @@ inline uint qHash(TermType key, uint seed)
 {
     return qHash(static_cast<uint>(key), seed);
 }
-
+Q_DECLARE_METATYPE(TermType)
 
 class TermItem
 {
