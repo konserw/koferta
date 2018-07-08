@@ -4,7 +4,7 @@ project(kOferta)
 
 set(KOFERTA_SQL_USER CACHE STRING "SQL Database user" )
 set(KOFERTA_SQL_PWD  CACHE STRING "SQL Database Password" )
-set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." )
+set(CMAKE_BUILD_TYPE Debug CACHE STRING "Type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." )
 set(KOFERTA_VERSION         "4.x-mannual" CACHE STRING "Please provide build version string" )
 option(BUILD_CUKE 	        "Build E2E test using cucumber" OFF)
 option(DISABLE_UNIT_TESTS   "Disable unit tests" OFF)

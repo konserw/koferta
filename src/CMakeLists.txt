@@ -1,7 +1,5 @@
 add_definitions(-DVERSION="${KOFERTA_VERSION}")
 IF(WIN32)
-    add_definitions(-DWIN32)
-    add_definitions(-DRELEASE)
     SET(GUI_TYPE WIN32)
 ENDIF()
 
