@@ -2,6 +2,7 @@
 #include "DatabaseHelpers.hpp"
 
 bool Transaction::opened = false;
+bool Transaction::transactionsDisabled = false;
 
 void Transaction::commit()
 {
@@ -27,8 +28,16 @@ void Transaction::commit()
     }
 }
 
+void Transaction::disableTransactionFeature()
+{
+    transactionsDisabled = true;
+}
+
 void Transaction::open()
 {
+    if(transactionsDisabled)
+        return;
+
     if(QSqlDatabase::database().transaction() == false)
     {
         QString error = QString("SQL transaction open has failed!\n"

@@ -18,6 +18,7 @@
 #include <random>
 
 #include <QSqlDatabase>
+#include <QSqlDriver>
 #include <QString>
 #include <QVariant>
 #include <QTcpSocket>
@@ -134,6 +135,11 @@ void Database::setupDatabaseConnection(const QString &host, unsigned port, const
 
         emit changeStatus(tr("Połączenie z bazą danych nie powiodło się."));
         return;
+    }
+    if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions) == false)
+    {
+        qCritical().noquote() << "Database hasn't got transactions feature - disabling transactions";
+        Transaction::disableTransactionFeature();
     }
 
     emit changeStatus(tr("Połączono z bazą danych"));

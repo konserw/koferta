@@ -45,7 +45,6 @@ QString saltPassword(const QString& salt, const QString& password);
 
 class Transaction
 {
-    static bool opened;
 public:
     Transaction() = delete;
     static void open();
@@ -53,8 +52,13 @@ public:
     static void run(QSqlQuery& query);
     static void runBatch(QSqlQuery& query);
     static void commit();
+    static void disableTransactionFeature();
+
 protected:
     inline static void handleError(const QSqlQuery& query);
+
+    static bool opened;
+    static bool transactionsDisabled;
 };
 
 #endif // DATABASE_HELPERS_HPP
