@@ -17,17 +17,7 @@ private:
         else
             Database::instance()->setupDatabaseConnection("localhost", 3306, db_name, db_user, db_pass);
     }
-private slots:
-    void initTestCase()
-    {
-        setupConnection();
-        QVERIFY(Database::instance()->isConnected());
-    }
-    void cleanupTestCase()
-    {
-        Database::instance()->dropConection();
-    }
-    void createTerm_data()
+    void sampleTermData()
     {
         QTest::addColumn<TermType>("term_type");
         QTest::addColumn<QString>("table");
@@ -38,6 +28,23 @@ private slots:
         QTest::newRow("delivery") << TermType::delivery << "deliveryTerms" << "delivery short" << "delivery long";
         QTest::newRow("delivery date") << TermType::deliveryDate << "deliveryDateTerms" << "delivery date short" << "delivery date long";
         QTest::newRow("offer") << TermType::offer << "offerTerms" << "offer short" << "offer long";
+    }
+private slots:
+    void initTestCase()
+    {
+        setupConnection();
+        QVERIFY(Database::instance()->isConnected());
+    }
+    void cleanupTestCase()
+    {
+        Database::instance()->dropConection();
+    }
+    /*
+     * TERMS
+     */
+    void createTerm_data()
+    {
+        sampleTermData();
     }
     void createTerm()
     {
@@ -58,6 +65,37 @@ private slots:
         query.next();
         QCOMPARE(query.value("shortDesc").toString(), short_desc);
         QCOMPARE(query.value("longDesc").toString(), long_desc);
+    }
+    void getTerm_data()
+    {
+        sampleTermData();
+    }
+    void getTerm()
+    {
+        QFETCH(TermType, term_type);
+        QFETCH(QString, short_desc);
+        QFETCH(QString, long_desc);
+
+        TermItem testItem = Database::getTerm(term_type, 1);
+        QCOMPARE(testItem.getType(), term_type);
+        QCOMPARE(testItem.shortDesc(), short_desc);
+        QCOMPARE(testItem.longDesc(), long_desc);
+    }
+    void getTermModel_data()
+    {
+        sampleTermData();
+    }
+    void getTermModel()
+    {
+        QFETCH(TermType, term_type);
+        QFETCH(QString, short_desc);
+        QFETCH(QString, long_desc);
+
+        std::unique_ptr<TermModel> testModel;
+        testModel.reset(Database::getTermModel(term_type));
+        QCOMPARE(testModel->rowCount(QModelIndex()), 1);
+        QCOMPARE(testModel->data(testModel->index(0, 1, QModelIndex())).toString(), short_desc);
+        QCOMPARE(testModel->data(testModel->index(0, 2, QModelIndex())).toString(), long_desc);
     }
 };
 
