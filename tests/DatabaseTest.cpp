@@ -2,6 +2,7 @@
 #include "Database.hpp"
 #include "DatabaseHelpers.hpp"
 #include "TermItem.hpp"
+#include "Customer.hpp"
 
 class DatabaseTest: public QObject {
     Q_OBJECT
@@ -29,6 +30,22 @@ private:
         QTest::newRow("delivery date") << TermType::deliveryDate << "deliveryDateTerms" << "delivery date short" << "delivery date long";
         QTest::newRow("offer") << TermType::offer << "offerTerms" << "offer short" << "offer long";
     }
+    int test_customer_id;
+    QSqlQuery customerQuery() const
+    {
+        QString queryText = R"(
+SELECT `customersView`.`customerID`,
+    `customersView`.`short`,
+    `customersView`.`full`,
+    `customersView`.`title`,
+    `customersView`.`name`,
+    `customersView`.`surname`,
+    `customersView`.`address`
+FROM `kOferta_test`.`customersView`;
+)";
+        return Transaction::run(queryText);
+    }
+
 private slots:
     void initTestCase()
     {
@@ -96,6 +113,50 @@ private slots:
         QCOMPARE(testModel->rowCount(QModelIndex()), 1);
         QCOMPARE(testModel->data(testModel->index(0, 1, QModelIndex())).toString(), short_desc);
         QCOMPARE(testModel->data(testModel->index(0, 2, QModelIndex())).toString(), long_desc);
+    }
+    /*
+     * CUSTOMER
+     */
+    void saveCustomer()
+    {
+        auto customer = Customer("Short company name", "Long company name", "Mr.", "Jon", "Smith", "Address");
+        Database::instance()->saveCustomer(customer);
+
+        auto query = customerQuery();
+        QVERIFY(query.isActive());
+        QCOMPARE(query.size(), 1);
+        query.next();
+        test_customer_id = query.value("customerID").toInt();
+        QCOMPARE(query.value("short").toString(), customer.getShortName());
+        QCOMPARE(query.value("full").toString(), customer.getFullName());
+        QCOMPARE(query.value("title").toString(), customer.getTitle());
+        QCOMPARE(query.value("name").toString(), customer.getName());
+        QCOMPARE(query.value("surname").toString(), customer.getSurname());
+        QCOMPARE(query.value("address").toString(), customer.getAddress());
+    }
+    void editCustomer()
+    {
+        auto customer = Customer("diff company name", "different company name", "Ms.", "Jane", "Doe", "Different Address", test_customer_id);
+        Database::instance()->editCustomer(customer);
+
+        auto query = customerQuery();
+        QVERIFY(query.isActive());
+        QCOMPARE(query.size(), 1);
+        query.next();
+        QCOMPARE(query.value("customerID").toInt(), test_customer_id);
+        QCOMPARE(query.value("short").toString(), customer.getShortName());
+        QCOMPARE(query.value("full").toString(), customer.getFullName());
+        QCOMPARE(query.value("title").toString(), customer.getTitle());
+        QCOMPARE(query.value("name").toString(), customer.getName());
+        QCOMPARE(query.value("surname").toString(), customer.getSurname());
+        QCOMPARE(query.value("address").toString(), customer.getAddress());
+    }
+    void deleteCustomer()
+    {
+        Database::instance()->deleteCustomer(Customer(test_customer_id));
+        auto query = customerQuery();
+        QVERIFY(query.isActive());
+        QCOMPARE(query.size(), 0);
     }
 };
 

@@ -25,6 +25,7 @@ class Customer
 {
 public:
     explicit Customer();
+    explicit Customer(int _id);
     Customer(
             const QString& ShortName,
             const QString& FullName,
@@ -58,6 +59,7 @@ public:
     void setAddress(const QString &value);
 
     QString getIDorNull() const;
+
 private:
     int id;
     QString shortName;

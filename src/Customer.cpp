@@ -18,16 +18,15 @@
 
 #include "Customer.hpp"
 
-Customer::Customer()
-{
-    id = -1;
-}
+Customer::Customer(): id(-1)
+{ }
+
+Customer::Customer(int _id): id(_id)
+{ }
 
 Customer::Customer(const QString &ShortName, const QString &FullName, const QString &Title, const QString &Name, const QString &Surname, const QString &Address, int id)
     : id(id), shortName(ShortName), fullName(FullName), title(Title), name(Name), surname(Surname), address(Address)
-{
-
-}
+{ }
 
 QString Customer::concatedName() const
 {
