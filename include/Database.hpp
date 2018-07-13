@@ -48,6 +48,7 @@ public:
     QHash<QString, int> usersList();
     void setPassword(int uid, QString password);
     int getNewOfferNumber(int uid) const;
+    QString getNewOfferSymbolForUser(const User &u) const;
 
     //terms
     static void createTerm(const TermItem& term);
@@ -64,7 +65,6 @@ public:
 
     //other
     static QString mainAddress();
-    QString getNewOfferSymbolForUser(const User &u) const;
 
     bool isConnected() const;
 public slots:

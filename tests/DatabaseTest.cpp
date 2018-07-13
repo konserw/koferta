@@ -158,6 +158,23 @@ private slots:
         QVERIFY(query.isActive());
         QCOMPARE(query.size(), 0);
     }
+    /*
+     * Others
+     */
+    void mainAddress()
+    {
+        QString address = "Sample address\nWith two lines";
+        QString queryText = R"(
+INSERT INTO `kOferta_test`.`addresses`
+(`id`, `address`)
+VALUES
+(2, "%1")
+)";
+        Transaction::run(queryText.arg(address));
+
+        QString test_address = Database::mainAddress();
+        QCOMPARE(test_address, address);
+    }
 };
 
 
