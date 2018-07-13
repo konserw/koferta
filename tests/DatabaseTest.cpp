@@ -159,6 +159,55 @@ private slots:
         QCOMPARE(query.size(), 0);
     }
     /*
+     * USER
+     */
+    void userList()
+    {
+        QString name = "John Smith";
+        QString queryText = R"(
+INSERT INTO `kOferta_test`.`users`
+(`id`,`name`,`mail`,`male`,`phone`,`currentOfferNumber`,`currentOfferNumberDate`,`charForOfferSymbol`,`password`,`salt`,`resetPassword`)
+VALUES
+(NULL,'%1','some@mail.com',1,'123 456 789',10,'2018-01-01','J','x','x',1);
+)";
+        Transaction::run(queryText.arg(name));
+
+        QHash<QString, int> test = Database::instance()->usersList();
+        QCOMPARE(test.size(), 1);
+        QCOMPARE(test.keys().first(), name);
+        QCOMPARE(test.value(name), 1);
+    }
+    void setPassword()
+    {
+        QString user_password = "SomePassword!";
+        Database::instance()->setPassword(1, user_password);
+
+        QString queryText = R"(
+SELECT
+    `users`.`password`,
+    `users`.`salt`,
+    `users`.`resetPassword`
+FROM `kOferta_test`.`users`;
+)";
+        auto query = Transaction::run(queryText);
+        QVERIFY(query.isActive());
+        QCOMPARE(query.size(), 1);
+        query.next();
+        QCOMPARE(query.value("resetPassword").toInt(), 0);
+        auto salt = query.value("salt").toString();
+        QVERIFY(salt != 'x');
+        auto salted_password_from_db = query.value("password").toString();
+        QVERIFY(salted_password_from_db != 'x');
+        auto salted_password = saltPassword(salt, user_password);
+        QCOMPARE(salted_password_from_db, salted_password);
+    }
+    void logIn()
+    {
+        User test_user = Database::instance()->logIn(1, "SomePassword!");
+        QCOMPARE(test_user.getName(), "John Smith");
+        //TODO - finish up
+    }
+    /*
      * Others
      */
     void mainAddress()
