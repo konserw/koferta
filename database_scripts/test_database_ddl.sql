@@ -322,7 +322,7 @@ CREATE TABLE `users` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = '' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`vps162195.ovh.net` FUNCTION `get_new_offer_number`(uid integer) RETURNS int(11)
+CREATE DEFINER=`root`@`localhost` FUNCTION `get_new_offer_number`(uid integer) RETURNS int(11)
 BEGIN
 	DECLARE new_number integer;
 	DECLARE old_number integer;
