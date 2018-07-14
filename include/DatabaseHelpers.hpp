@@ -30,7 +30,7 @@ class DatabaseException : public std::runtime_error
 public:
     DatabaseException(QString text) : std::runtime_error(text.toStdString())
     {
-        qCritical().noquote() << text;
+        qCritical().noquote().nospace() << text;
     }
 };
 

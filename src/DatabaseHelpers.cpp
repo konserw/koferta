@@ -16,12 +16,12 @@ void Transaction::commit()
     {
         QString error = QString("SQL transaction commit has failed!\n"
                                 "\t* Error text: %1\n"
-                                "\t* Rolling back transaction")
+                                "\t* Rolling back transaction\n")
                 .arg(QSqlDatabase::database().lastError().text());
         if(QSqlDatabase::database().rollback() == false)
         {
             error += QString("\t* SQL transaction rollback has failed!\n"
-                             "\t* Error text: %1")
+                             "\t* Error text: %1\n")
                     .arg(QSqlDatabase::database().lastError().text());
         }
         throw DatabaseException(error);
@@ -41,7 +41,7 @@ void Transaction::open()
     if(QSqlDatabase::database().transaction() == false)
     {
         QString error = QString("SQL transaction open has failed!\n"
-                                "\t* Error text: %1")
+                                "\t* Error text: %1\n")
                 .arg(QSqlDatabase::database().lastError().text());
         throw DatabaseException(error);
     }
@@ -59,12 +59,12 @@ void Transaction::handleError(const QSqlQuery &query)
             .arg(QSqlDatabase::database().lastError().text());
     if(opened)
     {
-        error += "\t* Rolling back transaction";
+        error += "\t* Rolling back transaction\n";
         if(QSqlDatabase::database().rollback())
-            error += "\t* Rollback successful";
+            error += "\t* Rollback successful\n";
         else
             error += QString("\t* SQL transaction rollback has failed!\n"
-                             "\t* Error text: %1")
+                             "\t* Error text: %1\n")
                     .arg(QSqlDatabase::database().lastError().text());
         opened = false;
     }
