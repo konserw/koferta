@@ -18,6 +18,22 @@ private:
         else
             Database::instance()->setupDatabaseConnection("localhost", 3306, db_name, db_user, db_pass);
     }
+    void sampleUserData()
+    {
+        QTest::addColumn<int>("uid");
+        QTest::addColumn<QString>("name");
+        QTest::addColumn<QString>("mail");
+        QTest::addColumn<int>("male");
+        QTest::addColumn<QString>("phone");
+        QTest::addColumn<int>("currentOfferNumber");
+        QTest::addColumn<QString>("currentOfferNumberDate");
+        QTest::addColumn<QString>("charForOfferSymbol");
+        QTest::addColumn<QString>("password");
+        QTest::addColumn<int>("resetPassword");
+
+        QTest::newRow("John") << 1 << "John Smith" << "john@mail.com" << 1 << "123 456 789" << 10 << "2018-01-01" << "S" << "JohnsSecretPassword" << 1;
+        QTest::newRow("Jane") << 2 << "Jane Doe" << "jane@mail.com" << 0 << "600 100 200" << 10 << QDate::currentDate().toString("yyyy-MM-dd") << "D" << "MKO)_PL<>:{+" << 1;
+    }
     void sampleTermData()
     {
         QTest::addColumn<TermType>("term_type");
@@ -161,29 +177,47 @@ private slots:
     /*
      * USER
      */
+    void userList_data() { sampleUserData(); }
     void userList()
     {
-        QString name = "John Smith";
+        QFETCH(int, uid);
+        QFETCH(QString, name);
+        QFETCH(QString, mail);
+        QFETCH(int, male);
+        QFETCH(QString, phone);
+        QFETCH(int, currentOfferNumber);
+        QFETCH(QString, currentOfferNumberDate);
+        QFETCH(QString, charForOfferSymbol);
         QString queryText = R"(
 INSERT INTO `kOferta_test`.`users`
 (`id`,`name`,`mail`,`male`,`phone`,`currentOfferNumber`,`currentOfferNumberDate`,`charForOfferSymbol`,`password`,`salt`,`resetPassword`)
 VALUES
-(NULL,'%1','some@mail.com',1,'123 456 789',10,'2018-01-01','J','x','x',1);
+(NULL,'%1','%2',%3,'%4',%5,'%6','%7','x','x',1);
 )";
-        Transaction::run(queryText.arg(name));
+        Transaction::run(queryText
+                         .arg(name)
+                         .arg(mail)
+                         .arg(male)
+                         .arg(phone)
+                         .arg(currentOfferNumber)
+                         .arg(currentOfferNumberDate)
+                         .arg(charForOfferSymbol)
+                         );
 
         QHash<QString, int> test = Database::instance()->usersList();
-        QCOMPARE(test.size(), 1);
-        QCOMPARE(test.keys().first(), name);
-        QCOMPARE(test.value(name), 1);
+        QCOMPARE(test.key(uid), name);
+        QCOMPARE(test.value(name), uid);
     }
+    void setPassword_data() { sampleUserData(); }
     void setPassword()
     {
-        QString user_password = "SomePassword!";
-        Database::instance()->setPassword(1, user_password);
+        QFETCH(int, uid);
+        QFETCH(QString, password);
+        Database::instance()->setPassword(uid, password);
 
         QString queryText = R"(
 SELECT
+    `users`.`id`,
     `users`.`password`,
     `users`.`salt`,
     `users`.`resetPassword`
@@ -191,21 +225,36 @@ FROM `kOferta_test`.`users`;
 )";
         auto query = Transaction::run(queryText);
         QVERIFY(query.isActive());
-        QCOMPARE(query.size(), 1);
         query.next();
+        while(query.value("id") < uid)
+            QVERIFY(query.next());
+
         QCOMPARE(query.value("resetPassword").toInt(), 0);
         auto salt = query.value("salt").toString();
         QVERIFY(salt != 'x');
         auto salted_password_from_db = query.value("password").toString();
         QVERIFY(salted_password_from_db != 'x');
-        auto salted_password = saltPassword(salt, user_password);
+        auto salted_password = saltPassword(salt, password);
         QCOMPARE(salted_password_from_db, salted_password);
     }
+    void logIn_data() { sampleUserData(); }
     void logIn()
     {
-        User test_user = Database::instance()->logIn(1, "SomePassword!");
-        QCOMPARE(test_user.getName(), "John Smith");
-        //TODO - finish up
+        QFETCH(int, uid);
+        QFETCH(QString, name);
+        QFETCH(QString, mail);
+        QFETCH(int, male);
+        QFETCH(QString, phone);
+        QFETCH(QString, charForOfferSymbol);
+        QFETCH(QString, password);
+
+        User test_user = Database::instance()->logIn(uid, password);
+        QCOMPARE(test_user.getUid(), uid);
+        QCOMPARE(test_user.getName(), name);
+        QCOMPARE(test_user.getMail(), mail);
+        QCOMPARE(test_user.getMale(), static_cast<bool>(male));
+        QCOMPARE(test_user.getPhone(), phone);
+        QCOMPARE(test_user.getCharForOfferSymbol(), charForOfferSymbol);
     }
     /*
      * Others
