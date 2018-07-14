@@ -26,13 +26,13 @@ private:
         QTest::addColumn<int>("male");
         QTest::addColumn<QString>("phone");
         QTest::addColumn<int>("currentOfferNumber");
-        QTest::addColumn<QString>("currentOfferNumberDate");
+        QTest::addColumn<QDate>("currentOfferNumberDate");
         QTest::addColumn<QString>("charForOfferSymbol");
         QTest::addColumn<QString>("password");
         QTest::addColumn<int>("resetPassword");
 
-        QTest::newRow("John") << 1 << "John Smith" << "john@mail.com" << 1 << "123 456 789" << 10 << "2018-01-01" << "S" << "JohnsSecretPassword" << 1;
-        QTest::newRow("Jane") << 2 << "Jane Doe" << "jane@mail.com" << 0 << "600 100 200" << 10 << QDate::currentDate().toString("yyyy-MM-dd") << "D" << "MKO)_PL<>:{+" << 1;
+        QTest::newRow("John") << 1 << "John Smith" << "john@mail.com" << 1 << "123 456 789" << 5 << QDate(2018, 1, 1) << "S" << "JohnsSecretPassword" << 1;
+        QTest::newRow("Jane") << 2 << "Jane Doe" << "jane@mail.com" << 0 << "600 100 200" << 5 << QDate::currentDate() << "D" << "MKO)_PL<>:{+" << 1;
     }
     void sampleTermData()
     {
@@ -186,7 +186,7 @@ private slots:
         QFETCH(int, male);
         QFETCH(QString, phone);
         QFETCH(int, currentOfferNumber);
-        QFETCH(QString, currentOfferNumberDate);
+        QFETCH(QDate, currentOfferNumberDate);
         QFETCH(QString, charForOfferSymbol);
         QString queryText = R"(
 INSERT INTO `kOferta_test`.`users`
@@ -200,7 +200,7 @@ VALUES
                          .arg(male)
                          .arg(phone)
                          .arg(currentOfferNumber)
-                         .arg(currentOfferNumberDate)
+                         .arg(currentOfferNumberDate.toString("yyyy-MM-dd"))
                          .arg(charForOfferSymbol)
                          );
 
@@ -252,9 +252,34 @@ FROM `kOferta_test`.`users`;
         QCOMPARE(test_user.getUid(), uid);
         QCOMPARE(test_user.getName(), name);
         QCOMPARE(test_user.getMail(), mail);
-        QCOMPARE(test_user.getMale(), static_cast<bool>(male));
+        QCOMPARE(test_user.getMale(), male == 1);
         QCOMPARE(test_user.getPhone(), phone);
         QCOMPARE(test_user.getCharForOfferSymbol(), charForOfferSymbol);
+    }
+    void getNewOfferSymbolForUser_data() { sampleUserData(); }
+    void getNewOfferSymbolForUser()
+    {
+        QFETCH(int, uid);
+        QFETCH(QString, name);
+        QFETCH(QString, mail);
+        QFETCH(int, male);
+        QFETCH(QString, phone);
+        QFETCH(int, currentOfferNumber);
+        QFETCH(QDate, currentOfferNumberDate);
+        QFETCH(QString, charForOfferSymbol);
+        auto user = User(uid, name, phone, mail, charForOfferSymbol, male == 1, false);
+        auto date = QDate::currentDate().toString("yyMM");
+        auto db_date = currentOfferNumberDate.toString("yyMM");
+        if(db_date != date)
+            currentOfferNumber = 0;
+        currentOfferNumber++;
+        auto symbol = QString("I%1%2%3")
+                .arg(date)
+                .arg(charForOfferSymbol)
+                .arg(QString::number(currentOfferNumber).rightJustified(2, '0'));
+
+        QString test_symbol = Database::instance()->getNewOfferSymbolForUser(user);
+        QCOMPARE(test_symbol, symbol);
     }
     /*
      * Others
