@@ -29,6 +29,8 @@ cmake -E chdir build cmake \
     -GNinja \
     -DKOFERTA_SQL_USER="${KOFERTA_SQL_USER}" \
     -DKOFERTA_SQL_PWD="${KOFERTA_SQL_PWD}" \
+    ${COVERALLS_SERVICE_NAME:+"-DCMAKE_BUILD_TYPE=Debug"} \
+    ${COVERALLS_SERVICE_NAME:+"-DCMAKE_CXX_FLAGS='--coverage'"} \
     ${VALGRIND_TESTS:+"-DVALGRIND_TESTS=${VALGRIND_TESTS}"} \
     ..
 cmake --build build
@@ -43,3 +45,16 @@ cmake --build build --target test
 
 #build/kofertaSteps >/dev/null &
 #cucumber features 
+
+if [ -n "${COVERALLS_SERVICE_NAME}" ]
+then
+  lcov --rc lcov_branch_coverage=1 --directory build --capture --output-file coverage.info
+  lcov --rc lcov_branch_coverage=1 --quiet --remove coverage.info \
+      "${PWD}/build/*" \
+      "${PWD}/tests/*" \
+      "/usr/*" \
+      "/opt/*" \
+      --output-file coverage.info
+  lcov --rc lcov_branch_coverage=1 --list coverage.info
+  coveralls-lcov coverage.info
+fi

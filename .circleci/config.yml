@@ -8,3 +8,20 @@ jobs:
       - run: ./circleci.sh
       - store_test_results:
           path: build/test-results
+  coverage:
+    environment:
+      COVERALLS_SERVICE_NAME: circleci
+    docker:
+      - image: konserw/koferta:ubuntu
+    steps:
+      - checkout
+      - run: ./circleci.sh
+      - store_test_results:
+          path: build/test-results
+
+workflows:
+  version: 2
+  build-and-coverage:
+    jobs:
+      - build
+      - coverage

@@ -1,7 +1,7 @@
 # kOferta
-devel: [![CircleCI](https://circleci.com/gh/konserw/koferta/tree/devel.svg?style=svg)](https://circleci.com/gh/konserw/koferta/tree/devel)[![Build status](https://ci.appveyor.com/api/projects/status/at9gkx5uqx1c28hw/branch/devel?svg=true)](https://ci.appveyor.com/project/konserw/koferta/branch/devel)
+devel: [![CircleCI](https://circleci.com/gh/konserw/koferta/tree/devel.svg?style=svg)](https://circleci.com/gh/konserw/koferta/tree/devel)[![Build status](https://ci.appveyor.com/api/projects/status/at9gkx5uqx1c28hw/branch/devel?svg=true)](https://ci.appveyor.com/project/konserw/koferta/branch/devel)[![Coverage Status](https://coveralls.io/repos/github/konserw/koferta/badge.svg?branch=devel)](https://coveralls.io/github/konserw/koferta?branch=devel)
 
-master: [![CircleCI](https://circleci.com/gh/konserw/koferta/tree/master.svg?style=svg)](https://circleci.com/gh/konserw/koferta/tree/master)[![Build status](https://ci.appveyor.com/api/projects/status/at9gkx5uqx1c28hw/branch/master?svg=true)](https://ci.appveyor.com/project/konserw/koferta/branch/master)
+master: [![CircleCI](https://circleci.com/gh/konserw/koferta/tree/master.svg?style=svg)](https://circleci.com/gh/konserw/koferta/tree/master)[![Build status](https://ci.appveyor.com/api/projects/status/at9gkx5uqx1c28hw/branch/master?svg=true)](https://ci.appveyor.com/project/konserw/koferta/branch/master)[![Coverage Status](https://coveralls.io/repos/github/konserw/koferta/badge.svg?branch=master)](https://coveralls.io/github/konserw/koferta?branch=master)
 
 [![Join the chat at https://gitter.im/konserw/koferta](https://badges.gitter.im/konserw/koferta.svg)](https://gitter.im/konserw/koferta?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 ## Wstęp
