@@ -256,6 +256,18 @@ FROM `kOferta_test`.`users`;
         QCOMPARE(test_user.getPhone(), phone);
         QCOMPARE(test_user.getCharForOfferSymbol(), charForOfferSymbol);
     }
+    void logIn_invalid_pass_data() { sampleUserData(); }
+    void logIn_invalid_pass()
+    {
+        QFETCH(int, uid);
+        User test_user = Database::instance()->logIn(uid, "invalid");
+        QVERIFY(!test_user.isValid());
+    }
+    void logIn_invalid_uid()
+    {
+        User test_user = Database::instance()->logIn(44, "invalid");
+        QVERIFY(!test_user.isValid());
+    }
     void getNewOfferSymbolForUser_data() { sampleUserData(); }
     void getNewOfferSymbolForUser()
     {
@@ -284,6 +296,11 @@ FROM `kOferta_test`.`users`;
     /*
      * Others
      */
+    void mainAddress_fail()
+    {
+        QString test_address = Database::mainAddress();
+        QVERIFY(test_address.isNull());
+    }
     void mainAddress()
     {
         QString address = "Sample address\nWith two lines";
