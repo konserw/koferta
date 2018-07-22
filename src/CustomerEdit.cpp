@@ -65,7 +65,7 @@ void CustomerEdit::app()
     customer.setName(ui->imie->text());
     customer.setSurname(ui->nazwisko->text());
     customer.setAddress(ui->adres->toPlainText());
-    Database::instance()->editCustomer(customer);
+    Database::editCustomer(customer);
 }
 
 void CustomerEdit::del()
@@ -73,7 +73,7 @@ void CustomerEdit::del()
     if(QMessageBox::warning(this, tr("Usuń klienta"), tr("Czy na pewno chcesz usunąć tego klienta z bazy danych?"), QMessageBox::Ok, QMessageBox::Cancel)==QMessageBox::Cancel)
         return;
 
-    Database::instance()->deleteCustomer(customer);
+    Database::deleteCustomer(customer);
 
     ui->skrocona->clear();
     ui->pelna->clear();

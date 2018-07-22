@@ -32,9 +32,7 @@
 #include "Offer.hpp"
 #include "MerchandiseListModel.hpp"
 
-Database* Database::m_instance = nullptr;
-
-QHash<TermType, QString> termTable
+static QHash<TermType, QString> termTable
 {
     {TermType::billing, "billingTerms"},
     {TermType::delivery, "deliveryTerms"},
@@ -42,43 +40,12 @@ QHash<TermType, QString> termTable
     {TermType::offer, "offerTerms"}
 };
 
-Database::Database() :
-    QObject(nullptr), m_database(nullptr)
-{ }
-
-Database::~Database()
-{
-    qDebug() << "Database class destruktor";
-    dropConection();
-}
-
-Database *Database::instance()
-{
-    if(m_instance == nullptr)
-        m_instance = new Database;
-
-    return m_instance;
-}
-
-void Database::dropConection()
-{
-    if(m_database != nullptr)
-    {
-        qDebug() << "drop database connection";
-        m_database->close();
-        delete m_database;
-        m_database = nullptr;
-    }
-}
-
 void Database::setupDatabaseConnection(const QString &host, unsigned port, const QString& schema, const QString& user, const QString& password)
 {
     qDebug() << "Setup database connection";
-    dropConection();
-    if(QSqlDatabase::drivers().contains("QMYSQL"))
-         m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"));
-    else
+    if(!QSqlDatabase::drivers().contains("QMYSQL"))
     {
+        qCritical() << "No QMYSQL Driver";
         qDebug() << "library paths: ";
         QStringList list = qApp->libraryPaths();
         for(int i=0; i<list.size(); i++)
@@ -88,62 +55,59 @@ void Database::setupDatabaseConnection(const QString &host, unsigned port, const
         list = QSqlDatabase::drivers();
         for(int i=0; i<list.size(); i++)
             qDebug() << "\t" << list[i];
-        throw DatabaseException("Failed to create database object - QMYSQL driver not found.");
+        throw DatabaseException("Failed to create database object - QMYSQL driver not found.",
+                                QObject::tr("Nie odnaleziono sterownika bazy danych. Skontaktuj się z administratorem"));
     }
+
+    auto database = QSqlDatabase::addDatabase("QMYSQL");
 
     qDebug().noquote().nospace() << "Check if TCP socket " << host << ":" << port << " is reachable";
     QTcpSocket socket;
     socket.connectToHost(host, port);
     if(socket.waitForReadyRead() == false)
     {
-        qCritical() << "Socket connection failed";
-        emit changeStatus(tr("Wystąpił błąd - uruchom ponownie lub popraw dane połączenia"));
-        return;
+        throw DatabaseException("Socket connection failed",
+                                QObject::tr("Wystąpił błąd połączenia - uruchom ponownie lub popraw dane połączenia"));
     }
     socket.disconnectFromHost();
     qDebug() << "Socket has been successfully opened";
 
     //fill in database connection details
-    m_database->setHostName(host);
-    m_database->setPort(port);
-    m_database->setDatabaseName(schema);
+    database.setHostName(host);
+    database.setPort(port);
+    database.setDatabaseName(schema);
     if(!user.isNull() && !password.isNull())
     {
-        m_database->setUserName(user);
-        m_database->setPassword(password);
+        database.setUserName(user);
+        database.setPassword(password);
     }
 
     qDebug().nospace().noquote() << "Set up connection details:\n"
-             << "\t* Host:\t\t" << m_database->hostName() << "\n"
-             << "\t* Port:\t\t" << m_database->port() << "\n"
-             << "\t* UserName:\t" << m_database->userName() << "\n"
-//             << "\t* Password:\t" << QCryptographicHash::hash(m_database->password().toUtf8(), QCryptographicHash::Sha1).toBase64() << "\n"
-             << "\t* Schema:\t" << m_database->databaseName();
+             << "\t* Host:\t\t" << database.hostName() << "\n"
+             << "\t* Port:\t\t" << database.port() << "\n"
+             << "\t* UserName:\t" << database.userName() << "\n"
+//             << "\t* Password:\t" << QCryptographicHash::hash(database.password().toUtf8(), QCryptographicHash::Sha1).toBase64() << "\n"
+             << "\t* Schema:\t" << database.databaseName();
 
-    //open database connection
-
-    if(!m_database->open())
+    if(!database.open())
     {
         qCritical().nospace().noquote() << "Unable to connect to database! Details:\n"
-        << "\t* connName:" << m_database->connectionName() << "\n"
-        << "\t* driver:" << m_database->driverName() << "\n"
-        << "\t* options:" << m_database->connectOptions() << "\n"
-        << "\t* host:" << m_database->hostName() << "\n"
-        << "\t* error number:" << m_database->lastError().number() << "\n"
-        << "\t* database error:" << m_database->lastError().databaseText() << "\n"
-        << "\t* driver error:" << m_database->lastError().driverText();
+        << "\t* connName:" << database.connectionName() << "\n"
+        << "\t* driver:" << database.driverName() << "\n"
+        << "\t* options:" << database.connectOptions() << "\n"
+        << "\t* host:" << database.hostName() << "\n"
+        << "\t* error number:" << database.lastError().number() << "\n"
+        << "\t* database error:" << database.lastError().databaseText() << "\n"
+        << "\t* driver error:" << database.lastError().driverText();
 
-        emit changeStatus(tr("Połączenie z bazą danych nie powiodło się."));
-        return;
+        throw DatabaseException("Database Connection failed",
+                                QObject::tr("Połączenie z bazą danych nie powiodło się."));
     }
     if(QSqlDatabase::database().driver()->hasFeature(QSqlDriver::Transactions) == false)
     {
         qCritical().noquote() << "Database hasn't got transactions feature - disabling transactions";
         Transaction::disableTransactionFeature();
     }
-
-    emit changeStatus(tr("Połączono z bazą danych"));
-    emit connectionSuccess();
 }
 
 void Database::setPassword(int uid, QString password)
@@ -162,7 +126,7 @@ void Database::setPassword(int uid, QString password)
     Transaction::commit();
 }
 
-User Database::logIn(int uid, const QString &password)
+QSqlRecord Database::getUserData(int uid, const QString &password)
 {
     qDebug() << "Downloading user info for" << uid;
 
@@ -171,10 +135,7 @@ User Database::logIn(int uid, const QString &password)
     usersTable.setFilter(QString("id = %1").arg(uid));
     usersTable.select();
     if(usersTable.rowCount() < 1)
-    {
-        qCritical().noquote() << "Invalid user selected";
-        return User();
-    }
+        throw DatabaseException("Invalid user selected");
 
     QSqlRecord r = usersTable.record(0);
     //qDebug() << "user record" << r;
@@ -183,25 +144,14 @@ User Database::logIn(int uid, const QString &password)
 
     qDebug() << "User's salt:" << salt;
     if(saltPassword(salt, password) != dbPassword)
-    {
-        qCritical().noquote() << "Wrong password has been given";
-        return User();
-    }
+        throw DatabaseException("Wrong password has been given", QObject::tr("Logowanie nie powiodło się; sprawdź użytkownika i hasło."));
 
-    return User(
-                r.value("id").toInt(),
-                r.value("name").toString(),
-                r.value("phone").toString(),
-                r.value("mail").toString(),
-                r.value("charForOfferSymbol").toString(),
-                r.value("male").toBool(),
-                r.value("resetPassword").toBool()
-                );
+    return r;
 }
 
-void Database::saveOffer(const Offer &offer) const
+void Database::saveOffer(const Offer &offer)
 {
-    qDebug().noquote() << "Saving offer symbol:" << offer.symbol;
+    qDebug().noquote() << "Saving offer symbol:" << offer.getSymbol();
     QString queryText;
 
     QString escapedRemarks = offer.getRemarks();
@@ -226,10 +176,10 @@ void Database::saveOffer(const Offer &offer) const
                         "bPrintPrice,"
                         "bPrintNumber"
                         ") VALUES ('%2', %3, %4, '%5', %6, %7, %8, %9, %10, %11, '%12', %13, %14, %15, %16, %17, %18, %19)")
-/* offerSymbol */   	.arg(offer.symbol)
+/* offerSymbol */   	.arg(offer.getSymbol())
 /* userID */        	.arg(offer.getUser().getUid())
-/* customerID */    	.arg(offer.customer.getIDorNull())
-/* offerDate */     	.arg(offer.date.toString("yyyy-MM-dd"))
+/* customerID */    	.arg(offer.getCustomer().getIDorNull())
+/* offerDate */     	.arg(offer.getDate().toString("yyyy-MM-dd"))
 /* inquiryDate */   	.arg(offer.getInquiryDateSql())
 /* InquiryNumber */ 	.arg(offer.getInquiryNumberSql())
 /* deliveryTerms */ 	.arg(offer.getTermIDforDB(TermType::delivery))
@@ -238,34 +188,23 @@ void Database::saveOffer(const Offer &offer) const
 /* offerTerms */        .arg(offer.getTermIDforDB(TermType::offer))
 /* remarks */           .arg(escapedRemarks)
 /* dExchangeRate */    	.arg(offer.getExchangeRateSql())
-/* bPrintSpecs */       .arg(offer.printOptions.testFlag(Offer::printSpecs)? "1" : "0")
-/* bPrintRawPrice */    .arg(offer.printOptions.testFlag(Offer::printRawPrice)? "1" : "0")
-/* bPrintRawPricePLN */ .arg(offer.printOptions.testFlag(Offer::printRawPricePLN)? "1" : "0")
-/* bPrintDiscount */  	.arg(offer.printOptions.testFlag(Offer::printDiscount)? "1" : "0")
-/* bPrintPrice */       .arg(offer.printOptions.testFlag(Offer::printPrice)? "1" : "0")
-/* bPrintNumber */		.arg(offer.printOptions.testFlag(Offer::printNumber)? "1" : "0");
+/* bPrintSpecs */       .arg(offer.getPrintOptionForDB(Offer::printSpecs))
+/* bPrintRawPrice */    .arg(offer.getPrintOptionForDB(Offer::printRawPrice))
+/* bPrintRawPricePLN */ .arg(offer.getPrintOptionForDB(Offer::printRawPricePLN))
+/* bPrintDiscount */  	.arg(offer.getPrintOptionForDB(Offer::printDiscount))
+/* bPrintPrice */       .arg(offer.getPrintOptionForDB(Offer::printPrice))
+/* bPrintNumber */		.arg(offer.getPrintOptionForDB(Offer::printNumber));
 
     //save merchandise
     QSqlQuery query;
     query.prepare("INSERT INTO `savedOffersMerchandise` (`offerID`, `sequenceNumber`, `merchandiseID`, `quantity`, `discount`) "
                   "VALUES (LAST_INSERT_ID(), :seq, :mer, :ile, :rabat)");
 
-    Merchandise* merchandise;
-    const QList<Merchandise*>& merchandiseList = offer.merchandiseList->m_list;
-    QVariantList seq, mer, ile, rabat;
-    for(int i=0; i < merchandiseList.length(); ++i)
-    {
-        merchandise = merchandiseList[i];
-        seq << i;
-        mer << merchandise->id();
-        ile << merchandise->ilosc();
-        rabat << merchandise->rabat();
-    }
-
-    query.addBindValue(seq);
-    query.addBindValue(mer);
-    query.addBindValue(ile);
-    query.addBindValue(rabat);
+    auto lists = offer.getMerchandiseAsVariantLists();
+    query.addBindValue(lists.seq);
+    query.addBindValue(lists.id);
+    query.addBindValue(lists.count);
+    query.addBindValue(lists.disc);
 
     Transaction::open();
     Transaction::run(queryText);
@@ -337,8 +276,7 @@ void Database::loadOffer(Offer* offer, int offerID)
     QSqlQuery query = Transaction::run(queryText);
     if(query.isActive() == false)
     {
-        QString error = "Something went wrong when retriving merchandise list";
-        throw DatabaseException(error);
+        throw DatabaseException("Something went wrong when retriving merchandise list");
     }
 
     int merchandiseCount = query.size();
@@ -365,7 +303,7 @@ void Database::loadOffer(Offer* offer, int offerID)
     qDebug() << "Done Loading!";
 }
 
-void Database::deleteCustomer(const Customer& customer) const
+void Database::deleteCustomer(const Customer& customer)
 {
     qDebug().noquote() <<  QString("deleting customer >%1< from database").arg(customer.concatedName());
 
@@ -378,7 +316,7 @@ void Database::deleteCustomer(const Customer& customer) const
     Transaction::commit();
 }
 
-void Database::editCustomer(const Customer &customer) const
+void Database::editCustomer(const Customer &customer)
 {
     qDebug().noquote() <<  QString("Updating customer >%1< in database").arg(customer.concatedName());
 
@@ -407,7 +345,7 @@ void Database::editCustomer(const Customer &customer) const
     Transaction::commit();
 }
 
-void Database::saveCustomer(const Customer &customer) const
+void Database::saveCustomer(const Customer &customer)
 {
     qDebug().noquote() <<  QString("Saving customer >%1< to database").arg(customer.concatedName());
 
@@ -462,7 +400,7 @@ TermItem Database::getTerm(TermType termType, int id)
     return TermItem(termType, rec.value("shortDesc").toString(), rec.value("longDesc").toString(), rec.value("id").toInt());
 }
 
-int Database::getNewOfferNumber(int uid) const
+int Database::getNewOfferNumber(int uid)
 {
     qDebug().noquote() << "Getting new offer number for user: " << uid;
 
@@ -471,8 +409,7 @@ int Database::getNewOfferNumber(int uid) const
     QSqlQuery query = Transaction::run(queryText);
     if(query.isActive() == false)
     {
-        QString error = "Something went wrong when retriving new offer number";
-        throw DatabaseException(error);
+        throw DatabaseException("Something went wrong when retriving new offer number");
     }
     query.next();
     int newOfferNumber = query.value(0).toInt();
@@ -481,23 +418,7 @@ int Database::getNewOfferNumber(int uid) const
     return newOfferNumber;
 }
 
-QString Database::getNewOfferSymbolForUser(const User& u) const
-{
-    int newOfferNumber = getNewOfferNumber(u.getUid());
-/* Example: I1804P01
-    1 znak - oznaczenie biznesu,
-2 i 3 znak - rok,
-4 i 5 znak – miesiąc,
-    6 znak – osoba ofertująca (czyli A – Agata, M – Marek, P – Patryk itd.),
-7 i 8 znak – numeracja ofert danej osoby w danym miesiącu,
-*/
-    return QString("I%1%2%3")
-            .arg(QDate::currentDate().toString("yyMM"))
-            .arg(u.getCharForOfferSymbol())
-            .arg(QString::number(newOfferNumber).rightJustified(2, '0'));
-}
-
-bool Database::isConnected() const
+bool Database::isConnected()
 {
     return QSqlDatabase::database().isOpen();
 }
@@ -535,24 +456,6 @@ void Database::createTerm(const TermItem& term)
     Transaction::commit();
 }
 
-LoadDialogMerchandiseListModel *Database::loadDialogMerchandiseListModel(QObject *parent)
-{
-    return new LoadDialogMerchandiseListModel(parent);
-}
-
-OfferSearchModel *Database::offerSearchModel(QObject *parent)
-{
-    auto model = new OfferSearchModel(parent);
-
-    auto sourceModel = new QSqlTableModel(model);
-    sourceModel->setTable("savedOffersView");
-    sourceModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
-    sourceModel->select();
-
-    model->setSourceModel(sourceModel);
-    return model;
-}
-
 QString Database::mainAddress()
 {
     QSqlTableModel model;
@@ -569,4 +472,16 @@ QString Database::mainAddress()
     QString address = rec.value("address").toString();
     qDebug() << "Company address:" << address;
     return address;
+}
+
+QSqlRecord Database::getCustomerData(int id)
+{
+    QSqlTableModel model;
+    model.setTable("customersView");
+    model.setEditStrategy(QSqlTableModel::OnManualSubmit);
+    model.setFilter(QString("customerID = %1").arg(id));
+    model.select();
+    if(model.rowCount() < 1)
+        throw DatabaseException(QString("Customer id = %1 not found").arg(id));
+    return model.record(0);
 }

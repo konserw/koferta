@@ -30,8 +30,8 @@
 
 Offer::Offer(User u, QObject *parent) :
     QObject(parent),
-    user(u),
-    printOptions(Offer::printDiscount | Offer::printNumber | Offer::printPrice | Offer::printRawPrice | Offer::printSpecs)
+    printOptions(Offer::printDiscount | Offer::printNumber | Offer::printPrice | Offer::printRawPrice | Offer::printSpecs),
+    user(u)
 {
     merchandiseList = new MerchandiseListModel(this);
     terms[TermType::remarks] = TermItem(TermType::remarks, QString::null, "Termin realizacji jest określany na podstawie stanu z dnia sporządzenia oferty i może ulec zmianie.");
@@ -223,6 +223,11 @@ QString Offer::getExchangeRateSql() const
     return QString("NULL");
 }
 
+VariantLists Offer::getMerchandiseAsVariantLists() const
+{
+    return merchandiseList->asVariantLists();
+}
+
 QString Offer::getRemarks() const
 {
     return terms[TermType::remarks].longDesc();
@@ -233,6 +238,11 @@ QString Offer::getTermIDforDB(TermType type) const
     if(terms.contains(type))
         return QString::number(terms[type].id());
     return "NULL";
+}
+
+QString Offer::getPrintOptionForDB(Offer::PrintOption opt) const
+{
+    return printOptions.testFlag(opt)? "1" : "0";
 }
 
 void Offer::setPln(bool value)

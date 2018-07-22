@@ -48,11 +48,10 @@ void LoginDialog::openDBconnection()
         schema = "kOferta_v4";
 
     try {
-    Database::instance()->setupDatabaseConnection(ui->lineEdit_ip->text(), ui->lineEdit_port->text().toUInt(), schema, SQL_USER, SQL_PWD);
+        Database::setupDatabaseConnection(ui->lineEdit_ip->text(), ui->lineEdit_port->text().toUInt(), schema, SQL_USER, SQL_PWD);
     } catch(const DatabaseException& e) {
-        QMessageBox::critical(nullptr, QObject::tr("Błąd"), QObject::tr("Bład sterownika bazy danych!"));
-        qFatal("%s", e.what());
-        //Application will close
+        QMessageBox::critical(this, tr("Bład sterownika bazy danych!"), e.userInfo());
+        this->reject();
     }
 }
 
@@ -72,8 +71,6 @@ LoginDialog::LoginDialog(QWidget *parent) :
     connect(ui->pushButton_apply, &QPushButton::clicked, this, &LoginDialog::openDBconnection);
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &LoginDialog::ok);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &LoginDialog::reject);
-    connect(Database::instance(), &Database::connectionSuccess, this, &LoginDialog::connected);
-    connect(Database::instance(), &Database::changeStatus, ui->label_statusBar, &QLabel::setText);
 
     readSettings();
     openDBconnection();
@@ -90,23 +87,23 @@ void LoginDialog::ok()
     settings.setValue("last user", user);
     settings.endGroup();
 
-    m_user = Database::instance()->logIn(uid, ui->lineEdit_password->text());
-    if(m_user.isValid())
+    try
     {
-        qDebug() << "Logged in successfully";
-        this->accept();
+        m_user = User::getUserFromDB(uid, ui->lineEdit_password->text());
     }
-    else
+    catch(const DatabaseException& e)
     {
         qDebug() << "Login failed";
-        ui->label_statusBar->setText(tr("Logowanie nie powiodło się; sprawdź użytkownika i hasło."));
+        QMessageBox::information(this, tr("Błąd logowania"), e.userInfo());
     }
+    qDebug() << "Logged in successfully";
+    this->accept();
 }
 
 void LoginDialog::connected()
 {
     qDebug() << "Database connected successfully";
-    m_userList = Database::instance()->usersList();
+    m_userList = Database::usersList();
     ui->comboBox_user->addItems(m_userList.keys());
     if(!(m_lastUser.isEmpty() || m_lastUser.isNull()) && m_userList.contains(m_lastUser))
         ui->comboBox_user->setCurrentText(m_lastUser);

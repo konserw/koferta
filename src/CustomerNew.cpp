@@ -37,7 +37,7 @@ CustomerNew::~CustomerNew()
 
 void CustomerNew::acc(){
     Customer client(ui->skrocona->text(), ui->pelna->text(), ui->tytul->text(), ui->imie->text(), ui->nazwisko->text(), ui->adres->toPlainText());
-    Database::instance()->saveCustomer(client);
+    Database::saveCustomer(client);
     this->accept();
 }
 

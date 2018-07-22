@@ -19,11 +19,14 @@
 #ifndef CUSTOMER_H
 #define CUSTOMER_H
 
-#include<QString>
+#include <QString>
+#include <QSqlRecord>
 
 class Customer
 {
 public:
+    static Customer fromDB(int id);
+    static Customer fromRecord(const QSqlRecord& record);
     explicit Customer();
     explicit Customer(int _id);
     Customer(
@@ -68,8 +71,6 @@ private:
     QString name;
     QString surname;
     QString address;
-
-    friend class Database;
 };
 
 #endif // CUSTOMER_H

@@ -340,7 +340,7 @@ void MainWindow::databaseDisconnect()
 {
     uiReset();
     setMenusEnabled(false);
-    Database::instance()->dropConection();
+    Database::dropConection();
     delete currentOffer;
     currentOffer = nullptr;
 }
@@ -501,7 +501,7 @@ void MainWindow::newOffer()
     uiReset();
     uiInit();
     bindOffer();
-    currentOffer->setSymbol(Database::instance()->getNewOfferSymbolForUser(m_user));
+    currentOffer->setSymbol(m_user.getNewOfferSymbol());
     currentOffer->setDate(QDate::currentDate());
     currentOffer->setPrintOptions(
                 Offer::printDiscount |
@@ -514,7 +514,7 @@ void MainWindow::newOffer()
 void MainWindow::assignNewSymbol()
 {
     currentOffer->setDate(QDate::currentDate());
-    currentOffer->setSymbol(Database::instance()->getNewOfferSymbolForUser(m_user));
+    currentOffer->setSymbol(m_user.getNewOfferSymbol());
 }
 
 void MainWindow::uiInit()
@@ -539,7 +539,7 @@ void MainWindow::saveOffer()
 {
     try
     {
-        Database::instance()->saveOffer(*currentOffer);
+        Database::saveOffer(*currentOffer);
     }
     catch (const DatabaseException& e)
     {
@@ -570,7 +570,7 @@ void MainWindow::changePassword()
 
     try
     {
-        Database::instance()->setPassword(uid, password);
+        Database::setPassword(uid, password);
     }
     catch (const DatabaseException& e)
     {
@@ -592,7 +592,7 @@ void MainWindow::loadOfferFromDatabase(int offerID)
     uiInit();
     try
     {
-        Database::instance()->loadOffer(currentOffer, offerID);
+        Database::loadOffer(currentOffer, offerID);
     }
     catch (const DatabaseException& e)
     {

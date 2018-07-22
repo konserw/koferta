@@ -26,18 +26,25 @@
 #include <QObject>
 #include <QString>
 #include <QDate>
+#include <QVariantList>
+
+struct VariantLists
+{
+    QVariantList seq;
+    QVariantList id;
+    QVariantList count;
+    QVariantList disc;
+};
 
 class MerchandiseListModel;
 class QTextDocument;
 class QPrinter;
 class Customer;
-class Database;
 class MerchandiseListView;
 
 class Offer : public QObject
 {
     Q_OBJECT
-    friend class Database;
 
 public:
     enum PrintOption : int
@@ -52,7 +59,7 @@ public:
     };
     Q_DECLARE_FLAGS(PrintOptions, PrintOption)
 
-    explicit Offer(User u, QObject *parent = 0);
+    explicit Offer(User u, QObject *parent = nullptr);
     ~Offer();
 
     void setGlobalDiscount(double discount);
@@ -62,9 +69,11 @@ public:
 
     bool getPln() const;
     QString getExchangeRateSql() const;
+    VariantLists getMerchandiseAsVariantLists() const;
 
     QString getRemarks() const;
     QString getTermIDforDB(TermType type) const;
+    QString getPrintOptionForDB(PrintOption opt) const;
     Customer getCustomer() const;
     QDate getDate() const;
     QString getSymbol() const;

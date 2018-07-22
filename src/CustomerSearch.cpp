@@ -54,10 +54,6 @@ CustomerSearch::CustomerSearch(QWidget *parent) :
     connect(tableView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(select(const QModelIndex&)));
 }
 
-CustomerSearch::~CustomerSearch()
-{
-}
-
 void CustomerSearch::ref2()
 {
     ref(lineEdit->text());
@@ -67,19 +63,10 @@ void CustomerSearch::select(const QModelIndex &idx)
 {
     QSqlRecord rec = model->record(idx.row());
     //TODO: sprawdzic nazwy kolumn, moze zmienic w bazie; Do klasy Database to?
-    //Customer* customer = new
     if(rec.isEmpty())
         emit selectionChanged(Customer());
     else
-        emit selectionChanged(Customer(
-                rec.value("short").toString(),
-                rec.value("full").toString(),
-                rec.value("title").toString(),
-                rec.value("name").toString(),
-                rec.value("surname").toString(),
-                rec.value("address").toString(),
-                rec.value("customerID").toInt()
-                ));
+        emit selectionChanged(Customer::fromRecord(rec));
 }
 
 void CustomerSearch::ref(const QString& in)

@@ -560,6 +560,21 @@ QString MerchandiseListModel::print(const int w, Offer::PrintOptions printOption
     return doc;
 }
 
+VariantLists MerchandiseListModel::asVariantLists()
+{
+    VariantLists lists;
+    Merchandise* merchandise;
+    for(int i=0; i < m_list.length(); ++i)
+    {
+        merchandise = m_list[i];
+        lists.seq << i;
+        lists.id << merchandise->id();
+        lists.count << merchandise->ilosc();
+        lists.disc << merchandise->rabat();
+    }
+    return lists;
+}
+
 double MerchandiseListModel::przeliczSume() const
 {
     double suma = 0;

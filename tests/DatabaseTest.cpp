@@ -14,9 +14,9 @@ private:
         QString db_user = QProcessEnvironment::systemEnvironment().value("SQL_USER", "");
         QString db_pass = QProcessEnvironment::systemEnvironment().value("SQL_PASS", "");
         if(db_user.isEmpty() || db_pass.isEmpty())
-            Database::instance()->setupDatabaseConnection("localhost", 3306, db_name);
+            Database::setupDatabaseConnection("localhost", 3306, db_name);
         else
-            Database::instance()->setupDatabaseConnection("localhost", 3306, db_name, db_user, db_pass);
+            Database::setupDatabaseConnection("localhost", 3306, db_name, db_user, db_pass);
     }
     void sampleUserData()
     {
@@ -66,11 +66,11 @@ private slots:
     void initTestCase()
     {
         setupConnection();
-        QVERIFY(Database::instance()->isConnected());
+        QVERIFY(Database::isConnected());
     }
     void cleanupTestCase()
     {
-        Database::instance()->dropConection();
+        Database::dropConection();
     }
     /*
      * TERMS
@@ -136,7 +136,7 @@ private slots:
     void saveCustomer()
     {
         auto customer = Customer("Short company name", "Long company name", "Mr.", "Jon", "Smith", "Address");
-        Database::instance()->saveCustomer(customer);
+        Database::saveCustomer(customer);
 
         auto query = customerQuery();
         QVERIFY(query.isActive());
@@ -153,7 +153,7 @@ private slots:
     void editCustomer()
     {
         auto customer = Customer("diff company name", "different company name", "Ms.", "Jane", "Doe", "Different Address", test_customer_id);
-        Database::instance()->editCustomer(customer);
+        Database::editCustomer(customer);
 
         auto query = customerQuery();
         QVERIFY(query.isActive());
@@ -169,7 +169,7 @@ private slots:
     }
     void deleteCustomer()
     {
-        Database::instance()->deleteCustomer(Customer(test_customer_id));
+        Database::deleteCustomer(Customer(test_customer_id));
         auto query = customerQuery();
         QVERIFY(query.isActive());
         QCOMPARE(query.size(), 0);
@@ -204,7 +204,7 @@ VALUES
                          .arg(charForOfferSymbol)
                          );
 
-        QHash<QString, int> test = Database::instance()->usersList();
+        QHash<QString, int> test = Database::usersList();
         QCOMPARE(test.key(uid), name);
         QCOMPARE(test.value(name), uid);
     }
@@ -213,7 +213,7 @@ VALUES
     {
         QFETCH(int, uid);
         QFETCH(QString, password);
-        Database::instance()->setPassword(uid, password);
+        Database::setPassword(uid, password);
 
         QString queryText = R"(
 SELECT
@@ -248,11 +248,11 @@ FROM `kOferta_test`.`users`;
         QFETCH(QString, charForOfferSymbol);
         QFETCH(QString, password);
 
-        User test_user = Database::instance()->logIn(uid, password);
+        User test_user = Database::getUserData(uid, password);
         QCOMPARE(test_user.getUid(), uid);
         QCOMPARE(test_user.getName(), name);
         QCOMPARE(test_user.getMail(), mail);
-        QCOMPARE(test_user.getMale(), male == 1);
+        QCOMPARE(test_user.isMale(), male == 1);
         QCOMPARE(test_user.getPhone(), phone);
         QCOMPARE(test_user.getCharForOfferSymbol(), charForOfferSymbol);
     }
@@ -260,12 +260,12 @@ FROM `kOferta_test`.`users`;
     void logIn_invalid_pass()
     {
         QFETCH(int, uid);
-        User test_user = Database::instance()->logIn(uid, "invalid");
+        User test_user = Database::getUserData(uid, "invalid");
         QVERIFY(!test_user.isValid());
     }
     void logIn_invalid_uid()
     {
-        User test_user = Database::instance()->logIn(44, "invalid");
+        User test_user = Database::getUserData(44, "invalid");
         QVERIFY(!test_user.isValid());
     }
     void getNewOfferSymbolForUser_data() { sampleUserData(); }
@@ -290,7 +290,7 @@ FROM `kOferta_test`.`users`;
                 .arg(charForOfferSymbol)
                 .arg(QString::number(currentOfferNumber).rightJustified(2, '0'));
 
-        QString test_symbol = Database::instance()->getNewOfferSymbolForUser(user);
+        QString test_symbol = Database::getNewOfferSymbolForUser(user);
         QCOMPARE(test_symbol, symbol);
     }
     /*

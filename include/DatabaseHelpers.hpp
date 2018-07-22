@@ -27,10 +27,15 @@
 
 class DatabaseException : public std::runtime_error
 {
+    QString m_userInfo;
 public:
-    DatabaseException(QString text) : std::runtime_error(text.toStdString())
+    DatabaseException(QString text, QString userInfo=QString()) : std::runtime_error(text.toStdString())
     {
         qCritical().noquote().nospace() << text;
+    }
+    QString userInfo() const
+    {
+        return m_userInfo;
     }
 };
 

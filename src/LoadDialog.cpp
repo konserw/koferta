@@ -30,7 +30,7 @@ LoadDialog::LoadDialog(QWidget *parent) :
     ui->setupUi(this);
     ui->label_towary->setText(tr("Towary:"));
 
-    model = Database::loadDialogMerchandiseListModel(this);
+    model = new LoadDialogMerchandiseListModel(this);
 
     ui->tableView->setModel(model);
     ui->tableView->hideColumn(0);
