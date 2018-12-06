@@ -147,7 +147,7 @@ QSqlRecord Database::getUserData(int uid, const QString &password)
     return r;
 }
 
-void Database::saveOffer(const Offer &offer)
+void Database::saveOffer(const Offer &offer, const User& user)
 {
     qDebug().noquote() << "Saving offer symbol:" << offer.getSymbol();
     QString queryText;
@@ -175,7 +175,7 @@ void Database::saveOffer(const Offer &offer)
                         "bPrintNumber"
                         ") VALUES ('%2', %3, %4, '%5', %6, %7, %8, %9, %10, %11, '%12', %13, %14, %15, %16, %17, %18, %19)")
 /* offerSymbol */   	.arg(offer.getSymbol())
-/* userID */        	.arg(offer.getUser().getUid())
+/* userID */        	.arg(user.getUid())
 /* customerID */    	.arg(offer.getCustomer().getIDorNull())
 /* offerDate */     	.arg(offer.getDate().toString("yyyy-MM-dd"))
 /* inquiryDate */   	.arg(offer.getInquiryDateSql())

@@ -97,6 +97,7 @@ public slots:
     //help
     void about();
 
+    void print(QPrinter *printer);
 signals:
     void remarksChanged(const QString& remarks);
 

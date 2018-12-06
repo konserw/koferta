@@ -497,7 +497,7 @@ void MainWindow::newOffer()
             return;
         delete currentOffer;
     }
-    currentOffer = new Offer(m_user, this);
+    currentOffer = Offer::createOffer(this);
     uiReset();
     uiInit();
     bindOffer();
@@ -539,7 +539,7 @@ void MainWindow::saveOffer()
 {
     try
     {
-        Database::saveOffer(*currentOffer);
+        Database::saveOffer(*currentOffer, m_user);
     }
     catch (const DatabaseException& )
     {
@@ -590,7 +590,6 @@ void MainWindow::loadOfferFromDatabase(int offerID)
     try
     {
         currentOffer = Offer::loadOffer(offerID, this);
-        currentOffer->setUser(m_user);
     }
     catch (const DatabaseException& )
     {
@@ -626,6 +625,20 @@ void MainWindow::createMerchandise()
     pop.exec();
 }
 
+
+void MainWindow::print(QPrinter *printer)
+{
+    const qreal margin = 5;
+    printer->setPaperSize(QPrinter::A4);
+    printer->setResolution(96);
+    printer->setPageMargins(margin, margin, margin, margin, QPrinter::Millimeter);
+
+    QTextDocument doc;
+    doc.setHtml(currentOffer->document(m_user));
+    doc.setPageSize(QSizeF(printer->pageRect().size()));
+    doc.print(printer);
+}
+
 void MainWindow::printPrev()
 {
     QPrinter printer;
@@ -633,7 +646,7 @@ void MainWindow::printPrev()
 
     QPrintPreviewDialog preview(&printer, this);
     preview.setWindowFlags(Qt::Window);
-    connect(&preview, &QPrintPreviewDialog::paintRequested, currentOffer, &Offer::print);
+    connect(&preview, &QPrintPreviewDialog::paintRequested, this, &MainWindow::print);
     preview.showMaximized();
     preview.exec();
 }
@@ -663,7 +676,7 @@ void MainWindow::printPdf()
     printer->setOutputFormat(QPrinter::PdfFormat);
     printer->setOutputFileName(filePath);
 
-    currentOffer->print(printer);
+    print(printer);
 
     delete printer;
 }

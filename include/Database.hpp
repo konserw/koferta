@@ -36,6 +36,7 @@ class QTcpSocket;
 class QProgressDialog;
 class Customer;
 class Offer;
+class User;
 
 namespace Database
 {
@@ -57,7 +58,7 @@ namespace Database
     TermItem getTerm(TermType termType, int id = -1);
 
     //offer
-    void saveOffer(const Offer& offer);
+    void saveOffer(const Offer& offer, const User &user);
     QSqlRecord loadOfferBasic(int offerID);
     QList<Merchandise*> loadOfferMerchandise(int offerID);
 

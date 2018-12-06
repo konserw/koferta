@@ -60,15 +60,15 @@ public:
     Q_DECLARE_FLAGS(PrintOptions, PrintOption)
 
     explicit Offer(QObject *parent = nullptr);
-    explicit Offer(User u, QObject *parent = nullptr);
-    ~Offer();
+    virtual ~Offer() = default;
 
     static Offer* loadOffer(int offerID, QObject *parent = nullptr);
+    static Offer* createOffer(QObject *parent = nullptr);
 
     void setGlobalDiscount(double discount);
     void removeMerchandiseRow(int row);
 
-    QString document() const;
+    QString document(const User& user) const;
 
     bool getPln() const;
     QString getExchangeRateSql() const;
@@ -80,7 +80,6 @@ public:
     Customer getCustomer() const;
     QDate getDate() const;
     QString getSymbol() const;
-    User getUser() const;
 
     QString getInquiryNumberSql() const;
     QString getInquiryNumber() const;
@@ -101,15 +100,11 @@ signals:
     void printOptionsChanged(PrintOptions options);
 
 public slots:
-    ///"drukowanie" dokumentu do podglądu lub pdf
-    void print(QPrinter *printer);
-
     void updateMerchandiseList(int id, double count);
     QHash<int, double> currentMerchandiseHash() const;
     void bindMerchandiseTable(MerchandiseListView* table);
 
 //setters
-    void setUser(const User &value);
     void setCustomer(const Customer &value);
     void setTerm(const TermItem &term);
     void setPln(bool value);
@@ -140,7 +135,6 @@ protected:
 
     MerchandiseListModel* merchandiseList;
     Customer customer;
-    User user;
 
     QHash<TermType, TermItem> terms;
 };

@@ -33,21 +33,15 @@ Offer::Offer(QObject *parent) :
     QObject(parent),
     merchandiseList(nullptr)
 {
-
 }
 
-Offer::Offer(User u, QObject *parent) :
-    QObject(parent),
-    printOptions(Offer::printDiscount | Offer::printNumber | Offer::printPrice | Offer::printRawPrice | Offer::printSpecs),
-    user(u)
+Offer *Offer::createOffer(QObject *parent)
 {
-    merchandiseList = new MerchandiseListModel(this);
-    terms[TermType::remarks] = TermItem(TermType::remarks, QString::null, "Termin realizacji jest określany na podstawie stanu z dnia sporządzenia oferty i może ulec zmianie.");
-}
-
-Offer::~Offer()
-{
-    delete merchandiseList;
+    auto offer = new Offer(parent);
+    offer->printOptions = (Offer::printDiscount | Offer::printNumber | Offer::printPrice | Offer::printRawPrice | Offer::printSpecs);
+    offer->merchandiseList = new MerchandiseListModel(offer);
+    offer->terms[TermType::remarks] = TermItem(TermType::remarks, QString::null, "Termin realizacji jest określany na podstawie stanu z dnia sporządzenia oferty i może ulec zmianie.");
+    return offer;
 }
 
 Offer *Offer::loadOffer(int offerID, QObject* parent)
@@ -179,16 +173,6 @@ void Offer::setPrintNumber(bool value)
     printOptions.setFlag(Offer::printNumber, value);
 }
 
-User Offer::getUser() const
-{
-    return user;
-}
-
-void Offer::setUser(const User &value)
-{
-    user = value;
-}
-
 void Offer::setDate(const QDate &value)
 {
     date = value;
@@ -317,20 +301,7 @@ void Offer::setExchangeRate(double value)
     emit exchangeRateChanged(value);
 }
 
-void Offer::print(QPrinter *printer)
-{
-    const qreal margin = 5;
-    printer->setPaperSize(QPrinter::A4);
-    printer->setResolution(96);
-    printer->setPageMargins(margin, margin, margin, margin, QPrinter::Millimeter);
-
-    QTextDocument doc;
-    doc.setHtml(document());
-    doc.setPageSize(QSizeF(printer->pageRect().size()));
-    doc.print(printer);
-}
-
-QString Offer::document() const
+QString Offer::document(const User &user) const
 {
     const int w = 745;                           //szerokosc szkieletu dokumentu
     const int dd = 248;
