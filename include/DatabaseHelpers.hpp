@@ -32,11 +32,13 @@ public:
     DatabaseException(QString text, QString userInfo=QString()) : std::runtime_error(text.toStdString())
     {
         qCritical().noquote().nospace() << text;
+        m_userInfo = userInfo;
     }
     QString userInfo() const
     {
         return m_userInfo;
     }
+    virtual ~DatabaseException() = default;
 };
 
 // Returns HMAC-SHA1 encrypted signature composed of public key and secret base string

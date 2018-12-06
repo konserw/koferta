@@ -237,8 +237,8 @@ FROM `kOferta_test`.`users`;
         auto salted_password = saltPassword(salt, password);
         QCOMPARE(salted_password_from_db, salted_password);
     }
-    void logIn_data() { sampleUserData(); }
-    void logIn()
+    void getUserData_data() { sampleUserData(); }
+    void getUserData()
     {
         QFETCH(int, uid);
         QFETCH(QString, name);
@@ -248,26 +248,56 @@ FROM `kOferta_test`.`users`;
         QFETCH(QString, charForOfferSymbol);
         QFETCH(QString, password);
 
-        User test_user = Database::getUserData(uid, password);
-        QCOMPARE(test_user.getUid(), uid);
-        QCOMPARE(test_user.getName(), name);
-        QCOMPARE(test_user.getMail(), mail);
-        QCOMPARE(test_user.isMale(), male == 1);
-        QCOMPARE(test_user.getPhone(), phone);
-        QCOMPARE(test_user.getCharForOfferSymbol(), charForOfferSymbol);
+        auto record = Database::getUserData(uid, password);
+        QCOMPARE(record.value("id").toInt(), uid);
+        QCOMPARE(record.value("name").toString(), name);
+        QCOMPARE(record.value("phone").toString(), phone);
+        QCOMPARE(record.value("mail").toString(), mail);
+        QCOMPARE(record.value("charForOfferSymbol").toString(), charForOfferSymbol);
+        QCOMPARE(record.value("male").toInt(), male);
+        QCOMPARE(record.value("resetPassword").toInt(), 0);
     }
-    void logIn_invalid_pass_data() { sampleUserData(); }
-    void logIn_invalid_pass()
+    void getUserData_invalid_pass_data() { sampleUserData(); }
+    void getUserData_invalid_pass()
     {
         QFETCH(int, uid);
-        User test_user = Database::getUserData(uid, "invalid");
-        QVERIFY(!test_user.isValid());
+        try
+        {
+            Database::getUserData(uid, "invalid");
+        }
+        catch (const DatabaseException& e)
+        {
+            QCOMPARE(e.what(), "Wrong password has been given");
+        }
     }
-    void logIn_invalid_uid()
+    void getUserData_invalid_uid()
     {
-        User test_user = Database::getUserData(44, "invalid");
-        QVERIFY(!test_user.isValid());
+        try
+        {
+            Database::getUserData(666, "invalid");
+        }
+        catch (const DatabaseException& e)
+        {
+            QCOMPARE(e.what(), "Invalid user selected");
+        }
     }
+    void getNewOfferNumber_data() { sampleUserData(); }
+    void getNewOfferNumber()
+    {
+        QFETCH(int, uid);
+        QFETCH(int, currentOfferNumber);
+        QFETCH(QDate, currentOfferNumberDate);
+
+        int newOfferNumber = Database::getNewOfferNumber(uid);
+
+        auto date = QDate::currentDate().toString("yyMM");
+        auto db_date = currentOfferNumberDate.toString("yyMM");
+        if(db_date != date)
+            currentOfferNumber = 0;
+        currentOfferNumber++;
+        QCOMPARE(newOfferNumber, currentOfferNumber);
+    }
+    /*
     void getNewOfferSymbolForUser_data() { sampleUserData(); }
     void getNewOfferSymbolForUser()
     {
@@ -293,6 +323,7 @@ FROM `kOferta_test`.`users`;
         QString test_symbol = Database::getNewOfferSymbolForUser(user);
         QCOMPARE(test_symbol, symbol);
     }
+    */
     /*
      * Others
      */
@@ -319,4 +350,4 @@ VALUES
 
 
 QTEST_MAIN(DatabaseTest)
-#include "DatabaseTest.moc"
+//#include "DatabaseTest.moc"
