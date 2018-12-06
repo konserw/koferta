@@ -212,61 +212,20 @@ void Database::saveOffer(const Offer &offer)
     Transaction::commit();
 }
 
-void Database::loadOffer(Offer* offer, int offerID)
+QSqlRecord Database::loadOfferBasic(int offerID)
 {
-    qDebug() << "Loading offer" << offerID;
-
+    qDebug() << "Loading basic data for offer" << offerID;
     QSqlTableModel model;
     model.setTable("savedOffersFullView");
     model.setFilter(QString("offerID = '%1'").arg(offerID));
     if(model.select() == false)
         throw DatabaseException("Something went wrong while reading data from savedOffersFullView");
-    QSqlRecord rec = model.record(0);
+    return model.record(0);
+}
 
-    offer->id = offerID; //need it?
-    offer->setSymbol(rec.value("offerSymbol").toString());
-    offer->date = rec.value("offerDate").toDate();
-    if(!rec.value("customerID").isNull())
-        offer->setCustomer(Customer(
-                    rec.value("short").toString(),
-                    rec.value("full").toString(),
-                    rec.value("title").toString(),
-                    rec.value("name").toString(),
-                    rec.value("surname").toString(),
-                    rec.value("address").toString(),
-                    rec.value("customerID").toInt()
-                    ));
-
-    offer->setInquiryDate(rec.value("inquiryDate").toString());
-    offer->setInquiryNumber(rec.value("inquiryNumber").toString());
-
-    for(auto it = termTable.begin(); it != termTable.end(); ++it)
-    {
-        auto val = rec.value(it.value());
-        if(!val.isNull())
-            offer->setTerm(getTerm(it.key(), val.toInt()));
-    }
-    offer->setTerm(TermItem(TermType::remarks, QString::null, rec.value("remarks").toString()));
-
-    QVariant exchange = rec.value("dExchangeRate");
-    if(exchange.isNull())
-        offer->setPln(false);
-    else
-    {
-        offer->setPln(true);
-        offer->setExchangeRate(exchange.toDouble());
-    }
-
-    Offer::PrintOptions options;
-    options.setFlag(Offer::printSpecs, rec.value("bPrintSpecs").toBool());
-    options.setFlag(Offer::printRawPrice, rec.value("bPrintRawPrice").toBool());
-    options.setFlag(Offer::printRawPricePLN, rec.value("bPrintRawPricePLN").toBool());
-    options.setFlag(Offer::printDiscount, rec.value("bPrintDiscount").toBool());
-    options.setFlag(Offer::printPrice, rec.value("bPrintPrice").toBool());
-    options.setFlag(Offer::printNumber, rec.value("bPrintNumber").toBool());
-    offer->setPrintOptions(options);
-
-    //merch list
+QList<Merchandise *> Database::loadOfferMerchandise(int offerID)
+{
+    qDebug() << "Loading merchandise list for offer" << offerID;
     QString queryText = QString(
                         "SELECT * "
                         "FROM savedOffersMerchandiseView "
@@ -279,28 +238,22 @@ void Database::loadOffer(Offer* offer, int offerID)
         throw DatabaseException("Something went wrong when retriving merchandise list");
     }
 
-    int merchandiseCount = query.size();
-    if(merchandiseCount > 0)
+    QList<Merchandise*> list;
+    Merchandise* merchandise;
+    while(query.next())
     {
-        Merchandise* merchandise;
-        offer->merchandiseList->beginInsertRows(QModelIndex(), 0, merchandiseCount - 1);
-        while(query.next())
-        {
-            qDebug() << "Loading merchandise: " << query.value("merchandiseID").toString();
-            merchandise = new Merchandise(
-                        query.value("merchandiseID").toInt(),
-                        query.value("code").toString(),
-                        query.value("description").toString(),
-                        query.value("price").toDouble(),
-                        query.value("unit").toString() == "mb.");
-            merchandise->setRabat(query.value("discount").toDouble());
-            merchandise->setIlosc(query.value("quantity").toInt());
-            offer->merchandiseList->m_list.append(merchandise);
-        }
-        offer->merchandiseList->endInsertRows();
+        //qDebug() << "Loading merchandise: " << query.value("merchandiseID").toString();
+        merchandise = new Merchandise(
+                    query.value("merchandiseID").toInt(),
+                    query.value("code").toString(),
+                    query.value("description").toString(),
+                    query.value("price").toDouble(),
+                    query.value("unit").toString() == "mb.");
+        merchandise->setRabat(query.value("discount").toDouble());
+        merchandise->setIlosc(query.value("quantity").toInt());
+        list.append(merchandise);
     }
-
-    qDebug() << "Done Loading!";
+    return list;
 }
 
 void Database::deleteCustomer(const Customer& customer)
@@ -484,4 +437,9 @@ QSqlRecord Database::getCustomerData(int id)
     if(model.rowCount() < 1)
         throw DatabaseException(QString("Customer id = %1 not found").arg(id));
     return model.record(0);
+}
+
+QHash<TermType, QString> Database::getTermTable()
+{
+    return termTable;
 }

@@ -59,8 +59,11 @@ public:
     };
     Q_DECLARE_FLAGS(PrintOptions, PrintOption)
 
+    explicit Offer(QObject *parent = nullptr);
     explicit Offer(User u, QObject *parent = nullptr);
     ~Offer();
+
+    static Offer* loadOffer(int offerID);
 
     void setGlobalDiscount(double discount);
     void removeMerchandiseRow(int row);

@@ -31,6 +31,12 @@ MerchandiseListModel::MerchandiseListModel(QObject *parent) :
 {
 }
 
+MerchandiseListModel::MerchandiseListModel(QList<Merchandise *> list, QObject *parent) :
+    MerchandiseListModel(parent)
+{
+    m_list = list;
+}
+
 MerchandiseListModel::~MerchandiseListModel()
 {
     qDeleteAll(m_list);

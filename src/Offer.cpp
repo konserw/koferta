@@ -18,6 +18,7 @@
 
 #include "Offer.hpp"
 #include "Database.hpp"
+#include "Customer.hpp"
 #include "MerchandiseListModel.hpp"
 #include "MerchandiseListView.hpp"
 
@@ -27,6 +28,13 @@
 #include <QPrinter>
 #include <QTextDocument>
 
+
+Offer::Offer(QObject *parent) :
+    QObject(parent),
+    merchandiseList(nullptr)
+{
+
+}
 
 Offer::Offer(User u, QObject *parent) :
     QObject(parent),
@@ -40,6 +48,57 @@ Offer::Offer(User u, QObject *parent) :
 Offer::~Offer()
 {
     delete merchandiseList;
+}
+
+Offer *Offer::loadOffer(int offerID)
+{
+    qDebug() << "Loading offer" << offerID;
+    auto rec = Database::loadOfferBasic(offerID);
+    auto offer = new Offer;
+
+    offer->id = offerID;
+    offer->symbol = rec.value("offer->ymbol").toString();
+    offer->date = rec.value("offer->ate").toDate();
+    offer->inquiryDate = rec.value("inquiryDate").toString();
+    offer->inquiryNumber = rec.value("inquiryNumber").toString();
+    if(!rec.value("customerID").isNull())
+        offer->customer = Customer::fromRecord(rec);
+
+    auto termTable = Database::getTermTable();
+    for(auto it = termTable.begin(); it != termTable.end(); ++it)
+    {
+        auto val = rec.value(it.value());
+        if(!val.isNull())
+        {
+            auto term = Database::getTerm(it.key(), val.toInt());
+            offer->terms[term.getType()] = term;
+        }
+    }
+    offer->terms[TermType::remarks] = TermItem(TermType::remarks, QString::null, rec.value("remarks").toString());
+
+    Offer::PrintOptions options;
+    options.setFlag(Offer::printSpecs, rec.value("bPrintSpecs").toBool());
+    options.setFlag(Offer::printRawPrice, rec.value("bPrintRawPrice").toBool());
+    options.setFlag(Offer::printRawPricePLN, rec.value("bPrintRawPricePLN").toBool());
+    options.setFlag(Offer::printDiscount, rec.value("bPrintDiscount").toBool());
+    options.setFlag(Offer::printPrice, rec.value("bPrintPrice").toBool());
+    options.setFlag(Offer::printNumber, rec.value("bPrintNumber").toBool());
+    offer->printOptions = options;
+
+    offer->merchandiseList = new MerchandiseListModel(Database::loadOfferMerchandise(offerID), offer);
+
+    //these are valid only when merchandise list is there
+    QVariant exchange = rec.value("dExchangeRate");
+    if(exchange.isNull())
+        offer->setPln(false);
+    else
+    {
+        offer->setPln(true);
+        offer->setExchangeRate(exchange.toDouble());
+    }
+
+    qDebug() << "Done Loading!";
+    return offer;
 }
 
 void Offer::setGlobalDiscount(double discount)

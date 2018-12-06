@@ -36,6 +36,7 @@ class MerchandiseListModel : public QAbstractTableModel
     Q_OBJECT
 public:
     explicit MerchandiseListModel(QObject *parent = nullptr);
+    explicit MerchandiseListModel(QList<Merchandise*> list, QObject *parent = nullptr);
     virtual ~MerchandiseListModel();
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;

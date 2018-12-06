@@ -51,13 +51,15 @@ namespace Database
     int getNewOfferNumber(int uid);
 
     //terms
+    QHash<TermType, QString> getTermTable();
     void createTerm(const TermItem& term);
     TermModel* getTermModel(TermType termType);
     TermItem getTerm(TermType termType, int id = -1);
 
     //offer
     void saveOffer(const Offer& offer);
-    void loadOffer(Offer *offer, int offerID);
+    QSqlRecord loadOfferBasic(int offerID);
+    QList<Merchandise*> loadOfferMerchandise(int offerID);
 
     //customer
     QSqlRecord getCustomerData(int id);
