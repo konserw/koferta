@@ -444,6 +444,7 @@ QHash<TermType, QString> Database::getTermTable()
 
 void Database::dropConection()
 {
-    auto database = QSqlDatabase::addDatabase("QMYSQL");
-    database.close();
+    auto database = QSqlDatabase::database();
+    if(database.isValid())
+        database.close();
 }
