@@ -62,6 +62,7 @@ public:
     void setAddress(const QString &value);
 
     QString getIDorNull() const;
+    int getId() const;
 
 private:
     int id;

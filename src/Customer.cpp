@@ -133,3 +133,8 @@ QString Customer::getIDorNull() const
         return QString::number(id);
     return "NULL";
 }
+
+int Customer::getId() const
+{
+    return id;
+}

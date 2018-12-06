@@ -42,7 +42,7 @@ namespace Database
     //connection
     bool isConnected();
     void dropConection();
-    void setupDatabaseConnection(const QString &host, unsigned port, const QString &schema, const QString &user = QString(), const QString &password = QString());
+    void setupDatabaseConnection(const QString &host, quint16 port, const QString &schema, const QString &user = QString(), const QString &password = QString());
 
     //user-related
     QSqlRecord getUserData(int uid, const QString& password);

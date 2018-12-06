@@ -40,7 +40,7 @@ static QHash<TermType, QString> termTable
     {TermType::offer, "offerTerms"}
 };
 
-void Database::setupDatabaseConnection(const QString &host, unsigned port, const QString& schema, const QString& user, const QString& password)
+void Database::setupDatabaseConnection(const QString &host, quint16 port, const QString& schema, const QString& user, const QString& password)
 {
     qDebug() << "Setup database connection";
     if(!QSqlDatabase::drivers().contains("QMYSQL"))
@@ -59,8 +59,6 @@ void Database::setupDatabaseConnection(const QString &host, unsigned port, const
                                 QObject::tr("Nie odnaleziono sterownika bazy danych. Skontaktuj się z administratorem"));
     }
 
-    auto database = QSqlDatabase::addDatabase("QMYSQL");
-
     qDebug().noquote().nospace() << "Check if TCP socket " << host << ":" << port << " is reachable";
     QTcpSocket socket;
     socket.connectToHost(host, port);
@@ -72,7 +70,7 @@ void Database::setupDatabaseConnection(const QString &host, unsigned port, const
     socket.disconnectFromHost();
     qDebug() << "Socket has been successfully opened";
 
-    //fill in database connection details
+    auto database = QSqlDatabase::addDatabase("QMYSQL");
     database.setHostName(host);
     database.setPort(port);
     database.setDatabaseName(schema);
@@ -113,7 +111,7 @@ void Database::setupDatabaseConnection(const QString &host, unsigned port, const
 void Database::setPassword(int uid, QString password)
 {
     std::random_device rd;
-    QString salt = QCryptographicHash::hash(QByteArray::number(uid + rd()), QCryptographicHash::Sha1).toBase64();
+    QString salt = QCryptographicHash::hash(QByteArray::number(rd()), QCryptographicHash::Sha1).toBase64();
     qDebug() << "new salt for user" << uid << "is" << salt;
 
     QString queryText = QString("UPDATE users SET password='%1', salt='%2', resetPassword=0 WHERE id=%3")
@@ -262,7 +260,7 @@ void Database::deleteCustomer(const Customer& customer)
 
 
     QString queryText= QString("DELETE FROM customers WHERE id=%1")
-            .arg(customer.id);
+            .arg(customer.getId());
 
     Transaction::open();
     Transaction::run(queryText);
@@ -278,19 +276,19 @@ void Database::editCustomer(const Customer &customer)
     query1.prepare("UPDATE customersView "
                    "SET short=?, full=?, title=?, name=?, surname=?"
                    "WHERE customerID=?");
-    query1.addBindValue(customer.shortName);
-    query1.addBindValue(customer.fullName);
-    query1.addBindValue(customer.title);
-    query1.addBindValue(customer.name);
-    query1.addBindValue(customer.surname);
-    query1.addBindValue(customer.id);
+    query1.addBindValue(customer.getShortName());
+    query1.addBindValue(customer.getFullName());
+    query1.addBindValue(customer.getTitle());
+    query1.addBindValue(customer.getName());
+    query1.addBindValue(customer.getSurname());
+    query1.addBindValue(customer.getId());
 
     QSqlQuery query2;
     query2.prepare("UPDATE customersView "
                    "SET address=?"
                    "WHERE customerID=?");
-    query2.addBindValue(customer.address);
-    query2.addBindValue(customer.id);
+    query2.addBindValue(customer.getAddress());
+    query2.addBindValue(customer.getId());
 
     Transaction::open();
     Transaction::run(query1);
@@ -305,15 +303,15 @@ void Database::saveCustomer(const Customer &customer)
 
     QSqlQuery query1;
     query1.prepare("INSERT INTO addresses (address) VALUES (?)");
-    query1.addBindValue(customer.address);
+    query1.addBindValue(customer.getAddress());
     QSqlQuery query2;
     query2.prepare("INSERT INTO customers (short, full, title, name, surname, addressID) "
                                "VALUES (?, ?, ?, ?, ?, LAST_INSERT_ID())");
-    query2.addBindValue(customer.shortName);
-    query2.addBindValue(customer.fullName);
-    query2.addBindValue(customer.title);
-    query2.addBindValue(customer.name);
-    query2.addBindValue(customer.surname);
+    query2.addBindValue(customer.getShortName());
+    query2.addBindValue(customer.getFullName());
+    query2.addBindValue(customer.getTitle());
+    query2.addBindValue(customer.getName());
+    query2.addBindValue(customer.getSurname());
 
     Transaction::open();
     Transaction::run(query1);
@@ -442,4 +440,10 @@ QSqlRecord Database::getCustomerData(int id)
 QHash<TermType, QString> Database::getTermTable()
 {
     return termTable;
+}
+
+void Database::dropConection()
+{
+    auto database = QSqlDatabase::addDatabase("QMYSQL");
+    database.close();
 }

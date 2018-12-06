@@ -50,11 +50,11 @@ Offer::~Offer()
     delete merchandiseList;
 }
 
-Offer *Offer::loadOffer(int offerID)
+Offer *Offer::loadOffer(int offerID, QObject* parent)
 {
     qDebug() << "Loading offer" << offerID;
     auto rec = Database::loadOfferBasic(offerID);
-    auto offer = new Offer;
+    auto offer = new Offer(parent);
 
     offer->id = offerID;
     offer->symbol = rec.value("offer->ymbol").toString();

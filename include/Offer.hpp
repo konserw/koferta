@@ -63,7 +63,7 @@ public:
     explicit Offer(User u, QObject *parent = nullptr);
     ~Offer();
 
-    static Offer* loadOffer(int offerID);
+    static Offer* loadOffer(int offerID, QObject *parent = nullptr);
 
     void setGlobalDiscount(double discount);
     void removeMerchandiseRow(int row);

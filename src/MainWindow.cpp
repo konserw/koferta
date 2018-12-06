@@ -541,7 +541,7 @@ void MainWindow::saveOffer()
     {
         Database::saveOffer(*currentOffer);
     }
-    catch (const DatabaseException& e)
+    catch (const DatabaseException& )
     {
         QMessageBox::critical(this, tr("Błąd zapisywania"), tr("Wystąpił bład w trakcie zapisywania oferty.\nProszę spróbowac później, bądź skontaktować się z Administratorem."));
     }
@@ -572,7 +572,7 @@ void MainWindow::changePassword()
     {
         Database::setPassword(uid, password);
     }
-    catch (const DatabaseException& e)
+    catch (const DatabaseException& )
     {
         qDebug() << "Some error during password change occured";
         QMessageBox::warning(nullptr, tr("Hasło nie zmienione"), tr("Wystąpił błąd podczas zmiany hasła.\nHasło nie zostało zmienione"));
@@ -586,21 +586,20 @@ void MainWindow::changePassword()
 void MainWindow::loadOfferFromDatabase(int offerID)
 {
     delete currentOffer;
-    currentOffer = new Offer(m_user, this);
-    bindOffer();
     uiReset();
-    uiInit();
     try
     {
-        Database::loadOffer(currentOffer, offerID);
+        currentOffer = Offer::loadOffer(offerID, this);
+        currentOffer->setUser(m_user);
     }
-    catch (const DatabaseException& e)
+    catch (const DatabaseException& )
     {
-        delete currentOffer;
         currentOffer = nullptr;
-        uiReset();
         QMessageBox::critical(this, tr("Błąd"), tr("Wystąpił błąd podczas wczytywania oferty.\nSpróbuj ponownie"));
+        return;
     }
+    uiInit();
+    bindOffer();
 }
 
 void MainWindow::createTerms()

@@ -350,4 +350,4 @@ VALUES
 
 
 QTEST_MAIN(DatabaseTest)
-//#include "DatabaseTest.moc"
+#include "DatabaseTest.moc"
