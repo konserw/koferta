@@ -274,7 +274,7 @@ void Database::editCustomer(const Customer &customer)
 
     QSqlQuery query1;
     query1.prepare("UPDATE customersView "
-                   "SET short=?, full=?, title=?, name=?, surname=?"
+                   "SET short=?, full=?, title=?, name=?, surname=? "
                    "WHERE customerID=?");
     query1.addBindValue(customer.getShortName());
     query1.addBindValue(customer.getFullName());
@@ -285,7 +285,7 @@ void Database::editCustomer(const Customer &customer)
 
     QSqlQuery query2;
     query2.prepare("UPDATE customersView "
-                   "SET address=?"
+                   "SET address=? "
                    "WHERE customerID=?");
     query2.addBindValue(customer.getAddress());
     query2.addBindValue(customer.getId());
