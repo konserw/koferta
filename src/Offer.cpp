@@ -18,6 +18,7 @@
 
 #include "Offer.hpp"
 #include "Database.hpp"
+#include "Customer.hpp"
 #include "MerchandiseListModel.hpp"
 #include "MerchandiseListView.hpp"
 
@@ -28,18 +29,71 @@
 #include <QTextDocument>
 
 
-Offer::Offer(User u, QObject *parent) :
+Offer::Offer(QObject *parent) :
     QObject(parent),
-    user(u),
-    printOptions(Offer::printDiscount | Offer::printNumber | Offer::printPrice | Offer::printRawPrice | Offer::printSpecs)
+    merchandiseList(nullptr)
 {
-    merchandiseList = new MerchandiseListModel(this);
-    terms[TermType::remarks] = TermItem(TermType::remarks, QString::null, "Termin realizacji jest określany na podstawie stanu z dnia sporządzenia oferty i może ulec zmianie.");
 }
 
-Offer::~Offer()
+Offer *Offer::createOffer(QObject *parent)
 {
-    delete merchandiseList;
+    auto offer = new Offer(parent);
+    offer->date = QDate::currentDate();
+    offer->printOptions = (Offer::printDiscount | Offer::printNumber | Offer::printPrice | Offer::printRawPrice | Offer::printSpecs);
+    offer->merchandiseList = new MerchandiseListModel(offer);
+    offer->terms[TermType::remarks] = TermItem(TermType::remarks, QString::null, "Termin realizacji jest określany na podstawie stanu z dnia sporządzenia oferty i może ulec zmianie.");
+    return offer;
+}
+
+Offer *Offer::loadOffer(int offerID, QObject* parent)
+{
+    qDebug() << "Loading offer" << offerID;
+    auto rec = Database::loadOfferBasic(offerID);
+    auto offer = new Offer(parent);
+
+    offer->id = offerID; // need it?
+    offer->symbol = rec.value("offerSymbol").toString();
+    offer->date = rec.value("offerDate").toDate();
+    offer->inquiryDate = rec.value("inquiryDate").toString();
+    offer->inquiryNumber = rec.value("inquiryNumber").toString();
+    if(!rec.value("customerID").isNull())
+        offer->customer = Customer::fromRecord(rec);
+
+    auto termTable = Database::getTermTable();
+    for(auto it = termTable.begin(); it != termTable.end(); ++it)
+    {
+        auto val = rec.value(it.value());
+        if(!val.isNull())
+        {
+            auto term = Database::getTerm(it.key(), val.toInt());
+            offer->terms[term.getType()] = term;
+        }
+    }
+    offer->terms[TermType::remarks] = TermItem(TermType::remarks, QString::null, rec.value("remarks").toString());
+
+    Offer::PrintOptions options;
+    options.setFlag(Offer::printSpecs, rec.value("bPrintSpecs").toBool());
+    options.setFlag(Offer::printRawPrice, rec.value("bPrintRawPrice").toBool());
+    options.setFlag(Offer::printRawPricePLN, rec.value("bPrintRawPricePLN").toBool());
+    options.setFlag(Offer::printDiscount, rec.value("bPrintDiscount").toBool());
+    options.setFlag(Offer::printPrice, rec.value("bPrintPrice").toBool());
+    options.setFlag(Offer::printNumber, rec.value("bPrintNumber").toBool());
+    offer->printOptions = options;
+
+    offer->merchandiseList = new MerchandiseListModel(Database::loadOfferMerchandise(offerID), offer);
+
+    //these are valid only when merchandise list is there
+    QVariant exchange = rec.value("dExchangeRate");
+    if(exchange.isNull())
+        offer->setPln(false);
+    else
+    {
+        offer->setPln(true);
+        offer->setExchangeRate(exchange.toDouble());
+    }
+
+    qDebug() << "Done Loading!";
+    return offer;
 }
 
 void Offer::setGlobalDiscount(double discount)
@@ -120,14 +174,14 @@ void Offer::setPrintNumber(bool value)
     printOptions.setFlag(Offer::printNumber, value);
 }
 
-User Offer::getUser() const
+Offer::PrintOptions Offer::getPrintOptions() const
 {
-    return user;
+    return printOptions;
 }
 
-void Offer::setUser(const User &value)
+QHash<TermType, TermItem> Offer::getTerms() const
 {
-    user = value;
+    return terms;
 }
 
 void Offer::setDate(const QDate &value)
@@ -216,11 +270,21 @@ bool Offer::getPln() const
     return merchandiseList->isPLN();
 }
 
+double Offer::getExchangeRate() const
+{
+    return merchandiseList->getExchangeRate();
+}
+
 QString Offer::getExchangeRateSql() const
 {
     if(getPln())
         return QString::number(merchandiseList->getExchangeRate());
     return QString("NULL");
+}
+
+VariantLists Offer::getMerchandiseAsVariantLists() const
+{
+    return merchandiseList->asVariantLists();
 }
 
 QString Offer::getRemarks() const
@@ -233,6 +297,11 @@ QString Offer::getTermIDforDB(TermType type) const
     if(terms.contains(type))
         return QString::number(terms[type].id());
     return "NULL";
+}
+
+QString Offer::getPrintOptionForDB(Offer::PrintOption opt) const
+{
+    return printOptions.testFlag(opt)? "1" : "0";
 }
 
 void Offer::setPln(bool value)
@@ -248,20 +317,7 @@ void Offer::setExchangeRate(double value)
     emit exchangeRateChanged(value);
 }
 
-void Offer::print(QPrinter *printer)
-{
-    const qreal margin = 5;
-    printer->setPaperSize(QPrinter::A4);
-    printer->setResolution(96);
-    printer->setPageMargins(margin, margin, margin, margin, QPrinter::Millimeter);
-
-    QTextDocument doc;
-    doc.setHtml(document());
-    doc.setPageSize(QSizeF(printer->pageRect().size()));
-    doc.print(printer);
-}
-
-QString Offer::document() const
+QString Offer::document(const User &user) const
 {
     const int w = 745;                           //szerokosc szkieletu dokumentu
     const int dd = 248;

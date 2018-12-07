@@ -17,6 +17,28 @@
 **/
 
 #include "Customer.hpp"
+#include "Database.hpp"
+
+#include <QVariant>
+
+Customer Customer::fromDB(int id)
+{
+    return fromRecord(Database::getCustomerData(id));
+}
+
+Customer Customer::fromRecord(const QSqlRecord &record)
+{
+
+    Customer customer;
+    customer.id = record.value("customerID").toInt();
+    customer.shortName = record.value("short").toString();
+    customer.fullName = record.value("full").toString();
+    customer.title = record.value("title").toString();
+    customer.name = record.value("name").toString();
+    customer.surname = record.value("surname").toString();
+    customer.address = record.value("address").toString();
+    return customer;
+}
 
 Customer::Customer(): id(-1)
 { }
@@ -110,4 +132,9 @@ QString Customer::getIDorNull() const
     if(id > -1)
         return QString::number(id);
     return "NULL";
+}
+
+int Customer::getId() const
+{
+    return id;
 }

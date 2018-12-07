@@ -119,3 +119,5 @@ QString saltPassword(const QString &salt, const QString &password)
 {
     return hmacSha1(password.toUtf8(), salt.toUtf8()).toBase64();
 }
+
+

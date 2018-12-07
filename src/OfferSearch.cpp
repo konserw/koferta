@@ -33,9 +33,9 @@ OfferSearch::OfferSearch(QWidget *parent) :
     ui->dateEdit->setDisplayFormat("MMMM yyyy");
     ui->dateEdit->setDate(QDate::currentDate());
     ui->comboBox->addItem(tr("Wybierz użytkownika"));
-    ui->comboBox->addItems(Database::instance()->usersList().keys());
+    ui->comboBox->addItems(Database::usersList().keys());
 
-    model = Database::instance()->offerSearchModel(this);
+    model = new OfferSearchModel(this);
 
     ui->tableView->setModel(model);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);

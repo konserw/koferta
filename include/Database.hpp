@@ -20,10 +20,11 @@
 #define DATABASE_H
 
 #include <QObject>
+#include <QString>
+#include <QSqlRecord>
+
 #include "TermItem.hpp"
 #include "TermModel.hpp"
-#include "OfferSearchModel.hpp"
-#include "User.hpp"
 
 class QSqlDatabase;
 class QString;
@@ -35,56 +36,40 @@ class QTcpSocket;
 class QProgressDialog;
 class Customer;
 class Offer;
+class User;
 
-class Database : public QObject
+namespace Database
 {
-Q_OBJECT
+    //connection
+    bool isConnected();
+    void dropConection();
+    void setupDatabaseConnection(const QString &host, quint16 port, const QString &schema, const QString &user = QString(), const QString &password = QString());
 
-public:
-    static Database* instance();
-
-/* Database Interface */
     //user-related
+    QSqlRecord getUserData(int uid, const QString& password);
     QHash<QString, int> usersList();
     void setPassword(int uid, QString password);
-    int getNewOfferNumber(int uid) const;
-    QString getNewOfferSymbolForUser(const User &u) const;
+    int getNewOfferNumber(int uid);
 
     //terms
-    static void createTerm(const TermItem& term);
-    static TermModel* getTermModel(TermType termType);
-    static TermItem getTerm(TermType termType, int id = -1);
+    QHash<TermType, QString> getTermTable();
+    void createTerm(const TermItem& term);
+    TermModel* getTermModel(TermType termType);
+    TermItem getTerm(TermType termType, int id = -1);
 
     //offer
-    void saveOffer(const Offer& offer) const;
-    void loadOffer(Offer *offer, int offerID);
+    void saveOffer(const Offer& offer, const User &user);
+    QSqlRecord loadOfferBasic(int offerID);
+    QList<Merchandise*> loadOfferMerchandise(int offerID);
 
-    //models
-    static LoadDialogMerchandiseListModel* loadDialogMerchandiseListModel(QObject* parent);
-    static OfferSearchModel* offerSearchModel(QObject* parent);
+    //customer
+    QSqlRecord getCustomerData(int id);
+    void deleteCustomer(const Customer &customer);
+    void editCustomer(const Customer& customer);
+    void saveCustomer(const Customer& customer);
 
     //other
-    static QString mainAddress();
-
-    bool isConnected() const;
-public slots:
-    void dropConection();
-    void setupDatabaseConnection(const QString &host, unsigned port, const QString &schema, const QString &user = QString(), const QString &password = QString());
-    User logIn(int uid, const QString& password);
-
-    void deleteCustomer(const Customer &customer) const;
-    void editCustomer(const Customer& customer) const;
-    void saveCustomer(const Customer& customer) const;
-
-signals:
-    void connectionSuccess();
-    void changeStatus(const QString&);
-
-protected:
-    explicit Database();
-    ~Database();
-    static Database* m_instance;
-    QSqlDatabase* m_database;
-};
+    QString mainAddress();
+}
 
 #endif // DATABASE_H

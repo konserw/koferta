@@ -37,7 +37,6 @@ class CustomerSearch : public QWidget
 
 public:
     explicit CustomerSearch(QWidget *parent = 0);
-    ~CustomerSearch();
 
 public slots:
     void ref(const QString&);

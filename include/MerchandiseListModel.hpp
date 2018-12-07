@@ -34,9 +34,9 @@ class QSqlRecord;
 class MerchandiseListModel : public QAbstractTableModel
 {
     Q_OBJECT
-    friend class Database;
 public:
-    explicit MerchandiseListModel(QObject *parent = 0);
+    explicit MerchandiseListModel(QObject *parent = nullptr);
+    explicit MerchandiseListModel(QList<Merchandise*> list, QObject *parent = nullptr);
     virtual ~MerchandiseListModel();
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
@@ -67,6 +67,8 @@ public:
 
     QHash<int, double> hash() const;
     QString print(const int w, Offer::PrintOptions printOptions) const;
+
+    VariantLists asVariantLists() const;
 
 public slots:
     void clear();

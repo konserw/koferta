@@ -40,9 +40,7 @@ public:
     explicit MainWindow();
     ~MainWindow();
 
-    bool isUiInitialized() const;
-    Offer *getCurrentOffer() const;
-
+    void setupCurrencyUi(bool pln);
 public slots:
     void remarksSlot();
     void loadOfferFromDatabase(int offerID);
@@ -55,7 +53,7 @@ public slots:
     void updateCustomer(const Customer &customer);
     void updateInquiryDate(const QString &date);
     void updateInquiryNumber(const QString &number);
-    void updtaPrintOptions(Offer::PrintOptions options);
+    void updatePrintOptions(Offer::PrintOptions options);
 
 /*buttony na 1 zakladce*/
     void selectMerchandise();
@@ -97,11 +95,11 @@ public slots:
     //help
     void about();
 
+    void print(QPrinter *printer);
 signals:
     void remarksChanged(const QString& remarks);
 
 protected:
-    void bindOffer();
     void writeSettings();
     void readSettings();
     void closeEvent(QCloseEvent *event);

@@ -23,23 +23,21 @@
 
 class User
 {
-    friend class Database;
-
 public:
+    static User getUserFromDB(int id, const QString &password);
     User();
-    User(int Uid, QString Name, QString Phone, QString Mail, QString CharForOfferSymbol, bool Male, bool ResetPassword);
-    virtual ~User();
 
     QString getName() const;
     QString getMail() const;
-    bool getMale() const;
+    bool isMale() const;
     int getUid() const;
     QString getPhone() const;
-    QString getCharForOfferSymbol() const;
     bool shouldChangePassword() const;
     bool isValid() const;
 
     QString getGenderSuffix() const;
+    QString getNewOfferSymbol() const;
+
 
 protected:
     QString name;

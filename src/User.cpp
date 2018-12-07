@@ -20,19 +20,24 @@
 #include "Database.hpp"
 
 #include <QDate>
+#include <QVariant>
+
+User User::getUserFromDB(int id, const QString& password)
+{
+    User user;
+    auto record = Database::getUserData(id, password);
+    user.uid = record.value("id").toInt();
+    user.name = record.value("name").toString();
+    user.phone = record.value("phone").toString();
+    user.mail = record.value("mail").toString();
+    user.charForOfferSymbol = record.value("charForOfferSymbol").toString();
+    user.male = record.value("male").toBool();
+    user.resetPassword = record.value("resetPassword").toBool();
+    return user;
+}
 
 User::User() : uid(-1)
-{
-}
-
-User::User(int Uid, QString Name, QString Phone, QString Mail, QString CharForOfferSymbol, bool Male, bool ResetPassword) :
-    uid(Uid), name(Name), phone(Phone), mail(Mail), charForOfferSymbol(CharForOfferSymbol), male(Male), resetPassword(ResetPassword)
-{
-}
-
-User::~User()
-{
-}
+{ }
 
 QString User::getName() const
 {
@@ -52,9 +57,21 @@ QString User::getGenderSuffix() const
         return QString("a");
 }
 
-QString User::getCharForOfferSymbol() const
+QString User::getNewOfferSymbol() const
 {
-    return charForOfferSymbol;
+    int newOfferNumber = Database::getNewOfferNumber(uid);
+/* Example: I1804P01
+    1 znak - oznaczenie biznesu,
+2 i 3 znak - rok,
+4 i 5 znak - miesiąc,
+    6 znak - osoba ofertująca (czyli A – Agata, M – Marek, P – Patryk itd.),
+7 i 8 znak - numeracja ofert danej osoby w danym miesiącu,
+*/
+    return QString("I%1%2%3")
+            .arg(QDate::currentDate().toString("yyMM"))
+            .arg(charForOfferSymbol)
+            .arg(QString::number(newOfferNumber).rightJustified(2, '0'));
+
 }
 
 bool User::shouldChangePassword() const
@@ -72,7 +89,7 @@ QString User::getMail() const
     return mail;
 }
 
-bool User::getMale() const
+bool User::isMale() const
 {
     return male;
 }

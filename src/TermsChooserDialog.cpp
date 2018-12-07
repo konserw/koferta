@@ -46,7 +46,7 @@ TermsChooserDialog::TermsChooserDialog(QWidget *parent, TermType type) :
         qCritical() << "Invalid model selection";
     }
 
-    ui->listView->setModel(Database::instance()->getTermModel(type));
+    ui->listView->setModel(Database::getTermModel(type));
     ui->listView->setModelColumn(1);
 
     connect(ui->listView, SIGNAL(clicked(QModelIndex)), this, SLOT(selectionChanged(QModelIndex)));

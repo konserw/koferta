@@ -31,6 +31,12 @@ MerchandiseListModel::MerchandiseListModel(QObject *parent) :
 {
 }
 
+MerchandiseListModel::MerchandiseListModel(QList<Merchandise *> list, QObject *parent) :
+    MerchandiseListModel(parent)
+{
+    m_list = list;
+}
+
 MerchandiseListModel::~MerchandiseListModel()
 {
     qDeleteAll(m_list);
@@ -509,8 +515,8 @@ QString MerchandiseListModel::print(const int w, Offer::PrintOptions printOption
     doc += QString("\t\t<td width=%1 align = right><b>%3 %2</b></td>\n").arg(columnWidthPrice).arg(waluta).arg("Wartość");
     doc += "\t</tr></thead>\n";
 
-    uint rows = m_list.count();
-    for(uint i=0; i<rows; ++i)
+    auto rows = m_list.count();
+    for(auto i=0; i<rows; ++i)
     {
         Merchandise* item = m_list[i];
         double dCena;
@@ -558,6 +564,21 @@ QString MerchandiseListModel::print(const int w, Offer::PrintOptions printOption
     doc += "\t</table>\n";
 
     return doc;
+}
+
+VariantLists MerchandiseListModel::asVariantLists() const
+{
+    VariantLists lists;
+    Merchandise* merchandise;
+    for(int i=0; i < m_list.length(); ++i)
+    {
+        merchandise = m_list[i];
+        lists.seq << i;
+        lists.id << merchandise->id();
+        lists.count << merchandise->ilosc();
+        lists.disc << merchandise->rabat();
+    }
+    return lists;
 }
 
 double MerchandiseListModel::przeliczSume() const

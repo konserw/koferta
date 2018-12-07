@@ -26,18 +26,25 @@
 #include <QObject>
 #include <QString>
 #include <QDate>
+#include <QVariantList>
+
+struct VariantLists
+{
+    QVariantList seq;
+    QVariantList id;
+    QVariantList count;
+    QVariantList disc;
+};
 
 class MerchandiseListModel;
 class QTextDocument;
 class QPrinter;
 class Customer;
-class Database;
 class MerchandiseListView;
 
 class Offer : public QObject
 {
     Q_OBJECT
-    friend class Database;
 
 public:
     enum PrintOption : int
@@ -52,23 +59,28 @@ public:
     };
     Q_DECLARE_FLAGS(PrintOptions, PrintOption)
 
-    explicit Offer(User u, QObject *parent = 0);
-    ~Offer();
+    explicit Offer(QObject *parent = nullptr);
+    virtual ~Offer() = default;
+
+    static Offer* loadOffer(int offerID, QObject *parent = nullptr);
+    static Offer* createOffer(QObject *parent = nullptr);
 
     void setGlobalDiscount(double discount);
     void removeMerchandiseRow(int row);
 
-    QString document() const;
+    QString document(const User& user) const;
 
     bool getPln() const;
+    double getExchangeRate() const;
     QString getExchangeRateSql() const;
+    VariantLists getMerchandiseAsVariantLists() const;
 
     QString getRemarks() const;
     QString getTermIDforDB(TermType type) const;
+    QString getPrintOptionForDB(PrintOption opt) const;
     Customer getCustomer() const;
     QDate getDate() const;
     QString getSymbol() const;
-    User getUser() const;
 
     QString getInquiryNumberSql() const;
     QString getInquiryNumber() const;
@@ -76,6 +88,9 @@ public:
     QString getInquiryDateSql() const;
     QString getInquiryDate() const;
     QString getInquiryText() const;
+
+    QHash<TermType, TermItem> getTerms() const;
+    PrintOptions getPrintOptions() const;
 
 signals:
     void symbolChnged(const QString& symbol);
@@ -89,15 +104,11 @@ signals:
     void printOptionsChanged(PrintOptions options);
 
 public slots:
-    ///"drukowanie" dokumentu do podglądu lub pdf
-    void print(QPrinter *printer);
-
     void updateMerchandiseList(int id, double count);
     QHash<int, double> currentMerchandiseHash() const;
     void bindMerchandiseTable(MerchandiseListView* table);
 
 //setters
-    void setUser(const User &value);
     void setCustomer(const Customer &value);
     void setTerm(const TermItem &term);
     void setPln(bool value);
@@ -128,7 +139,6 @@ protected:
 
     MerchandiseListModel* merchandiseList;
     Customer customer;
-    User user;
 
     QHash<TermType, TermItem> terms;
 };

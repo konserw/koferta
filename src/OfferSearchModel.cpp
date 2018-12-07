@@ -23,6 +23,12 @@ OfferSearchModel::OfferSearchModel(QObject *parent)
     : QIdentityProxyModel(parent)
 {
 
+    auto sourceModel = new QSqlTableModel(this);
+    sourceModel->setTable("savedOffersView");
+    sourceModel->setEditStrategy(QSqlTableModel::OnManualSubmit);
+    sourceModel->select();
+
+    setSourceModel(sourceModel);
 }
 
 QVariant OfferSearchModel::headerData(int section, Qt::Orientation orientation, int role) const
