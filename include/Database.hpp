@@ -70,6 +70,7 @@ namespace Database
 
     //other
     QString mainAddress();
+    QString getVar(const QString& key);
 }
 
 #endif // DATABASE_H

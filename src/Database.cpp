@@ -451,3 +451,15 @@ void Database::dropConection()
     if(database.isValid())
         database.close();
 }
+
+QString Database::getVar(const QString &key)
+{
+    QSqlTableModel model;
+    model.setTable("vars");
+    model.setEditStrategy(QSqlTableModel::OnManualSubmit);
+    model.setFilter(QString("`key` = '%1'").arg(key));
+    model.select();
+    if(model.rowCount() < 1)
+        throw DatabaseException(QString("key = %1 not found").arg(key));
+    return model.record(0).value("value").toString();
+}

@@ -423,7 +423,7 @@ QString Offer::document(const User &user) const
                 "<tr><td>\n"
                 "\t<p>"
                 "\n\t%22<br>\n"
-                "<b>Zamówienia prosimy kierować na adres:</b> order@aliaxis-ui.pl z kopią do autora oferty.<br />\n"
+                "<b>Zamówienia prosimy kierować na adres:</b> %25 z kopią do autora oferty.<br />\n"
                 "<br />\n"
                 "\tŁączymy pozdrowienia.\n"
                 "\t</p>"
@@ -459,5 +459,6 @@ QString Offer::document(const User &user) const
 /*21*/.arg(escapedRemarks)
 /*22*/.arg(terms.value(TermType::offer, TermItem()).longDesc())
 /*23*/.arg(user.getGenderSuffix())
-/*24*/.arg(user.getName());
+/*24*/.arg(user.getName())
+/*25*/.arg(Database::getVar("order email"));
 }
