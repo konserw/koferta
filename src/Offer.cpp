@@ -39,9 +39,13 @@ Offer *Offer::createOffer(QObject *parent)
 {
     auto offer = new Offer(parent);
     offer->date = QDate::currentDate();
-    offer->printOptions = (Offer::printDiscount | Offer::printNumber | Offer::printPrice | Offer::printRawPrice | Offer::printSpecs);
-    offer->merchandiseList = new MerchandiseListModel(offer);
+    offer->printOptions = (Offer::printDiscount | Offer::printNumber | Offer::printPrice | Offer::printSpecs | Offer::printRawPricePLN);
     offer->terms[TermType::remarks] = TermItem(TermType::remarks, QString::null, "Termin realizacji jest określany na podstawie stanu z dnia sporządzenia oferty i może ulec zmianie.");
+
+    offer->merchandiseList = new MerchandiseListModel(offer);
+    offer->merchandiseList->setPLN(true);
+    offer->merchandiseList->setExchangeRate(Database::getVar("exchange rate").toDouble());
+
     return offer;
 }
 

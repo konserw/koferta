@@ -304,7 +304,7 @@ void MerchandiseListModel::setPLN(bool value)
     if(currencyIsPLN == true && value == false) //back to EUR
     {
         beginRemoveColumns(QModelIndex(), 3, 3);
-//        exchangeRate = 1;
+        exchangeRate = 1;
         currencyIsPLN = false;
         endRemoveColumns();
     }
