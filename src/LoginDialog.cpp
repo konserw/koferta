@@ -37,6 +37,7 @@ LoginDialog::~LoginDialog()
 
 void LoginDialog::openDBconnection()
 {
+    ui->label_statusBar->setText(tr("Łączenie z bazą danych"));
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     ui->comboBox_user->clear();
     writeSettings();
@@ -48,11 +49,22 @@ void LoginDialog::openDBconnection()
         schema = "kOferta_v4";
 
     try {
-        Database::setupDatabaseConnection(ui->lineEdit_ip->text(), ui->lineEdit_port->text().toUInt(), schema, SQL_USER, SQL_PWD);
+        Database::setupDatabaseConnection(ui->lineEdit_ip->text(), ui->lineEdit_port->text().toUShort(), schema, SQL_USER, SQL_PWD);
     } catch(const DatabaseException& e) {
-        QMessageBox::critical(this, tr("Bład sterownika bazy danych!"), e.userInfo());
-        this->reject();
+        QMessageBox::critical(this, tr("Bład połączenia z bazą danych!"), e.userInfo());
+        ui->label_statusBar->setText(tr("Nie połączono z bazą danych."));
+        return;
     }
+
+    ui->label_statusBar->setText(tr("Pobieranie listy użytkowników"));
+    qDebug() << "Database connected successfully";
+    m_userList = Database::usersList();
+    ui->comboBox_user->addItems(m_userList.keys());
+    if(!(m_lastUser.isEmpty() || m_lastUser.isNull()) && m_userList.contains(m_lastUser))
+        ui->comboBox_user->setCurrentText(m_lastUser);
+
+    ui->buttonBox->button(QDialogButtonBox::StandardButton::Ok)->setEnabled(true);
+    ui->label_statusBar->setText(tr("Połączono z bazą danych. Wybierz użytkownika i wprowadź hasło."));
 }
 
 LoginDialog::LoginDialog(QWidget *parent) :
@@ -66,6 +78,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     m_kOfertaLogo = new QPixmap(":/klog");
     ui->label_logo->setPixmap(*m_kOfertaLogo);
     ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+    ui->label_statusBar->setText(tr("Nie połączono z bazą danych."));
 
     disconnect(this, SLOT(accept()));
     connect(ui->pushButton_apply, &QPushButton::clicked, this, &LoginDialog::openDBconnection);
@@ -98,17 +111,6 @@ void LoginDialog::ok()
     }
     qDebug() << "Logged in successfully";
     this->accept();
-}
-
-void LoginDialog::connected()
-{
-    qDebug() << "Database connected successfully";
-    m_userList = Database::usersList();
-    ui->comboBox_user->addItems(m_userList.keys());
-    if(!(m_lastUser.isEmpty() || m_lastUser.isNull()) && m_userList.contains(m_lastUser))
-        ui->comboBox_user->setCurrentText(m_lastUser);
-
-    ui->buttonBox->button(QDialogButtonBox::StandardButton::Ok)->setEnabled(true);
 }
 
 User LoginDialog::user() const

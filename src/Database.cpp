@@ -58,6 +58,7 @@ void Database::setupDatabaseConnection(const QString &host, quint16 port, const 
         throw DatabaseException("Failed to create database object - QMYSQL driver not found.",
                                 QObject::tr("Nie odnaleziono sterownika bazy danych. Skontaktuj się z administratorem"));
     }
+    Database::dropConection();
 
     qDebug().noquote().nospace() << "Check if TCP socket " << host << ":" << port << " is reachable";
     QTcpSocket socket;
