@@ -25,7 +25,7 @@ class MerchandiseListView : public QTableView
 {
     Q_OBJECT
 public:
-    explicit MerchandiseListView(QWidget *parent = 0);
+    explicit MerchandiseListView(QWidget *parent = nullptr);
 
     void dropEvent(QDropEvent *event);
     void mousePressEvent(QMouseEvent *event);

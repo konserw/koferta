@@ -34,7 +34,7 @@ MerchandiseListView::MerchandiseListView(QWidget *parent) :
 
     header = this->horizontalHeader();
     header->setSortIndicatorShown(false);
-    header->setDefaultSectionSize(85);
+    header->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 void MerchandiseListView::dragEnterEvent(QDragEnterEvent *event)
