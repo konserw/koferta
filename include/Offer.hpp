@@ -71,6 +71,7 @@ public:
     QString document(const User& user) const;
 
     bool getPln() const;
+    double getExchangeRate() const;
     QString getExchangeRateSql() const;
     VariantLists getMerchandiseAsVariantLists() const;
 
@@ -87,6 +88,9 @@ public:
     QString getInquiryDateSql() const;
     QString getInquiryDate() const;
     QString getInquiryText() const;
+
+    QHash<TermType, TermItem> getTerms() const;
+    PrintOptions getPrintOptions() const;
 
 signals:
     void symbolChnged(const QString& symbol);

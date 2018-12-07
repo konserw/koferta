@@ -141,55 +141,6 @@ MainWindow::MainWindow():
     setMenusEnabled(false);
 }
 
-void MainWindow::bindOffer()
-{
-//general
-    //offer->ui
-    connect(currentOffer, &Offer::symbolChnged, this, &MainWindow::setTitle);
-//second tab
-    //offer -> ui
-    connect(currentOffer, &Offer::termsChanged, this, &MainWindow::updateTerms);
-    connect(currentOffer, &Offer::customerChanged, this, &MainWindow::updateCustomer);
-    //ui->offer
-    connect(this, &MainWindow::remarksChanged, currentOffer, &Offer::setRemarks);
-    //exchange rate related
-    //offer->ui
-    connect(currentOffer, &Offer::currencyChanged, this, &MainWindow::changeCurrency);
-    connect(currentOffer, &Offer::exchangeRateChanged, ui->spinBox_exchangeRate, &QDoubleSpinBox::setValue);
-    //ui->offer
-    connect(ui->radioButton_PLN, &QRadioButton::toggled, currentOffer, &Offer::setPln);
-    connect(ui->spinBox_exchangeRate, SIGNAL(valueChanged(double)), currentOffer, SLOT(setExchangeRate(double)));
-    //inquiry related
-    //offer->ui
-    connect(currentOffer, &Offer::inquiryDateChanged, this, &MainWindow::updateInquiryDate);
-    connect(currentOffer, &Offer::inquiryNumberChanged, this, &MainWindow::updateInquiryNumber);
-    //ui->offer
-    connect(ui->lineEdit_zapytanieNr, SIGNAL(textChanged(QString)), currentOffer, SLOT(setInquiryNumber(QString)));
-    connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), currentOffer, SLOT(setInquiryDate(QString)));
-    connect(m_calendarWidget, SIGNAL(clicked(QDate)), currentOffer, SLOT(setInquiryDate(QDate)));
-    connect(m_calendarWidget, SIGNAL(clicked(QDate)), m_calendarWidget, SLOT(close()));
-    //print options
-    //offer->ui
-    connect(currentOffer, &Offer::printOptionsChanged, this, &MainWindow::updtaPrintOptions);
-    //ui->offer
-    connect(ui->kol_specyfikacja, &QCheckBox::toggled, currentOffer, &Offer::setPrintSpecs);
-    connect(ui->kol_cenaKat, &QCheckBox::toggled, currentOffer, &Offer::setPrintRawPrice);
-    connect(ui->kol_cenaPln, &QCheckBox::toggled, currentOffer, &Offer::setPrintRawPricePLN);
-    connect(ui->kol_rabat, &QCheckBox::toggled, currentOffer, &Offer::setPrintDiscount);
-    connect(ui->kol_cena, &QCheckBox::toggled, currentOffer, &Offer::setPrintPrice);
-    connect(ui->kol_ilosc, &QCheckBox::toggled, currentOffer, &Offer::setPrintNumber);
-}
-
-bool MainWindow::isUiInitialized() const
-{
-    return (ui->tab->isEnabled() &&
-            ui->tab_2->isEnabled() &&
-            ui->menuExport->isEnabled() &&
-            ui->actionSave->isEnabled() &&
-            ui->actionNR->isEnabled()
-            );
-}
-
 void MainWindow::setMenusEnabled(bool en)
 {
     ui->menuOferta->setEnabled(en);
@@ -224,6 +175,69 @@ void MainWindow::uiReset()
     ui->menuExport->setEnabled(false);
     ui->actionSave->setEnabled(false);
     ui->actionNR->setEnabled(false);
+}
+
+void MainWindow::uiInit()
+{
+    //enable disabled controls
+    ui->tab->setEnabled(true);
+    ui->tab_2->setEnabled(true);
+
+    ui->menuExport->setEnabled(true);
+    ui->actionSave->setEnabled(true);
+    ui->actionNR->setEnabled(true);
+
+    setTitle(currentOffer->getSymbol());
+    auto terms = currentOffer->getTerms();
+    foreach (auto& term, terms.values()) {
+        updateTerms(term);
+    }
+    updateCustomer(currentOffer->getCustomer());
+    bool pln = currentOffer->getPln();
+    if (pln)
+        ui->spinBox_exchangeRate->setValue(currentOffer->getExchangeRate());
+    setupCurrencyUi(pln);
+    updateInquiryDate(currentOffer->getInquiryDate());
+    updateInquiryNumber(currentOffer->getInquiryNumber());
+    updatePrintOptions(currentOffer->getPrintOptions());
+
+    //bind offer and ui
+//general
+    connect(currentOffer, &Offer::symbolChnged, this, &MainWindow::setTitle);
+//first tab
+    currentOffer->bindMerchandiseTable(ui->tableView);
+//second tab
+    //offer -> ui
+    connect(currentOffer, &Offer::termsChanged, this, &MainWindow::updateTerms);
+    connect(currentOffer, &Offer::customerChanged, this, &MainWindow::updateCustomer);
+    //ui->offer
+    connect(this, &MainWindow::remarksChanged, currentOffer, &Offer::setRemarks);
+    //exchange rate related
+    //offer->ui
+    connect(currentOffer, &Offer::currencyChanged, this, &MainWindow::changeCurrency);
+    connect(currentOffer, &Offer::exchangeRateChanged, ui->spinBox_exchangeRate, &QDoubleSpinBox::setValue);
+    //ui->offer
+    connect(ui->radioButton_PLN, &QRadioButton::toggled, currentOffer, &Offer::setPln);
+    connect(ui->spinBox_exchangeRate, SIGNAL(valueChanged(double)), currentOffer, SLOT(setExchangeRate(double)));
+    //inquiry related
+    //offer->ui
+    connect(currentOffer, &Offer::inquiryDateChanged, this, &MainWindow::updateInquiryDate);
+    connect(currentOffer, &Offer::inquiryNumberChanged, this, &MainWindow::updateInquiryNumber);
+    //ui->offer
+    connect(ui->lineEdit_zapytanieNr, SIGNAL(textChanged(QString)), currentOffer, SLOT(setInquiryNumber(QString)));
+    connect(ui->lineEdit_zapytanieData, SIGNAL(textChanged(QString)), currentOffer, SLOT(setInquiryDate(QString)));
+    connect(m_calendarWidget, SIGNAL(clicked(QDate)), currentOffer, SLOT(setInquiryDate(QDate)));
+    connect(m_calendarWidget, SIGNAL(clicked(QDate)), m_calendarWidget, SLOT(close()));
+    //print options
+    //offer->ui
+    connect(currentOffer, &Offer::printOptionsChanged, this, &MainWindow::updatePrintOptions);
+    //ui->offer
+    connect(ui->kol_specyfikacja, &QCheckBox::toggled, currentOffer, &Offer::setPrintSpecs);
+    connect(ui->kol_cenaKat, &QCheckBox::toggled, currentOffer, &Offer::setPrintRawPrice);
+    connect(ui->kol_cenaPln, &QCheckBox::toggled, currentOffer, &Offer::setPrintRawPricePLN);
+    connect(ui->kol_rabat, &QCheckBox::toggled, currentOffer, &Offer::setPrintDiscount);
+    connect(ui->kol_cena, &QCheckBox::toggled, currentOffer, &Offer::setPrintPrice);
+    connect(ui->kol_ilosc, &QCheckBox::toggled, currentOffer, &Offer::setPrintNumber);
 }
 
 void MainWindow::writeSettings()
@@ -268,11 +282,6 @@ bool MainWindow::messageBoxSave()
     if(reply == QMessageBox::Yes)
         saveOffer();
     return false;
-}
-
-Offer *MainWindow::getCurrentOffer() const
-{
-    return currentOffer;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -386,15 +395,22 @@ void MainWindow::checkData(bool ch)
     }
 }
 
-void MainWindow::changeCurrency(bool pln)
-{
-    qDebug() << "currency changed pln:" << pln;
+void MainWindow::setupCurrencyUi(bool pln) {
     ui->spinBox_exchangeRate->setEnabled(pln);
     ui->kol_cenaPln->setEnabled(pln);
     ui->kol_cenaPln->setChecked(pln);
     ui->radioButton_PLN->setChecked(pln);
-    if(pln)
+}
+
+void MainWindow::changeCurrency(bool pln)
+{
+    setupCurrencyUi(pln);
+    if (pln) {
+        qDebug() << "currency changed to PLN";
         currentOffer->setExchangeRate(ui->spinBox_exchangeRate->value());
+    } else {
+        qDebug() << "currency changed to EUR";
+    }
 }
 
 void MainWindow::updateTerms(const TermItem &term)
@@ -446,7 +462,7 @@ void MainWindow::updateInquiryNumber(const QString& number)
     ui->plainTextEdit_zapytanie->setPlainText(currentOffer->getInquiryText());
 }
 
-void MainWindow::updtaPrintOptions(Offer::PrintOptions options)
+void MainWindow::updatePrintOptions(Offer::PrintOptions options)
 {
     ui->kol_specyfikacja->setChecked(options.testFlag(Offer::printSpecs));
     ui->kol_cenaKat->setChecked(options.testFlag(Offer::printRawPrice));
@@ -500,39 +516,13 @@ void MainWindow::newOffer()
     currentOffer = Offer::createOffer(this);
     uiReset();
     uiInit();
-    bindOffer();
     currentOffer->setSymbol(m_user.getNewOfferSymbol());
-    currentOffer->setDate(QDate::currentDate());
-    currentOffer->setPrintOptions(
-                Offer::printDiscount |
-                Offer::printNumber |
-                Offer::printPrice |
-                Offer::printRawPrice |
-                Offer::printSpecs);
 }
 
 void MainWindow::assignNewSymbol()
 {
     currentOffer->setDate(QDate::currentDate());
     currentOffer->setSymbol(m_user.getNewOfferSymbol());
-}
-
-void MainWindow::uiInit()
-{
-    currentOffer->bindMerchandiseTable(ui->tableView);
-
-    if(isUiInitialized())
-        return;
-
-    //włączenie zablokowanych części
-    ui->tab->setEnabled(true);
-    ui->tab_2->setEnabled(true);
-
-    ui->menuExport->setEnabled(true);
-    ui->actionSave->setEnabled(true);
-    ui->actionNR->setEnabled(true);
-
-    ui->plainTextEdit_zapytanie->setPlainText(currentOffer->getInquiryText());
 }
 
 void MainWindow::saveOffer()
@@ -598,7 +588,6 @@ void MainWindow::loadOfferFromDatabase(int offerID)
         return;
     }
     uiInit();
-    bindOffer();
 }
 
 void MainWindow::createTerms()
@@ -624,7 +613,6 @@ void MainWindow::createMerchandise()
     MerchandiseNew pop(this);
     pop.exec();
 }
-
 
 void MainWindow::print(QPrinter *printer)
 {

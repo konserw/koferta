@@ -38,6 +38,7 @@ Offer::Offer(QObject *parent) :
 Offer *Offer::createOffer(QObject *parent)
 {
     auto offer = new Offer(parent);
+    offer->date = QDate::currentDate();
     offer->printOptions = (Offer::printDiscount | Offer::printNumber | Offer::printPrice | Offer::printRawPrice | Offer::printSpecs);
     offer->merchandiseList = new MerchandiseListModel(offer);
     offer->terms[TermType::remarks] = TermItem(TermType::remarks, QString::null, "Termin realizacji jest określany na podstawie stanu z dnia sporządzenia oferty i może ulec zmianie.");
@@ -50,9 +51,9 @@ Offer *Offer::loadOffer(int offerID, QObject* parent)
     auto rec = Database::loadOfferBasic(offerID);
     auto offer = new Offer(parent);
 
-    offer->id = offerID;
-    offer->symbol = rec.value("offer->ymbol").toString();
-    offer->date = rec.value("offer->ate").toDate();
+    offer->id = offerID; // need it?
+    offer->symbol = rec.value("offerSymbol").toString();
+    offer->date = rec.value("offerDate").toDate();
     offer->inquiryDate = rec.value("inquiryDate").toString();
     offer->inquiryNumber = rec.value("inquiryNumber").toString();
     if(!rec.value("customerID").isNull())
@@ -173,6 +174,16 @@ void Offer::setPrintNumber(bool value)
     printOptions.setFlag(Offer::printNumber, value);
 }
 
+Offer::PrintOptions Offer::getPrintOptions() const
+{
+    return printOptions;
+}
+
+QHash<TermType, TermItem> Offer::getTerms() const
+{
+    return terms;
+}
+
 void Offer::setDate(const QDate &value)
 {
     date = value;
@@ -257,6 +268,11 @@ QString Offer::getInquiryText() const
 bool Offer::getPln() const
 {
     return merchandiseList->isPLN();
+}
+
+double Offer::getExchangeRate() const
+{
+    return merchandiseList->getExchangeRate();
 }
 
 QString Offer::getExchangeRateSql() const
