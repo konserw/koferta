@@ -77,6 +77,13 @@ bool MerchandiseListModel::setData(const QModelIndex &index, const QVariant &val
 
 QVariant MerchandiseListModel::data(const QModelIndex &index, int role) const
 {
+    if (role == Qt::TextAlignmentRole) {
+        if (index.column() > 1) {
+            return Qt::AlignRight;
+        } else {
+            return Qt::AlignLeft;
+        }
+    }
 
     if(!(role == Qt::DisplayRole || role == Qt::EditRole) || !index.isValid() || (index.row() > m_list.count()))
         return QVariant();
