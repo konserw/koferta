@@ -108,6 +108,7 @@ void LoginDialog::ok()
     {
         qDebug() << "Login failed";
         QMessageBox::information(this, tr("Błąd logowania"), e.userInfo());
+        return;
     }
     qDebug() << "Logged in successfully";
     this->accept();

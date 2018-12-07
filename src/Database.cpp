@@ -140,6 +140,8 @@ QSqlRecord Database::getUserData(int uid, const QString &password)
     //qDebug() << "user record" << r;
     QString dbPassword = r.value("password").toString();
     QString salt = r.value("salt").toString();
+    if (dbPassword.isEmpty() && salt.isEmpty())
+        return r;
 
     qDebug() << "User's salt:" << salt;
     if(saltPassword(salt, password) != dbPassword)
