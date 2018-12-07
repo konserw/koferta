@@ -635,6 +635,7 @@ void MainWindow::printPrev()
     QPrintPreviewDialog preview(&printer, this);
     preview.setWindowFlags(Qt::Window);
     connect(&preview, &QPrintPreviewDialog::paintRequested, currentOffer, &Offer::print);
+    preview.showMaximized();
     preview.exec();
 }
 
