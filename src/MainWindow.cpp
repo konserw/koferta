@@ -431,6 +431,7 @@ void MainWindow::selectMerchandise()
     connect(&pop, &MerchandiseSelection::itemCountChanged, currentOffer, &Offer::updateMerchandiseList);
     pop.showMaximized();
     pop.exec();
+    ui->tableView->resizeColumnsToContents();
 }
 
 void MainWindow::updateCustomer(const Customer& customer)
