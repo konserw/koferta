@@ -73,6 +73,28 @@ private slots:
         Database::dropConection();
     }
     /*
+     * main address
+     */
+    void mainAddress_fail()
+    {
+        QString test_address = Database::mainAddress();
+        QVERIFY(test_address.isNull());
+    }
+    void mainAddress()
+    {
+        QString address = "Sample address\nWith two lines";
+        QString queryText = R"(
+INSERT INTO `kOferta_test`.`addresses`
+(`id`, `address`)
+VALUES
+(1, "%1")
+)";
+        Transaction::run(queryText.arg(address));
+
+        QString test_address = Database::mainAddress();
+        QCOMPARE(test_address, address);
+    }
+    /*
      * TERMS
      */
     void createTerm_data()
@@ -324,28 +346,6 @@ FROM `kOferta_test`.`users`;
         QCOMPARE(test_symbol, symbol);
     }
     */
-    /*
-     * Others
-     */
-    void mainAddress_fail()
-    {
-        QString test_address = Database::mainAddress();
-        QVERIFY(test_address.isNull());
-    }
-    void mainAddress()
-    {
-        QString address = "Sample address\nWith two lines";
-        QString queryText = R"(
-INSERT INTO `kOferta_test`.`addresses`
-(`id`, `address`)
-VALUES
-(1, "%1")
-)";
-        Transaction::run(queryText.arg(address));
-
-        QString test_address = Database::mainAddress();
-        QCOMPARE(test_address, address);
-    }
 };
 
 
