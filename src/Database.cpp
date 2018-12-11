@@ -414,7 +414,7 @@ QString Database::mainAddress()
 {
     QSqlTableModel model;
     model.setTable("addresses");
-    model.setFilter(QString("id = 2"));
+    model.setFilter(QString("id = 1"));
     model.select();
 
     if(model.rowCount() < 1)
