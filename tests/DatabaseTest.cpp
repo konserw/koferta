@@ -339,7 +339,7 @@ FROM `kOferta_test`.`users`;
 INSERT INTO `kOferta_test`.`addresses`
 (`id`, `address`)
 VALUES
-(2, "%1")
+(1, "%1")
 )";
         Transaction::run(queryText.arg(address));
 
