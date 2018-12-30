@@ -318,7 +318,7 @@ void MerchandiseListModel::setPLN(bool value)
 
 bool MerchandiseListModel::removeRows(int row, int count, const QModelIndex & /*parent*/)
 {
-    if(row == m_list.count())
+    if(row >= m_list.count())
         return false;
 
     beginRemoveRows(QModelIndex(), row, row+count-1);

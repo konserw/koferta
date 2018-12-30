@@ -23,12 +23,12 @@
 
 double Merchandise::roundTo2(double val)
 {
-    return llround(val * 100) / 100.0f;
+    return llround(val * 100) / 100.0;
 }
 
 Merchandise::Merchandise() :
     m_rabat(0), m_ilosc(0)
-{   
+{
 }
 
 Merchandise::Merchandise(int id) :
