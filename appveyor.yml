@@ -91,8 +91,8 @@ deploy:
 * Visual studio 2017 redist package installed
 [download link](https://aka.ms/vs/15/release/vc_redist.x64.exe)"
   provider: GitHub
-#  auth_token:
-#    secure: ogmv8nz5XumGTJew9jWXUvPQ8U4J9t4z7WcAIG+xYHrbqnenBO5x0NUZvCMitga6 
+  auth_token:
+    secure: un5QF11H/oKDRBBjkczwnlhsJKh1jsb3gSp3/VnoTjznUkVzEm1fECunBw55Z28k
   artifact: kOferta.7z 
   draft: false
   prerelease: false
