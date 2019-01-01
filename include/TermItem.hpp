@@ -22,7 +22,9 @@
 #include <QString>
 #include <QHash>
 
-enum class TermType : uint
+#include "MainwindowExport.hpp"
+
+enum class MAINWINDOW_EXPORT TermType : uint
 {
     delivery = 0,
     offer,
@@ -36,7 +38,7 @@ inline uint qHash(TermType key, uint seed)
 }
 
 
-class TermItem
+class MAINWINDOW_EXPORT TermItem
 {
 public:
 

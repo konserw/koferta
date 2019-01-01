@@ -1,10 +1,11 @@
 mkdir koferta
 cd koferta
 mkdir bin
-cp ../build/Release/koferta.exe ./bin/
-cp ../build/Logger/Release/logger.dll ./bin/
-cp ../build/MainWindow/Release/mainwindow.dll ./bin/
-cp ../build/MainWindow/*.qm ./bin/
+cp ../build/src/Release/koferta.exe ./bin/
+cp ../build/src/Release/logger.dll ./bin/
+cp ../build/src/Release/database.dll ./bin/
+cp ../build/src/Release/mainwindow.dll ./bin/
+cp ../build/src/*.qm ./bin/
 cp ../3rdParty/* ./bin/
 cp ../LICENSE.md ./
 cp ../README.md ./

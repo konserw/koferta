@@ -21,8 +21,9 @@
 
 #include <QIdentityProxyModel>
 #include <QDate>
+#include "MainwindowExport.hpp"
 
-class OfferSearchModel: public QIdentityProxyModel
+class MAINWINDOW_EXPORT OfferSearchModel: public QIdentityProxyModel
 {
 public:
     explicit OfferSearchModel(QObject* parent);

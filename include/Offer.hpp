@@ -19,6 +19,7 @@
 #ifndef OFFER_H
 #define OFFER_H
 
+#include "MainwindowExport.hpp"
 #include "TermItem.hpp"
 #include "Customer.hpp"
 #include "User.hpp"
@@ -34,7 +35,7 @@ class Customer;
 class Database;
 class MerchandiseListView;
 
-class Offer : public QObject
+class MAINWINDOW_EXPORT Offer : public QObject
 {
     Q_OBJECT
     friend class Database;

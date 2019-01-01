@@ -20,11 +20,12 @@
 #define LOGGER_H
 
 #include <QtCore/QtGlobal>
+#include "LoggerExport.hpp"
 
 class QTextStream;
 class QFile;
 
-class Logger
+class LOGGER_EXPORT Logger
 {
 public:
     static Logger& instance();

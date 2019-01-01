@@ -20,8 +20,9 @@
 #define CUSTOMER_H
 
 #include<QString>
+#include "MainwindowExport.hpp"
 
-class Customer
+class MAINWINDOW_EXPORT Customer
 {
 public:
     explicit Customer();

@@ -22,11 +22,12 @@
 #include <QAbstractTableModel>
 #include <QList>
 #include "TermItem.hpp"
+#include "MainwindowExport.hpp"
 
 /*!
  * \brief Model that contain possible terms for offer, payment etc.
  */
-class TermModel : public QAbstractTableModel
+class MAINWINDOW_EXPORT TermModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:

@@ -23,6 +23,7 @@
 #include <QTcpSocket>
 #include <QHash>
 
+#include "MainwindowExport.hpp"
 #include "Customer.hpp"
 #include "Merchandise.hpp"
 #include "Database.hpp"

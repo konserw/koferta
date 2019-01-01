@@ -20,8 +20,9 @@
 #define USER_H
 
 #include <QString>
+#include "MainwindowExport.hpp"
 
-class User
+class MAINWINDOW_EXPORT User
 {
     friend class Database;
 

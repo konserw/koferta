@@ -20,6 +20,7 @@
 #define DATABASE_H
 
 #include <QObject>
+#include "DatabaseExport.hpp"
 #include "TermItem.hpp"
 #include "TermModel.hpp"
 #include "OfferSearchModel.hpp"
@@ -36,7 +37,7 @@ class QProgressDialog;
 class Customer;
 class Offer;
 
-class Database : public QObject
+class DATABASE_EXPORT Database : public QObject
 {
 Q_OBJECT
 

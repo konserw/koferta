@@ -1,3 +1,5 @@
+include(GenerateExportHeader)
+
 add_definitions(-DVERSION="${KOFERTA_VERSION}")
 IF(WIN32)
     add_definitions(-DWIN32)
@@ -44,29 +46,68 @@ set(LOGGER_HEADERS "${KOFERTA_INCLUDE_DIR}/Logger.hpp")
 #if(CMAKE_EXTRA_GENERATOR OR MSVC_IDE)
     message(STATUS "Adding header files to project")
     file(GLOB_RECURSE MAINWINDOW_HEADERS "${KOFERTA_INCLUDE_DIR}/*.hpp")
-    list(REMOVE_ITEM MAINWINDOW_HEADERS ${LOGGER_HEADERS})
-    list(REMOVE_ITEM MAINWINDOW_HEADERS ${DATABASE_HEADERS})
-    message("MW H: ${MAINWINDOW_HEADERS}")
-#    source_group("Header Files" FILES ${MAINWINDOW_HEADERS})
+  #  source_group("Header Files" FILES ${MAINWINDOW_HEADERS})
     list(APPEND MAINWINDOW_SOURCES ${MAINWINDOW_HEADERS})
-#    source_group("Header Files" FILES ${DATABASE_HEADERS})
+    list(REMOVE_ITEM MAINWINDOW_HEADERS ${DATABASE_HEADERS})
+    list(REMOVE_ITEM MAINWINDOW_HEADERS ${LOGGER_HEADERS})
+ #   source_group("Header Files" FILES ${DATABASE_HEADERS})
     list(APPEND DATABASE_SOURCES ${DATABASE_HEADERS})
 #endif()
 
-add_library(logger STATIC Logger.cpp)# "${KOFERTA_INCLUDE_DIR}/Logger.hpp")
+add_library(logger SHARED Logger.cpp)# "${KOFERTA_INCLUDE_DIR}/Logger.hpp")
 target_compile_definitions(logger PUBLIC QT_MESSAGELOGCONTEXT)
 target_link_libraries(logger Qt5::Core)
+set_target_properties(
+    logger
+    PROPERTIES
+        DEFINE_SYMBOL logger_EXPORTS
+        CXX_VISIBILITY_PRESET hidden
+        VISIBILITY_INLINES_HIDDEN ON
+)
+generate_export_header(logger
+    EXPORT_FILE_NAME "LoggerExport.hpp"
+)
 
-add_library(database STATIC ${DATABASE_SOURCES})
+add_library(database SHARED ${DATABASE_SOURCES})
 target_link_libraries(database PUBLIC Qt5::Core Qt5::Sql Qt5::Network)
+set_target_properties(
+    database
+    PROPERTIES
+        DEFINE_SYMBOL database_EXPORTS
+        CXX_VISIBILITY_PRESET hidden
+        VISIBILITY_INLINES_HIDDEN ON
+)
+generate_export_header(database
+    EXPORT_FILE_NAME "DatabaseExport.hpp"
+)
 
-add_library(mainwindow STATIC ${MAINWINDOW_SOURCES})# ${UI_GENERATED_HEADERS})
+add_library(mainwindow SHARED ${MAINWINDOW_SOURCES})# ${UI_GENERATED_HEADERS})
 #set_property(TARGET  mainwindow PROPERTY CXX_STANDARD 14)
 target_link_libraries(mainwindow Qt5::Sql Qt5::Core Qt5::Widgets Qt5::PrintSupport database)
-target_compile_definitions(mainwindow PRIVATE EXPORT_MAINWINDOW)
 target_compile_definitions(mainwindow PRIVATE SQL_USER="${KOFERTA_SQL_USER}")
 target_compile_definitions(mainwindow PRIVATE SQL_PWD="${KOFERTA_SQL_PWD}")
+set_target_properties(
+    mainwindow
+    PROPERTIES
+        DEFINE_SYMBOL mainwindow_EXPORTS
+        CXX_VISIBILITY_PRESET hidden
+        VISIBILITY_INLINES_HIDDEN ON
+)
+generate_export_header(mainwindow
+    EXPORT_FILE_NAME "MainwindowExport.hpp"
+)
 
 add_executable(koferta ${GUI_TYPE} Main.cpp ${KOFERTA_RESOURCES}) 
-target_link_libraries(koferta mainwindow logger)# database )
+target_link_libraries(koferta logger database mainwindow )
 
+foreach(TARGET
+        mainwindow
+        koferta
+        database
+)
+    target_include_directories(${TARGET}
+        PUBLIC
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+            $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+    )
+endforeach()

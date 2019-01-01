@@ -20,8 +20,9 @@
 #define LOADDIALOGMERCHANDISELISTMODEL_H
 
 #include <QSqlTableModel>
+#include "MainwindowExport.hpp"
 
-class LoadDialogMerchandiseListModel : public QSqlTableModel
+class MAINWINDOW_EXPORT LoadDialogMerchandiseListModel : public QSqlTableModel
 {
     Q_OBJECT
 

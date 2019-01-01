@@ -23,6 +23,7 @@
 #include <QCalendarWidget>
 #include <QPlainTextEdit>
 
+#include "MainwindowExport.hpp"
 #include "User.hpp"
 #include "Offer.hpp"
 #include "TermItem.hpp"
@@ -32,7 +33,7 @@ namespace Ui {
     class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+class MAINWINDOW_EXPORT MainWindow : public QMainWindow
 {
     Q_OBJECT
 

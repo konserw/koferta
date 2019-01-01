@@ -25,7 +25,9 @@
 #include <QCryptographicHash>
 #include <QtSql>
 
-class DatabaseException : public std::runtime_error
+#include "DatabaseExport.hpp"
+
+class DATABASE_EXPORT DatabaseException : public std::runtime_error
 {
 public:
     DatabaseException(QString text) : std::runtime_error(text.toStdString())

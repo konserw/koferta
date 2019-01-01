@@ -20,11 +20,12 @@
 #define TOWAR_H
 
 #include <QString>
+#include "MainwindowExport.hpp"
 
 /*!
  * \brief Klasa reprezentująca towar w ofercie
  */
-class Merchandise
+class MAINWINDOW_EXPORT Merchandise
 {
 public:
     explicit Merchandise();
