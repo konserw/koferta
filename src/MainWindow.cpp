@@ -81,7 +81,7 @@ MainWindow::MainWindow():
         qDebug() << "loaded translations from file" << translationFile;
     }
     else
-        qWarning() << "\t\tCould not load translations from file" << translationFile;
+        qWarning() << "Could not load translations from file" << translationFile;
 
     qDebug() << "setup ui";
     ui->setupUi(this);
@@ -139,10 +139,12 @@ MainWindow::MainWindow():
     connect(ui->plainTextEdit_uwagi, &QPlainTextEdit::textChanged, this, &MainWindow::remarksSlot);
 
     setMenusEnabled(false);
+    qDebug() << "End of MainWindow constructor";
 }
 
 void MainWindow::setMenusEnabled(bool en)
 {
+    qDebug() << "Enabling windows";
     ui->menuOferta->setEnabled(en);
     ui->menuKlient->setEnabled(en);
     ui->actionDisconnect->setEnabled(en);
@@ -332,9 +334,11 @@ void MainWindow::about()
 
 void MainWindow::databaseConnect()
 {
+    qDebug() << "Launching login dialog";
     LoginDialog pop(this);
     if(pop.exec() == QDialog::Accepted)
     {
+        qDebug() << "Login dialog accepted";
         m_user = pop.user();
         if(m_user.shouldChangePassword())
         {
@@ -343,6 +347,7 @@ void MainWindow::databaseConnect()
         }
         setMenusEnabled(true);
     }
+    qDebug() << "Login routine finished";
 }
 
 void MainWindow::databaseDisconnect()

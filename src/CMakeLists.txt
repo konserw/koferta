@@ -59,6 +59,6 @@ target_compile_definitions(mainwindow PRIVATE EXPORT_MAINWINDOW)
 target_compile_definitions(mainwindow PRIVATE SQL_USER="${KOFERTA_SQL_USER}")
 target_compile_definitions(mainwindow PRIVATE SQL_PWD="${KOFERTA_SQL_PWD}")
 
-add_executable(koferta ${GUI_TYPE} Main.cpp ${KOFERTA_RESOURCES}) 
+add_executable(koferta ${GUI_TYPE} Main.cpp application.cpp application.h ${KOFERTA_RESOURCES})
 target_link_libraries(koferta mainwindow logger)
 

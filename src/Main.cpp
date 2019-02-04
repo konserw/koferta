@@ -16,20 +16,31 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#include <QApplication>
-#include <QTextCodec>
+#include <QDebug>
 #include "Logger.hpp"
 #include "MainWindow.hpp"
+#include "DatabaseHelpers.hpp"
 
-int main(int argc, char *argv[])
-{
-    QApplication app(argc, argv);
-    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
-    QCoreApplication::setOrganizationName("Konserw  Software");
-    //QCoreApplication::setOrganizationDomain("koferta.no-ip.biz");
-    QCoreApplication::setApplicationName("kOferta");
+#include "application.h"
 
+
+int main(int argc, char *argv[]) {
     qInstallMessageHandler(Logger::logToFile);
-    MainWindow w;
-    return app.exec();
+    Application app(argc, argv);
+
+    int ret;
+    try {
+        MainWindow w;
+        ret = app.exec();
+    } catch (const DatabaseException & e) {
+        qCritical() << "[MAIN] DatabaseException has been thrown:" << e.what();
+        return EXIT_FAILURE; // exit the application
+    } catch (const std::exception & e) {
+        qCritical() << "[MAIN] std::exception has been thrown:" << e.what();
+        return EXIT_FAILURE; // exit the application
+    } catch (...) {
+        qCritical() << "[MAIN] Unknown Exception has been thrown";
+        return EXIT_FAILURE; // exit the application
+    }
+    return ret;
 }
